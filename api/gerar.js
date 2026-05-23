@@ -1,3 +1,7 @@
+export const config = {
+  maxDuration: 60
+};
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
@@ -58,9 +62,9 @@ export default async function handler(req, res) {
               }
             ],
             generationConfig: {
-              temperature: 0.7,
-              topP: 0.95,
-              maxOutputTokens: 4096
+              temperature: 0.45,
+              topP: 0.9,
+              maxOutputTokens: 8192
             }
           })
         });
