@@ -29,14 +29,28 @@ export default async function handler(req, res) {
       });
     }
 
+    /*
+      Ordem dos modelos:
+      1. Primeiro tenta o Pro, que é mais forte.
+      2. Depois tenta o 3.5 Flash.
+      3. Depois cai para o 3.1 Flash-Lite.
+      4. Depois tenta alternativas 2.5.
+      
+      Se um modelo der cota excedida, indisponível, sem acesso,
+      modelo não encontrado ou qualquer erro, o código tenta o próximo.
+    */
     const modelos = [
+      "gemini-3.1-pro-preview",
+      "gemini-3.5-flash",
       "gemini-3.1-flash-lite",
       "gemini-3.1-flash-lite-preview",
-      "gemini-2.5-flash-lite",
-      "gemini-2.5-flash"
+      "gemini-2.5-pro",
+      "gemini-2.5-flash",
+      "gemini-2.5-flash-lite"
     ];
 
     let ultimoErro = "";
+    const errosDosModelos = [];
 
     for (const modelo of modelos) {
       try {
@@ -80,6 +94,12 @@ export default async function handler(req, res) {
               : "Erro desconhecido na API do Gemini.";
 
           ultimoErro = "Erro com o modelo " + modelo + ": " + mensagem;
+
+          errosDosModelos.push({
+            modelo,
+            erro: mensagem
+          });
+
           continue;
         }
 
@@ -96,6 +116,12 @@ export default async function handler(req, res) {
 
         if (!texto) {
           ultimoErro = "O modelo " + modelo + " respondeu, mas não retornou texto.";
+
+          errosDosModelos.push({
+            modelo,
+            erro: "O modelo respondeu, mas não retornou texto."
+          });
+
           continue;
         }
 
@@ -106,13 +132,31 @@ export default async function handler(req, res) {
         });
 
       } catch (erroModelo) {
-        ultimoErro = erroModelo.message || "Erro desconhecido com o modelo " + modelo;
+        const mensagemErro =
+          erroModelo && erroModelo.message
+            ? erroModelo.message
+            : "Erro desconhecido com o modelo " + modelo;
+
+        ultimoErro = mensagemErro;
+
+        errosDosModelos.push({
+          modelo,
+          erro: mensagemErro
+        });
       }
     }
 
     return res.status(500).json({
       sucesso: false,
-      erro: ultimoErro || "Nenhum modelo conseguiu gerar o material."
+      erro:
+        "Nenhum modelo conseguiu gerar o material.\n\nÚltimo erro:\n" +
+        (ultimoErro || "Erro desconhecido.") +
+        "\n\nModelos tentados:\n" +
+        errosDosModelos
+          .map(function (item) {
+            return "- " + item.modelo + ": " + item.erro;
+          })
+          .join("\n")
     });
 
   } catch (erro) {
