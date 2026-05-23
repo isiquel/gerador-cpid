@@ -27,12 +27,19 @@ module.exports = async function handler(req, res) {
     const prompt = buildPrompt(form);
     const result = await callGeminiText(apiKey, models, prompt);
     const text = extractText(result.data);
-    const material = parseJson(text);
+    let material = parseJson(text);
+
+    if (!material && form.materialType === "revista" && form.revistaPart === "lesson") {
+      const compactPrompt = promptRevistaLicao(form, true);
+      const compactResult = await callGeminiText(apiKey, models, compactPrompt);
+      const compactText = extractText(compactResult.data);
+      material = parseJson(compactText);
+    }
 
     if (!material) {
       return res.status(500).json({
         ok: false,
-        error: "A IA respondeu, mas não entregou um JSON válido. Tente novamente."
+        error: "A IA respondeu, mas não entregou um JSON válido. Tente novamente em alguns segundos."
       });
     }
 
@@ -52,6 +59,7 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
     console.error("Erro em api/gerar.js:", error);
+
     return res.status(500).json({
       ok: false,
       error: error.message || "Erro interno ao gerar o material."
@@ -107,7 +115,7 @@ function normalizeForm(body) {
 
 function buildPrompt(form) {
   if (form.materialType === "revista" && form.revistaPart === "meta") return promptRevistaMeta(form);
-  if (form.materialType === "revista" && form.revistaPart === "lesson") return promptRevistaLicao(form);
+  if (form.materialType === "revista" && form.revistaPart === "lesson") return promptRevistaLicao(form, false);
   if (form.materialType === "sermao") return promptSermao(form);
   if (form.materialType === "livro") return promptLivro(form);
   if (form.materialType === "devocional") return promptDevocional(form);
@@ -149,6 +157,7 @@ REGRAS OBRIGATÓRIAS:
 8. O conteúdo precisa ser bíblico, profundo, pastoral, claro e aplicável.
 9. Não use aspas duplas dentro dos textos, a não ser que estejam escapadas corretamente.
 10. Evite caracteres que quebrem JSON.
+11. Não use travessões longos demais, símbolos decorativos ou listas enormes dentro de um único campo.
 `.trim();
 }
 
@@ -173,6 +182,7 @@ REGRAS:
 3. Cada título de lição deve seguir o tema geral.
 4. A revista do aluno e a revista do professor devem ter a mesma linha temática.
 5. O conteúdo deve seguir linha bíblica conservadora e pentecostal clássica quando envolver Espírito Santo, dons, igreja e escatologia.
+6. A apresentação deve ser boa, mas objetiva, com no máximo 220 palavras.
 
 FORMATO JSON:
 {
@@ -196,11 +206,52 @@ FORMATO JSON:
 `.trim();
 }
 
-function promptRevistaLicao(form) {
-  const versaoTexto = form.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR";
+function promptRevistaLicao(form, compacto) {
+  const isProfessor = form.revistaVersion === "professor";
+  const versaoTexto = isProfessor ? "REVISTA DO PROFESSOR" : "REVISTA DO ALUNO";
+
   const tituloPlanejado = Array.isArray(form.lessonTitles)
     ? (form.lessonTitles.find(x => Number(x.lesson) === Number(form.lessonNumber))?.title || "")
     : "";
+
+  const controleProfessor = isProfessor
+    ? `
+REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
+1. O conteúdo principal da lição deve continuar profundo.
+2. As respostas das perguntas devem ser objetivas, com no máximo 35 palavras cada.
+3. Orientações para o professor: máximo 80 palavras.
+4. Sugestão de abordagem em classe: máximo 80 palavras.
+5. Observação pastoral: máximo 70 palavras.
+6. Não repita o conteúdo dos tópicos nas orientações do professor.
+7. Não escreva comentários longos demais nos campos teacherNotes, classApproach e pastoralObservation.
+`
+    : `
+REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
+1. Não inclua gabarito.
+2. Não inclua orientação interna do professor.
+3. As perguntas devem vir sem respostas.
+`;
+
+  const limites = compacto
+    ? `
+MODO COMPACTO DE SEGURANÇA:
+1. Esta geração precisa ser mais leve para não quebrar a API.
+2. Introdução: 80 a 120 palavras.
+3. Cada tópico principal: 40 a 70 palavras.
+4. Cada subtópico: 55 a 85 palavras.
+5. Conclusão: 70 a 100 palavras.
+6. Leitura bíblica em classe: no máximo 4 versículos.
+7. Perguntas e respostas: objetivas.
+`
+    : `
+LIMITES DE TAMANHO:
+1. Introdução: 90 a 140 palavras.
+2. Cada tópico principal: 50 a 80 palavras.
+3. Cada subtópico: 65 a 100 palavras.
+4. Conclusão: 75 a 110 palavras.
+5. Leitura bíblica em classe: no máximo 5 versículos.
+6. Não escreva textos longos demais em um único campo.
+`;
 
   return `
 Você é um comentarista de revista bíblica, pastor, teólogo e professor de Escola Bíblica Dominical.
@@ -224,23 +275,16 @@ REGRAS DA LIÇÃO:
 3. Deve seguir padrão de revista de EBD.
 4. Deve conter exatamente 3 tópicos principais.
 5. Cada tópico principal deve conter exatamente 3 subtópicos.
-6. Cada subtópico deve conter:
-   - título;
-   - referência bíblica relacionada;
-   - explicação bíblica;
-   - aplicação prática.
-7. A revista do aluno também deve ser completa, explicativa e profunda. Não pode ser rasa.
-8. A versão do aluno não deve ter gabarito, nem orientação interna do professor.
-9. A versão do professor deve ter respostas, notas didáticas, sugestão de abordagem e observação pastoral.
-10. A leitura bíblica em classe deve ter referência e texto bíblico.
-11. Para não quebrar a geração, a leitura bíblica em classe deve ter no máximo 6 versículos.
-12. Use como padrão textual a King James Fiel 1611.
-13. Cada introdução deve ter entre 100 e 160 palavras.
-14. Cada subtópico deve ter entre 70 e 120 palavras.
-15. Cada tópico principal deve ter uma breve abertura.
-16. Cada conclusão deve ter entre 80 e 130 palavras.
-17. Siga linha bíblica conservadora e pentecostal clássica quando envolver Espírito Santo, dons, igreja e escatologia.
-18. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+6. Cada subtópico deve conter título, referência bíblica relacionada, explicação bíblica e aplicação prática.
+7. A revista do aluno também deve ser completa, explicativa e profunda.
+8. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
+9. Use como padrão textual a King James Fiel 1611.
+10. Siga linha bíblica conservadora e pentecostal clássica quando envolver Espírito Santo, dons, igreja e escatologia.
+11. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+
+${limites}
+
+${controleProfessor}
 
 FORMATO JSON:
 {
@@ -575,9 +619,9 @@ async function callGeminiText(apiKey, models, prompt) {
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
-              temperature: 0.65,
-              topP: 0.9,
-              maxOutputTokens: 22000
+              temperature: 0.58,
+              topP: 0.88,
+              maxOutputTokens: 16000
             }
           })
         }
