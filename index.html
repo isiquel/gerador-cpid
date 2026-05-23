@@ -6,473 +6,1049 @@
   <title>VERBO IA - Gerador de Materiais Cristãos</title>
   <style>
     :root {
-      --bg: #f5efe6;
-      --paper: #ffffff;
-      --soft: #f9f5ef;
-      --ink: #2c241d;
-      --muted: #6f6256;
-      --gold: #b38b52;
-      --gold-2: #d8b98a;
-      --brown: #7a5b3a;
-      --line: #e7dbc9;
-      --success: #1f8f55;
-      --shadow: 0 18px 50px rgba(0, 0, 0, 0.10);
-      --radius: 22px;
+      --bg: #f6f3ee;
+      --card: #ffffff;
+      --text: #2b2b2b;
+      --muted: #746a5f;
+      --primary: #8c6239;
+      --primary-2: #c79b68;
+      --border: #e7ded4;
+      --soft: #fbf8f3;
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --radius: 20px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background:
-        radial-gradient(circle at top right, rgba(211, 183, 135, 0.18), transparent 20%),
-        linear-gradient(180deg, #f7f2ea 0%, #f2e9dc 100%);
-      color: var(--ink);
+        radial-gradient(circle at top left, #fff7eb 0%, transparent 20%),
+        radial-gradient(circle at top right, #f7efe6 0%, transparent 25%),
+        linear-gradient(180deg, #f8f4ee, #f2ede6);
+      color: var(--text);
     }
 
-    .topbar {
-      padding: 22px 28px;
-      border-bottom: 1px solid rgba(122, 91, 58, 0.12);
+    .app {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: rgba(255,255,255,0.82);
       backdrop-filter: blur(10px);
+      border-right: 1px solid var(--border);
+      padding: 24px;
       position: sticky;
       top: 0;
-      z-index: 20;
-      background: rgba(247, 242, 234, 0.92);
+      height: 100vh;
+      overflow-y: auto;
     }
 
-    .topbar h1 {
+    .logo-box {
+      background: linear-gradient(135deg, #8c6239, #c79b68);
+      color: white;
+      border-radius: 22px;
+      padding: 22px 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .logo-box h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-box p {
       margin: 0;
-      font-size: 28px;
-      letter-spacing: 0.3px;
-      color: var(--brown);
-    }
-
-    .topbar p {
-      margin: 8px 0 0;
-      color: var(--muted);
+      line-height: 1.5;
+      opacity: 0.95;
       font-size: 14px;
     }
 
-    .layout {
-      display: grid;
-      grid-template-columns: 410px 1fr;
-      gap: 24px;
-      padding: 24px;
-      align-items: start;
-    }
-
-    .panel {
-      background: rgba(255,255,255,0.78);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(179, 139, 82, 0.12);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-head {
-      padding: 20px 22px;
-      border-bottom: 1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,246,240,0.9));
-    }
-
-    .panel-head h2 {
-      margin: 0;
-      font-size: 20px;
-      color: var(--brown);
-    }
-
-    .panel-head p {
-      margin: 8px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .form-wrap {
-      padding: 18px 20px 24px;
-      max-height: calc(100vh - 170px);
-      overflow: auto;
+    .sidebar h2 {
+      font-size: 17px;
+      margin: 18px 0 10px;
+      color: var(--primary);
     }
 
     .field {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .field label {
       display: block;
-      margin-bottom: 7px;
-      font-weight: 700;
       font-size: 13px;
-      color: var(--brown);
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-weight: 700;
     }
 
     .field input,
-    .field select,
-    .field textarea {
+    .field textarea,
+    .field select {
       width: 100%;
-      border: 1px solid #dccdb8;
-      background: #fffdf9;
+      border: 1px solid var(--border);
+      background: #fff;
       border-radius: 14px;
       padding: 12px 14px;
       font-size: 14px;
-      color: var(--ink);
       outline: none;
-      transition: 0.2s ease;
+      color: var(--text);
     }
 
     .field textarea {
-      min-height: 110px;
+      min-height: 96px;
       resize: vertical;
-      line-height: 1.5;
     }
 
-    .field input:focus,
-    .field select:focus,
-    .field textarea:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 4px rgba(179, 139, 82, 0.14);
-    }
-
-    .row {
+    .row-2 {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
     }
 
     .actions {
       display: flex;
-      flex-wrap: wrap;
       gap: 10px;
       margin-top: 18px;
+      flex-wrap: wrap;
     }
 
     button {
-      border: 0;
+      border: none;
       border-radius: 14px;
-      padding: 13px 18px;
-      cursor: pointer;
-      font-weight: 700;
+      padding: 12px 16px;
       font-size: 14px;
-      transition: 0.2s ease;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--gold), var(--brown));
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
       color: white;
-      box-shadow: 0 10px 26px rgba(122, 91, 58, 0.25);
+      box-shadow: var(--shadow);
     }
 
-    .btn-primary:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.03);
+    .btn-secondary {
+      background: #fff;
+      color: var(--primary);
+      border: 1px solid var(--border);
     }
 
-    .btn-soft {
-      background: #f4eadb;
-      color: var(--brown);
+    .main {
+      padding: 26px;
+      overflow-x: hidden;
     }
 
-    .status {
-      margin-top: 12px;
-      min-height: 22px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .status.success { color: var(--success); }
-    .status.error { color: #a32828; }
-
-    .preview-head {
+    .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
+      margin-bottom: 18px;
       flex-wrap: wrap;
     }
 
-    .preview-actions {
+    .topbar h2 {
+      margin: 0;
+      font-size: 28px;
+      color: var(--primary);
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.85);
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+    }
+
+    .preview-shell {
+      background: rgba(255,255,255,0.7);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      min-height: 80vh;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--muted);
+    }
+
+    .empty-state h3 {
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .ebook {
+      max-width: 920px;
+      margin: 0 auto;
+      display: grid;
+      gap: 24px;
+    }
+
+    .page {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      page-break-after: always;
+    }
+
+    .page-inner {
+      padding: 34px;
+    }
+
+    .cover {
+      position: relative;
+      min-height: 1100px;
+      color: white;
+      background: linear-gradient(135deg, rgba(85,52,23,0.82), rgba(200,148,86,0.72));
+    }
+
+    .cover-image {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: saturate(1.08);
+    }
+
+    .cover-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 10% 15%, rgba(255,255,255,0.24) 0 4%, transparent 5%),
+        radial-gradient(circle at 78% 20%, rgba(255,255,255,0.20) 0 5%, transparent 6%),
+        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.17) 0 6%, transparent 7%),
+        linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.45));
+      backdrop-filter: blur(0.5px);
+    }
+
+    .cover-content {
+      position: relative;
+      z-index: 2;
+      min-height: 1100px;
+      padding: 70px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .cover-pill {
+      padding: 10px 16px;
+      border: 1px solid rgba(255,255,255,0.45);
+      border-radius: 999px;
+      font-size: 14px;
+      margin-bottom: 18px;
+      background: rgba(255,255,255,0.10);
+      backdrop-filter: blur(8px);
+    }
+
+    .cover-app {
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .cover h1 {
+      font-size: 52px;
+      line-height: 1.12;
+      margin: 0 0 16px;
+      max-width: 760px;
+    }
+
+    .cover h3 {
+      margin: 0 0 16px;
+      font-size: 24px;
+      font-weight: 600;
+      max-width: 720px;
+      color: #fff8ef;
+    }
+
+    .cover p {
+      max-width: 720px;
+      line-height: 1.7;
+      font-size: 17px;
+      color: #fff8ef;
+    }
+
+    .cover-meta {
+      margin-top: 26px;
+      display: grid;
+      gap: 10px;
+      font-size: 15px;
+    }
+
+    .info-card {
+      background: var(--soft);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 28px;
+    }
+
+    .info-title {
+      color: var(--primary);
+      font-size: 15px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .toc-title,
+    .section-title {
+      font-size: 34px;
+      margin: 0 0 12px;
+      color: var(--primary);
+    }
+
+    .lead {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .toc-list {
+      margin-top: 24px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .toc-item {
+      display: grid;
+      grid-template-columns: 74px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 12px 16px;
+    }
+
+    .toc-number {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: white;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .chapter-hero {
+      background: linear-gradient(180deg, #fdf9f3, #ffffff);
+    }
+
+    .chapter-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .chapter-kicker {
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .chapter-title {
+      font-size: 42px;
+      line-height: 1.15;
+      margin: 0 0 10px;
+      color: #4b382a;
+    }
+
+    .chapter-sub {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 17px;
+      max-width: 780px;
+    }
+
+    .chips {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      margin: 20px 0 22px;
     }
 
-    iframe {
-      width: 100%;
-      min-height: calc(100vh - 180px);
-      border: 0;
-      background: white;
-    }
-
-    details {
-      margin-top: 14px;
-      border-top: 1px dashed #d9cbb7;
-      padding-top: 14px;
-    }
-
-    details summary {
-      cursor: pointer;
+    .chip {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: #6d5542;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 13px;
       font-weight: 700;
-      color: var(--brown);
     }
 
-    .json-box {
-      margin-top: 10px;
+    .hero-image-box {
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #fcfaf7;
+      margin-bottom: 12px;
+    }
+
+    .hero-image-box img {
+      display: block;
       width: 100%;
-      min-height: 180px;
+      height: auto;
+      object-fit: cover;
+    }
+
+    .hero-fallback {
+      min-height: 340px;
+      padding: 28px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.8;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(199,155,104,0.16) 0 8%, transparent 9%),
+        radial-gradient(circle at 80% 20%, rgba(140,98,57,0.10) 0 9%, transparent 10%),
+        linear-gradient(135deg, #fffaf4, #f6efe5);
+    }
+
+    .hero-caption {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    .content-block {
+      margin-top: 24px;
+    }
+
+    .content-block h4 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      color: #5f4633;
+    }
+
+    .content-block p,
+    .rich-text {
+      line-height: 1.95;
+      font-size: 17px;
+      color: #333;
+      white-space: pre-line;
+    }
+
+    .highlight-box {
+      margin: 24px 0;
+      background: linear-gradient(135deg, #8c6239, #c79b68);
+      color: white;
+      border-radius: 26px;
+      padding: 26px;
+      box-shadow: var(--shadow);
+    }
+
+    .highlight-box .label {
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.9;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .highlight-box .quote {
+      font-size: 28px;
+      line-height: 1.4;
+      font-weight: bold;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .mini-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+    }
+
+    .mini-card h5 {
+      margin: 0 0 12px;
+      font-size: 18px;
+      color: var(--primary);
+    }
+
+    .mini-card ul {
+      padding-left: 18px;
+      margin: 0;
+      line-height: 1.8;
+    }
+
+    .mini-card li {
+      margin-bottom: 8px;
+    }
+
+    .footer-page {
+      background: linear-gradient(180deg, #fff, #fbf6ef);
+    }
+
+    .author-box {
+      margin-top: 18px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 24px;
+    }
+
+    .loading {
+      position: fixed;
+      inset: 0;
+      background: rgba(27, 20, 14, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .loading.show {
+      display: flex;
+    }
+
+    .loading-card {
+      width: min(500px, 100%);
+      background: white;
+      border-radius: 24px;
+      padding: 26px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .loading-card h3 {
+      margin: 0 0 10px;
+      color: var(--primary);
+    }
+
+    .loading-card p {
+      color: var(--muted);
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .error-box {
+      margin-top: 16px;
+      background: #fff4f4;
+      color: #9b2c2c;
+      border: 1px solid #f5caca;
       border-radius: 14px;
-      border: 1px solid #dccdb8;
-      background: #fffdf9;
-      padding: 12px;
-      font-family: Consolas, monospace;
+      padding: 12px 14px;
+      display: none;
+    }
+
+    .hint {
       font-size: 12px;
-      color: #4a4037;
-      white-space: pre-wrap;
-      overflow: auto;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
     }
 
     @media (max-width: 1100px) {
-      .layout {
+      .app {
         grid-template-columns: 1fr;
       }
-      .form-wrap {
-        max-height: none;
+
+      .sidebar {
+        position: static;
+        height: auto;
       }
-      iframe {
-        min-height: 900px;
+
+      .grid-2,
+      .row-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .cover h1 {
+        font-size: 38px;
+      }
+
+      .chapter-title {
+        font-size: 32px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .sidebar,
+      .topbar,
+      .actions-inline,
+      .loading,
+      .error-box {
+        display: none !important;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .main {
+        padding: 0;
+      }
+
+      .preview-shell {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .page {
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        margin: 0;
+      }
+
+      .page-inner {
+        padding: 28px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <h1>VERBO IA</h1>
-    <p>Gerador de e-books, estudos, devocionais, apostilas e materiais cristãos prontos para PDF.</p>
+  <div class="loading" id="loading">
+    <div class="loading-card">
+      <h3>Gerando seu material...</h3>
+      <p>
+        O VERBO IA está criando o conteúdo, organizando o e-book e gerando as ilustrações.
+        Como agora o material está mais profundo e mais bonito, isso pode levar um pouco mais de tempo.
+      </p>
+    </div>
   </div>
 
-  <div class="layout">
-    <section class="panel">
-      <div class="panel-head">
-        <h2>Configurar material</h2>
-        <p>Preencha os campos abaixo. Agora o sistema também tenta gerar <strong>ilustrações reais</strong> para capa e capítulos.</p>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo-box">
+        <h1>VERBO IA</h1>
+        <p>
+          Gerador de materiais cristãos, e-books, devocionais, estudos e conteúdos bíblicos
+          com estrutura mais bonita, organizada e pronta para PDF.
+        </p>
       </div>
 
-      <div class="form-wrap">
-        <form id="materialForm">
+      <h2>Configurar material</h2>
+
+      <form id="generatorForm">
+        <div class="field">
+          <label for="materialType">Tipo de material</label>
+          <select id="materialType" name="materialType">
+            <option value="ebook">E-book cristão</option>
+            <option value="devocional">Devocional</option>
+            <option value="estudo">Estudo teológico</option>
+            <option value="curso">Curso cristão</option>
+            <option value="revista">Revista de ensino bíblico</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="title">Título</label>
+          <input id="title" name="title" type="text" placeholder="Ex.: 7 Princípios para Vencer a Ansiedade" required />
+        </div>
+
+        <div class="field">
+          <label for="subtitle">Subtítulo</label>
+          <input id="subtitle" name="subtitle" type="text" placeholder="Ex.: Fé, descanso e confiança em tempos difíceis" />
+        </div>
+
+        <div class="field">
+          <label for="theme">Tema principal</label>
+          <textarea id="theme" name="theme" placeholder="Descreva o foco do material..."></textarea>
+        </div>
+
+        <div class="row-2">
           <div class="field">
-            <label for="tipoMaterial">Tipo de material</label>
-            <select id="tipoMaterial" name="tipoMaterial">
-              <option value="E-book cristão">E-book cristão</option>
-              <option value="Devocional">Devocional</option>
-              <option value="Estudo teológico">Estudo teológico</option>
-              <option value="Revista de EBD">Revista de EBD</option>
-              <option value="Apostila">Apostila</option>
-              <option value="Livro cristão">Livro cristão</option>
+            <label for="quantity">Capítulos / lições / dias</label>
+            <input id="quantity" name="quantity" type="number" min="1" max="20" value="7" />
+          </div>
+
+          <div class="field">
+            <label for="targetAudience">Público-alvo</label>
+            <input id="targetAudience" name="targetAudience" type="text" value="Igreja em geral" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="biblicalBase">Texto bíblico base</label>
+          <input id="biblicalBase" name="biblicalBase" type="text" placeholder="Ex.: Salmos 46; Filipenses 4; Mateus 6" />
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="author">Autor / comentarista</label>
+            <input id="author" name="author" type="text" value="Pr. Isiquel Rodrigues" />
+          </div>
+
+          <div class="field">
+            <label for="ministry">Editora / ministério</label>
+            <input id="ministry" name="ministry" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
+          </div>
+        </div>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="language">Linguagem</label>
+            <select id="language" name="language">
+              <option value="Português">Português</option>
             </select>
           </div>
 
           <div class="field">
-            <label for="titulo">Título</label>
-            <input id="titulo" name="titulo" value="O Poder do Lugar Secreto" />
+            <label for="depthLevel">Profundidade</label>
+            <select id="depthLevel" name="depthLevel">
+              <option value="profundo">Profundo</option>
+              <option value="muito profundo">Muito profundo</option>
+              <option value="pastoral e profundo">Pastoral e profundo</option>
+            </select>
           </div>
-
-          <div class="field">
-            <label for="temaPrincipal">Tema principal</label>
-            <input id="temaPrincipal" name="temaPrincipal" value="Intimidade com Deus, oração diária e vida espiritual profunda" />
-          </div>
-
-          <div class="field">
-            <label for="textoBiblicoBase">Texto bíblico base</label>
-            <input id="textoBiblicoBase" name="textoBiblicoBase" value="Mateus 6.6; Salmos 91.1; João 15.5; Tiago 4.8" />
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="publicoAlvo">Público-alvo</label>
-              <input id="publicoAlvo" name="publicoAlvo" value="Igreja em geral" />
-            </div>
-            <div class="field">
-              <label for="linguagem">Linguagem</label>
-              <input id="linguagem" name="linguagem" value="Pastoral, bíblica e didática" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="quantidadeCapitulos">Quantidade de capítulos</label>
-              <input id="quantidadeCapitulos" name="quantidadeCapitulos" type="number" min="1" max="12" value="3" />
-            </div>
-            <div class="field">
-              <label for="perguntasPorCapitulo">Perguntas por capítulo</label>
-              <input id="perguntasPorCapitulo" name="perguntasPorCapitulo" type="number" min="1" max="8" value="2" />
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="profundidade">Profundidade</label>
-              <select id="profundidade" name="profundidade">
-                <option value="Muito expandido" selected>Muito expandido</option>
-                <option value="Expandido">Expandido</option>
-                <option value="Médio">Médio</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="estiloVisual">Estilo visual</label>
-              <select id="estiloVisual" name="estiloVisual">
-                <option value="Colorido" selected>Colorido</option>
-                <option value="Preto e branco">Preto e branco</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="field">
-              <label for="gerarCapa">Gerar capa ilustrada</label>
-              <select id="gerarCapa" name="gerarCapa">
-                <option value="Sim" selected>Sim</option>
-                <option value="Não">Não</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="gerarIlustracoes">Gerar ilustrações nos capítulos</label>
-              <select id="gerarIlustracoes" name="gerarIlustracoes">
-                <option value="Sim" selected>Sim</option>
-                <option value="Não">Não</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="autor">Autor / Comentarista</label>
-            <input id="autor" name="autor" value="Pr. Isiquel Rodrigues" />
-          </div>
-
-          <div class="field">
-            <label for="editoraMinisterio">Editora / Ministério</label>
-            <input id="editoraMinisterio" name="editoraMinisterio" value="CPID - Casa Publicadora da Igreja de Deus" />
-          </div>
-
-          <div class="field">
-            <label for="orientacoesAdicionais">Orientações adicionais</label>
-            <textarea id="orientacoesAdicionais" name="orientacoesAdicionais">Crie um e-book cristão profissional, bonito, colorido, profundo e pronto para PDF. Quero uma capa forte, visual premium, sumário limpo e capítulos bem desenvolvidos. Não repita o nome do autor em todos os capítulos. Não use frases como “nova seção do material”. Desenvolva cada capítulo com base bíblica, explicação pastoral, aplicação prática, caixa de destaque, exercício de reflexão, oração final e perguntas com respostas. Insira ilustrações reais por IA, e não apenas descrição textual da imagem.</textarea>
-          </div>
-
-          <div class="actions">
-            <button type="submit" class="btn-primary">Gerar material</button>
-            <button type="button" class="btn-soft" id="btnPrint">Imprimir / Salvar em PDF</button>
-            <button type="button" class="btn-soft" id="btnTest">Preencher teste</button>
-          </div>
-
-          <div class="status" id="status"></div>
-
-          <details>
-            <summary>Ver JSON gerado</summary>
-            <div class="json-box" id="jsonBox"></div>
-          </details>
-        </form>
-      </div>
-    </section>
-
-    <section class="panel">
-      <div class="panel-head preview-head">
-        <div>
-          <h2>Pré-visualização do material</h2>
-          <p>Se as ilustrações estiverem funcionando, elas aparecerão dentro do e-book.</p>
         </div>
-        <div class="preview-actions">
-          <button type="button" class="btn-soft" id="btnOpenNew">Abrir em nova aba</button>
+
+        <div class="row-2">
+          <div class="field">
+            <label for="visualStyle">Estilo visual</label>
+            <select id="visualStyle" name="visualStyle">
+              <option value="colorido">Colorido</option>
+              <option value="preto e branco">Preto e branco</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="coverMode">Capa</label>
+            <select id="coverMode" name="coverMode">
+              <option value="com-capa">Com capa</option>
+              <option value="sem-capa">Sem capa</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="tone">Tom do material</label>
+          <input id="tone" name="tone" type="text" value="pastoral, bíblico, atual, profundo, encorajador e moderno" />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary">Gerar material</button>
+          <button type="button" class="btn-secondary" id="btnPrint">Salvar em PDF</button>
+        </div>
+
+        <div class="hint">
+          Dica: depois que o material estiver pronto, clique em <strong>Salvar em PDF</strong>
+          e use a opção do navegador para imprimir em PDF.
+        </div>
+
+        <div class="error-box" id="errorBox"></div>
+      </form>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <h2>Pré-visualização do material</h2>
+        <div class="status" id="statusText">Aguardando geração...</div>
+      </div>
+
+      <div class="preview-shell">
+        <div id="preview">
+          <div class="empty-state">
+            <h3>Seu e-book vai aparecer aqui</h3>
+            <p>
+              Preencha os campos ao lado e clique em <strong>Gerar material</strong>.
+              O VERBO IA irá montar um material mais profundo, organizado, ilustrado e pronto para impressão.
+            </p>
+          </div>
         </div>
       </div>
-      <iframe id="previewFrame" title="Pré-visualização"></iframe>
-    </section>
+    </main>
   </div>
 
   <script>
-    const form = document.getElementById('materialForm');
-    const statusEl = document.getElementById('status');
-    const previewFrame = document.getElementById('previewFrame');
-    const jsonBox = document.getElementById('jsonBox');
-    let lastGeneratedHtml = '';
+    const form = document.getElementById("generatorForm");
+    const preview = document.getElementById("preview");
+    const loading = document.getElementById("loading");
+    const errorBox = document.getElementById("errorBox");
+    const statusText = document.getElementById("statusText");
+    const btnPrint = document.getElementById("btnPrint");
 
-    function setStatus(message, type = '') {
-      statusEl.textContent = message || '';
-      statusEl.className = 'status' + (type ? ' ' + type : '');
-    }
+    btnPrint.addEventListener("click", () => window.print());
 
-    function getFormData() {
-      const fd = new FormData(form);
-      return Object.fromEntries(fd.entries());
-    }
-
-    form.addEventListener('submit', async (event) => {
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const payload = getFormData();
-
-      setStatus('Gerando material... Isso pode levar um pouco mais de tempo por causa das ilustrações.', '');
-      jsonBox.textContent = '';
-      previewFrame.srcdoc = '<div style="font-family:Arial;padding:40px">Gerando material...</div>';
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+      statusText.textContent = "Gerando conteúdo e ilustrações...";
+      loading.classList.add("show");
 
       try {
-        const response = await fetch('/api/gerar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const formData = new FormData(form);
+        const payload = Object.fromEntries(formData.entries());
+        payload.generateImages = true;
+
+        const response = await fetch("/api/gerar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify(payload)
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Erro ao gerar o material.');
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || "Erro ao gerar o material.");
         }
 
-        lastGeneratedHtml = data.html || '';
-        previewFrame.srcdoc = lastGeneratedHtml;
-        jsonBox.textContent = JSON.stringify(data.ebook || {}, null, 2);
-        setStatus('Material gerado com sucesso.', 'success');
+        statusText.textContent = `Material gerado com sucesso • Texto: ${result.modelUsed.text} • Imagem: ${result.modelUsed.image}`;
+        renderBook(result.book, result.images);
       } catch (error) {
         console.error(error);
-        previewFrame.srcdoc = '<div style="font-family:Arial;padding:40px;color:#9d1f1f">Erro ao gerar o material.</div>';
-        setStatus(error.message || 'Erro ao gerar o material.', 'error');
+        errorBox.textContent = error.message || "Erro inesperado.";
+        errorBox.style.display = "block";
+        statusText.textContent = "Erro ao gerar o material.";
+      } finally {
+        loading.classList.remove("show");
       }
     });
 
-    document.getElementById('btnPrint').addEventListener('click', () => {
-      if (!previewFrame.contentWindow) return;
-      previewFrame.contentWindow.focus();
-      previewFrame.contentWindow.print();
-    });
+    function renderBook(book, images) {
+      const chapters = Array.isArray(book.chapters) ? book.chapters : [];
 
-    document.getElementById('btnOpenNew').addEventListener('click', () => {
-      if (!lastGeneratedHtml) return;
-      const win = window.open('', '_blank');
-      if (win) {
-        win.document.open();
-        win.document.write(lastGeneratedHtml);
-        win.document.close();
-      }
-    });
+      preview.innerHTML = `
+        <div class="ebook">
+          ${renderCover(book, images)}
+          ${renderInfoPage(book)}
+          ${renderSummaryPage(book, chapters)}
+          ${chapters.map((chapter) => renderChapterPage(chapter, images?.chapters?.[String(chapter.number)])).join("")}
+          ${renderClosingPage(book)}
+        </div>
+      `;
+    }
 
-    document.getElementById('btnTest').addEventListener('click', () => {
-      document.getElementById('tipoMaterial').value = 'E-book cristão';
-      document.getElementById('titulo').value = 'O Poder do Lugar Secreto';
-      document.getElementById('temaPrincipal').value = 'Intimidade com Deus, oração diária e vida espiritual profunda';
-      document.getElementById('textoBiblicoBase').value = 'Mateus 6.6; Lucas 5.16; Marcos 1.35; Salmos 91.1';
-      document.getElementById('publicoAlvo').value = 'Igreja em geral';
-      document.getElementById('linguagem').value = 'Pastoral, bíblica e didática';
-      document.getElementById('quantidadeCapitulos').value = '3';
-      document.getElementById('perguntasPorCapitulo').value = '2';
-      document.getElementById('profundidade').value = 'Muito expandido';
-      document.getElementById('estiloVisual').value = 'Colorido';
-      document.getElementById('gerarCapa').value = 'Sim';
-      document.getElementById('gerarIlustracoes').value = 'Sim';
-      document.getElementById('autor').value = 'Pr. Isiquel Rodrigues';
-      document.getElementById('editoraMinisterio').value = 'CPID - Casa Publicadora da Igreja de Deus';
-      document.getElementById('orientacoesAdicionais').value =
-        'Crie um e-book cristão profissional, bonito, colorido, profundo e pronto para PDF. Quero capa ilustrada, sumário limpo, capítulos ricos, sem repetições desnecessárias, com ilustrações reais por IA em cada capítulo, e não apenas descrição textual.';
-      setStatus('Campos preenchidos para teste.', 'success');
-    });
+    function renderCover(book, images) {
+      const coverImage = images?.cover
+        ? `<div class="cover-image" style="background-image:url('${images.cover}')"></div>`
+        : `<div class="cover-image" style="background:linear-gradient(135deg,#8c6239,#c79b68)"></div>`;
+
+      return `
+        <section class="page cover">
+          ${coverImage}
+          <div class="cover-overlay"></div>
+          <div class="cover-content">
+            <div class="cover-app">${escapeHtml(book.appName || "VERBO IA")}</div>
+            <div class="cover-pill">${escapeHtml(book.coverBadge || book.materialType || "E-book cristão")}</div>
+            <h1>${escapeHtml(book.title || "Sem título")}</h1>
+            <h3>${escapeHtml(book.subtitle || "")}</h3>
+            <p>${escapeHtml(book.coverTagline || "")}</p>
+
+            <div class="cover-meta">
+              <div><strong>Texto bíblico base:</strong> ${escapeHtml((book.biblicalBase || []).join(" • "))}</div>
+              <div><strong>Autor / Comentarista:</strong> ${escapeHtml(book.author || "")}</div>
+              <div><strong>Editora / Ministério:</strong> ${escapeHtml(book.ministry || "")}</div>
+              <div><strong>Público-alvo:</strong> ${escapeHtml(book.targetAudience || "")}</div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderInfoPage(book) {
+      return `
+        <section class="page">
+          <div class="page-inner">
+            <div class="info-card">
+              <div class="info-title">Apresentação</div>
+              <h2 class="section-title">${escapeHtml(book.title || "")}</h2>
+              <p class="lead">${escapeHtml(book.summaryIntro || "")}</p>
+
+              <div class="grid-2">
+                <div class="mini-card">
+                  <h5>Dados do material</h5>
+                  <ul>
+                    <li><strong>Tipo:</strong> ${escapeHtml(book.materialType || "")}</li>
+                    <li><strong>Tema:</strong> ${escapeHtml(book.theme || "")}</li>
+                    <li><strong>Público:</strong> ${escapeHtml(book.targetAudience || "")}</li>
+                    <li><strong>Linguagem:</strong> ${escapeHtml(book.language || "")}</li>
+                  </ul>
+                </div>
+
+                <div class="mini-card">
+                  <h5>Autoria</h5>
+                  <ul>
+                    <li><strong>Autor:</strong> ${escapeHtml(book.author || "")}</li>
+                    <li><strong>Ministério:</strong> ${escapeHtml(book.ministry || "")}</li>
+                    <li><strong>Estilo visual:</strong> ${escapeHtml(book.visualStyle || "")}</li>
+                    <li><strong>Base bíblica:</strong> ${escapeHtml((book.biblicalBase || []).join(", "))}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderSummaryPage(book, chapters) {
+      return `
+        <section class="page">
+          <div class="page-inner">
+            <div class="info-title">Sumário</div>
+            <h2 class="toc-title">Visão geral do conteúdo</h2>
+            <p class="lead">
+              Abaixo está o sumário do material com a sequência organizada dos capítulos.
+            </p>
+
+            <div class="toc-list">
+              ${chapters.map((chapter) => `
+                <div class="toc-item">
+                  <div class="toc-number">Cap. ${chapter.number}</div>
+                  <div>
+                    <strong>${escapeHtml(chapter.title || "")}</strong><br />
+                    <span style="color:#7a6a5a">${escapeHtml(chapter.heroCaption || "")}</span>
+                  </div>
+                  <div style="color:#8c6239;font-weight:bold;">→</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderChapterPage(chapter, imageUrl) {
+      return `
+        <section class="page chapter-hero">
+          <div class="page-inner">
+            <div class="chapter-head">
+              <div>
+                <div class="chapter-kicker">Capítulo ${chapter.number}</div>
+                <h2 class="chapter-title">${escapeHtml(chapter.title || "")}</h2>
+                <div class="chapter-sub">${escapeHtml(chapter.heroCaption || "")}</div>
+              </div>
+            </div>
+
+            <div class="chips">
+              ${(chapter.biblicalBase || []).map((verse) => `<span class="chip">${escapeHtml(verse)}</span>`).join("")}
+            </div>
+
+            <div class="hero-image-box">
+              ${imageUrl
+                ? `<img src="${imageUrl}" alt="${escapeHtml(chapter.title || "Ilustração do capítulo")}" />`
+                : `<div class="hero-fallback">Ilustração não disponível nesta geração. O conteúdo foi gerado corretamente, mas a imagem não foi retornada pela API neste capítulo.</div>`
+              }
+            </div>
+
+            <div class="hero-caption">${escapeHtml(chapter.illustrationPrompt || "")}</div>
+
+            <div class="content-block">
+              <h4>Abertura do capítulo</h4>
+              <div class="rich-text">${escapeHtml(chapter.opening || "")}</div>
+            </div>
+
+            <div class="content-block">
+              <h4>Ideia central</h4>
+              <div class="rich-text">${escapeHtml(chapter.centralIdea || "")}</div>
+            </div>
+
+            ${(chapter.sections || []).map((section) => `
+              <div class="content-block">
+                <h4>${escapeHtml(section.title || "")}</h4>
+                <div class="rich-text">${escapeHtml(section.content || "")}</div>
+              </div>
+            `).join("")}
+
+            <div class="highlight-box">
+              <div class="label">Caixa de destaque</div>
+              <div class="quote">${escapeHtml(chapter.highlightQuote || "")}</div>
+            </div>
+
+            <div class="grid-2">
+              <div class="mini-card">
+                <h5>Exercício de reflexão</h5>
+                <ul>
+                  ${(chapter.reflectionQuestions || []).map((q) => `<li>${escapeHtml(q)}</li>`).join("")}
+                </ul>
+              </div>
+
+              <div class="mini-card">
+                <h5>Aplicação prática</h5>
+                <div class="rich-text">${escapeHtml(chapter.practice || "")}</div>
+              </div>
+            </div>
+
+            <div class="content-block">
+              <h4>Oração</h4>
+              <div class="rich-text">${escapeHtml(chapter.prayer || "")}</div>
+            </div>
+
+            <div class="content-block">
+              <h4>Conclusão do capítulo</h4>
+              <div class="rich-text">${escapeHtml(chapter.conclusion || "")}</div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderClosingPage(book) {
+      return `
+        <section class="page footer-page">
+          <div class="page-inner">
+            <div class="info-title">Encerramento</div>
+            <h2 class="section-title">Conclusão final</h2>
+            <div class="rich-text">${escapeHtml(book.closing || "")}</div>
+
+            <div class="author-box">
+              <h4 style="margin-top:0;color:#8c6239;">Sobre o autor</h4>
+              <div class="rich-text">${escapeHtml(book.authorBio || "")}</div>
+            </div>
+
+            <div class="author-box">
+              <h4 style="margin-top:0;color:#8c6239;">Texto de contracapa</h4>
+              <div class="rich-text">${escapeHtml(book.backCoverText || "")}</div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
   </script>
 </body>
 </html>
