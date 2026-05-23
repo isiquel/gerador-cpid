@@ -18,14 +18,10 @@
       --sombra: 0 12px 32px rgba(0,0,0,0.08);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
     body {
       margin: 0;
-      padding: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: linear-gradient(180deg, #f8f2ea, #eee2d4);
       color: var(--texto);
@@ -89,9 +85,7 @@
       line-height: 1.5;
     }
 
-    .card-body {
-      padding: 18px;
-    }
+    .card-body { padding: 18px; }
 
     label {
       display: block;
@@ -101,9 +95,7 @@
       font-size: 13px;
     }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
       padding: 12px;
       border: 1px solid #dbc9b5;
@@ -120,9 +112,7 @@
       line-height: 1.5;
     }
 
-    input:focus,
-    select:focus,
-    textarea:focus {
+    input:focus, select:focus, textarea:focus {
       border-color: var(--dourado);
       box-shadow: 0 0 0 4px rgba(199,155,88,0.16);
     }
@@ -133,14 +123,23 @@
       gap: 12px;
     }
 
-    .campo-oculto {
-      display: none !important;
-    }
+    .campo-oculto { display: none !important; }
 
     .aviso {
       background: #eef8f0;
       border-left: 5px solid var(--verde);
       color: #225a35;
+      padding: 12px;
+      border-radius: 13px;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .aviso-reservado {
+      background: #fff8e8;
+      border-left: 5px solid var(--dourado);
+      color: #7a4f2f;
       padding: 12px;
       border-radius: 13px;
       font-size: 13px;
@@ -231,13 +230,8 @@
       min-height: 40px;
     }
 
-    .ok {
-      color: var(--verde);
-    }
-
-    .erro {
-      color: var(--vermelho);
-    }
+    .ok { color: var(--verde); }
+    .erro { color: var(--vermelho); }
 
     .progresso {
       margin-top: 12px;
@@ -309,9 +303,7 @@
       overflow: visible;
     }
 
-    .pagina-interna {
-      padding: 40px 46px;
-    }
+    .pagina-interna { padding: 40px 46px; }
 
     .titulo-grande {
       margin: 0 0 12px;
@@ -406,96 +398,12 @@
       font-size: 13px;
     }
 
-    .licao-revista {
-      page-break-before: auto;
-      break-before: auto;
-    }
-
-    .revisao-revista {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
-    .sermao {
-      max-width: 900px;
-    }
-
-    .sermao .pagina {
-      border-radius: 8px;
-      border: 1px solid #d5d5d5;
-      box-shadow: none;
-      background: #fff;
-    }
-
-    .sermao .pagina-interna {
-      padding: 46px 56px;
-    }
-
-    .sermao .titulo-sermao {
-      margin: 0 0 18px;
-      text-align: center;
-      color: #111;
-      font-size: 34px;
-      line-height: 1.25;
-      text-transform: uppercase;
-    }
-
-    .sermao .subtitulo-sermao {
-      text-align: center;
-      color: #333;
-      font-size: 18px;
-      margin-bottom: 30px;
-      line-height: 1.5;
-    }
-
-    .sermao .linha-info {
-      border-top: 1px solid #222;
-      border-bottom: 1px solid #222;
-      padding: 14px 0;
-      margin: 20px 0 26px;
-      font-size: 17px;
-      line-height: 1.7;
-      color: #111;
-    }
-
-    .sermao h2 {
-      margin: 32px 0 12px;
-      color: #111;
-      font-size: 24px;
-      border-bottom: 1px solid #ccc;
-      padding-bottom: 8px;
-    }
-
-    .sermao h3 {
-      margin: 26px 0 10px;
-      color: #111;
-      font-size: 21px;
-    }
-
-    .sermao p {
-      font-size: 18px;
-      line-height: 1.9;
-      color: #111;
-      margin: 0 0 16px;
-      white-space: pre-line;
-    }
-
-    .sermao .ponto {
-      margin-top: 28px;
-      padding-top: 12px;
-      border-top: 1px solid #ddd;
-    }
-
-    .sermao ul {
-      font-size: 18px;
-      line-height: 1.9;
-      color: #111;
-    }
-
     .capa {
       min-height: 850px;
       color: white;
-      background: linear-gradient(135deg, #5b3a24, #c79b58);
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 35%),
+        linear-gradient(135deg, #4a2d1a, #7a4f2f 45%, #c79b58);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -504,12 +412,22 @@
       overflow: hidden;
     }
 
+    .capa::before {
+      content: "";
+      position: absolute;
+      inset: 32px;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 28px;
+    }
+
     .capa-box {
       width: min(760px, 90%);
       padding: 42px 34px;
       border-radius: 28px;
       background: rgba(255,255,255,0.14);
       border: 1px solid rgba(255,255,255,0.30);
+      position: relative;
+      z-index: 2;
     }
 
     .capa h1 {
@@ -539,45 +457,20 @@
     }
 
     @media (max-width: 1100px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-
-      .linha,
-      .botoes {
-        grid-template-columns: 1fr;
-      }
-
-      .pagina-interna,
-      .sermao .pagina-interna {
-        padding: 30px 24px;
-      }
-
-      .titulo-grande {
-        font-size: 30px;
-      }
-
-      .sermao .titulo-sermao {
-        font-size: 28px;
-      }
+      .container { grid-template-columns: 1fr; }
+      .linha, .botoes { grid-template-columns: 1fr; }
+      .pagina-interna { padding: 30px 24px; }
+      .titulo-grande { font-size: 30px; }
     }
 
     @media print {
-      header,
-      .painel,
-      .card-head,
-      .modo-edicao {
+      header, .painel, .card-head, .modo-edicao {
         display: none !important;
       }
 
-      body {
-        background: white !important;
-      }
+      body { background: white !important; }
 
-      .container,
-      .card,
-      .card-body,
-      #resultado {
+      .container, .card, .card-body, #resultado {
         display: block !important;
         width: 100% !important;
         max-width: none !important;
@@ -605,20 +498,27 @@
     <section class="card painel">
       <div class="card-head">
         <h2>Configurar material</h2>
-        <p>Escolha o tipo de material. Cada tipo terá uma estrutura própria.</p>
+        <p>Algumas ferramentas são públicas. Outras são reservadas ao administrador.</p>
       </div>
 
       <div class="card-body">
         <div class="aviso">
-          Revista mensal: agora a revista é gerada por partes para evitar erro. Primeiro a apresentação, depois as 4 lições.
+          Liberado para todos: Sermão, Devocional e Estudo Bíblico.
         </div>
+
+        <div class="aviso-reservado">
+          Reservado com código: Prompt automático, E-book, Livro, Curso e Revista.
+        </div>
+
+        <label for="adminCode">Código de acesso</label>
+        <input id="adminCode" type="password" autocomplete="off" placeholder="Digite o código para liberar recursos reservados" oninput="atualizarOpcoesPorTipo()" />
 
         <div class="prompt-box">
           <h3>Gerar prompt automático</h3>
-          <p>Digite somente o tema. A IA preencherá título, subtítulo, tema principal, textos bíblicos, público-alvo e tom.</p>
+          <p>Recurso reservado. Digite o código de acesso para usar.</p>
 
           <label for="promptTema">Crie um prompt sobre:</label>
-          <input id="promptTema" type="text" autocomplete="off" placeholder="Ex: arrebatamento da igreja, família restaurada, missões, oração..." />
+          <input id="promptTema" type="text" autocomplete="off" placeholder="Ex: arrebatamento, família, missões, oração..." />
 
           <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">
             Gerar prompt automático
@@ -627,13 +527,13 @@
 
         <label for="materialType">Tipo de material</label>
         <select id="materialType" onchange="atualizarOpcoesPorTipo()" autocomplete="off">
-          <option value="ebook">E-book cristão</option>
-          <option value="livro">Livro cristão</option>
           <option value="sermao">Sermão</option>
           <option value="devocional">Devocional</option>
           <option value="estudo">Estudo bíblico/teológico</option>
-          <option value="curso">Curso cristão</option>
-          <option value="revista">Revista de ensino bíblico</option>
+          <option value="ebook">E-book cristão - reservado</option>
+          <option value="livro">Livro cristão - reservado</option>
+          <option value="curso">Curso cristão - reservado</option>
+          <option value="revista">Revista de ensino bíblico - reservado</option>
         </select>
 
         <div id="campoRevistaVersao" class="campo-oculto">
@@ -650,16 +550,16 @@
         </div>
 
         <label for="title">Título</label>
-        <input id="title" type="text" autocomplete="off" value="Coração Blindado: Vencendo a Ansiedade na Presença de Deus" />
+        <input id="title" type="text" autocomplete="off" value="O Deus que Restaura" />
 
         <label for="subtitle">Subtítulo</label>
-        <input id="subtitle" type="text" autocomplete="off" value="Fé, descanso e confiança para uma alma sobrecarregada" />
+        <input id="subtitle" type="text" autocomplete="off" value="Uma palavra bíblica de esperança e transformação" />
 
         <label for="theme">Tema principal</label>
-        <textarea id="theme" autocomplete="off">Como vencer a ansiedade, o medo, a sobrecarga emocional e a inquietação da alma por meio da fé, da oração e da confiança em Deus.</textarea>
+        <textarea id="theme" autocomplete="off">A restauração de Deus na vida espiritual, familiar e emocional do cristão.</textarea>
 
         <label for="biblicalBase">Texto bíblico base</label>
-        <input id="biblicalBase" type="text" autocomplete="off" value="Filipenses 4.6-7; Mateus 6.25-34; 1 Pedro 5.7; Salmos 46.10; Isaías 26.3" />
+        <input id="biblicalBase" type="text" autocomplete="off" value="Joel 2.25; Salmos 23; Romanos 8.28; 1 Pedro 5.10" />
 
         <div class="linha">
           <div id="campoQuantidade">
@@ -759,7 +659,7 @@
 
       <div class="card-body">
         <div class="modo-edicao" id="modoEdicao">
-          Modo edição ativado. Você pode clicar no texto do material, corrigir, apagar partes e ajustar antes de salvar em PDF.
+          Modo edição ativado. Você pode corrigir o material antes de salvar em PDF.
         </div>
 
         <div id="resultado">
@@ -776,7 +676,6 @@
 
   <script>
     let materialAtual = null;
-    let modoEdicaoAtivo = false;
 
     function el(id) {
       return document.getElementById(id);
@@ -795,14 +694,6 @@
         .replaceAll("'", "&#039;");
     }
 
-    function p(texto) {
-      return `<p>${escapeHtml(texto || "")}</p>`;
-    }
-
-    function divTexto(texto) {
-      return `<div class="texto">${escapeHtml(texto || "")}</div>`;
-    }
-
     function setStatus(msg, tipo) {
       const s = el("status");
       s.innerHTML = msg;
@@ -817,6 +708,27 @@
       return valor("materialType");
     }
 
+    function recursoReservado(tipo) {
+      return ["ebook", "livro", "curso", "revista"].includes(tipo);
+    }
+
+    function codigoInformado() {
+      return valor("adminCode");
+    }
+
+    function temCodigo() {
+      return codigoInformado().length > 0;
+    }
+
+    function validarAcesso(tipo) {
+      if (recursoReservado(tipo) && !temCodigo()) {
+        alert("Este recurso é reservado. Digite o código de acesso.");
+        return false;
+      }
+
+      return true;
+    }
+
     function atualizarOpcoesPorTipo() {
       const tipo = tipoAtual();
 
@@ -828,46 +740,46 @@
       el("campoRevistaVersao").classList.add("campo-oculto");
       el("campoTraducaoBiblica").classList.add("campo-oculto");
 
+      if (recursoReservado(tipo)) {
+        setStatus("Recurso reservado. Para gerar este material, digite o código de acesso.", temCodigo() ? "ok" : "");
+      }
+
       if (tipo === "sermao") {
         el("campoQuantidade").classList.add("campo-oculto");
         el("campoTopicos").classList.remove("campo-oculto");
         el("campoCapa").classList.add("campo-oculto");
-        el("visualStyle").value = "preto e branco";
         el("quantity").value = "1";
-        setStatus("Modo Sermão: texto base, introdução, contexto, tópicos, aplicações, conclusão, apelo e oração.", "ok");
-        return;
-      }
-
-      if (tipo === "livro") {
-        el("labelQuantidade").innerText = "Capítulos";
-        setStatus("Modo Livro: formato literário, com prefácio, apresentação, capítulos densos e conclusão.", "ok");
-        return;
-      }
-
-      if (tipo === "ebook") {
-        el("labelQuantidade").innerText = "Capítulos";
-        setStatus("Modo E-book: formato moderno e organizado.", "ok");
+        setStatus("Modo Sermão: liberado para todos.", "ok");
         return;
       }
 
       if (tipo === "devocional") {
         el("labelQuantidade").innerText = "Dias devocionais";
         el("campoCapa").classList.add("campo-oculto");
-        setStatus("Modo Devocional: curto, direto, reflexivo e com oração.", "ok");
+        setStatus("Modo Devocional: liberado para todos.", "ok");
         return;
       }
 
       if (tipo === "estudo") {
         el("labelQuantidade").innerText = "Partes do estudo";
         el("campoCapa").classList.add("campo-oculto");
-        setStatus("Modo Estudo: exposição bíblica, contexto, análise e aplicação.", "ok");
+        setStatus("Modo Estudo Bíblico: liberado para todos.", "ok");
+        return;
+      }
+
+      if (tipo === "ebook") {
+        el("labelQuantidade").innerText = "Capítulos";
+        return;
+      }
+
+      if (tipo === "livro") {
+        el("labelQuantidade").innerText = "Capítulos";
         return;
       }
 
       if (tipo === "curso") {
         el("labelQuantidade").innerText = "Aulas";
         el("campoCapa").classList.add("campo-oculto");
-        setStatus("Modo Curso: aulas com objetivo, conteúdo, atividade e tarefa.", "ok");
         return;
       }
 
@@ -876,7 +788,7 @@
         el("quantity").value = "4";
         el("campoRevistaVersao").classList.remove("campo-oculto");
         el("campoTraducaoBiblica").classList.remove("campo-oculto");
-        setStatus("Modo Revista Mensal: a revista será gerada em partes para não quebrar.", "ok");
+        return;
       }
     }
 
@@ -884,6 +796,7 @@
       const tipo = tipoAtual();
 
       return {
+        adminCode: codigoInformado(),
         materialType: tipo,
         revistaVersion: valor("revistaVersion") || "professor",
         bibleVersion: valor("bibleVersion") || "King James Fiel 1611",
@@ -928,22 +841,28 @@
 
     async function gerarPromptAutomatico() {
       const assunto = valor("promptTema");
-      const btn = el("btnPrompt");
+
+      if (!temCodigo()) {
+        alert("O Gerador de Prompt Automático é reservado. Digite o código de acesso.");
+        return;
+      }
 
       if (!assunto) {
         alert("Digite um tema. Exemplo: arrebatamento da igreja.");
         return;
       }
 
+      const btn = el("btnPrompt");
       btn.disabled = true;
       btn.innerText = "Criando prompt...";
-      setStatus("A IA está criando um prompt profundo e preenchendo os campos...", "");
+      setStatus("A IA está criando um prompt profundo...", "");
 
       try {
         const resposta = await fetch("/api/prompt", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            adminCode: codigoInformado(),
             assunto,
             materialType: tipoAtual()
           })
@@ -964,7 +883,7 @@
         el("targetAudience").value = d.targetAudience || "";
         el("tone").value = d.tone || "";
 
-        setStatus("Prompt automático criado e campos preenchidos. Agora é só conferir e clicar em Gerar material.", "ok");
+        setStatus("Prompt automático criado e campos preenchidos.", "ok");
 
       } catch (error) {
         console.error(error);
@@ -983,6 +902,8 @@
         alert("Preencha o título.");
         return;
       }
+
+      if (!validarAcesso(dados.materialType)) return;
 
       finalizarEdicao();
 
@@ -1070,88 +991,8 @@
       setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
     }
 
-    function ativarEdicao() {
-      const resultado = el("resultado");
-
-      if (!materialAtual || resultado.innerText.includes("Seu material aparecerá aqui")) {
-        alert("Gere um material antes de editar.");
-        return;
-      }
-
-      resultado.setAttribute("contenteditable", "true");
-      resultado.focus();
-
-      modoEdicaoAtivo = true;
-      el("modoEdicao").style.display = "block";
-      el("btnEditar").disabled = true;
-      el("btnFinalizarEdicao").disabled = false;
-
-      setStatus("Modo edição ativado. Clique no texto do material e edite diretamente antes de salvar o PDF.", "ok");
-    }
-
-    function finalizarEdicao() {
-      const resultado = el("resultado");
-
-      resultado.removeAttribute("contenteditable");
-      modoEdicaoAtivo = false;
-
-      el("modoEdicao").style.display = "none";
-      el("btnEditar").disabled = false;
-      el("btnFinalizarEdicao").disabled = true;
-    }
-
-    function renderizarMaterial(material) {
-      const type = material.type || material.selectedType || tipoAtual();
-
-      if (type === "sermao") return renderSermao(material);
-      if (type === "livro") return renderLivro(material);
-      if (type === "devocional") return renderDevocional(material);
-      if (type === "estudo") return renderEstudo(material);
-      if (type === "curso") return renderCurso(material);
-      if (type === "revista") return renderRevista(material);
-      return renderEbook(material);
-    }
-
-    function renderSermao(m) {
-      el("resultado").innerHTML = `
-        <article class="doc sermao">
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-sermao">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo-sermao">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="linha-info">
-                <strong>Texto bíblico:</strong> ${escapeHtml(m.biblicalText || "")}<br>
-                <strong>Tema:</strong> ${escapeHtml(m.theme || "")}<br>
-                <strong>Objetivo:</strong> ${escapeHtml(m.objective || "")}
-              </div>
-
-              <h2>Introdução</h2>${p(m.introduction)}
-              <h2>Contexto bíblico</h2>${p(m.biblicalContext)}
-              <h2>Explicação do texto</h2>${p(m.textExplanation)}
-              <h2>Proposição central</h2>${p(m.centralProposition)}
-              <h2>Frase de transição</h2>${p(m.transitionPhrase)}
-              <h2>Desenvolvimento</h2>
-
-              ${(m.points || []).map((pt, i) => `
-                <div class="ponto">
-                  <h3>${escapeHtml(pt.title || `Ponto ${i + 1}`)}</h3>
-                  <p><strong>Explicação bíblica:</strong><br>${escapeHtml(pt.explanation || "")}</p>
-                  <p><strong>Aplicação pastoral:</strong><br>${escapeHtml(pt.pastoralApplication || "")}</p>
-                  <p><strong>Ilustração / exemplo prático:</strong><br>${escapeHtml(pt.illustration || "")}</p>
-                </div>
-              `).join("")}
-
-              <h2>Aplicações práticas para a vida diária</h2>
-              <ul>${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}</ul>
-
-              <h2>Conclusão</h2>${p(m.conclusion)}
-              <h2>Apelo final</h2>${p(m.appeal)}
-              <h2>Oração final</h2>${p(m.finalPrayer)}
-            </div>
-          </section>
-        </article>
-      `;
+    function divTexto(texto) {
+      return `<div class="texto">${escapeHtml(texto || "")}</div>`;
     }
 
     function capaMaterial(m, selo) {
@@ -1163,185 +1004,164 @@
             <div class="selo">${escapeHtml(selo || "VERBO IA")}</div>
             <h1>${escapeHtml(m.title || "")}</h1>
             <h2>${escapeHtml(m.subtitle || "")}</h2>
+            <p style="margin-top:28px;font-size:16px;">${escapeHtml(m.ministry || valor("ministry"))}</p>
+            <p style="font-size:15px;">${escapeHtml(m.author || valor("author"))}</p>
           </div>
         </section>
       `;
     }
 
-    function renderLivro(m) {
-      el("resultado").innerHTML = `
-        <article class="doc">
-          ${capaMaterial(m, "LIVRO CRISTÃO")}
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-              <div class="bloco"><h3>Prefácio</h3>${divTexto(m.preface)}</div>
-              <div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>
-              <div class="bloco"><h3>Introdução geral</h3>${divTexto(m.generalIntroduction)}</div>
-            </div>
-          </section>
+    function renderizarMaterial(m) {
+      const type = m.type || m.selectedType || tipoAtual();
 
-          ${(m.chapters || []).map(ch => `
-            <section class="pagina">
-              <div class="pagina-interna">
-                <h2 class="titulo-grande">Capítulo ${escapeHtml(ch.number)} — ${escapeHtml(ch.title)}</h2>
-                <div class="chips">${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}</div>
-                <div class="bloco"><h3>Abertura literária</h3>${divTexto(ch.openingNarrative)}</div>
-                <div class="bloco"><h3>Desenvolvimento</h3>${divTexto(ch.development)}</div>
-                <div class="bloco"><h3>Reflexão teológica</h3>${divTexto(ch.theologicalReflection)}</div>
-                <div class="bloco"><h3>Aplicação pastoral</h3>${divTexto(ch.pastoralApplication)}</div>
-                <div class="bloco"><h3>Fechamento do capítulo</h3>${divTexto(ch.chapterClosing)}</div>
-              </div>
-            </section>
-          `).join("")}
-
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h2 class="titulo-grande">Conclusão final</h2>
-              ${divTexto(m.finalConclusion)}
-              <div class="bloco"><h3>Palavra ao leitor</h3>${divTexto(m.wordToReader)}</div>
-              <div class="bloco"><h3>Sobre o autor</h3>${divTexto(m.authorBio)}</div>
-              <div class="bloco"><h3>Texto de contracapa</h3>${divTexto(m.backCoverText)}</div>
-            </div>
-          </section>
-        </article>
-      `;
+      if (type === "revista") return renderRevista(m);
+      if (type === "sermao") return renderSermao(m);
+      return renderMaterialGeral(m, type);
     }
 
-    function renderEbook(m) {
-      el("resultado").innerHTML = `
-        <article class="doc">
-          ${capaMaterial(m, "E-BOOK CRISTÃO")}
-
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-              <div class="bloco"><h3>Apresentação</h3>${divTexto(m.summaryIntro)}</div>
-            </div>
-          </section>
-
-          ${(m.chapters || []).map(ch => `
-            <section class="pagina">
-              <div class="pagina-interna">
-                <h2 class="titulo-grande">Capítulo ${escapeHtml(ch.number)} — ${escapeHtml(ch.title)}</h2>
-                ${divTexto(ch.heroCaption)}
-                <div class="chips">${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}</div>
-                <div class="bloco"><h3>Abertura</h3>${divTexto(ch.opening)}</div>
-                <div class="bloco"><h3>Ideia central</h3>${divTexto(ch.centralIdea)}</div>
-                ${(ch.sections || []).map(s => `<div class="bloco"><h3>${escapeHtml(s.title)}</h3>${divTexto(s.content)}</div>`).join("")}
-                <div class="bloco"><h3>Destaque</h3>${divTexto(ch.highlightQuote)}</div>
-                <div class="bloco"><h3>Perguntas de reflexão</h3><ul class="lista">${(ch.reflectionQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul></div>
-                <div class="bloco"><h3>Aplicação prática</h3>${divTexto(ch.practice)}</div>
-                <div class="bloco"><h3>Oração</h3>${divTexto(ch.prayer)}</div>
-                <div class="bloco"><h3>Conclusão</h3>${divTexto(ch.conclusion)}</div>
-              </div>
-            </section>
-          `).join("")}
-
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h2 class="titulo-grande">Conclusão final</h2>
-              ${divTexto(m.closing)}
-            </div>
-          </section>
-        </article>
-      `;
-    }
-
-    function renderDevocional(m) {
+    function renderSermao(m) {
       el("resultado").innerHTML = `
         <article class="doc">
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-              <div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>
 
-              ${(m.days || []).map(d => `
+              <div class="bloco"><h3>Texto bíblico</h3>${divTexto(m.biblicalText || "")}</div>
+              <div class="bloco"><h3>Tema</h3>${divTexto(m.theme || "")}</div>
+              <div class="bloco"><h3>Objetivo</h3>${divTexto(m.objective || "")}</div>
+              <div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction || "")}</div>
+              <div class="bloco"><h3>Contexto bíblico</h3>${divTexto(m.biblicalContext || "")}</div>
+              <div class="bloco"><h3>Explicação do texto</h3>${divTexto(m.textExplanation || "")}</div>
+              <div class="bloco"><h3>Proposição central</h3>${divTexto(m.centralProposition || "")}</div>
+              <div class="bloco"><h3>Frase de transição</h3>${divTexto(m.transitionPhrase || "")}</div>
+
+              ${(m.points || []).map((pt, i) => `
                 <div class="bloco">
-                  <h3>Dia ${escapeHtml(d.day)} — ${escapeHtml(d.title)}</h3>
-                  <div class="chips"><span class="chip">${escapeHtml(d.verse)}</span></div>
-                  <h3>Reflexão</h3>${divTexto(d.reflection)}
-                  <h3>Aplicação prática</h3>${divTexto(d.practicalApplication)}
-                  <h3>Pergunta para meditação</h3>${divTexto(d.meditationQuestion)}
-                  <h3>Oração</h3>${divTexto(d.prayer)}
+                  <h3>${i + 1}. ${escapeHtml(pt.title || "")}</h3>
+                  ${divTexto(pt.explanation || "")}
+                  <h3>Aplicação pastoral</h3>${divTexto(pt.pastoralApplication || "")}
+                  <h3>Ilustração</h3>${divTexto(pt.illustration || "")}
                 </div>
               `).join("")}
 
-              <div class="bloco"><h3>Palavra final</h3>${divTexto(m.finalWord)}</div>
+              <div class="bloco"><h3>Aplicações práticas</h3><ul class="lista">${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}</ul></div>
+              <div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion || "")}</div>
+              <div class="bloco"><h3>Apelo</h3>${divTexto(m.appeal || "")}</div>
+              <div class="bloco"><h3>Oração final</h3>${divTexto(m.finalPrayer || "")}</div>
             </div>
           </section>
         </article>
       `;
     }
 
-    function renderEstudo(m) {
+    function renderMaterialGeral(m, type) {
+      const tituloTipo = {
+        ebook: "E-BOOK CRISTÃO",
+        livro: "LIVRO CRISTÃO",
+        devocional: "DEVOCIONAL",
+        estudo: "ESTUDO BÍBLICO",
+        curso: "CURSO CRISTÃO"
+      }[type] || "MATERIAL CRISTÃO";
+
+      let conteudo = "";
+
+      if (m.presentation) conteudo += bloco("Apresentação", m.presentation);
+      if (m.summaryIntro) conteudo += bloco("Apresentação", m.summaryIntro);
+      if (m.preface) conteudo += bloco("Prefácio", m.preface);
+      if (m.generalIntroduction) conteudo += bloco("Introdução geral", m.generalIntroduction);
+      if (m.courseDescription) conteudo += bloco("Descrição do curso", m.courseDescription);
+      if (m.generalObjective) conteudo += bloco("Objetivo geral", m.generalObjective);
+      if (m.objective) conteudo += bloco("Objetivo", m.objective);
+      if (m.introduction) conteudo += bloco("Introdução", m.introduction);
+      if (m.biblicalContext) conteudo += bloco("Contexto bíblico", m.biblicalContext);
+
+      conteudo += renderArray("Capítulos", m.chapters, "number");
+      conteudo += renderArray("Aulas", m.lessons, "lesson");
+      conteudo += renderArray("Dias devocionais", m.days, "day");
+      conteudo += renderArray("Partes", m.parts, "number");
+
+      if (m.finalConclusion) conteudo += bloco("Conclusão final", m.finalConclusion);
+      if (m.conclusion) conteudo += bloco("Conclusão", m.conclusion);
+      if (m.closing) conteudo += bloco("Encerramento", m.closing);
+      if (m.finalWord) conteudo += bloco("Palavra final", m.finalWord);
+      if (m.finalEvaluation) conteudo += bloco("Avaliação final", m.finalEvaluation);
+      if (m.wordToReader) conteudo += bloco("Palavra ao leitor", m.wordToReader);
+      if (m.authorBio) conteudo += bloco("Sobre o autor", m.authorBio);
+      if (m.backCoverText) conteudo += bloco("Texto de contracapa", m.backCoverText);
+
       el("resultado").innerHTML = `
         <article class="doc">
+          ${capaMaterial(m, tituloTipo)}
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.theme || "")}</div>
-              <div class="bloco"><h3>Texto bíblico</h3>${divTexto(m.biblicalText)}</div>
-              <div class="bloco"><h3>Objetivo</h3>${divTexto(m.objective)}</div>
-              <div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction)}</div>
-              <div class="bloco"><h3>Contexto bíblico</h3>${divTexto(m.biblicalContext)}</div>
-
-              ${(m.parts || []).map(pt => `
-                <div class="bloco">
-                  <h3>${escapeHtml(pt.number)}. ${escapeHtml(pt.title)}</h3>
-                  ${divTexto(pt.explanation)}
-                  <h3>Análise teológica</h3>${divTexto(pt.theologicalAnalysis)}
-                  <h3>Aplicação prática</h3>${divTexto(pt.practicalApplication)}
-                </div>
-              `).join("")}
-
-              <div class="bloco"><h3>Perguntas de revisão</h3><ul class="lista">${(m.reviewQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul></div>
-              <div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion)}</div>
+              <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
+              ${conteudo}
             </div>
           </section>
         </article>
       `;
     }
 
-    function renderCurso(m) {
-      el("resultado").innerHTML = `
-        <article class="doc">
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-              <div class="bloco"><h3>Descrição do curso</h3>${divTexto(m.courseDescription)}</div>
-              <div class="bloco"><h3>Objetivo geral</h3>${divTexto(m.generalObjective)}</div>
-            </div>
-          </section>
+    function bloco(titulo, texto) {
+      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
+    }
 
-          ${(m.lessons || []).map(a => `
-            <section class="pagina">
-              <div class="pagina-interna">
-                <h2 class="titulo-grande">Aula ${escapeHtml(a.lesson)} — ${escapeHtml(a.title)}</h2>
-                <div class="bloco"><h3>Objetivo da aula</h3>${divTexto(a.objective)}</div>
-                <div class="bloco"><h3>Introdução</h3>${divTexto(a.introduction)}</div>
-                <div class="chips">${(a.biblicalTexts || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}</div>
-                <div class="bloco"><h3>Conteúdo</h3>${divTexto(a.content)}</div>
-                <div class="bloco"><h3>Atividade em classe</h3>${divTexto(a.classActivity)}</div>
-                <div class="bloco"><h3>Tarefa da semana</h3>${divTexto(a.homework)}</div>
-                <div class="bloco"><h3>Resumo da aula</h3>${divTexto(a.summary)}</div>
-              </div>
-            </section>
-          `).join("")}
+    function renderArray(tituloGeral, arr, numeroCampo) {
+      if (!Array.isArray(arr) || arr.length === 0) return "";
 
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h2 class="titulo-grande">Avaliação final</h2>
-              ${divTexto(m.finalEvaluation)}
-              <div class="bloco"><h3>Palavra final</h3>${divTexto(m.finalWord)}</div>
-            </div>
-          </section>
-        </article>
-      `;
+      return arr.map((item, index) => {
+        const numero = item[numeroCampo] || index + 1;
+        const titulo = item.title || `${tituloGeral} ${numero}`;
+
+        let html = `<div class="bloco"><h3>${escapeHtml(numero)}. ${escapeHtml(titulo)}</h3>`;
+
+        Object.keys(item).forEach(key => {
+          if (["title", numeroCampo].includes(key)) return;
+          const value = item[key];
+
+          if (Array.isArray(value)) {
+            html += `<h3>${escapeHtml(rotulo(key))}</h3><ul class="lista">${value.map(v => `<li>${escapeHtml(typeof v === "string" ? v : JSON.stringify(v))}</li>`).join("")}</ul>`;
+          } else if (typeof value === "object" && value !== null) {
+            html += `<h3>${escapeHtml(rotulo(key))}</h3>${divTexto(JSON.stringify(value, null, 2))}`;
+          } else if (value) {
+            html += `<h3>${escapeHtml(rotulo(key))}</h3>${divTexto(value)}`;
+          }
+        });
+
+        html += `</div>`;
+        return html;
+      }).join("");
+    }
+
+    function rotulo(key) {
+      const labels = {
+        openingNarrative: "Abertura",
+        biblicalBase: "Base bíblica",
+        development: "Desenvolvimento",
+        theologicalReflection: "Reflexão teológica",
+        pastoralApplication: "Aplicação pastoral",
+        chapterClosing: "Fechamento",
+        opening: "Abertura",
+        centralIdea: "Ideia central",
+        sections: "Seções",
+        highlightQuote: "Destaque",
+        reflectionQuestions: "Perguntas de reflexão",
+        practice: "Prática",
+        prayer: "Oração",
+        verse: "Versículo",
+        reflection: "Reflexão",
+        practicalApplication: "Aplicação prática",
+        meditationQuestion: "Pergunta para meditação",
+        explanation: "Explicação",
+        theologicalAnalysis: "Análise teológica",
+        classActivity: "Atividade em classe",
+        homework: "Tarefa",
+        summary: "Resumo"
+      };
+
+      return labels[key] || key;
     }
 
     function renderRevista(m) {
@@ -1365,7 +1185,7 @@
                 <span class="chip">${escapeHtml(m.bibleVersion || "King James Fiel 1611")}</span>
               </div>
 
-              <div class="bloco bloco-apresentacao"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
+              <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
 
               ${lessons.length < 4 ? `
                 <div class="bloco">
@@ -1400,8 +1220,10 @@
                   <div class="bloco"><h3>Orientações para o professor</h3>${divTexto(l.teacherNotes)}</div>
                   <div class="bloco"><h3>Sugestão de abordagem em classe</h3>${divTexto(l.classApproach)}</div>
                   <div class="bloco"><h3>Observação pastoral</h3>${divTexto(l.pastoralObservation)}</div>
+                  ${l.doctrinalSupport ? `<div class="bloco"><h3>Apoio doutrinário</h3>${divTexto(l.doctrinalSupport)}</div>` : ""}
+                  ${(l.recommendedDeepening || []).length ? `<div class="bloco"><h3>Para aprofundamento</h3><ul class="lista">${l.recommendedDeepening.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : ""}
                 ` : `
-                  <div class="bloco bloco-anotacoes">
+                  <div class="bloco">
                     <h3>Espaço para anotações</h3>
                     <p>__________________________________________________________________</p>
                     <p>__________________________________________________________________</p>
@@ -1441,7 +1263,8 @@
           ${(t.subtopics || []).map((s, subIndex) => `
             <div class="subtopico-revista">
               <h4>${subIndex + 1}. ${escapeHtml(s.title || "")}</h4>
-              ${s.reference ? `<div class="referencia">Referência bíblica: ${escapeHtml(s.reference)}</div>` : ""}
+              ${s.reference ? `<div class="referencia">Referência principal: ${escapeHtml(s.reference)}</div>` : ""}
+              ${(s.supportReferences || []).length ? `<div class="referencia">Referências de apoio: ${escapeHtml(s.supportReferences.filter(Boolean).join("; "))}</div>` : ""}
               ${divTexto(s.content || "")}
             </div>
           `).join("")}
@@ -1466,10 +1289,7 @@
         `).join("");
       }
 
-      return `
-        <p><strong>${escapeHtml(l.biblicalReadingReference || l.biblicalReading || "")}</strong></p>
-        <p style="color:#a12d2d;"><strong>Atenção:</strong> o texto completo da leitura bíblica não veio nesta geração. Gere novamente ou edite manualmente antes de salvar.</p>
-      `;
+      return `<p><strong>${escapeHtml(l.biblicalReadingReference || "")}</strong></p>`;
     }
 
     function renderPerguntasProfessor(l) {
@@ -1504,17 +1324,12 @@
           print-color-adjust: exact !important;
         }
 
-        html,
-        body {
+        html, body {
           margin: 0;
           padding: 0;
           background: #fff;
           font-family: Arial, Helvetica, sans-serif;
           color: #222;
-        }
-
-        .modo-edicao {
-          display: none !important;
         }
 
         .doc {
@@ -1539,12 +1354,9 @@
           padding: 0;
           page-break-after: auto;
           break-after: auto;
-          page-break-inside: auto;
-          break-inside: auto;
         }
 
-        .pagina-interna,
-        .sermao .pagina-interna {
+        .pagina-interna {
           padding: 0;
           margin: 0;
         }
@@ -1553,7 +1365,9 @@
           width: 100%;
           min-height: 273mm;
           color: white;
-          background: linear-gradient(135deg, #5b3a24, #c79b58);
+          background:
+            radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 35%),
+            linear-gradient(135deg, #4a2d1a, #7a4f2f 45%, #c79b58);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1566,12 +1380,22 @@
           padding: 12mm 10mm;
         }
 
+        .capa::before {
+          content: "";
+          position: absolute;
+          inset: 28px;
+          border: 2px solid rgba(255,255,255,0.35);
+          border-radius: 28px;
+        }
+
         .capa-box {
           width: 80%;
           padding: 42px 34px;
           border-radius: 28px;
           background: rgba(255,255,255,0.14);
           border: 1px solid rgba(255,255,255,0.30);
+          position: relative;
+          z-index: 2;
         }
 
         .capa h1 {
@@ -1631,21 +1455,15 @@
           margin-bottom: 10px;
         }
 
-        .texto {
+        .texto, p {
           font-size: 12.7px;
           line-height: 1.48;
           color: #222;
           white-space: pre-line;
-        }
-
-        p {
-          font-size: 12.7px;
-          line-height: 1.48;
           margin: 0 0 5px;
         }
 
-        .bloco,
-        .topico-revista {
+        .bloco, .topico-revista {
           margin-top: 7px;
           padding: 8px 10px;
           border: 1px solid #ddd;
@@ -1660,8 +1478,7 @@
           break-inside: auto;
         }
 
-        .bloco h3,
-        .topico-revista h3 {
+        .bloco h3, .topico-revista h3 {
           margin: 0 0 4px;
           color: #5b3a24;
           font-size: 15px;
@@ -1683,8 +1500,6 @@
           margin: 0 0 4px;
           color: #333;
           font-size: 13.8px;
-          page-break-after: avoid;
-          break-after: avoid;
         }
 
         .referencia {
@@ -1692,16 +1507,6 @@
           color: #7b5a39;
           font-weight: bold;
           margin-bottom: 4px;
-        }
-
-        .revisao-revista,
-        .bloco-anotacoes {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        .revisao-revista {
-          margin-bottom: 0;
         }
 
         .lista {
@@ -1726,74 +1531,6 @@
           border-radius: 999px;
           padding: 3px 7px;
           font-size: 10px;
-        }
-
-        .sermao .titulo-sermao {
-          margin: 0 0 10px;
-          text-align: center;
-          color: #111;
-          font-size: 25px;
-          line-height: 1.25;
-          text-transform: uppercase;
-        }
-
-        .sermao .subtitulo-sermao {
-          text-align: center;
-          color: #333;
-          font-size: 14px;
-          margin-bottom: 18px;
-          line-height: 1.45;
-        }
-
-        .sermao .linha-info {
-          border-top: 1px solid #222;
-          border-bottom: 1px solid #222;
-          padding: 9px 0;
-          margin: 12px 0 16px;
-          font-size: 13.8px;
-          line-height: 1.55;
-          color: #111;
-        }
-
-        .sermao h2 {
-          margin: 18px 0 7px;
-          color: #111;
-          font-size: 17px;
-          border-bottom: 1px solid #ccc;
-          padding-bottom: 5px;
-          page-break-after: avoid;
-          break-after: avoid;
-        }
-
-        .sermao h3 {
-          margin: 14px 0 6px;
-          color: #111;
-          font-size: 15.5px;
-          page-break-after: avoid;
-          break-after: avoid;
-        }
-
-        .sermao p {
-          font-size: 13.8px;
-          line-height: 1.62;
-          color: #111;
-          margin: 0 0 8px;
-          white-space: pre-line;
-        }
-
-        .sermao .ponto {
-          margin-top: 14px;
-          padding-top: 8px;
-          border-top: 1px solid #ddd;
-          page-break-inside: auto;
-          break-inside: auto;
-        }
-
-        .sermao ul {
-          font-size: 13.8px;
-          line-height: 1.6;
-          color: #111;
-          margin: 6px 0;
         }
       `;
     }
@@ -1842,47 +1579,45 @@
       setStatus("Abrindo uma página limpa para salvar em PDF.", "ok");
     }
 
-    function limparCamposFormulario() {
-      el("materialType").value = "ebook";
-      el("promptTema").value = "";
-      el("title").value = "";
-      el("subtitle").value = "";
-      el("theme").value = "";
-      el("biblicalBase").value = "";
-      el("quantity").value = "3";
-      el("sermonPoints").value = "3";
-      el("targetAudience").value = "";
-      el("depthLevel").value = "muito profundo";
-      el("visualStyle").value = "preto e branco";
-      el("coverMode").value = "sem-capa";
-      el("tone").value = "";
-      el("revistaVersion").value = "professor";
-      el("bibleVersion").value = "King James Fiel 1611";
+    function ativarEdicao() {
+      const resultado = el("resultado");
 
-      el("author").value = "Pr. Isiquel Rodrigues";
-      el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
+      if (!materialAtual || resultado.innerText.includes("Seu material aparecerá aqui")) {
+        alert("Gere um material antes de editar.");
+        return;
+      }
 
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-      } catch (e) {}
+      resultado.setAttribute("contenteditable", "true");
+      resultado.focus();
 
-      atualizarOpcoesPorTipo();
+      el("modoEdicao").style.display = "block";
+      el("btnEditar").disabled = true;
+      el("btnFinalizarEdicao").disabled = false;
+
+      setStatus("Modo edição ativado. Edite diretamente antes de salvar o PDF.", "ok");
+    }
+
+    function finalizarEdicao() {
+      const resultado = el("resultado");
+
+      resultado.removeAttribute("contenteditable");
+      el("modoEdicao").style.display = "none";
+      el("btnEditar").disabled = false;
+      el("btnFinalizarEdicao").disabled = true;
     }
 
     function limparTudo() {
       finalizarEdicao();
 
       materialAtual = null;
-      limparCamposFormulario();
       setBarra(0);
-      setStatus("Tudo limpo. Os campos do formulário também foram limpos.", "ok");
+      setStatus("Tudo limpo.", "ok");
 
       el("resultado").innerHTML = `
         <div class="placeholder">
           <div>
             <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
-            <p style="margin:0;">Os campos foram limpos. Preencha um novo material e clique em <strong>Gerar material</strong>.</p>
+            <p style="margin:0;">Preencha um novo material e clique em <strong>Gerar material</strong>.</p>
           </div>
         </div>
       `;
@@ -1901,24 +1636,22 @@
     }
 
     function preencherTeste() {
-      el("materialType").value = "revista";
-      el("title").value = "Doutrinas Fundamentais da Fé Cristã";
-      el("subtitle").value = "Revista mensal com quatro lições para formação espiritual e doutrinária";
-      el("theme").value = "Crie uma revista mensal de ensino bíblico profunda, pastoral e doutrinária, com quatro lições, uma para cada semana do mês. Cada lição deve seguir o padrão de EBD, contendo texto áureo, verdade prática, leitura bíblica em classe com referência e texto completo, objetivos, introdução, três tópicos principais e três subtópicos dentro de cada tópico. Cada subtópico deve ser bem explicado, com profundidade bíblica, referência bíblica relacionada e aplicação prática. A revista do aluno também deve ser completa, explicativa e profunda, sem respostas e sem orientações internas do professor. A revista do professor deve conter respostas, orientações didáticas e sugestões de abordagem em classe. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons espirituais, igreja e escatologia, siga o pentecostalismo clássico.";
-      el("biblicalBase").value = "2 Timóteo 3.16-17; Atos 1.8; Atos 2.1-4; Romanos 10.9-17; Mateus 28.18-20";
-      el("quantity").value = "4";
-      el("targetAudience").value = "Professores, alunos da EBD, obreiros, líderes e membros da igreja";
+      el("materialType").value = "sermao";
+      el("title").value = "O Deus que Restaura";
+      el("subtitle").value = "Uma palavra de esperança para quem precisa recomeçar";
+      el("theme").value = "A restauração de Deus na vida espiritual, familiar e emocional do cristão.";
+      el("biblicalBase").value = "Joel 2.25; Salmos 23; Romanos 8.28; 1 Pedro 5.10";
+      el("quantity").value = "3";
+      el("targetAudience").value = "Igreja em geral";
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "preto e branco";
       el("coverMode").value = "sem-capa";
-      el("tone").value = "bíblico, pastoral, doutrinário, profundo, didático, pentecostal clássico e aplicável";
-      el("revistaVersion").value = "professor";
-      el("bibleVersion").value = "King James Fiel 1611";
+      el("tone").value = "bíblico, pastoral, profundo e encorajador";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste de revista mensal preenchido. Escolha professor ou aluno e clique em Gerar material.", "ok");
+      setStatus("Teste preenchido. Clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
