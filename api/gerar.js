@@ -85,6 +85,8 @@ function normalizeForm(body) {
 
   if (tipo === "sermao") {
     quantidade = 1;
+  } else if (tipo === "revista") {
+    quantidade = 4;
   } else if (tipo === "devocional") {
     quantidade = Math.max(1, Math.min(quantidade, 30));
   } else {
@@ -431,10 +433,10 @@ function promptRevista(form) {
     : "REVISTA DO PROFESSOR";
 
   return `
-Você é um comentarista de revista bíblica, pastor, teólogo e professor de EBD.
+Você é um comentarista de revista bíblica, pastor, teólogo e professor de Escola Bíblica Dominical.
 
-Crie uma REVISTA DE ENSINO BÍBLICO em formato de lições.
-A revista deve seguir linguagem bíblica, pastoral, didática, doutrinária e profunda.
+Crie uma REVISTA MENSAL DE ENSINO BÍBLICO em formato de EBD.
+A revista deve seguir linguagem bíblica, pastoral, didática, doutrinária, profunda e organizada.
 
 VERSÃO SOLICITADA:
 ${versaoTexto}
@@ -442,28 +444,45 @@ ${versaoTexto}
 TRADUÇÃO BÍBLICA PADRÃO:
 ${form.bibleVersion}
 
-${baseDados(form, "Revista de ensino bíblico")}
+${baseDados(form, "Revista mensal de ensino bíblico")}
 ${regrasJson()}
 
 REGRAS ESPECÍFICAS DA REVISTA:
-1. A revista deve parecer uma lição bíblica, não um e-book.
-2. Cada lição deve ter Texto Áureo, Verdade Prática, Leitura Bíblica em Classe, Objetivos, Introdução, Tópicos, Aplicação, Conclusão e Revisão.
-3. A Leitura Bíblica em Classe nunca pode trazer somente a referência.
-4. A Leitura Bíblica em Classe deve trazer:
-   - a referência;
-   - o texto bíblico completo correspondente;
-   - usando como padrão a King James Fiel 1611.
-5. Se a versão for PROFESSOR:
-   - inclua perguntas com respostas;
-   - inclua observações didáticas para o professor;
-   - inclua sugestões de abordagem em sala.
-6. Se a versão for ALUNO:
-   - inclua perguntas sem respostas;
-   - não inclua gabarito;
-   - inclua espaço para anotações;
-   - não inclua observações internas do professor.
-7. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
-8. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons, igreja e escatologia, siga o pentecostalismo clássico.
+1. A revista é MENSAL, não trimestral.
+2. Gere exatamente 4 lições, uma para cada semana do mês.
+3. Cada lição deve ser completa, profunda e didática.
+4. Cada lição deve ter exatamente 3 tópicos principais.
+5. Cada tópico principal deve ter exatamente 3 subtópicos.
+6. Cada subtópico deve ser bem explicado, com profundidade bíblica, aplicação prática e referência bíblica relacionada.
+7. A revista do aluno também deve ser completa, explicativa e profunda. Ela não pode ser rasa, resumida ou fraca.
+8. A diferença da revista do aluno é que ela NÃO tem gabarito e NÃO tem orientação interna do professor.
+9. A revista do professor tem o mesmo conteúdo do aluno, mas acrescenta respostas, notas didáticas e sugestões de abordagem.
+10. A Leitura Bíblica em Classe nunca pode trazer somente a referência.
+11. A Leitura Bíblica em Classe deve trazer a referência e o texto bíblico completo correspondente, usando como padrão a King James Fiel 1611.
+12. Cada lição deve conter:
+    - Texto Áureo;
+    - Verdade Prática;
+    - Leitura Bíblica em Classe com referência e texto completo;
+    - Objetivos;
+    - Introdução;
+    - 3 tópicos principais;
+    - 3 subtópicos dentro de cada tópico;
+    - Aplicação para a vida;
+    - Conclusão;
+    - Revisando o conteúdo.
+13. Se a versão for PROFESSOR:
+    - inclua perguntas com respostas;
+    - inclua orientações didáticas para o professor;
+    - inclua sugestões de abordagem em sala;
+    - inclua observações pastorais.
+14. Se a versão for ALUNO:
+    - inclua perguntas sem respostas;
+    - inclua espaço para anotações;
+    - não inclua gabarito;
+    - não inclua orientações internas do professor.
+15. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons, igreja e escatologia, siga o pentecostalismo clássico.
+16. Evite conteúdo raso. Cada explicação deve ser expandida, bíblica, pastoral e aplicável.
+17. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
 
 FORMATO JSON:
 {
@@ -492,13 +511,74 @@ FORMATO JSON:
       "objectives": ["", "", ""],
       "introduction": "",
       "topics": [
-        { "title": "", "content": "" },
-        { "title": "", "content": "" },
-        { "title": "", "content": "" }
+        {
+          "title": "",
+          "content": "",
+          "subtopics": [
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            },
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            },
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            }
+          ]
+        },
+        {
+          "title": "",
+          "content": "",
+          "subtopics": [
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            },
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            },
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            }
+          ]
+        },
+        {
+          "title": "",
+          "content": "",
+          "subtopics": [
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            },
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            },
+            {
+              "title": "",
+              "reference": "",
+              "content": ""
+            }
+          ]
+        }
       ],
       "lifeApplication": "",
       "teacherNotes": "",
       "classApproach": "",
+      "pastoralObservation": "",
       "studentNotesSpace": "",
       "conclusion": "",
       "questionsAndAnswers": [
@@ -513,7 +593,7 @@ FORMATO JSON:
   "finalWord": ""
 }
 
-Crie exatamente ${form.quantity} lições.
+Crie exatamente 4 lições.
 `.trim();
 }
 
@@ -538,7 +618,7 @@ async function callGeminiText(apiKey, models, prompt) {
             generationConfig: {
               temperature: 0.72,
               topP: 0.9,
-              maxOutputTokens: 24000
+              maxOutputTokens: 50000
             }
           })
         }
