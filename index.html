@@ -600,7 +600,7 @@
 
       <div class="card-body">
         <div class="aviso">
-          Revista mensal atualizada: 4 lições, 3 tópicos por lição e 3 subtópicos por tópico.
+          Revista mensal: agora a revista é gerada por partes para evitar erro. Primeiro a apresentação, depois as 4 lições.
         </div>
 
         <div class="prompt-box">
@@ -866,7 +866,7 @@
         el("quantity").value = "4";
         el("campoRevistaVersao").classList.remove("campo-oculto");
         el("campoTraducaoBiblica").classList.remove("campo-oculto");
-        setStatus("Modo Revista Mensal: 4 lições, 3 tópicos por lição e 3 subtópicos por tópico.", "ok");
+        setStatus("Modo Revista Mensal: a revista será gerada em partes para não quebrar.", "ok");
       }
     }
 
@@ -893,6 +893,29 @@
       };
     }
 
+    async function chamarApiGerar(dados) {
+      const resposta = await fetch("/api/gerar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      });
+
+      const texto = await resposta.text();
+      let json = null;
+
+      try {
+        json = JSON.parse(texto);
+      } catch (_) {
+        throw new Error("A API devolveu uma resposta inválida. Aguarde alguns segundos e tente novamente.");
+      }
+
+      if (!resposta.ok || !json.ok) {
+        throw new Error(json.error || "Erro ao gerar material.");
+      }
+
+      return json.material;
+    }
+
     async function gerarPromptAutomatico() {
       const assunto = valor("promptTema");
       const btn = el("btnPrompt");
@@ -909,9 +932,7 @@
       try {
         const resposta = await fetch("/api/prompt", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             assunto,
             materialType: tipoAtual()
@@ -957,8 +978,7 @@
 
       btn.disabled = true;
       btn.innerText = "Gerando...";
-      setBarra(10);
-      setStatus("Gerando conteúdo no formato correto...", "");
+      setBarra(5);
 
       el("resultado").innerHTML = `
         <div class="placeholder">
@@ -970,26 +990,17 @@
       `;
 
       try {
-        const resposta = await fetch("/api/gerar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(dados)
-        });
-
-        const json = await resposta.json();
-
-        if (!resposta.ok || !json.ok) {
-          throw new Error(json.error || "Erro ao gerar material.");
+        if (dados.materialType === "revista") {
+          await gerarRevistaPorPartes(dados);
+        } else {
+          setStatus("Gerando conteúdo no formato correto...", "");
+          const material = await chamarApiGerar(dados);
+          materialAtual = material;
+          setBarra(90);
+          renderizarMaterial(materialAtual);
+          setBarra(100);
+          setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
         }
-
-        materialAtual = json.material;
-        setBarra(90);
-        renderizarMaterial(materialAtual);
-        setBarra(100);
-        setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
-
       } catch (error) {
         console.error(error);
         setStatus("Erro: " + escapeHtml(error.message), "erro");
@@ -1005,6 +1016,48 @@
         btn.disabled = false;
         btn.innerText = "Gerar material";
       }
+    }
+
+    async function gerarRevistaPorPartes(dados) {
+      setStatus("Organizando a revista mensal...", "");
+      setBarra(8);
+
+      const meta = await chamarApiGerar({
+        ...dados,
+        revistaPart: "meta"
+      });
+
+      const revista = {
+        ...meta,
+        type: "revista",
+        revistaVersion: dados.revistaVersion,
+        bibleVersion: dados.bibleVersion,
+        lessons: []
+      };
+
+      materialAtual = revista;
+      renderizarMaterial(materialAtual);
+
+      const lessonTitles = meta.lessonTitles || [];
+
+      for (let i = 1; i <= 4; i++) {
+        setStatus(`Gerando lição ${i} de 4...`, "");
+        setBarra(10 + i * 20);
+
+        const lesson = await chamarApiGerar({
+          ...dados,
+          revistaPart: "lesson",
+          lessonNumber: i,
+          lessonTitles
+        });
+
+        revista.lessons.push(lesson);
+        materialAtual = revista;
+        renderizarMaterial(materialAtual);
+      }
+
+      setBarra(100);
+      setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
     }
 
     function ativarEdicao() {
@@ -1063,21 +1116,11 @@
                 <strong>Objetivo:</strong> ${escapeHtml(m.objective || "")}
               </div>
 
-              <h2>Introdução</h2>
-              ${p(m.introduction)}
-
-              <h2>Contexto bíblico</h2>
-              ${p(m.biblicalContext)}
-
-              <h2>Explicação do texto</h2>
-              ${p(m.textExplanation)}
-
-              <h2>Proposição central</h2>
-              ${p(m.centralProposition)}
-
-              <h2>Frase de transição</h2>
-              ${p(m.transitionPhrase)}
-
+              <h2>Introdução</h2>${p(m.introduction)}
+              <h2>Contexto bíblico</h2>${p(m.biblicalContext)}
+              <h2>Explicação do texto</h2>${p(m.textExplanation)}
+              <h2>Proposição central</h2>${p(m.centralProposition)}
+              <h2>Frase de transição</h2>${p(m.transitionPhrase)}
               <h2>Desenvolvimento</h2>
 
               ${(m.points || []).map((pt, i) => `
@@ -1090,18 +1133,11 @@
               `).join("")}
 
               <h2>Aplicações práticas para a vida diária</h2>
-              <ul>
-                ${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}
-              </ul>
+              <ul>${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}</ul>
 
-              <h2>Conclusão</h2>
-              ${p(m.conclusion)}
-
-              <h2>Apelo final</h2>
-              ${p(m.appeal)}
-
-              <h2>Oração final</h2>
-              ${p(m.finalPrayer)}
+              <h2>Conclusão</h2>${p(m.conclusion)}
+              <h2>Apelo final</h2>${p(m.appeal)}
+              <h2>Oração final</h2>${p(m.finalPrayer)}
             </div>
           </section>
         </article>
@@ -1126,7 +1162,6 @@
       el("resultado").innerHTML = `
         <article class="doc">
           ${capaMaterial(m, "LIVRO CRISTÃO")}
-
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
@@ -1187,10 +1222,7 @@
                 <div class="bloco"><h3>Ideia central</h3>${divTexto(ch.centralIdea)}</div>
                 ${(ch.sections || []).map(s => `<div class="bloco"><h3>${escapeHtml(s.title)}</h3>${divTexto(s.content)}</div>`).join("")}
                 <div class="bloco"><h3>Destaque</h3>${divTexto(ch.highlightQuote)}</div>
-                <div class="bloco">
-                  <h3>Perguntas de reflexão</h3>
-                  <ul class="lista">${(ch.reflectionQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul>
-                </div>
+                <div class="bloco"><h3>Perguntas de reflexão</h3><ul class="lista">${(ch.reflectionQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul></div>
                 <div class="bloco"><h3>Aplicação prática</h3>${divTexto(ch.practice)}</div>
                 <div class="bloco"><h3>Oração</h3>${divTexto(ch.prayer)}</div>
                 <div class="bloco"><h3>Conclusão</h3>${divTexto(ch.conclusion)}</div>
@@ -1256,11 +1288,7 @@
                 </div>
               `).join("")}
 
-              <div class="bloco">
-                <h3>Perguntas de revisão</h3>
-                <ul class="lista">${(m.reviewQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul>
-              </div>
-
+              <div class="bloco"><h3>Perguntas de revisão</h3><ul class="lista">${(m.reviewQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul></div>
               <div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion)}</div>
             </div>
           </section>
@@ -1309,6 +1337,7 @@
     function renderRevista(m) {
       const versao = m.revistaVersion || valor("revistaVersion") || "professor";
       const isAluno = versao === "aluno";
+      const lessons = m.lessons || [];
 
       el("resultado").innerHTML = `
         <article class="doc">
@@ -1327,63 +1356,40 @@
               </div>
 
               <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
+
+              ${lessons.length < 4 ? `
+                <div class="bloco">
+                  <h3>Geração em andamento</h3>
+                  <p>${lessons.length} de 4 lições geradas até agora.</p>
+                </div>
+              ` : ""}
             </div>
           </section>
 
-          ${(m.lessons || []).map(l => `
+          ${lessons.map(l => `
             <section class="pagina">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Lição ${escapeHtml(l.lesson)} — ${escapeHtml(l.title)}</h2>
 
-                <div class="bloco">
-                  <h3>Texto áureo</h3>
-                  ${divTexto(l.goldenText)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Verdade prática</h3>
-                  ${divTexto(l.practicalTruth)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Leitura bíblica em classe</h3>
-                  ${renderLeituraBiblica(l)}
-                </div>
+                <div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>
+                <div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>
+                <div class="bloco"><h3>Leitura bíblica em classe</h3>${renderLeituraBiblica(l)}</div>
 
                 <div class="bloco">
                   <h3>Objetivos</h3>
-                  <ul class="lista">
-                    ${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}
-                  </ul>
+                  <ul class="lista">${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}</ul>
                 </div>
 
-                <div class="bloco">
-                  <h3>Introdução</h3>
-                  ${divTexto(l.introduction)}
-                </div>
+                <div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>
 
                 ${renderTopicosRevista(l)}
 
-                <div class="bloco">
-                  <h3>Aplicação para a vida</h3>
-                  ${divTexto(l.lifeApplication)}
-                </div>
+                <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
 
                 ${!isAluno ? `
-                  <div class="bloco">
-                    <h3>Orientações para o professor</h3>
-                    ${divTexto(l.teacherNotes)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Sugestão de abordagem em classe</h3>
-                    ${divTexto(l.classApproach)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Observação pastoral</h3>
-                    ${divTexto(l.pastoralObservation)}
-                  </div>
+                  <div class="bloco"><h3>Orientações para o professor</h3>${divTexto(l.teacherNotes)}</div>
+                  <div class="bloco"><h3>Sugestão de abordagem em classe</h3>${divTexto(l.classApproach)}</div>
+                  <div class="bloco"><h3>Observação pastoral</h3>${divTexto(l.pastoralObservation)}</div>
                 ` : `
                   <div class="bloco">
                     <h3>Espaço para anotações</h3>
@@ -1394,10 +1400,7 @@
                   </div>
                 `}
 
-                <div class="bloco">
-                  <h3>Conclusão</h3>
-                  ${divTexto(l.conclusion)}
-                </div>
+                <div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>
 
                 <div class="bloco">
                   <h3>Revisando o conteúdo</h3>
@@ -1407,12 +1410,14 @@
             </section>
           `).join("")}
 
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h2 class="titulo-grande">Palavra final</h2>
-              ${divTexto(m.finalWord)}
-            </div>
-          </section>
+          ${lessons.length === 4 ? `
+            <section class="pagina">
+              <div class="pagina-interna">
+                <h2 class="titulo-grande">Palavra final</h2>
+                ${divTexto(m.finalWord)}
+              </div>
+            </section>
+          ` : ""}
         </article>
       `;
     }
