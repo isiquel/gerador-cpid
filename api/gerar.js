@@ -41,6 +41,8 @@ module.exports = async function handler(req, res) {
 
     material.appName = "VERBO IA";
     material.selectedType = form.materialType;
+    material.revistaVersion = form.revistaVersion;
+    material.bibleVersion = form.bibleVersion;
     material.author = material.author || form.author;
     material.ministry = material.ministry || form.ministry;
     material.visualStyle = form.visualStyle;
@@ -86,12 +88,14 @@ function normalizeForm(body) {
   } else if (tipo === "devocional") {
     quantidade = Math.max(1, Math.min(quantidade, 30));
   } else {
-    quantidade = Math.max(1, Math.min(quantidade, 10));
+    quantidade = Math.max(1, Math.min(quantidade, 12));
   }
 
   return {
     appName: "VERBO IA",
     materialType: tipo,
+    revistaVersion: String(body.revistaVersion || "professor").trim(),
+    bibleVersion: String(body.bibleVersion || "King James Fiel 1611").trim(),
     sermonPoints,
     title: String(body.title || body.titulo || "Material cristão").trim(),
     subtitle: String(body.subtitle || body.subtitulo || "").trim(),
@@ -127,6 +131,8 @@ Tema: ${form.theme || form.title}
 Texto bíblico base: ${form.biblicalBase || "Escolha textos bíblicos coerentes"}
 Quantidade: ${form.quantity}
 Quantidade de tópicos do sermão: ${form.sermonPoints}
+Versão da revista: ${form.revistaVersion}
+Tradução bíblica padrão da revista: ${form.bibleVersion}
 Público-alvo: ${form.targetAudience}
 Autor: ${form.author}
 Ministério/Editora: ${form.ministry}
@@ -175,12 +181,8 @@ ESTRUTURA DO SERMÃO:
 - Proposição central.
 - Frase de transição para os pontos.
 - Exatamente ${form.sermonPoints} pontos principais.
-- Cada ponto deve ter:
-  1. Título do ponto.
-  2. Explicação bíblica.
-  3. Aplicação pastoral.
-  4. Ilustração ou exemplo prático.
-- Aplicações práticas finais para a vida diária.
+- Cada ponto deve ter título, explicação bíblica, aplicação pastoral e ilustração prática.
+- Aplicações práticas finais.
 - Conclusão forte.
 - Apelo final.
 - Oração final.
@@ -214,12 +216,6 @@ FORMATO JSON:
   "appeal": "",
   "finalPrayer": ""
 }
-
-IMPORTANTE:
-O sermão precisa ter exatamente ${form.sermonPoints} pontos.
-A introdução deve ser bem desenvolvida.
-A conclusão deve ser forte e espiritual.
-O sermão deve ser direto para ministração, não para leitura de e-book.
 `.trim();
 }
 
@@ -228,7 +224,7 @@ function promptLivro(form) {
 Você é um escritor cristão, pastor e autor de livros de formação espiritual.
 
 Crie um LIVRO CRISTÃO.
-Livro não é e-book. Deve ter tom mais literário, mais maduro e capítulos mais densos.
+Livro não é e-book. Deve ter tom literário, maduro e capítulos densos.
 
 ${baseDados(form, "Livro cristão")}
 ${regrasJson()}
@@ -430,18 +426,50 @@ Crie exatamente ${form.quantity} aulas.
 }
 
 function promptRevista(form) {
-  return `
-Você é um comentarista de revista bíblica, pastor e professor de EBD.
+  const versaoTexto = form.revistaVersion === "aluno"
+    ? "REVISTA DO ALUNO"
+    : "REVISTA DO PROFESSOR";
 
-Crie uma REVISTA DE ENSINO BÍBLICO.
-Revista deve parecer lição bíblica, não e-book.
+  return `
+Você é um comentarista de revista bíblica, pastor, teólogo e professor de EBD.
+
+Crie uma REVISTA DE ENSINO BÍBLICO em formato de lições.
+A revista deve seguir linguagem bíblica, pastoral, didática, doutrinária e profunda.
+
+VERSÃO SOLICITADA:
+${versaoTexto}
+
+TRADUÇÃO BÍBLICA PADRÃO:
+${form.bibleVersion}
 
 ${baseDados(form, "Revista de ensino bíblico")}
 ${regrasJson()}
 
+REGRAS ESPECÍFICAS DA REVISTA:
+1. A revista deve parecer uma lição bíblica, não um e-book.
+2. Cada lição deve ter Texto Áureo, Verdade Prática, Leitura Bíblica em Classe, Objetivos, Introdução, Tópicos, Aplicação, Conclusão e Revisão.
+3. A Leitura Bíblica em Classe nunca pode trazer somente a referência.
+4. A Leitura Bíblica em Classe deve trazer:
+   - a referência;
+   - o texto bíblico completo correspondente;
+   - usando como padrão a King James Fiel 1611.
+5. Se a versão for PROFESSOR:
+   - inclua perguntas com respostas;
+   - inclua observações didáticas para o professor;
+   - inclua sugestões de abordagem em sala.
+6. Se a versão for ALUNO:
+   - inclua perguntas sem respostas;
+   - não inclua gabarito;
+   - inclua espaço para anotações;
+   - não inclua observações internas do professor.
+7. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+8. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons, igreja e escatologia, siga o pentecostalismo clássico.
+
 FORMATO JSON:
 {
   "type": "revista",
+  "revistaVersion": "${form.revistaVersion}",
+  "bibleVersion": "${form.bibleVersion}",
   "title": "",
   "subtitle": "",
   "targetAudience": "",
@@ -454,7 +482,13 @@ FORMATO JSON:
       "title": "",
       "goldenText": "",
       "practicalTruth": "",
-      "biblicalReading": "",
+      "biblicalReadingReference": "",
+      "biblicalReadingFull": [
+        {
+          "reference": "",
+          "text": ""
+        }
+      ],
       "objectives": ["", "", ""],
       "introduction": "",
       "topics": [
@@ -463,13 +497,17 @@ FORMATO JSON:
         { "title": "", "content": "" }
       ],
       "lifeApplication": "",
+      "teacherNotes": "",
+      "classApproach": "",
+      "studentNotesSpace": "",
       "conclusion": "",
       "questionsAndAnswers": [
         { "question": "", "answer": "" },
         { "question": "", "answer": "" },
         { "question": "", "answer": "" },
         { "question": "", "answer": "" }
-      ]
+      ],
+      "questionsOnly": ["", "", "", ""]
     }
   ],
   "finalWord": ""
@@ -500,7 +538,7 @@ async function callGeminiText(apiKey, models, prompt) {
             generationConfig: {
               temperature: 0.72,
               topP: 0.9,
-              maxOutputTokens: 18000
+              maxOutputTokens: 24000
             }
           })
         }
