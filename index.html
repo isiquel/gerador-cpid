@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Gerador CPID de Materiais Bíblicos</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+
+  <style>
+    :root {
+      --marrom: #4b2e1e;
+      --marrom-claro: #7a4a30;
+      --bege: #f4efe6;
+      --dourado: #c4974f;
+      --branco: #ffffff;
+      --verde: #2e7d32;
+      --vermelho: #b3261e;
+      --borda: #ddd;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bege);
+      color: #222;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--marrom), var(--marrom-claro));
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+      border-bottom: 5px solid var(--dourado);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 30px;
+    }
+
+    header p {
+      margin: 10px 0 0;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 1250px;
+      margin: 30px auto;
+      padding: 0 18px;
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 22px;
+    }
+
+    .card {
+      background: var(--branco);
+      border-radius: 14px;
+      padding: 22px;
+      box-shadow: 0 5px 18px rgba(0, 0, 0, 0.10);
+      border: 1px solid #eee;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: var(--marrom);
+      font-size: 22px;
+      border-bottom: 2px solid var(--dourado);
+      padding-bottom: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--marrom);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 7px;
+      padding: 12px;
+      border: 1px solid var(--borda);
+      border-radius: 9px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 95px;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--dourado);
+      box-shadow: 0 0 0 2px rgba(196, 151, 79, 0.18);
+    }
+
+    .linha {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 13px;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: 0.2s;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-principal {
+      background: var(--marrom);
+      color: white;
+    }
+
+    .btn-principal:hover {
+      background: var(--marrom-claro);
+    }
+
+    .btn-copiar {
+      background: var(--verde);
+      color: white;
+    }
+
+    .btn-imprimir {
+      background: #263238;
+      color: white;
+    }
+
+    .btn-limpar {
+      background: #eee;
+      color: #333;
+    }
+
+    .btn-prompt {
+      background: var(--dourado);
+      color: white;
+    }
+
+    .botoes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .aviso {
+      background: #e8f5e9;
+      color: #1b5e20;
+      border-left: 5px solid var(--verde);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      line-height: 1.4;
+    }
+
+    .ok { color: var(--verde); }
+    .erro { color: var(--vermelho); }
+
+    #resultado {
+      background: #fffdf8;
+      border: 1px solid #eadcc2;
+      border-left: 6px solid var(--dourado);
+      border-radius: 10px;
+      padding: 24px;
+      min-height: 590px;
+      line-height: 1.7;
+      font-size: 16px;
+      overflow-wrap: break-word;
+    }
+
+    #resultado h1,
+    #resultado h2,
+    #resultado h3 {
+      color: var(--marrom);
+    }
+
+    #resultado blockquote {
+      border-left: 4px solid var(--dourado);
+      padding-left: 14px;
+      color: #5d4300;
+      background: #fff8e1;
+      margin-left: 0;
+    }
+
+    .rodape {
+      text-align: center;
+      color: #6b5a4d;
+      padding: 20px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .linha { grid-template-columns: 1fr; }
+      .botoes { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: white; }
+      header, .painel, .rodape { display: none !important; }
+      .container { display: block; margin: 0; padding: 0; }
+      .card { box-shadow: none; border: none; }
+      #resultado { border: none; padding: 0; font-size: 17px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Gerador CPID de Materiais Bíblicos</h1>
+    <p>Revistas de EBD, lições bíblicas, apostilas, sermões, estudos, livros e devocionais com Gemini seguro na Vercel</p>
+  </header>
+
+  <main class="container">
+    <section class="card painel">
+      <h2>Configurar Material</h2>
+
+      <div class="aviso">
+        Modo seguro ativado: a chave Gemini não fica no HTML. Ela fica protegida na Vercel como variável de ambiente.
+      </div>
+
+      <label for="tipo">Tipo de material</label>
+      <select id="tipo">
+        <option value="Revista de EBD para professor">Revista de EBD para professor</option>
+        <option value="Revista de EBD para aluno">Revista de EBD para aluno</option>
+        <option value="Lição bíblica completa">Lição bíblica completa</option>
+        <option value="Apostila teológica">Apostila teológica</option>
+        <option value="Sermão">Sermão</option>
+        <option value="Estudo bíblico">Estudo bíblico</option>
+        <option value="Livro cristão">Livro cristão</option>
+        <option value="Devocional">Devocional</option>
+      </select>
+
+      <label for="titulo">Título</label>
+      <input id="titulo" type="text" placeholder="Ex: União" />
+
+      <label for="tema">Tema principal</label>
+      <input id="tema" type="text" placeholder="Ex: A bênção da união" />
+
+      <label for="textoBase">Texto bíblico base</label>
+      <input id="textoBase" type="text" placeholder="Ex: Salmos 133" />
+
+      <div class="linha">
+        <div>
+          <label for="publico">Público-alvo</label>
+          <select id="publico">
+            <option>Jovens</option>
+            <option>Adolescentes</option>
+            <option>Adultos</option>
+            <option>Novos Convertidos</option>
+            <option>Professores de EBD</option>
+            <option>Liderança da Igreja</option>
+            <option>Obreiros</option>
+            <option>Igreja em geral</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="linguagem">Linguagem</label>
+          <select id="linguagem">
+            <option>Pastoral, bíblica e didática</option>
+            <option>Teológica e profunda</option>
+            <option>Simples e objetiva</option>
+            <option>Jovem e dinâmica</option>
+            <option>Expositiva e doutrinária</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="linha">
+        <div>
+          <label for="quantidade">Quantidade de lições/capítulos/dias</label>
+          <input id="quantidade" type="number" min="1" max="30" value="1" />
+        </div>
+
+        <div>
+          <label for="perguntas">Perguntas por lição/capítulo</label>
+          <input id="perguntas" type="number" min="1" max="10" value="5" />
+        </div>
+      </div>
+
+      <label for="autor">Comentarista / Autor</label>
+      <input id="autor" type="text" placeholder="Ex: Pr. Isiquel Rodrigues" />
+
+      <label for="editora">Editora / Ministério</label>
+      <input id="editora" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
+
+      <label for="orientacoes">Orientações adicionais</label>
+      <textarea id="orientacoes" placeholder="Ex: crie uma mensagem bíblica forte, pastoral e bem organizada."></textarea>
+
+      <button class="btn-principal" id="btnGerar" type="button" onclick="window.gerarMaterialComGemini()">
+        Gerar Material com Gemini
+      </button>
+
+      <button class="btn-prompt" id="btnPrompt" type="button" onclick="window.mostrarPrompt()">
+        Ver Prompt Antes de Gerar
+      </button>
+
+      <div class="botoes">
+        <button class="btn-copiar" id="btnCopiar" type="button" onclick="window.copiarResultado()">Copiar Texto</button>
+        <button class="btn-imprimir" id="btnImprimir" type="button" onclick="window.print()">Imprimir / Salvar PDF</button>
+      </div>
+
+      <button class="btn-limpar" id="btnLimpar" type="button" onclick="window.limparTudo()">Limpar Tudo</button>
+
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="card">
+      <h2>Material Gerado</h2>
+      <div id="resultado">
+        O resultado aparecerá aqui. Preencha os campos e clique em “Gerar Material com Gemini”.
+      </div>
+    </section>
+  </main>
+
+  <div class="rodape">
+    Gerador CPID de Materiais Bíblicos — Modo seguro com Vercel Functions.
+  </div>
+
+  <script>
+    window.onload = function () {
+      mostrarStatus("Aplicativo carregado em modo seguro.", "ok");
+    };
+
+    window.onerror = function (mensagem, arquivo, linha, coluna, erro) {
+      const painel = document.getElementById("resultado");
+      const status = document.getElementById("status");
+
+      if (painel) {
+        painel.innerText =
+          "Erro no JavaScript:\n\n" +
+          mensagem +
+          "\n\nLinha: " + linha +
+          "\nColuna: " + coluna;
+      }
+
+      if (status) {
+        status.innerText = "Erro no código. Veja o painel de resultado.";
+        status.className = "status erro";
+      }
+
+      return false;
+    };
+
+    function valor(id) {
+      const campo = document.getElementById(id);
+      return campo ? campo.value.trim() : "";
+    }
+
+    function mostrarStatus(mensagem, tipo) {
+      const status = document.getElementById("status");
+
+      if (status) {
+        status.innerText = mensagem;
+        status.className = "status " + tipo;
+      }
+    }
+
+    function criarEstruturaPorTipo(tipo) {
+      if (tipo === "Sermão") {
+        return `
+GERE SOMENTE UM SERMÃO.
+
+Estrutura obrigatória:
+# Título do Sermão
+# Texto Base
+# Tema
+# Introdução
+# Proposição
+# Frase de Transição
+# I - Primeiro ponto
+# II - Segundo ponto
+# III - Terceiro ponto
+# Aplicação para a Igreja
+# Conclusão
+# Apelo
+
+Regras específicas:
+- Não faça capa de revista.
+- Não faça sumário de revista.
+- Não coloque perguntas de EBD, a menos que eu peça nas orientações.
+- Use linguagem de púlpito, pastoral, espiritual e bíblica.
+- Desenvolva bem cada ponto.
+- Inclua aplicações práticas para a vida cristã.
+`;
+      }
+
+      if (tipo === "Devocional") {
+        return `
+GERE SOMENTE UM DEVOCIONAL.
+
+Se a quantidade for 1, crie um devocional único.
+Se a quantidade for maior que 1, crie uma sequência de devocionais conforme a quantidade informada.
+
+Estrutura obrigatória para cada devocional:
+# Devocional
+## Título
+## Texto Bíblico
+## Meditação
+## Aplicação do Dia
+## Pergunta para Reflexão
+## Oração
+
+Regras específicas:
+- Não faça formato de revista.
+- Não faça sumário, texto áureo ou verdade prática.
+- Não faça tópicos longos como sermão.
+- Use linguagem íntima, pastoral, devocional e reflexiva.
+- A meditação deve tocar o coração e conduzir à oração.
+`;
+      }
+
+      if (tipo === "Estudo bíblico") {
+        return `
+GERE SOMENTE UM ESTUDO BÍBLICO.
+
+Estrutura obrigatória:
+# Título do Estudo
+# Texto Base
+# Objetivo do Estudo
+# Introdução
+# Contexto Bíblico
+# Explicação do Texto
+# Ensinamentos Principais
+# Aplicações Práticas
+# Perguntas para Discussão
+# Conclusão
+
+Regras específicas:
+- Não faça formato de revista de EBD.
+- O foco deve ser ensino, explicação bíblica e aplicação.
+- Use linguagem clara, didática e bíblica.
+`;
+      }
+
+      if (tipo === "Livro cristão") {
+        return `
+GERE SOMENTE UM LIVRO CRISTÃO.
+
+A quantidade informada deve ser entendida como quantidade de capítulos.
+
+Estrutura obrigatória:
+# Capa Textual
+# Título
+# Autor
+# Editora / Ministério
+# Apresentação
+# Prefácio
+# Sumário
+
+Cada capítulo deve ter:
+- Título do capítulo
+- Introdução do capítulo
+- Desenvolvimento bíblico e pastoral
+- Aplicações práticas
+- Conclusão do capítulo
+
+Finalize com:
+# Conclusão Geral
+# Palavra Final ao Leitor
+
+Regras específicas:
+- Não faça formato de revista de EBD.
+- Não coloque texto áureo, verdade prática e revisão de conteúdo.
+- Escreva com estilo de livro cristão, organizado, profundo e pastoral.
+`;
+      }
+
+      if (tipo === "Apostila teológica") {
+        return `
+GERE SOMENTE UMA APOSTILA TEOLÓGICA.
+
+A quantidade informada deve ser entendida como quantidade de aulas ou capítulos.
+
+Estrutura obrigatória:
+# Capa Textual
+# Título da Apostila
+# Autor
+# Editora / Ministério
+# Apresentação
+# Ementa
+# Objetivo Geral
+# Objetivos Específicos
+# Sumário
+
+Para cada aula ou capítulo:
+## Aula / Capítulo
+## Tema da Aula
+## Texto Bíblico Base
+## Introdução
+## Desenvolvimento Teológico
+## Fundamentação Bíblica
+## Aplicação Ministerial
+## Resumo da Aula
+## Exercícios de Fixação
+
+Finalize com:
+# Conclusão Geral
+# Bibliografia Bíblica Sugerida
+`;
+      }
+
+      if (tipo === "Revista de EBD para professor") {
+        return `
+GERE SOMENTE UMA REVISTA DE EBD PARA PROFESSOR.
+
+A quantidade informada deve ser entendida como quantidade de lições.
+
+Estrutura obrigatória:
+# Capa Textual
+# Título da Revista
+# Tema do Trimestre
+# Comentarista
+# Editora / Ministério
+# Apresentação
+# Sumário
+
+Para cada lição:
+## Lição
+## Título da Lição
+## Texto Áureo
+## Verdade Prática
+## Leitura Bíblica em Classe
+## Objetivos da Lição
+## Palavra-chave
+## Introdução
+## I - Primeiro tópico
+## II - Segundo tópico
+## III - Terceiro tópico
+## Auxílio ao Professor
+## Aplicação Pessoal
+## Sinopse da Lição
+## Conclusão
+## Revisando o Conteúdo
+
+No Revisando o Conteúdo:
+- Inclua perguntas e respostas.
+- A quantidade de perguntas deve seguir o campo informado.
+`;
+      }
+
+      if (tipo === "Revista de EBD para aluno") {
+        return `
+GERE SOMENTE UMA REVISTA DE EBD PARA ALUNO.
+
+A quantidade informada deve ser entendida como quantidade de lições.
+
+Estrutura obrigatória:
+# Capa Textual
+# Título da Revista
+# Tema do Trimestre
+# Editora / Ministério
+# Apresentação
+# Sumário
+
+Para cada lição:
+## Lição
+## Título da Lição
+## Texto Áureo
+## Verdade Prática
+## Leitura Bíblica em Classe
+## Objetivos da Lição
+## Introdução
+## I - Primeiro tópico
+## II - Segundo tópico
+## III - Terceiro tópico
+## Aplicação Pessoal
+## Conclusão
+## Revisando o Conteúdo
+
+No Revisando o Conteúdo:
+- Inclua somente as perguntas.
+- Não inclua respostas.
+`;
+      }
+
+      if (tipo === "Lição bíblica completa") {
+        return `
+GERE SOMENTE UMA LIÇÃO BÍBLICA COMPLETA.
+
+Estrutura obrigatória:
+# Título da Lição
+# Texto Áureo
+# Verdade Prática
+# Leitura Bíblica em Classe
+# Objetivos da Lição
+# Introdução
+# I - Primeiro tópico
+# II - Segundo tópico
+# III - Terceiro tópico
+# Aplicação Pessoal
+# Sinopse da Lição
+# Conclusão
+# Revisando o Conteúdo
+
+No Revisando o Conteúdo:
+- Inclua perguntas e respostas conforme a quantidade informada.
+`;
+      }
+
+      return "GERE UM MATERIAL BÍBLICO ORGANIZADO, ORIGINAL, PASTORAL E DIDÁTICO.";
+    }
+
+    function criarPromptTexto() {
+      const tipo = valor("tipo");
+      const titulo = valor("titulo") || "Material Bíblico";
+      const tema = valor("tema") || "Tema bíblico a definir";
+      const textoBase = valor("textoBase") || "Texto bíblico a definir";
+      const publico = valor("publico") || "Igreja em geral";
+      const linguagem = valor("linguagem") || "Pastoral, bíblica e didática";
+      const quantidade = valor("quantidade") || "1";
+      const perguntas = valor("perguntas") || "5";
+      const autor = valor("autor") || "Comentarista a definir";
+      const editora = valor("editora") || "CPID - Casa Publicadora da Igreja de Deus";
+      const orientacoes = valor("orientacoes") || "Sem orientações adicionais.";
+      const estrutura = criarEstruturaPorTipo(tipo);
+
+      return `
+Você é um assistente editorial cristão, bíblico, teológico e pastoral.
+
+Crie o material conforme as informações abaixo.
+
+TIPO DE MATERIAL:
+${tipo}
+
+TÍTULO:
+${titulo}
+
+TEMA PRINCIPAL:
+${tema}
+
+TEXTO BÍBLICO BASE:
+${textoBase}
+
+PÚBLICO-ALVO:
+${publico}
+
+LINGUAGEM:
+${linguagem}
+
+QUANTIDADE DE LIÇÕES, CAPÍTULOS OU DIAS:
+${quantidade}
+
+PERGUNTAS POR LIÇÃO OU CAPÍTULO:
+${perguntas}
+
+COMENTARISTA / AUTOR:
+${autor}
+
+EDITORA / MINISTÉRIO:
+${editora}
+
+ORIENTAÇÕES ADICIONAIS:
+${orientacoes}
+
+REGRAS GERAIS:
+1. Escreva em português do Brasil.
+2. Use linguagem bíblica, pastoral, reverente, didática e organizada.
+3. Crie conteúdo original.
+4. Não mencione CPAD.
+5. Use referências bíblicas coerentes.
+6. Evite frases genéricas demais; aprofunde os tópicos.
+7. Mantenha fidelidade bíblica, doutrinária e aplicação prática.
+8. Não invente citações de autores.
+9. Use a Bíblia como base principal.
+10. Use formatação em Markdown com títulos e subtítulos.
+11. Respeite exatamente o tipo de material escolhido.
+12. Não misture estrutura de revista, sermão, livro, apostila, estudo e devocional.
+
+ESTRUTURA ESPECÍFICA PARA ESTE TIPO DE MATERIAL:
+${estrutura}
+
+Agora gere o material completo.
+      `;
+    }
+
+    function renderizarResultado(texto) {
+      const painel = document.getElementById("resultado");
+
+      if (typeof marked !== "undefined" && typeof DOMPurify !== "undefined") {
+        const htmlConvertido = marked.parse(texto);
+        const htmlSeguro = DOMPurify.sanitize(htmlConvertido);
+        painel.innerHTML = htmlSeguro;
+      } else {
+        painel.innerText = texto;
+      }
+    }
+
+    window.gerarMaterialComGemini = async function () {
+      const painel = document.getElementById("resultado");
+      const botao = document.getElementById("btnGerar");
+
+      const titulo = valor("titulo");
+      const tema = valor("tema");
+
+      if (!titulo && !tema) {
+        alert("Preencha pelo menos o título ou o tema.");
+        return;
+      }
+
+      botao.disabled = true;
+      botao.innerText = "Gerando...";
+      painel.innerText = "Enviando pedido para o servidor seguro da Vercel...";
+      mostrarStatus("Gerando material com segurança...", "ok");
+
+      try {
+        const resposta = await fetch("/api/gerar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            prompt: criarPromptTexto()
+          })
+        });
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok || !dados.sucesso) {
+          throw new Error(dados.erro || "Erro ao gerar material.");
+        }
+
+        renderizarResultado(dados.texto);
+        mostrarStatus("Material gerado com sucesso usando: " + dados.modelo, "ok");
+
+      } catch (erro) {
+        painel.innerText =
+          "Erro ao gerar material:\n\n" +
+          erro.message +
+          "\n\nVerifique:\n" +
+          "1. Se o arquivo api/gerar.js existe.\n" +
+          "2. Se a variável GEMINI_API_KEY foi configurada na Vercel.\n" +
+          "3. Se você fez novo deploy depois de configurar a variável.\n" +
+          "4. Se a chave do Gemini está ativa.";
+
+        mostrarStatus("Erro ao gerar. Veja a mensagem no painel.", "erro");
+
+      } finally {
+        botao.disabled = false;
+        botao.innerText = "Gerar Material com Gemini";
+      }
+    };
+
+    window.mostrarPrompt = function () {
+      document.getElementById("resultado").innerText = criarPromptTexto();
+      mostrarStatus("Prompt exibido.", "ok");
+    };
+
+    window.copiarResultado = async function () {
+      const texto = document.getElementById("resultado").innerText;
+
+      try {
+        await navigator.clipboard.writeText(texto);
+        mostrarStatus("Texto copiado com sucesso.", "ok");
+      } catch (erro) {
+        mostrarStatus("Não foi possível copiar automaticamente.", "erro");
+      }
+    };
+
+    window.limparTudo = function () {
+      ["titulo", "tema", "textoBase", "autor", "orientacoes"].forEach(function (id) {
+        const campo = document.getElementById(id);
+        if (campo) campo.value = "";
+      });
+
+      document.getElementById("quantidade").value = "1";
+      document.getElementById("perguntas").value = "5";
+      document.getElementById("editora").value = "CPID - Casa Publicadora da Igreja de Deus";
+      document.getElementById("resultado").innerText =
+        "O resultado aparecerá aqui. Preencha os campos e clique em “Gerar Material com Gemini”.";
+
+      mostrarStatus("Campos limpos.", "ok");
+    };
+  </script>
+</body>
+</html>
