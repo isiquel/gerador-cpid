@@ -157,7 +157,10 @@ REGRAS OBRIGATÓRIAS:
 8. O conteúdo precisa ser bíblico, profundo, pastoral, claro e aplicável.
 9. Não use aspas duplas dentro dos textos, a não ser que estejam escapadas corretamente.
 10. Evite caracteres que quebrem JSON.
-11. Não use travessões longos demais, símbolos decorativos ou listas enormes dentro de um único campo.
+11. Não use símbolos decorativos, caracteres estranhos ou listas enormes dentro de um único campo.
+12. Não invente citações literais de autores.
+13. Não invente número de página, editora ou frase exata de livro.
+14. Quando citar autores, cite apenas como referência de aprofundamento, sem aspas diretas.
 `.trim();
 }
 
@@ -181,8 +184,10 @@ REGRAS:
 2. Deve ter exatamente 4 lições, uma por semana.
 3. Cada título de lição deve seguir o tema geral.
 4. A revista do aluno e a revista do professor devem ter a mesma linha temática.
-5. O conteúdo deve seguir linha bíblica conservadora e pentecostal clássica quando envolver Espírito Santo, dons, igreja e escatologia.
-6. A apresentação deve ser boa, mas objetiva, com no máximo 220 palavras.
+5. O conteúdo deve seguir linha bíblica conservadora.
+6. Em temas sobre Espírito Santo, dons espirituais, igreja, santificação, escatologia e missão, siga o pentecostalismo clássico.
+7. A apresentação deve ser boa, mas objetiva, com no máximo 220 palavras.
+8. O texto deve ter linguagem de revista bíblica séria, pastoral e doutrinária.
 
 FORMATO JSON:
 {
@@ -219,17 +224,29 @@ function promptRevistaLicao(form, compacto) {
 REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
 1. O conteúdo principal da lição deve continuar profundo.
 2. As respostas das perguntas devem ser objetivas, com no máximo 35 palavras cada.
-3. Orientações para o professor: máximo 80 palavras.
-4. Sugestão de abordagem em classe: máximo 80 palavras.
-5. Observação pastoral: máximo 70 palavras.
+3. Orientações para o professor: máximo 90 palavras.
+4. Sugestão de abordagem em classe: máximo 90 palavras.
+5. Observação pastoral: máximo 80 palavras.
 6. Não repita o conteúdo dos tópicos nas orientações do professor.
-7. Não escreva comentários longos demais nos campos teacherNotes, classApproach e pastoralObservation.
+7. Acrescente apoio doutrinário seguro dentro de teacherNotes ou pastoralObservation.
+8. O apoio doutrinário pode mencionar, de forma geral e sem citação direta:
+   - teologia sistemática pentecostal;
+   - comentários bíblicos conservadores;
+   - hermenêutica bíblica;
+   - doutrina da salvação;
+   - doutrina do Espírito Santo;
+   - escatologia pentecostal clássica;
+   - eclesiologia bíblica.
+9. Quando útil, mencione autores seguros apenas como indicação geral de aprofundamento, sem inventar frase, página ou citação literal.
+10. Autores possíveis para aprofundamento, conforme o tema: Stanley Horton, Myer Pearlman, Antônio Gilberto, Eurico Bergstén, Donald Stamps, Wayne Grudem, Louis Berkhof, Millard Erickson, Norman Geisler, Hernandes Dias Lopes, John Stott, F. F. Bruce, Gordon Fee.
+11. Não cite todos os autores em toda lição. Use no máximo 2 ou 3 nomes quando fizer sentido.
 `
     : `
 REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
 1. Não inclua gabarito.
 2. Não inclua orientação interna do professor.
 3. As perguntas devem vir sem respostas.
+4. A versão do aluno deve continuar bem explicada, bíblica e profunda.
 `;
 
   const limites = compacto
@@ -242,6 +259,7 @@ MODO COMPACTO DE SEGURANÇA:
 5. Conclusão: 70 a 100 palavras.
 6. Leitura bíblica em classe: no máximo 4 versículos.
 7. Perguntas e respostas: objetivas.
+8. Mesmo no modo compacto, inclua referências bíblicas de apoio.
 `
     : `
 LIMITES DE TAMANHO:
@@ -275,12 +293,24 @@ REGRAS DA LIÇÃO:
 3. Deve seguir padrão de revista de EBD.
 4. Deve conter exatamente 3 tópicos principais.
 5. Cada tópico principal deve conter exatamente 3 subtópicos.
-6. Cada subtópico deve conter título, referência bíblica relacionada, explicação bíblica e aplicação prática.
-7. A revista do aluno também deve ser completa, explicativa e profunda.
-8. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
-9. Use como padrão textual a King James Fiel 1611.
-10. Siga linha bíblica conservadora e pentecostal clássica quando envolver Espírito Santo, dons, igreja e escatologia.
-11. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+6. Cada tópico principal deve ter uma abertura explicativa.
+7. Cada subtópico deve conter:
+   - título;
+   - referência bíblica principal;
+   - explicação bíblica;
+   - aplicação prática;
+   - referências bíblicas de apoio dentro do próprio texto.
+8. Em cada subtópico, inclua de 2 a 4 referências bíblicas de apoio, somente as referências, sem transcrever o texto completo.
+9. Use no conteúdo frases como: Referências de apoio: João 3.16; Romanos 5.1; Efésios 2.8-9.
+10. Não encha a lição de versículos soltos sem explicar. As referências precisam apoiar a ideia ensinada.
+11. A revista do aluno também deve ser completa, explicativa e profunda.
+12. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
+13. Use como padrão textual a King James Fiel 1611.
+14. Siga linha bíblica conservadora.
+15. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
+16. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+17. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
+18. Priorize fidelidade bíblica, clareza, ortodoxia e aplicação pastoral.
 
 ${limites}
 
@@ -306,27 +336,72 @@ FORMATO JSON:
       "title": "",
       "content": "",
       "subtopics": [
-        { "title": "", "reference": "", "content": "" },
-        { "title": "", "reference": "", "content": "" },
-        { "title": "", "reference": "", "content": "" }
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        }
       ]
     },
     {
       "title": "",
       "content": "",
       "subtopics": [
-        { "title": "", "reference": "", "content": "" },
-        { "title": "", "reference": "", "content": "" },
-        { "title": "", "reference": "", "content": "" }
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        }
       ]
     },
     {
       "title": "",
       "content": "",
       "subtopics": [
-        { "title": "", "reference": "", "content": "" },
-        { "title": "", "reference": "", "content": "" },
-        { "title": "", "reference": "", "content": "" }
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "supportReferences": ["", "", ""],
+          "content": ""
+        }
       ]
     }
   ],
@@ -334,6 +409,8 @@ FORMATO JSON:
   "teacherNotes": "",
   "classApproach": "",
   "pastoralObservation": "",
+  "doctrinalSupport": "",
+  "recommendedDeepening": ["", "", ""],
   "studentNotesSpace": "",
   "conclusion": "",
   "questionsAndAnswers": [
@@ -356,6 +433,13 @@ Não faça parecer e-book, livro ou revista.
 
 ${baseDados(form, "Sermão cristão")}
 ${regrasJson()}
+
+REGRAS:
+1. O sermão deve ser bíblico, profundo e pregável.
+2. Cada ponto deve ter base bíblica clara.
+3. Inclua referências bíblicas de apoio em cada ponto.
+4. Não crie um texto com cara de e-book.
+5. Não coloque dados editoriais.
 
 ESTRUTURA:
 - Título.
@@ -414,6 +498,12 @@ Crie um LIVRO CRISTÃO com tom literário, maduro e capítulos densos.
 ${baseDados(form, "Livro cristão")}
 ${regrasJson()}
 
+REGRAS:
+1. Livro não é e-book.
+2. Use linguagem literária, pastoral e bíblica.
+3. Cada capítulo deve ter várias referências bíblicas de apoio.
+4. Não exagere em citações externas.
+
 FORMATO JSON:
 {
   "type": "livro",
@@ -456,6 +546,12 @@ Crie um E-BOOK CRISTÃO moderno, prático, profundo e organizado.
 
 ${baseDados(form, "E-book cristão")}
 ${regrasJson()}
+
+REGRAS:
+1. E-book deve ser moderno, claro e prático.
+2. Cada capítulo deve ter base bíblica.
+3. Inclua referências bíblicas de apoio em cada capítulo.
+4. Não faça parecer revista de EBD.
 
 FORMATO JSON:
 {
@@ -503,6 +599,11 @@ Crie um DEVOCIONAL CRISTÃO curto, bíblico, reflexivo e aplicável.
 ${baseDados(form, "Devocional cristão")}
 ${regrasJson()}
 
+REGRAS:
+1. Devocional deve ser curto e direto.
+2. Cada dia deve ter versículo, reflexão, aplicação e oração.
+3. Não faça parecer revista ou sermão.
+
 FORMATO JSON:
 {
   "type": "devocional",
@@ -540,6 +641,11 @@ Crie um ESTUDO BÍBLICO/TEOLÓGICO didático, analítico e bíblico.
 ${baseDados(form, "Estudo bíblico/teológico")}
 ${regrasJson()}
 
+REGRAS:
+1. O estudo deve ser bíblico, analítico e pastoral.
+2. Inclua referências bíblicas de apoio em cada parte.
+3. Quando necessário, explique termos doutrinários com clareza.
+
 FORMATO JSON:
 {
   "type": "estudo",
@@ -574,6 +680,12 @@ Crie um CURSO CRISTÃO em formato de aulas.
 
 ${baseDados(form, "Curso cristão")}
 ${regrasJson()}
+
+REGRAS:
+1. O curso deve ser didático.
+2. Cada aula deve ter objetivo, introdução, conteúdo, atividade e resumo.
+3. Inclua referências bíblicas de apoio em cada aula.
+4. Mantenha linguagem clara para ensino em igreja local.
 
 FORMATO JSON:
 {
