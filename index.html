@@ -348,6 +348,41 @@
       font-size: 23px;
     }
 
+    .topico-revista {
+      margin-top: 26px;
+      padding: 24px;
+      border: 1px solid #e6d8c7;
+      border-radius: 18px;
+      background: #fffdf9;
+    }
+
+    .topico-revista h3 {
+      margin: 0 0 12px;
+      color: var(--marrom);
+      font-size: 24px;
+    }
+
+    .subtopico-revista {
+      margin-top: 16px;
+      padding: 16px;
+      border-left: 5px solid var(--dourado);
+      background: #fff;
+      border-radius: 12px;
+    }
+
+    .subtopico-revista h4 {
+      margin: 0 0 8px;
+      color: #3a2a1c;
+      font-size: 19px;
+    }
+
+    .referencia {
+      font-size: 14px;
+      color: #7b5a39;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
     .lista {
       padding-left: 22px;
       font-size: 17px;
@@ -565,7 +600,7 @@
 
       <div class="card-body">
         <div class="aviso">
-          Revista atualizada: agora você pode escolher versão do professor ou aluno, com leitura bíblica em classe completa.
+          Revista mensal atualizada: 4 lições, 3 tópicos por lição e 3 subtópicos por tópico.
         </div>
 
         <div class="prompt-box">
@@ -827,10 +862,11 @@
       }
 
       if (tipo === "revista") {
-        el("labelQuantidade").innerText = "Lições";
+        el("labelQuantidade").innerText = "Lições mensais";
+        el("quantity").value = "4";
         el("campoRevistaVersao").classList.remove("campo-oculto");
         el("campoTraducaoBiblica").classList.remove("campo-oculto");
-        setStatus("Modo Revista: escolha professor ou aluno. A leitura bíblica virá com referência e texto completo.", "ok");
+        setStatus("Modo Revista Mensal: 4 lições, 3 tópicos por lição e 3 subtópicos por tópico.", "ok");
       }
     }
 
@@ -846,7 +882,7 @@
         subtitle: valor("subtitle"),
         theme: valor("theme"),
         biblicalBase: valor("biblicalBase"),
-        quantity: tipo === "sermao" ? 1 : Number(valor("quantity") || 1),
+        quantity: tipo === "sermao" ? 1 : tipo === "revista" ? 4 : Number(valor("quantity") || 1),
         targetAudience: valor("targetAudience"),
         author: valor("author"),
         ministry: valor("ministry"),
@@ -1284,6 +1320,8 @@
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
 
               <div class="chips">
+                <span class="chip">Revista mensal</span>
+                <span class="chip">4 lições</span>
                 <span class="chip">${isAluno ? "Versão do aluno" : "Versão do professor"}</span>
                 <span class="chip">${escapeHtml(m.bibleVersion || "King James Fiel 1611")}</span>
               </div>
@@ -1324,12 +1362,7 @@
                   ${divTexto(l.introduction)}
                 </div>
 
-                ${(l.topics || []).map(t => `
-                  <div class="bloco">
-                    <h3>${escapeHtml(t.title)}</h3>
-                    ${divTexto(t.content)}
-                  </div>
-                `).join("")}
+                ${renderTopicosRevista(l)}
 
                 <div class="bloco">
                   <h3>Aplicação para a vida</h3>
@@ -1345,6 +1378,11 @@
                   <div class="bloco">
                     <h3>Sugestão de abordagem em classe</h3>
                     ${divTexto(l.classApproach)}
+                  </div>
+
+                  <div class="bloco">
+                    <h3>Observação pastoral</h3>
+                    ${divTexto(l.pastoralObservation)}
                   </div>
                 ` : `
                   <div class="bloco">
@@ -1377,6 +1415,28 @@
           </section>
         </article>
       `;
+    }
+
+    function renderTopicosRevista(l) {
+      return (l.topics || []).map((t, index) => `
+        <div class="topico-revista">
+          <h3>${numeroRomano(index + 1)}. ${escapeHtml(t.title || "")}</h3>
+          ${divTexto(t.content || "")}
+
+          ${(t.subtopics || []).map((s, subIndex) => `
+            <div class="subtopico-revista">
+              <h4>${subIndex + 1}. ${escapeHtml(s.title || "")}</h4>
+              ${s.reference ? `<div class="referencia">Referência bíblica: ${escapeHtml(s.reference)}</div>` : ""}
+              ${divTexto(s.content || "")}
+            </div>
+          `).join("")}
+        </div>
+      `).join("");
+    }
+
+    function numeroRomano(num) {
+      const romanos = ["I", "II", "III", "IV", "V"];
+      return romanos[num - 1] || String(num);
     }
 
     function renderLeituraBiblica(l) {
@@ -1464,8 +1524,6 @@
           padding: 0;
           page-break-after: auto;
           break-after: auto;
-          page-break-before: auto;
-          break-before: auto;
           page-break-inside: auto;
           break-inside: auto;
         }
@@ -1550,7 +1608,8 @@
           white-space: pre-line;
         }
 
-        .bloco {
+        .bloco,
+        .topico-revista {
           margin-top: 9px;
           padding: 10px 12px;
           border: 1px solid #ddd;
@@ -1560,12 +1619,34 @@
           break-inside: auto;
         }
 
-        .bloco h3 {
+        .bloco h3,
+        .topico-revista h3 {
           margin: 0 0 5px;
           color: #5b3a24;
           font-size: 16px;
           page-break-after: avoid;
           break-after: avoid;
+        }
+
+        .subtopico-revista {
+          margin-top: 8px;
+          padding: 8px 10px;
+          border-left: 4px solid #c79b58;
+          background: #fff;
+          border-radius: 8px;
+        }
+
+        .subtopico-revista h4 {
+          margin: 0 0 5px;
+          color: #333;
+          font-size: 14.5px;
+        }
+
+        .referencia {
+          font-size: 12px;
+          color: #7b5a39;
+          font-weight: bold;
+          margin-bottom: 5px;
         }
 
         .lista {
@@ -1767,10 +1848,10 @@
     function preencherTeste() {
       el("materialType").value = "revista";
       el("title").value = "Doutrinas Fundamentais da Fé Cristã";
-      el("subtitle").value = "Lições bíblicas profundas para formação espiritual e doutrinária";
-      el("theme").value = "Crie uma revista de ensino bíblico profunda, pastoral e doutrinária, com lições organizadas para ensinar os fundamentos da fé cristã. A revista deve trazer texto áureo, verdade prática, leitura bíblica em classe com referência e texto completo, objetivos, introdução, tópicos desenvolvidos, aplicação para a vida, conclusão e revisão do conteúdo. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons espirituais, igreja e escatologia, siga o pentecostalismo clássico.";
+      el("subtitle").value = "Revista mensal com quatro lições para formação espiritual e doutrinária";
+      el("theme").value = "Crie uma revista mensal de ensino bíblico profunda, pastoral e doutrinária, com quatro lições, uma para cada semana do mês. Cada lição deve seguir o padrão de EBD, contendo texto áureo, verdade prática, leitura bíblica em classe com referência e texto completo, objetivos, introdução, três tópicos principais e três subtópicos dentro de cada tópico. Cada subtópico deve ser bem explicado, com profundidade bíblica, referência bíblica relacionada e aplicação prática. A revista do aluno também deve ser completa, explicativa e profunda, sem respostas e sem orientações internas do professor. A revista do professor deve conter respostas, orientações didáticas e sugestões de abordagem em classe. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons espirituais, igreja e escatologia, siga o pentecostalismo clássico.";
       el("biblicalBase").value = "2 Timóteo 3.16-17; Atos 1.8; Atos 2.1-4; Romanos 10.9-17; Mateus 28.18-20";
-      el("quantity").value = "3";
+      el("quantity").value = "4";
       el("targetAudience").value = "Professores, alunos da EBD, obreiros, líderes e membros da igreja";
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
@@ -1782,7 +1863,7 @@
       el("bibleVersion").value = "King James Fiel 1611";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste de revista preenchido. Escolha professor ou aluno e clique em Gerar material.", "ok");
+      setStatus("Teste de revista mensal preenchido. Escolha professor ou aluno e clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
