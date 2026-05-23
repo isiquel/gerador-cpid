@@ -2,7 +2,8 @@ module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
       ok: false,
-      error: "Método não permitido. Use POST."
+      error: "Método não permitido. Use POST.",
+      fallback: buildFallbackSvg("Método não permitido. Use POST.", "Imagem não gerada")
     });
   }
 
@@ -13,26 +14,20 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({
         ok: false,
         error: "A variável GEMINI_API_KEY não foi encontrada.",
-        fallback: buildFallbackSvg("Chave do Gemini não encontrada.", "Erro")
+        fallback: buildFallbackSvg("A variável GEMINI_API_KEY não foi encontrada na Vercel.", "Erro de configuração")
       });
     }
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
-
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
     const prompt = String(body.prompt || "").trim();
 
     if (!prompt) {
       return res.status(400).json({
         ok: false,
         error: "Prompt de imagem vazio.",
-        fallback: buildFallbackSvg("Prompt de imagem vazio.", "Imagem")
+        fallback: buildFallbackSvg("Prompt de imagem vazio.", "Imagem não gerada")
       });
     }
-
-    const modelCandidates = [
-      process.env.GEMINI_IMAGE_MODEL_1 || "gemini-3.1-flash-image-preview",
-      process.env.GEMINI_IMAGE_MODEL_2 || "gemini-2.5-flash-image"
-    ].filter(Boolean);
 
     const finalPrompt = buildImagePrompt({
       prompt,
@@ -41,12 +36,17 @@ module.exports = async function handler(req, res) {
       visualStyle: body.visualStyle || "colorido"
     });
 
+    const models = [
+      process.env.GEMINI_IMAGE_MODEL_1 || "gemini-2.0-flash-preview-image-generation",
+      process.env.GEMINI_IMAGE_MODEL_2 || "gemini-2.5-flash-image-preview",
+      process.env.GEMINI_IMAGE_MODEL_3 || "gemini-3.0-flash-image-preview",
+      process.env.GEMINI_IMAGE_MODEL_4 || "gemini-3.1-flash-image-preview"
+    ].filter(Boolean);
+
     const result = await callImageModels({
       apiKey,
-      models: modelCandidates,
-      prompt: finalPrompt,
-      aspectRatio: body.aspectRatio || "4:3",
-      imageSize: body.imageSize || "512"
+      models,
+      prompt: finalPrompt
     });
 
     return res.status(200).json({
@@ -61,41 +61,46 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({
       ok: false,
       error: error.message || "Erro ao gerar imagem.",
-      fallback: buildFallbackSvg(error.message || "Imagem não gerada.", "Falha na imagem")
+      fallback: buildFallbackSvg(
+        error.message || "A imagem não foi retornada pela API.",
+        "Falha na imagem"
+      )
     });
   }
 };
 
 function buildImagePrompt({ prompt, title, theme, visualStyle }) {
-  const color =
+  const style =
     String(visualStyle).toLowerCase().includes("preto")
-      ? "paleta monocromática elegante, alto contraste, aparência editorial refinada"
+      ? "paleta monocromática elegante, alto contraste, refinada, editorial"
       : "cores vivas, bonitas, sofisticadas, iluminação suave, aparência premium";
 
   return `
 Crie uma imagem editorial cristã profissional para um e-book.
 
-Tema do e-book: ${title}
-Assunto: ${theme}
+Título do e-book: ${title}
+Tema: ${theme}
 
-Descrição da imagem:
+Descrição principal da imagem:
 ${prompt}
 
 Requisitos visuais:
-- ${color}
-- composição moderna e bonita
-- atmosfera espiritual, reverente e acolhedora
+- ${style}
+- composição moderna, bonita e profissional
+- atmosfera espiritual, reverente, emocional e acolhedora
 - aparência de capa ou ilustração de e-book premium
 - sem texto escrito dentro da imagem
 - sem letras
 - sem palavras
 - sem logotipo
 - sem marca d'água
-- imagem limpa, forte, emocional e inspiradora
+- imagem limpa, forte, inspiradora e bem iluminada
+- proporção horizontal quando for imagem de capítulo
+- proporção vertical/editorial quando for imagem de capa
 `.trim();
 }
 
-async function callImageModels({ apiKey, models, prompt, aspectRatio, imageSize }) {
+async function callImageModels({ apiKey, models, prompt }) {
   let lastError = null;
 
   for (const model of models) {
@@ -110,17 +115,15 @@ async function callImageModels({ apiKey, models, prompt, aspectRatio, imageSize 
           body: JSON.stringify({
             contents: [
               {
-                parts: [{ text: prompt }]
+                parts: [
+                  {
+                    text: prompt
+                  }
+                ]
               }
             ],
             generationConfig: {
-              responseModalities: ["IMAGE"],
-              responseFormat: {
-                image: {
-                  aspectRatio,
-                  imageSize
-                }
-              }
+              responseModalities: ["TEXT", "IMAGE"]
             }
           })
         }
@@ -184,17 +187,23 @@ function buildFallbackSvg(message, title) {
       <stop offset="100%" stop-color="#8c6239"/>
     </linearGradient>
   </defs>
+
   <rect width="1200" height="900" rx="36" fill="url(#g)"/>
+
   <circle cx="190" cy="160" r="90" fill="rgba(255,255,255,0.25)"/>
   <circle cx="1010" cy="180" r="130" fill="rgba(255,255,255,0.18)"/>
   <circle cx="920" cy="700" r="100" fill="rgba(255,255,255,0.14)"/>
+
   <rect x="90" y="120" width="1020" height="660" rx="36" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.55)" stroke-width="3"/>
+
   <text x="140" y="225" font-family="Arial" font-size="44" font-weight="bold" fill="#5b3a24">${safeTitle}</text>
+
   <foreignObject x="140" y="280" width="900" height="340">
     <div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Arial;font-size:30px;line-height:1.45;color:#5b3a24;">
       ${safeMsg}
     </div>
   </foreignObject>
+
   <text x="140" y="715" font-family="Arial" font-size="26" font-weight="bold" fill="#5b3a24">VERBO IA</text>
 </svg>`.trim();
 
