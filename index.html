@@ -11,8 +11,6 @@
       --marrom: #5b3a24;
       --marrom2: #7a4f2f;
       --dourado: #c79b58;
-      --bege: #f6efe6;
-      --papel: #ffffff;
       --texto: #222;
       --muted: #666;
       --linha: #ddd;
@@ -480,39 +478,17 @@
     }
 
     @media print {
-      @page {
-        size: A4;
-        margin: 0;
-      }
-
-      html,
-      body {
-        background: white !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        overflow: visible !important;
-      }
-
       header,
       .painel,
       .card-head {
         display: none !important;
       }
 
-      .container {
-        display: block !important;
-        max-width: none !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: visible !important;
+      body {
+        background: white !important;
       }
 
+      .container,
       .card,
       .card-body,
       #resultado {
@@ -528,77 +504,6 @@
         padding: 0 !important;
         margin: 0 !important;
         background: white !important;
-      }
-
-      .doc {
-        display: block !important;
-        max-width: none !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        gap: 0 !important;
-        overflow: visible !important;
-      }
-
-      .pagina {
-        display: block !important;
-        width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
-        overflow: visible !important;
-        border: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        margin: 0 !important;
-        background: white !important;
-        page-break-after: always;
-        break-after: page;
-        page-break-inside: auto;
-        break-inside: auto;
-      }
-
-      .pagina:last-child {
-        page-break-after: auto;
-        break-after: auto;
-      }
-
-      .pagina-interna,
-      .sermao .pagina-interna {
-        padding: 18mm 16mm !important;
-      }
-
-      .sermao {
-        display: block !important;
-        max-width: none !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: visible !important;
-      }
-
-      .sermao .pagina {
-        page-break-after: auto !important;
-        break-after: auto !important;
-        border: none !important;
-      }
-
-      .sermao h2,
-      .sermao h3,
-      .sermao .ponto,
-      .bloco {
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      .placeholder {
-        display: none !important;
-      }
-
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
       }
     }
   </style>
@@ -619,7 +524,7 @@
 
       <div class="card-body">
         <div class="aviso">
-          O botão limpar tudo agora limpa também os campos do formulário, deixando pronto para criar outro material.
+          O botão Salvar em PDF agora imprime somente o material gerado, sem o menu lateral.
         </div>
 
         <label for="materialType">Tipo de material</label>
@@ -1284,12 +1189,272 @@
       `;
     }
 
-    function salvarPDF() {
-      setStatus("Abrindo impressão. Na tela seguinte, escolha Salvar como PDF.", "ok");
+    function estilosParaPDF() {
+      return `
+        @page {
+          size: A4;
+          margin: 0;
+        }
 
-      setTimeout(function () {
-        window.print();
-      }, 300);
+        * {
+          box-sizing: border-box;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+
+        html,
+        body {
+          margin: 0;
+          padding: 0;
+          background: #fff;
+          font-family: Arial, Helvetica, sans-serif;
+          color: #222;
+        }
+
+        .doc {
+          display: block;
+          width: 100%;
+          max-width: none;
+          margin: 0;
+          padding: 0;
+        }
+
+        .pagina {
+          display: block;
+          width: 100%;
+          min-height: auto;
+          height: auto;
+          overflow: visible;
+          background: #fff;
+          border: none;
+          box-shadow: none;
+          border-radius: 0;
+          margin: 0;
+          page-break-after: always;
+          break-after: page;
+        }
+
+        .pagina:last-child {
+          page-break-after: auto;
+          break-after: auto;
+        }
+
+        .pagina-interna,
+        .sermao .pagina-interna {
+          padding: 18mm 16mm;
+        }
+
+        .titulo-grande {
+          margin: 0 0 12px;
+          color: #5b3a24;
+          font-size: 30px;
+          line-height: 1.2;
+        }
+
+        .subtitulo {
+          color: #555;
+          font-size: 17px;
+          line-height: 1.5;
+          margin-bottom: 18px;
+        }
+
+        .texto {
+          font-size: 15.5px;
+          line-height: 1.75;
+          color: #222;
+          white-space: pre-line;
+        }
+
+        .bloco {
+          margin-top: 16px;
+          padding: 18px;
+          border: 1px solid #ddd;
+          border-radius: 12px;
+          background: #fff;
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .bloco h3 {
+          margin: 0 0 8px;
+          color: #5b3a24;
+          font-size: 20px;
+        }
+
+        .lista {
+          padding-left: 22px;
+          font-size: 15.5px;
+          line-height: 1.7;
+        }
+
+        .chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 7px;
+          margin: 14px 0 16px;
+        }
+
+        .chip {
+          border: 1px solid #ddd;
+          background: #fff;
+          color: #333;
+          font-weight: bold;
+          border-radius: 999px;
+          padding: 6px 10px;
+          font-size: 12px;
+        }
+
+        .sermao .titulo-sermao {
+          margin: 0 0 14px;
+          text-align: center;
+          color: #111;
+          font-size: 28px;
+          line-height: 1.25;
+          text-transform: uppercase;
+        }
+
+        .sermao .subtitulo-sermao {
+          text-align: center;
+          color: #333;
+          font-size: 16px;
+          margin-bottom: 24px;
+          line-height: 1.5;
+        }
+
+        .sermao .linha-info {
+          border-top: 1px solid #222;
+          border-bottom: 1px solid #222;
+          padding: 12px 0;
+          margin: 18px 0 22px;
+          font-size: 15.5px;
+          line-height: 1.7;
+          color: #111;
+        }
+
+        .sermao h2 {
+          margin: 26px 0 10px;
+          color: #111;
+          font-size: 21px;
+          border-bottom: 1px solid #ccc;
+          padding-bottom: 7px;
+        }
+
+        .sermao h3 {
+          margin: 20px 0 8px;
+          color: #111;
+          font-size: 18px;
+        }
+
+        .sermao p {
+          font-size: 15.5px;
+          line-height: 1.75;
+          color: #111;
+          margin: 0 0 13px;
+          white-space: pre-line;
+        }
+
+        .sermao .ponto {
+          margin-top: 22px;
+          padding-top: 10px;
+          border-top: 1px solid #ddd;
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .sermao ul {
+          font-size: 15.5px;
+          line-height: 1.75;
+          color: #111;
+        }
+
+        .capa {
+          min-height: 297mm;
+          color: white;
+          background: linear-gradient(135deg, #5b3a24, #c79b58);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .capa-box {
+          width: 80%;
+          padding: 42px 34px;
+          border-radius: 28px;
+          background: rgba(255,255,255,0.14);
+          border: 1px solid rgba(255,255,255,0.30);
+        }
+
+        .capa h1 {
+          margin: 0 0 16px;
+          font-size: 42px;
+          line-height: 1.12;
+          text-transform: uppercase;
+        }
+
+        .capa h2 {
+          margin: 0;
+          font-size: 20px;
+          line-height: 1.45;
+          font-weight: 500;
+        }
+
+        .selo {
+          display: inline-block;
+          padding: 9px 16px;
+          border-radius: 999px;
+          border: 1px solid rgba(255,255,255,0.35);
+          background: rgba(255,255,255,0.14);
+          font-size: 13px;
+          margin-bottom: 20px;
+          font-weight: bold;
+          letter-spacing: 1px;
+        }
+      `;
+    }
+
+    function salvarPDF() {
+      const conteudo = el("resultado").innerHTML;
+
+      if (!materialAtual || !conteudo.trim() || conteudo.includes("Seu material aparecerá aqui")) {
+        alert("Gere um material antes de salvar em PDF.");
+        return;
+      }
+
+      const janela = window.open("", "_blank");
+
+      if (!janela) {
+        setStatus("O navegador bloqueou a janela de impressão. Permita pop-ups ou tente novamente.", "erro");
+        return;
+      }
+
+      janela.document.open();
+      janela.document.write(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>VERBO IA - PDF</title>
+          <style>${estilosParaPDF()}</style>
+        </head>
+        <body>
+          ${conteudo}
+          <script>
+            window.onload = function() {
+              setTimeout(function() {
+                window.print();
+              }, 500);
+            };
+          <\/script>
+        </body>
+        </html>
+      `);
+      janela.document.close();
+
+      setStatus("Abrindo uma página limpa para salvar em PDF. Ela não deve mostrar o menu lateral.", "ok");
     }
 
     function limparCamposFormulario() {
@@ -1319,9 +1484,7 @@
 
     function limparTudo() {
       materialAtual = null;
-
       limparCamposFormulario();
-
       setBarra(0);
       setStatus("Tudo limpo. Os campos do formulário também foram limpos.", "ok");
 
