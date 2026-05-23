@@ -76,13 +76,11 @@ function normalizeForm(body) {
     quantidade = 3;
   }
 
-  /*
-    Para acelerar:
-    - E-book/teste: até 10 capítulos por geração.
-    - Se quiser 30, 50 ou 100 capítulos, o ideal é depois fazermos geração por partes.
-    - Gerar 100 capítulos de uma vez trava ou estoura limite.
-  */
-  quantidade = Math.max(1, Math.min(quantidade, 10));
+  if (tipo === "sermao") {
+    quantidade = 1;
+  } else {
+    quantidade = Math.max(1, Math.min(quantidade, 10));
+  }
 
   return {
     appName: "VERBO IA",
@@ -105,16 +103,24 @@ function normalizeForm(body) {
 function buildPrompt(form) {
   const materialNames = {
     ebook: "E-book cristão",
+    livro: "Livro cristão",
     devocional: "Devocional cristão",
     estudo: "Estudo teológico",
     curso: "Curso cristão",
     revista: "Revista de ensino bíblico",
-    sermão: "Sermão cristão",
     sermao: "Sermão cristão"
   };
 
   const materialName = materialNames[form.materialType] || "E-book cristão";
 
+  if (form.materialType === "sermao") {
+    return buildPromptSermao(form, materialName);
+  }
+
+  return buildPromptMaterial(form, materialName);
+}
+
+function buildPromptMaterial(form, materialName) {
   return `
 Você é um escritor cristão, teólogo, pastor, comentarista bíblico e organizador editorial.
 
@@ -127,7 +133,7 @@ Título: ${form.title}
 Subtítulo: ${form.subtitle || "Crie um subtítulo forte, bonito e moderno"}
 Tema: ${form.theme || form.title}
 Texto bíblico base: ${form.biblicalBase || "Escolha textos bíblicos coerentes com o tema"}
-Quantidade exata de capítulos/lições/dias: ${form.quantity}
+Quantidade exata de capítulos/lições/dias/aulas: ${form.quantity}
 Público-alvo: ${form.targetAudience}
 Autor/comentarista: ${form.author}
 Ministério/Editora: ${form.ministry}
@@ -137,21 +143,20 @@ Tom: ${form.tone}
 
 REGRAS DE VELOCIDADE E ORGANIZAÇÃO:
 1. Gere somente o conteúdo textual.
-2. Não tente gerar imagem.
-3. Não tente criar arquivo PDF.
-4. Não tente montar HTML completo.
+2. Não gere imagem.
+3. Não gere PDF.
+4. Não monte HTML.
 5. Não escreva mensagens de processo.
 6. Não escreva "estou organizando".
 7. Não use markdown.
 8. Responda apenas em JSON válido.
-9. Crie exatamente ${form.quantity} capítulos, sem pular numeração.
-10. Se o usuário pedir muitos capítulos, entregue os ${form.quantity} primeiros capítulos com profundidade.
-11. Não repita o nome do autor em todos os capítulos.
-12. Não use a frase "nova seção do material".
-13. Cada capítulo precisa ser profundo, mas objetivo o bastante para a resposta terminar.
-14. Cada capítulo deve ter conteúdo expandido, bíblico, pastoral e aplicável.
-15. Cada capítulo deve ter um prompt de imagem em inglês, mas apenas como texto no campo "illustrationPrompt".
-16. A capa deve ter um prompt de imagem em inglês no campo "coverIllustrationPrompt", mas não gere imagem.
+9. Crie exatamente ${form.quantity} partes, sem pular numeração.
+10. Não repita o nome do autor em todos os capítulos.
+11. Não use a frase "nova seção do material".
+12. O conteúdo deve ser profundo, mas objetivo o bastante para a resposta terminar.
+13. Cada parte deve ter conteúdo expandido, bíblico, pastoral e aplicável.
+14. Cada parte deve ter um prompt de imagem em inglês, apenas como texto no campo "illustrationPrompt".
+15. A capa deve ter um prompt de imagem em inglês no campo "coverIllustrationPrompt", mas não gere imagem.
 
 FORMATO JSON OBRIGATÓRIO:
 {
@@ -198,8 +203,77 @@ FORMATO JSON OBRIGATÓRIO:
 
 IMPORTANTE:
 O material precisa ser profundo, edificante, bem organizado e pastoral.
-Mas não prolongue demais a ponto de travar.
-Entregue uma versão completa, clara e útil.
+`.trim();
+}
+
+function buildPromptSermao(form, materialName) {
+  return `
+Você é um pregador cristão, expositor bíblico, pastor e teólogo.
+
+Crie um sermão cristão profundo, bíblico, pastoral e organizado em português do Brasil.
+
+DADOS DO SERMÃO:
+Título: ${form.title}
+Tema: ${form.theme || form.title}
+Texto bíblico base: ${form.biblicalBase || "Escolha um texto bíblico coerente com o tema"}
+Público-alvo: ${form.targetAudience}
+Autor/comentarista: ${form.author}
+Ministério/Editora: ${form.ministry}
+Profundidade: ${form.depthLevel}
+Tom: ${form.tone}
+
+REGRAS:
+1. Responda apenas em JSON válido.
+2. Não use markdown.
+3. Não gere imagem.
+4. Não gere capa.
+5. Não gere PDF.
+6. Não use a frase "nova seção do material".
+7. O sermão precisa ser profundo, bíblico, pastoral, aplicável e pregável.
+8. O sermão deve conter introdução forte, proposição, frase de transição, pontos principais, aplicações, conclusão, apelo e oração final.
+
+FORMATO JSON OBRIGATÓRIO:
+{
+  "appName": "VERBO IA",
+  "materialType": "${materialName}",
+  "title": "string",
+  "subtitle": "string",
+  "coverBadge": "Sermão",
+  "coverTagline": "string",
+  "theme": "string",
+  "targetAudience": "string",
+  "language": "Português",
+  "author": "string",
+  "ministry": "string",
+  "visualStyle": "texto",
+  "biblicalBase": ["string"],
+  "summaryIntro": "string",
+  "coverIllustrationPrompt": "",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "string",
+      "heroCaption": "Texto base, tema e objetivo do sermão",
+      "illustrationPrompt": "",
+      "biblicalBase": ["string"],
+      "opening": "Introdução forte do sermão",
+      "centralIdea": "Proposição central do sermão",
+      "sections": [
+        { "title": "I - Primeiro ponto do sermão", "content": "string" },
+        { "title": "II - Segundo ponto do sermão", "content": "string" },
+        { "title": "III - Terceiro ponto do sermão", "content": "string" }
+      ],
+      "highlightQuote": "Frase de impacto do sermão",
+      "reflectionQuestions": ["Aplicação 1", "Aplicação 2", "Aplicação 3"],
+      "practice": "Aplicação prática para a igreja",
+      "prayer": "Oração final",
+      "conclusion": "Conclusão e apelo"
+    }
+  ],
+  "closing": "string",
+  "authorBio": "string",
+  "backCoverText": "string"
+}
 `.trim();
 }
 
