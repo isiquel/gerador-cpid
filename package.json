@@ -1,11 +1,8 @@
 {
-  "name": "verbo-ia",
+  "name": "gerador-cpid",
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "vercel dev"
-  },
-  "engines": {
-    "node": "22.x"
+    "start": "vercel dev"
   }
 }
