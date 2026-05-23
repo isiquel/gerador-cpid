@@ -58,7 +58,7 @@
     }
 
     .container {
-      max-width: 1460px;
+      max-width: 1500px;
       margin: 24px auto;
       padding: 0 16px 28px;
       display: grid;
@@ -68,7 +68,7 @@
     }
 
     .card {
-      background: rgba(255,255,255,0.92);
+      background: rgba(255,255,255,0.94);
       border: 1px solid #eee0d0;
       border-radius: 22px;
       box-shadow: var(--sombra);
@@ -136,6 +136,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+    }
+
+    .campo-oculto {
+      display: none !important;
     }
 
     .aviso {
@@ -255,7 +259,7 @@
       background: #f7efe5;
       border: 1px solid #eadbc9;
       border-radius: 18px;
-      padding: 18px;
+      padding: 22px;
       overflow: auto;
     }
 
@@ -274,10 +278,10 @@
     }
 
     .ebook {
-      max-width: 980px;
+      max-width: 1050px;
       margin: 0 auto;
       display: grid;
-      gap: 24px;
+      gap: 26px;
     }
 
     .pagina {
@@ -290,11 +294,11 @@
     }
 
     .pagina-interna {
-      padding: 38px 42px;
+      padding: 42px 46px;
     }
 
     .capa {
-      min-height: 1180px;
+      min-height: 1080px;
       position: relative;
       color: white;
       background: linear-gradient(135deg, #5b3a24, #c79b58);
@@ -310,7 +314,6 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: 1;
     }
 
     .capa::after {
@@ -378,15 +381,15 @@
     }
 
     .titulo-pagina {
-      margin: 0 0 12px;
+      margin: 0 0 14px;
       color: var(--marrom);
-      font-size: 34px;
+      font-size: 36px;
       line-height: 1.2;
     }
 
     .texto {
-      font-size: 17px;
-      line-height: 1.88;
+      font-size: 18px;
+      line-height: 1.9;
       color: #302b26;
       white-space: pre-line;
     }
@@ -399,7 +402,7 @@
 
     .sumario-item {
       display: grid;
-      grid-template-columns: 80px 1fr;
+      grid-template-columns: 85px 1fr;
       gap: 12px;
       align-items: center;
       border: 1px solid var(--linha);
@@ -419,7 +422,7 @@
     }
 
     .sumario-titulo {
-      font-size: 17px;
+      font-size: 18px;
       font-weight: bold;
       color: var(--marrom);
       line-height: 1.4;
@@ -441,7 +444,7 @@
     .cap-titulo {
       margin: 0 0 14px;
       color: #4b3425;
-      font-size: 40px;
+      font-size: 42px;
       line-height: 1.15;
     }
 
@@ -503,7 +506,7 @@
 
     .bloco {
       margin-top: 24px;
-      padding: 22px;
+      padding: 24px;
       border: 1px solid var(--linha);
       border-radius: 20px;
       background: #fffdf9;
@@ -512,12 +515,12 @@
     .bloco h3 {
       margin: 0 0 10px;
       color: var(--marrom);
-      font-size: 24px;
+      font-size: 25px;
     }
 
     .destaque {
       margin: 24px 0;
-      padding: 26px;
+      padding: 28px;
       border-radius: 24px;
       color: white;
       background: linear-gradient(135deg, var(--marrom), var(--dourado));
@@ -534,7 +537,7 @@
     }
 
     .destaque .frase {
-      font-size: 26px;
+      font-size: 27px;
       line-height: 1.45;
       font-weight: bold;
     }
@@ -549,6 +552,7 @@
       padding-left: 20px;
       line-height: 1.8;
       margin: 0;
+      font-size: 17px;
     }
 
     .rodape-final {
@@ -579,11 +583,15 @@
       }
 
       .cap-titulo {
-        font-size: 31px;
+        font-size: 32px;
       }
 
       .pagina-interna {
-        padding: 28px 22px;
+        padding: 30px 24px;
+      }
+
+      header h1 {
+        font-size: 32px;
       }
     }
 
@@ -657,28 +665,26 @@
 <body>
   <header>
     <h1>VERBO IA</h1>
-    <p>Gerador inteligente de e-books, devocionais, estudos, revistas e materiais cristãos.</p>
+    <p>Gerador inteligente de e-books, livros, sermões, devocionais, estudos, revistas e materiais cristãos.</p>
   </header>
 
   <main class="container">
     <section class="card painel">
       <div class="card-head">
         <h2>Configurar material</h2>
-        <p>Agora o texto é gerado primeiro e as imagens são geradas depois, uma por uma.</p>
+        <p>As opções mudam automaticamente conforme o tipo de material escolhido.</p>
       </div>
 
       <div class="card-body">
         <div class="aviso">
-          Geração por etapas ativada: o app primeiro monta o e-book, depois gera capa e ilustrações dos capítulos.
-        </div>
-
-        <div class="aviso2">
-          Para testar, use 3 capítulos. Depois que funcionar, aumente para 5, 7 ou mais.
+          Modo inteligente ativado: sermão fica simples e rápido; e-book libera capa e imagens; livro libera capa, mas sem imagens por capítulo.
         </div>
 
         <label for="materialType">Tipo de material</label>
-        <select id="materialType">
+        <select id="materialType" onchange="atualizarOpcoesPorTipo()">
           <option value="ebook">E-book cristão</option>
+          <option value="livro">Livro cristão</option>
+          <option value="sermao">Sermão</option>
           <option value="devocional">Devocional</option>
           <option value="estudo">Estudo teológico</option>
           <option value="curso">Curso cristão</option>
@@ -688,8 +694,10 @@
         <label for="title">Título</label>
         <input id="title" type="text" value="Coração Blindado: Vencendo a Ansiedade na Presença de Deus" />
 
-        <label for="subtitle">Subtítulo</label>
-        <input id="subtitle" type="text" value="Fé, descanso e confiança para uma alma sobrecarregada" />
+        <div id="campoSubtitulo">
+          <label for="subtitle">Subtítulo</label>
+          <input id="subtitle" type="text" value="Fé, descanso e confiança para uma alma sobrecarregada" />
+        </div>
 
         <label for="theme">Tema principal</label>
         <textarea id="theme">Como vencer a ansiedade, o medo, a sobrecarga emocional e a inquietação da alma por meio da fé, da oração e da confiança em Deus.</textarea>
@@ -698,9 +706,9 @@
         <input id="biblicalBase" type="text" value="Filipenses 4.6-7; Mateus 6.25-34; 1 Pedro 5.7; Salmos 46.10; Isaías 26.3" />
 
         <div class="linha">
-          <div>
-            <label for="quantity">Capítulos / lições / dias</label>
-            <input id="quantity" type="number" min="1" max="20" value="3" />
+          <div id="campoQuantidade">
+            <label for="quantity" id="labelQuantidade">Capítulos / lições / dias</label>
+            <input id="quantity" type="number" min="1" max="10" value="3" />
           </div>
 
           <div>
@@ -731,7 +739,7 @@
             </select>
           </div>
 
-          <div>
+          <div id="campoVisual">
             <label for="visualStyle">Estilo visual</label>
             <select id="visualStyle">
               <option value="colorido" selected>Colorido</option>
@@ -741,19 +749,19 @@
         </div>
 
         <div class="linha">
-          <div>
+          <div id="campoCapa">
             <label for="coverMode">Capa</label>
             <select id="coverMode">
-              <option value="com-capa" selected>Com capa ilustrada</option>
+              <option value="com-capa" selected>Com capa</option>
               <option value="sem-capa">Sem capa</option>
             </select>
           </div>
 
-          <div>
-            <label for="generateImages">Imagens</label>
+          <div id="campoImagens">
+            <label for="generateImages">Imagens por capítulo</label>
             <select id="generateImages">
-              <option value="sim" selected>Gerar imagens</option>
-              <option value="nao">Não gerar imagens</option>
+              <option value="sim">Gerar imagens</option>
+              <option value="nao" selected>Não gerar imagens</option>
             </select>
           </div>
         </div>
@@ -766,7 +774,7 @@
         </button>
 
         <div class="botoes">
-          <button class="btn-azul" type="button" onclick="tentarImagensNovamente()">
+          <button class="btn-azul" id="btnGerarImagens" type="button" onclick="tentarImagensNovamente()">
             Gerar imagens novamente
           </button>
 
@@ -798,7 +806,7 @@
     <section class="card">
       <div class="card-head">
         <h2>Material gerado</h2>
-        <p>As imagens aparecerão dentro da capa e dos capítulos quando forem geradas.</p>
+        <p>O material aparecerá aqui, já organizado conforme o tipo escolhido.</p>
       </div>
 
       <div class="card-body">
@@ -812,7 +820,7 @@
             <div>
               <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
               <p style="margin:0;">
-                Preencha os campos e clique em <strong>Gerar material</strong>.
+                Escolha o tipo de material e clique em <strong>Gerar material</strong>.
               </p>
             </div>
           </div>
@@ -855,21 +863,124 @@
         .replaceAll("'", "&#039;");
     }
 
+    function tipoAtual() {
+      return valor("materialType");
+    }
+
+    function atualizarOpcoesPorTipo() {
+      const tipo = tipoAtual();
+
+      const campoQuantidade = el("campoQuantidade");
+      const campoVisual = el("campoVisual");
+      const campoCapa = el("campoCapa");
+      const campoImagens = el("campoImagens");
+      const btnGerarImagens = el("btnGerarImagens");
+      const labelQuantidade = el("labelQuantidade");
+
+      campoQuantidade.classList.remove("campo-oculto");
+      campoVisual.classList.remove("campo-oculto");
+      campoCapa.classList.remove("campo-oculto");
+      campoImagens.classList.remove("campo-oculto");
+      btnGerarImagens.classList.remove("campo-oculto");
+
+      if (tipo === "sermao") {
+        campoQuantidade.classList.add("campo-oculto");
+        campoVisual.classList.add("campo-oculto");
+        campoCapa.classList.add("campo-oculto");
+        campoImagens.classList.add("campo-oculto");
+        btnGerarImagens.classList.add("campo-oculto");
+        el("quantity").value = "1";
+        el("coverMode").value = "sem-capa";
+        el("generateImages").value = "nao";
+        setStatus("Modo Sermão: geração rápida, sem capa e sem imagens.", "ok");
+        return;
+      }
+
+      if (tipo === "livro") {
+        labelQuantidade.innerText = "Capítulos";
+        campoImagens.classList.add("campo-oculto");
+        btnGerarImagens.classList.add("campo-oculto");
+        el("generateImages").value = "nao";
+        setStatus("Modo Livro: capa e visual disponíveis, mas sem imagens por capítulo.", "ok");
+        return;
+      }
+
+      if (tipo === "ebook") {
+        labelQuantidade.innerText = "Capítulos";
+        setStatus("Modo E-book: você pode escolher capa, estilo visual e imagens por capítulo.", "ok");
+        return;
+      }
+
+      if (tipo === "devocional") {
+        labelQuantidade.innerText = "Dias devocionais";
+        campoImagens.classList.add("campo-oculto");
+        btnGerarImagens.classList.add("campo-oculto");
+        el("generateImages").value = "nao";
+        setStatus("Modo Devocional: texto organizado, com opção de capa.", "ok");
+        return;
+      }
+
+      if (tipo === "curso") {
+        labelQuantidade.innerText = "Aulas";
+        campoVisual.classList.add("campo-oculto");
+        campoCapa.classList.add("campo-oculto");
+        campoImagens.classList.add("campo-oculto");
+        btnGerarImagens.classList.add("campo-oculto");
+        el("coverMode").value = "sem-capa";
+        el("generateImages").value = "nao";
+        setStatus("Modo Curso: geração textual organizada por aulas.", "ok");
+        return;
+      }
+
+      if (tipo === "estudo") {
+        labelQuantidade.innerText = "Partes";
+        campoVisual.classList.add("campo-oculto");
+        campoCapa.classList.add("campo-oculto");
+        campoImagens.classList.add("campo-oculto");
+        btnGerarImagens.classList.add("campo-oculto");
+        el("coverMode").value = "sem-capa";
+        el("generateImages").value = "nao";
+        setStatus("Modo Estudo: geração textual simples e profunda.", "ok");
+        return;
+      }
+
+      if (tipo === "revista") {
+        labelQuantidade.innerText = "Lições";
+        campoImagens.classList.add("campo-oculto");
+        btnGerarImagens.classList.add("campo-oculto");
+        el("generateImages").value = "nao";
+        setStatus("Modo Revista: lições organizadas, com capa opcional, sem imagens por capítulo.", "ok");
+        return;
+      }
+    }
+
+    function deveMostrarCapa() {
+      const tipo = tipoAtual();
+      if (tipo === "sermao" || tipo === "curso" || tipo === "estudo") return false;
+      return valor("coverMode") === "com-capa";
+    }
+
+    function deveGerarImagens() {
+      const tipo = tipoAtual();
+      if (tipo !== "ebook") return false;
+      return valor("generateImages") === "sim";
+    }
+
     function dadosFormulario() {
       return {
-        materialType: valor("materialType"),
+        materialType: tipoAtual(),
         title: valor("title"),
         subtitle: valor("subtitle"),
         theme: valor("theme"),
         biblicalBase: valor("biblicalBase"),
-        quantity: Number(valor("quantity") || 3),
+        quantity: Number(valor("quantity") || 1),
         targetAudience: valor("targetAudience"),
         author: valor("author"),
         ministry: valor("ministry"),
         depthLevel: valor("depthLevel"),
         visualStyle: valor("visualStyle"),
-        coverMode: valor("coverMode"),
-        generateImages: valor("generateImages") === "sim",
+        coverMode: deveMostrarCapa() ? valor("coverMode") : "sem-capa",
+        generateImages: deveGerarImagens(),
         tone: valor("tone")
       };
     }
@@ -884,15 +995,15 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Gerando texto...";
-      setBarra(5);
-      setStatus("Gerando o texto do material. Aguarde...", "");
+      btn.innerText = "Gerando...";
+      setBarra(8);
+      setStatus("Gerando o conteúdo textual. Aguarde...", "");
 
       el("resultado").innerHTML = `
         <div class="placeholder">
           <div>
-            <h2 style="color:#5b3a24;margin:0 0 10px;">Gerando texto...</h2>
-            <p style="margin:0;">Primeiro o VERBO IA vai montar o e-book. Depois as imagens serão geradas uma por uma.</p>
+            <h2 style="color:#5b3a24;margin:0 0 10px;">Gerando conteúdo...</h2>
+            <p style="margin:0;">O VERBO IA está preparando o material com profundidade e organização.</p>
           </div>
         </div>
       `;
@@ -918,15 +1029,15 @@
           chapters: {}
         };
 
-        setBarra(25);
-        setStatus("Texto gerado. Montando o material...", "ok");
+        setBarra(65);
+        setStatus("Texto gerado. Organizando documento...", "ok");
         renderizarMaterial();
 
-        if (dados.generateImages) {
-          await gerarImagensPorEtapas();
+        if (dados.generateImages || dados.coverMode === "com-capa") {
+          await gerarRecursosVisuais();
         } else {
-          setStatus("Material gerado sem imagens.", "ok");
           setBarra(100);
+          setStatus("Material gerado com sucesso, sem capa e sem imagens.", "ok");
         }
 
       } catch (error) {
@@ -946,50 +1057,55 @@
       }
     }
 
-    async function gerarImagensPorEtapas() {
-      if (!materialAtual) {
-        alert("Gere o material primeiro.");
-        return;
-      }
+    async function gerarRecursosVisuais() {
+      if (!materialAtual) return;
 
       const dados = dadosFormulario();
       const chapters = Array.isArray(materialAtual.chapters) ? materialAtual.chapters : [];
-      const totalImagens = (dados.coverMode === "com-capa" ? 1 : 0) + chapters.length;
+
+      let total = 0;
+      if (dados.coverMode === "com-capa") total++;
+      if (dados.generateImages) total += chapters.length;
+
+      if (total === 0) {
+        setBarra(100);
+        setStatus("Material gerado com sucesso.", "ok");
+        return;
+      }
+
       let feitas = 0;
 
       if (dados.coverMode === "com-capa") {
-        setStatus("Gerando imagem da capa...", "");
+        setStatus("Gerando capa...", "");
         imagensAtuais.cover = await gerarUmaImagem({
           prompt: materialAtual.coverIllustrationPrompt || "Capa cristã editorial moderna",
-          aspectRatio: "3:4",
-          imageSize: "1K",
           title: "Capa"
         });
 
         feitas++;
-        setBarra(25 + Math.round((feitas / totalImagens) * 70));
+        setBarra(65 + Math.round((feitas / total) * 30));
         renderizarMaterial();
       }
 
-      for (const chapter of chapters) {
-        setStatus("Gerando imagem do capítulo " + chapter.number + " de " + chapters.length + "...", "");
+      if (dados.generateImages) {
+        for (const chapter of chapters) {
+          setStatus("Gerando imagem do capítulo " + chapter.number + " de " + chapters.length + "...", "");
 
-        const img = await gerarUmaImagem({
-          prompt: chapter.illustrationPrompt || ("Ilustração cristã para o capítulo " + chapter.number),
-          aspectRatio: "4:3",
-          imageSize: "512",
-          title: "Capítulo " + chapter.number
-        });
+          const img = await gerarUmaImagem({
+            prompt: chapter.illustrationPrompt || ("Ilustração cristã para o capítulo " + chapter.number),
+            title: "Capítulo " + chapter.number
+          });
 
-        imagensAtuais.chapters[String(chapter.number)] = img;
+          imagensAtuais.chapters[String(chapter.number)] = img;
 
-        feitas++;
-        setBarra(25 + Math.round((feitas / totalImagens) * 70));
-        renderizarMaterial();
+          feitas++;
+          setBarra(65 + Math.round((feitas / total) * 30));
+          renderizarMaterial();
+        }
       }
 
       setBarra(100);
-      setStatus("Material completo gerado com texto e imagens.", "ok");
+      setStatus("Material finalizado.", "ok");
     }
 
     async function gerarUmaImagem(payload) {
@@ -1011,18 +1127,12 @@
 
         const json = await resposta.json();
 
-        if (!resposta.ok || !json.ok) {
-          return {
-            ok: false,
-            image: json.fallback || "",
-            error: json.error || "A imagem não foi gerada."
-          };
-        }
+        const image = json.dataUrl || json.image || json.fallback || "";
 
         return {
-          ok: true,
-          image: json.image,
-          error: ""
+          ok: !!image,
+          image,
+          error: json.warning || json.error || ""
         };
 
       } catch (error) {
@@ -1040,9 +1150,14 @@
         return;
       }
 
-      setBarra(25);
+      if (!deveGerarImagens()) {
+        alert("A geração de imagens por capítulo só está disponível no modo E-book com imagens ativadas.");
+        return;
+      }
+
+      setBarra(65);
       setStatus("Tentando gerar imagens novamente...", "");
-      await gerarImagensPorEtapas();
+      await gerarRecursosVisuais();
     }
 
     function renderizarMaterial() {
@@ -1062,9 +1177,7 @@
     }
 
     function renderCapa(book) {
-      const dados = dadosFormulario();
-
-      if (dados.coverMode !== "com-capa") return "";
+      if (!deveMostrarCapa()) return "";
 
       const img = imagensAtuais.cover;
 
@@ -1077,7 +1190,7 @@
           ${bg}
           <div class="capa-conteudo">
             <div class="marca">${escapeHtml(book.appName || "VERBO IA")}</div>
-            <div class="selo">${escapeHtml(book.coverBadge || book.materialType || "E-book cristão")}</div>
+            <div class="selo">${escapeHtml(book.coverBadge || book.materialType || "Material cristão")}</div>
             <h1>${escapeHtml(book.title || "")}</h1>
             <h2>${escapeHtml(book.subtitle || "")}</h2>
 
@@ -1087,8 +1200,6 @@
               <div><strong>Editora / Ministério:</strong> ${escapeHtml(book.ministry || "")}</div>
               <div><strong>Público-alvo:</strong> ${escapeHtml(book.targetAudience || "")}</div>
             </div>
-
-            ${img && img.error ? `<p style="margin-top:18px;font-size:13px;color:#fff2d7;">Imagem da capa não gerada: ${escapeHtml(img.error)}</p>` : ""}
           </div>
         </section>
       `;
@@ -1098,7 +1209,7 @@
       return `
         <section class="pagina">
           <div class="pagina-interna">
-            <h2 class="titulo-pagina">Apresentação</h2>
+            <h2 class="titulo-pagina">${tipoAtual() === "sermao" ? "Introdução do Sermão" : "Apresentação"}</h2>
             <div class="texto">${escapeHtml(book.summaryIntro || "")}</div>
 
             <div class="grid2" style="margin-top:24px;">
@@ -1117,7 +1228,7 @@ Linguagem: ${escapeHtml(book.language || "")}
                 <div class="texto">
 Autor: ${escapeHtml(book.author || "")}
 Ministério: ${escapeHtml(book.ministry || "")}
-Estilo visual: ${escapeHtml(book.visualStyle || "")}
+Estilo: ${escapeHtml(book.visualStyle || "")}
                 </div>
               </div>
             </div>
@@ -1127,6 +1238,8 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
     }
 
     function renderSumario(book, chapters) {
+      if (tipoAtual() === "sermao" && chapters.length <= 1) return "";
+
       return `
         <section class="pagina">
           <div class="pagina-interna">
@@ -1136,7 +1249,7 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
             <div class="sumario-lista">
               ${chapters.map(ch => `
                 <div class="sumario-item">
-                  <div class="sumario-numero">Cap. ${escapeHtml(ch.number)}</div>
+                  <div class="sumario-numero">${tipoAtual() === "revista" ? "Lição" : "Cap."} ${escapeHtml(ch.number)}</div>
                   <div class="sumario-titulo">${escapeHtml(ch.title || "")}</div>
                 </div>
               `).join("")}
@@ -1147,31 +1260,43 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
     }
 
     function renderCapitulo(chapter) {
+      const dados = dadosFormulario();
       const img = imagensAtuais.chapters[String(chapter.number)];
-      let imgHtml = "";
 
-      if (img && img.image) {
-        imgHtml = `<img src="${img.image}" alt="${escapeHtml(chapter.title || "Ilustração")}" />`;
-      } else if (img && img.error) {
-        imgHtml = `
-          <div class="img-loading">
-            <strong>Imagem não gerada neste capítulo.</strong><br>
-            ${escapeHtml(img.error)}
+      let blocoImagem = "";
+
+      if (dados.generateImages) {
+        let imgHtml = "";
+
+        if (img && img.image) {
+          imgHtml = `<img src="${img.image}" alt="${escapeHtml(chapter.title || "Ilustração")}" />`;
+        } else {
+          imgHtml = `
+            <div class="img-loading">
+              <strong>Aguardando ilustração...</strong><br>
+              A imagem deste capítulo será gerada por etapa.
+            </div>
+          `;
+        }
+
+        blocoImagem = `
+          <div class="img-box">
+            ${imgHtml}
           </div>
-        `;
-      } else {
-        imgHtml = `
-          <div class="img-loading">
-            <strong>Aguardando ilustração...</strong><br>
-            A imagem deste capítulo será gerada por etapa.
-          </div>
+          <div class="legenda">${escapeHtml(chapter.illustrationPrompt || "")}</div>
         `;
       }
+
+      const tituloParte = tipoAtual() === "sermao" ? "Sermão" :
+        tipoAtual() === "revista" ? "Lição" :
+        tipoAtual() === "curso" ? "Aula" :
+        tipoAtual() === "devocional" ? "Dia" :
+        "Capítulo";
 
       return `
         <section class="pagina cap-topo">
           <div class="pagina-interna">
-            <div class="cap-numero">Capítulo ${escapeHtml(chapter.number || "")}</div>
+            <div class="cap-numero">${tituloParte} ${escapeHtml(chapter.number || "")}</div>
             <h2 class="cap-titulo">${escapeHtml(chapter.title || "")}</h2>
             <div class="texto">${escapeHtml(chapter.heroCaption || "")}</div>
 
@@ -1179,14 +1304,10 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
               ${(chapter.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
             </div>
 
-            <div class="img-box">
-              ${imgHtml}
-            </div>
-
-            <div class="legenda">${escapeHtml(chapter.illustrationPrompt || "")}</div>
+            ${blocoImagem}
 
             <div class="bloco">
-              <h3>Abertura</h3>
+              <h3>${tipoAtual() === "sermao" ? "Introdução" : "Abertura"}</h3>
               <div class="texto">${escapeHtml(chapter.opening || "")}</div>
             </div>
 
@@ -1209,7 +1330,7 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
 
             <div class="grid2">
               <div class="bloco">
-                <h3>Exercício de reflexão</h3>
+                <h3>${tipoAtual() === "sermao" ? "Aplicações para a igreja" : "Exercício de reflexão"}</h3>
                 <ul class="lista">
                   ${(chapter.reflectionQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}
                 </ul>
@@ -1227,7 +1348,7 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
             </div>
 
             <div class="bloco">
-              <h3>Conclusão do capítulo</h3>
+              <h3>Conclusão</h3>
               <div class="texto">${escapeHtml(chapter.conclusion || "")}</div>
             </div>
           </div>
@@ -1271,7 +1392,7 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
           <div>
             <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
             <p style="margin:0;">
-              Preencha os campos e clique em <strong>Gerar material</strong>.
+              Escolha o tipo de material e clique em <strong>Gerar material</strong>.
             </p>
           </div>
         </div>
@@ -1290,12 +1411,15 @@ Estilo visual: ${escapeHtml(book.visualStyle || "")}
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "colorido";
-      el("coverMode").value = "com-capa";
-      el("generateImages").value = "sim";
+      el("coverMode").value = "sem-capa";
+      el("generateImages").value = "nao";
       el("tone").value = "pastoral, bíblico, atual, profundo, acolhedor, moderno e encorajador";
 
+      atualizarOpcoesPorTipo();
       setStatus("Teste preenchido. Clique em Gerar material.", "ok");
     }
+
+    atualizarOpcoesPorTipo();
   </script>
 </body>
 </html>
