@@ -406,6 +406,16 @@
       font-size: 13px;
     }
 
+    .licao-revista {
+      page-break-before: auto;
+      break-before: auto;
+    }
+
+    .revisao-revista {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
     .sermao {
       max-width: 900px;
     }
@@ -1340,10 +1350,10 @@
       const lessons = m.lessons || [];
 
       el("resultado").innerHTML = `
-        <article class="doc">
+        <article class="doc revista-doc">
           ${capaMaterial(m, isAluno ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR")}
 
-          <section class="pagina">
+          <section class="pagina pagina-apresentacao-revista">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
@@ -1355,7 +1365,7 @@
                 <span class="chip">${escapeHtml(m.bibleVersion || "King James Fiel 1611")}</span>
               </div>
 
-              <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
+              <div class="bloco bloco-apresentacao"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
 
               ${lessons.length < 4 ? `
                 <div class="bloco">
@@ -1367,7 +1377,7 @@
           </section>
 
           ${lessons.map(l => `
-            <section class="pagina">
+            <section class="pagina licao-revista">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Lição ${escapeHtml(l.lesson)} — ${escapeHtml(l.title)}</h2>
 
@@ -1391,7 +1401,7 @@
                   <div class="bloco"><h3>Sugestão de abordagem em classe</h3>${divTexto(l.classApproach)}</div>
                   <div class="bloco"><h3>Observação pastoral</h3>${divTexto(l.pastoralObservation)}</div>
                 ` : `
-                  <div class="bloco">
+                  <div class="bloco bloco-anotacoes">
                     <h3>Espaço para anotações</h3>
                     <p>__________________________________________________________________</p>
                     <p>__________________________________________________________________</p>
@@ -1402,7 +1412,7 @@
 
                 <div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>
 
-                <div class="bloco">
+                <div class="bloco revisao-revista">
                   <h3>Revisando o conteúdo</h3>
                   ${isAluno ? renderPerguntasAluno(l) : renderPerguntasProfessor(l)}
                 </div>
@@ -1411,7 +1421,7 @@
           `).join("")}
 
           ${lessons.length === 4 ? `
-            <section class="pagina">
+            <section class="pagina pagina-final-revista">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Palavra final</h2>
                 ${divTexto(m.finalWord)}
@@ -1485,7 +1495,7 @@
       return `
         @page {
           size: A4;
-          margin: 14mm 12mm;
+          margin: 12mm 10mm;
         }
 
         * {
@@ -1541,7 +1551,7 @@
 
         .capa {
           width: 100%;
-          min-height: 269mm;
+          min-height: 273mm;
           color: white;
           background: linear-gradient(135deg, #5b3a24, #c79b58);
           display: flex;
@@ -1552,8 +1562,8 @@
           overflow: hidden;
           page-break-after: always;
           break-after: page;
-          margin: -14mm -12mm 0 -12mm;
-          padding: 14mm 12mm;
+          margin: -12mm -10mm 0 -10mm;
+          padding: 12mm 10mm;
         }
 
         .capa-box {
@@ -1566,14 +1576,14 @@
 
         .capa h1 {
           margin: 0 0 16px;
-          font-size: 40px;
+          font-size: 38px;
           line-height: 1.12;
           text-transform: uppercase;
         }
 
         .capa h2 {
           margin: 0;
-          font-size: 19px;
+          font-size: 18px;
           line-height: 1.45;
           font-weight: 500;
         }
@@ -1590,82 +1600,122 @@
           letter-spacing: 1px;
         }
 
+        .pagina-apresentacao-revista {
+          page-break-after: always;
+          break-after: page;
+        }
+
+        .licao-revista {
+          page-break-before: always;
+          break-before: page;
+        }
+
+        .pagina-final-revista {
+          page-break-before: always;
+          break-before: page;
+        }
+
         .titulo-grande {
-          margin: 0 0 10px;
+          margin: 0 0 8px;
           color: #5b3a24;
-          font-size: 25px;
-          line-height: 1.2;
+          font-size: 23px;
+          line-height: 1.18;
           page-break-after: avoid;
           break-after: avoid;
         }
 
         .subtitulo {
           color: #555;
-          font-size: 15px;
-          line-height: 1.45;
-          margin-bottom: 12px;
+          font-size: 14px;
+          line-height: 1.4;
+          margin-bottom: 10px;
         }
 
         .texto {
-          font-size: 13.8px;
-          line-height: 1.62;
+          font-size: 12.7px;
+          line-height: 1.48;
           color: #222;
           white-space: pre-line;
         }
 
+        p {
+          font-size: 12.7px;
+          line-height: 1.48;
+          margin: 0 0 5px;
+        }
+
         .bloco,
         .topico-revista {
-          margin-top: 9px;
-          padding: 10px 12px;
+          margin-top: 7px;
+          padding: 8px 10px;
           border: 1px solid #ddd;
-          border-radius: 8px;
+          border-radius: 7px;
           background: #fff;
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .topico-revista {
           page-break-inside: auto;
           break-inside: auto;
         }
 
         .bloco h3,
         .topico-revista h3 {
-          margin: 0 0 5px;
+          margin: 0 0 4px;
           color: #5b3a24;
-          font-size: 16px;
+          font-size: 15px;
           page-break-after: avoid;
           break-after: avoid;
         }
 
         .subtopico-revista {
-          margin-top: 8px;
-          padding: 8px 10px;
+          margin-top: 7px;
+          padding: 7px 9px;
           border-left: 4px solid #c79b58;
           background: #fff;
-          border-radius: 8px;
+          border-radius: 7px;
+          page-break-inside: avoid;
+          break-inside: avoid;
         }
 
         .subtopico-revista h4 {
-          margin: 0 0 5px;
+          margin: 0 0 4px;
           color: #333;
-          font-size: 14.5px;
+          font-size: 13.8px;
+          page-break-after: avoid;
+          break-after: avoid;
         }
 
         .referencia {
-          font-size: 12px;
+          font-size: 11.5px;
           color: #7b5a39;
           font-weight: bold;
-          margin-bottom: 5px;
+          margin-bottom: 4px;
+        }
+
+        .revisao-revista,
+        .bloco-anotacoes {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+
+        .revisao-revista {
+          margin-bottom: 0;
         }
 
         .lista {
-          padding-left: 18px;
-          font-size: 13.8px;
-          line-height: 1.55;
-          margin: 5px 0;
+          padding-left: 16px;
+          font-size: 12.7px;
+          line-height: 1.45;
+          margin: 4px 0;
         }
 
         .chips {
           display: flex;
           flex-wrap: wrap;
-          gap: 5px;
-          margin: 8px 0 10px;
+          gap: 4px;
+          margin: 6px 0 8px;
         }
 
         .chip {
@@ -1674,8 +1724,8 @@
           color: #333;
           font-weight: bold;
           border-radius: 999px;
-          padding: 4px 8px;
-          font-size: 10.5px;
+          padding: 3px 7px;
+          font-size: 10px;
         }
 
         .sermao .titulo-sermao {
