@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
   <title>VERBO IA - Gerador de Materiais Cristãos</title>
 
@@ -15,22 +15,30 @@
       --muted: #666;
       --verde: #237a45;
       --vermelho: #a12d2d;
+      --fundo: #f8f2ea;
       --sombra: 0 12px 32px rgba(0,0,0,0.08);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
+    html,
     body {
       margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
       font-family: Arial, Helvetica, sans-serif;
       background: linear-gradient(180deg, #f8f2ea, #eee2d4);
       color: var(--texto);
+      overflow-x: hidden;
     }
 
     header {
       background: linear-gradient(135deg, var(--marrom), var(--marrom2));
       color: white;
-      padding: 26px 18px;
+      padding: 22px 16px;
       text-align: center;
       border-bottom: 5px solid var(--dourado);
       box-shadow: var(--sombra);
@@ -38,14 +46,14 @@
 
     header h1 {
       margin: 0;
-      font-size: 36px;
+      font-size: 34px;
       letter-spacing: 1px;
     }
 
     header p {
       margin: 8px 0 0;
       opacity: 0.95;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .container {
@@ -85,7 +93,9 @@
       line-height: 1.5;
     }
 
-    .card-body { padding: 18px; }
+    .card-body {
+      padding: 18px;
+    }
 
     label {
       display: block;
@@ -95,7 +105,9 @@
       font-size: 13px;
     }
 
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       width: 100%;
       padding: 12px;
       border: 1px solid #dbc9b5;
@@ -112,7 +124,9 @@
       line-height: 1.5;
     }
 
-    input:focus, select:focus, textarea:focus {
+    input:focus,
+    select:focus,
+    textarea:focus {
       border-color: var(--dourado);
       box-shadow: 0 0 0 4px rgba(199,155,88,0.16);
     }
@@ -123,7 +137,9 @@
       gap: 12px;
     }
 
-    .campo-oculto { display: none !important; }
+    .campo-oculto {
+      display: none !important;
+    }
 
     .aviso {
       background: #eef8f0;
@@ -175,6 +191,7 @@
       font-weight: bold;
       cursor: pointer;
       font-size: 14px;
+      min-height: 48px;
     }
 
     button:disabled {
@@ -230,8 +247,13 @@
       min-height: 40px;
     }
 
-    .ok { color: var(--verde); }
-    .erro { color: var(--vermelho); }
+    .ok {
+      color: var(--verde);
+    }
+
+    .erro {
+      color: var(--vermelho);
+    }
 
     .progresso {
       margin-top: 12px;
@@ -275,7 +297,7 @@
     }
 
     .placeholder {
-      min-height: 560px;
+      min-height: 520px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -303,7 +325,9 @@
       overflow: visible;
     }
 
-    .pagina-interna { padding: 40px 46px; }
+    .pagina-interna {
+      padding: 40px 46px;
+    }
 
     .titulo-grande {
       margin: 0 0 12px;
@@ -373,6 +397,7 @@
       color: #7b5a39;
       font-weight: bold;
       margin-bottom: 8px;
+      line-height: 1.5;
     }
 
     .lista {
@@ -456,21 +481,218 @@
       letter-spacing: 1px;
     }
 
-    @media (max-width: 1100px) {
-      .container { grid-template-columns: 1fr; }
-      .linha, .botoes { grid-template-columns: 1fr; }
-      .pagina-interna { padding: 30px 24px; }
-      .titulo-grande { font-size: 30px; }
+    /* MELHORIA PARA CELULAR E KODULAR */
+    @media (max-width: 800px) {
+      html,
+      body {
+        background: #f8f2ea;
+      }
+
+      header {
+        padding: 16px 10px;
+        border-bottom-width: 4px;
+      }
+
+      header h1 {
+        font-size: 27px;
+      }
+
+      header p {
+        font-size: 12px;
+      }
+
+      .container {
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+        display: block;
+      }
+
+      .card {
+        border-radius: 18px;
+        margin-bottom: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+      }
+
+      .card-head {
+        padding: 14px 14px;
+      }
+
+      .card-head h2 {
+        font-size: 19px;
+      }
+
+      .card-head p {
+        font-size: 12px;
+      }
+
+      .card-body {
+        padding: 12px;
+      }
+
+      .aviso,
+      .aviso-reservado,
+      .prompt-box,
+      .status {
+        font-size: 12.5px;
+        border-radius: 12px;
+      }
+
+      label {
+        font-size: 12.5px;
+      }
+
+      input,
+      select,
+      textarea {
+        font-size: 15px;
+        padding: 13px;
+        border-radius: 12px;
+      }
+
+      textarea {
+        min-height: 90px;
+      }
+
+      .linha,
+      .botoes {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      button {
+        width: 100%;
+        min-height: 50px;
+        font-size: 15px;
+      }
+
+      #resultado {
+        min-height: 420px;
+        padding: 10px;
+        border-radius: 16px;
+      }
+
+      .placeholder {
+        min-height: 360px;
+        padding: 18px;
+      }
+
+      .doc {
+        width: 100%;
+        max-width: 100%;
+        gap: 12px;
+      }
+
+      .pagina {
+        border-radius: 16px;
+      }
+
+      .pagina-interna {
+        padding: 18px 14px;
+      }
+
+      .titulo-grande {
+        font-size: 25px;
+        line-height: 1.18;
+      }
+
+      .subtitulo {
+        font-size: 15px;
+        margin-bottom: 12px;
+      }
+
+      .texto {
+        font-size: 15px;
+        line-height: 1.65;
+      }
+
+      .bloco,
+      .topico-revista {
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 14px;
+      }
+
+      .bloco h3,
+      .topico-revista h3 {
+        font-size: 18px;
+      }
+
+      .subtopico-revista {
+        padding: 12px;
+        border-radius: 12px;
+      }
+
+      .subtopico-revista h4 {
+        font-size: 16px;
+      }
+
+      .referencia {
+        font-size: 12.5px;
+      }
+
+      .lista {
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .chip {
+        font-size: 11px;
+        padding: 6px 9px;
+      }
+
+      .capa {
+        min-height: 560px;
+      }
+
+      .capa::before {
+        inset: 18px;
+      }
+
+      .capa-box {
+        padding: 28px 20px;
+      }
+
+      .capa h1 {
+        font-size: 29px;
+      }
+
+      .capa h2 {
+        font-size: 16px;
+      }
     }
 
+    /* IMPRESSÃO/PDF SEM ABRIR NOVA ABA */
     @media print {
-      header, .painel, .card-head, .modo-edicao {
+      @page {
+        size: A4;
+        margin: 12mm 10mm;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      header,
+      .painel,
+      .card-head,
+      .modo-edicao {
         display: none !important;
       }
 
-      body { background: white !important; }
+      html,
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: white !important;
+        overflow: visible !important;
+      }
 
-      .container, .card, .card-body, #resultado {
+      .container,
+      .card,
+      .card-body,
+      #resultado {
         display: block !important;
         width: 100% !important;
         max-width: none !important;
@@ -483,6 +705,210 @@
         padding: 0 !important;
         margin: 0 !important;
         background: white !important;
+      }
+
+      .doc {
+        display: block;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .pagina {
+        display: block;
+        width: 100%;
+        height: auto;
+        min-height: auto;
+        overflow: visible;
+        background: #fff;
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+        margin: 0;
+        padding: 0;
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      .pagina-interna {
+        padding: 0;
+        margin: 0;
+      }
+
+      .capa {
+        width: 100%;
+        min-height: 273mm;
+        color: white;
+        background:
+          radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 35%),
+          linear-gradient(135deg, #4a2d1a, #7a4f2f 45%, #c79b58);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        page-break-after: always;
+        break-after: page;
+        margin: -12mm -10mm 0 -10mm;
+        padding: 12mm 10mm;
+      }
+
+      .capa::before {
+        content: "";
+        position: absolute;
+        inset: 28px;
+        border: 2px solid rgba(255,255,255,0.35);
+        border-radius: 28px;
+      }
+
+      .capa-box {
+        width: 80%;
+        padding: 42px 34px;
+        border-radius: 28px;
+        background: rgba(255,255,255,0.14);
+        border: 1px solid rgba(255,255,255,0.30);
+        position: relative;
+        z-index: 2;
+      }
+
+      .capa h1 {
+        margin: 0 0 16px;
+        font-size: 38px;
+        line-height: 1.12;
+        text-transform: uppercase;
+      }
+
+      .capa h2 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.45;
+        font-weight: 500;
+      }
+
+      .selo {
+        display: inline-block;
+        padding: 9px 16px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.35);
+        background: rgba(255,255,255,0.14);
+        font-size: 12px;
+        margin-bottom: 20px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      .pagina-apresentacao-revista {
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .licao-revista {
+        page-break-before: always;
+        break-before: page;
+      }
+
+      .pagina-final-revista {
+        page-break-before: always;
+        break-before: page;
+      }
+
+      .titulo-grande {
+        margin: 0 0 8px;
+        color: #5b3a24;
+        font-size: 23px;
+        line-height: 1.18;
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      .subtitulo {
+        color: #555;
+        font-size: 14px;
+        line-height: 1.4;
+        margin-bottom: 10px;
+      }
+
+      .texto,
+      p {
+        font-size: 12.7px;
+        line-height: 1.48;
+        color: #222;
+        white-space: pre-line;
+        margin: 0 0 5px;
+      }
+
+      .bloco,
+      .topico-revista {
+        margin-top: 7px;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 7px;
+        background: #fff;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .topico-revista {
+        page-break-inside: auto;
+        break-inside: auto;
+      }
+
+      .bloco h3,
+      .topico-revista h3 {
+        margin: 0 0 4px;
+        color: #5b3a24;
+        font-size: 15px;
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      .subtopico-revista {
+        margin-top: 7px;
+        padding: 7px 9px;
+        border-left: 4px solid #c79b58;
+        background: #fff;
+        border-radius: 7px;
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .subtopico-revista h4 {
+        margin: 0 0 4px;
+        color: #333;
+        font-size: 13.8px;
+      }
+
+      .referencia {
+        font-size: 11.5px;
+        color: #7b5a39;
+        font-weight: bold;
+        margin-bottom: 4px;
+      }
+
+      .lista {
+        padding-left: 16px;
+        font-size: 12.7px;
+        line-height: 1.45;
+        margin: 4px 0;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin: 6px 0 8px;
+      }
+
+      .chip {
+        border: 1px solid #ddd;
+        background: #fff;
+        color: #333;
+        font-weight: bold;
+        border-radius: 999px;
+        padding: 3px 7px;
+        font-size: 10px;
       }
     }
   </style>
@@ -740,10 +1166,6 @@
       el("campoRevistaVersao").classList.add("campo-oculto");
       el("campoTraducaoBiblica").classList.add("campo-oculto");
 
-      if (recursoReservado(tipo)) {
-        setStatus("Recurso reservado. Para gerar este material, digite o código de acesso.", temCodigo() ? "ok" : "");
-      }
-
       if (tipo === "sermao") {
         el("campoQuantidade").classList.add("campo-oculto");
         el("campoTopicos").classList.remove("campo-oculto");
@@ -767,6 +1189,10 @@
         return;
       }
 
+      if (recursoReservado(tipo)) {
+        setStatus("Recurso reservado. Para gerar este material, digite o código de acesso.", temCodigo() ? "ok" : "");
+      }
+
       if (tipo === "ebook") {
         el("labelQuantidade").innerText = "Capítulos";
         return;
@@ -788,7 +1214,6 @@
         el("quantity").value = "4";
         el("campoRevistaVersao").classList.remove("campo-oculto");
         el("campoTraducaoBiblica").classList.remove("campo-oculto");
-        return;
       }
     }
 
@@ -995,6 +1420,10 @@
       return `<div class="texto">${escapeHtml(texto || "")}</div>`;
     }
 
+    function bloco(titulo, texto) {
+      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
+    }
+
     function capaMaterial(m, selo) {
       if (valor("coverMode") !== "com-capa") return "";
 
@@ -1027,14 +1456,14 @@
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
 
-              <div class="bloco"><h3>Texto bíblico</h3>${divTexto(m.biblicalText || "")}</div>
-              <div class="bloco"><h3>Tema</h3>${divTexto(m.theme || "")}</div>
-              <div class="bloco"><h3>Objetivo</h3>${divTexto(m.objective || "")}</div>
-              <div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction || "")}</div>
-              <div class="bloco"><h3>Contexto bíblico</h3>${divTexto(m.biblicalContext || "")}</div>
-              <div class="bloco"><h3>Explicação do texto</h3>${divTexto(m.textExplanation || "")}</div>
-              <div class="bloco"><h3>Proposição central</h3>${divTexto(m.centralProposition || "")}</div>
-              <div class="bloco"><h3>Frase de transição</h3>${divTexto(m.transitionPhrase || "")}</div>
+              ${bloco("Texto bíblico", m.biblicalText || "")}
+              ${bloco("Tema", m.theme || "")}
+              ${bloco("Objetivo", m.objective || "")}
+              ${bloco("Introdução", m.introduction || "")}
+              ${bloco("Contexto bíblico", m.biblicalContext || "")}
+              ${bloco("Explicação do texto", m.textExplanation || "")}
+              ${bloco("Proposição central", m.centralProposition || "")}
+              ${bloco("Frase de transição", m.transitionPhrase || "")}
 
               ${(m.points || []).map((pt, i) => `
                 <div class="bloco">
@@ -1046,9 +1475,9 @@
               `).join("")}
 
               <div class="bloco"><h3>Aplicações práticas</h3><ul class="lista">${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}</ul></div>
-              <div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion || "")}</div>
-              <div class="bloco"><h3>Apelo</h3>${divTexto(m.appeal || "")}</div>
-              <div class="bloco"><h3>Oração final</h3>${divTexto(m.finalPrayer || "")}</div>
+              ${bloco("Conclusão", m.conclusion || "")}
+              ${bloco("Apelo", m.appeal || "")}
+              ${bloco("Oração final", m.finalPrayer || "")}
             </div>
           </section>
         </article>
@@ -1102,10 +1531,6 @@
           </section>
         </article>
       `;
-    }
-
-    function bloco(titulo, texto) {
-      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
     }
 
     function renderArray(tituloGeral, arr, numeroCampo) {
@@ -1311,230 +1736,6 @@
       `).join("");
     }
 
-    function estilosParaPDF() {
-      return `
-        @page {
-          size: A4;
-          margin: 12mm 10mm;
-        }
-
-        * {
-          box-sizing: border-box;
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-
-        html, body {
-          margin: 0;
-          padding: 0;
-          background: #fff;
-          font-family: Arial, Helvetica, sans-serif;
-          color: #222;
-        }
-
-        .doc {
-          display: block;
-          width: 100%;
-          max-width: none;
-          margin: 0;
-          padding: 0;
-        }
-
-        .pagina {
-          display: block;
-          width: 100%;
-          height: auto;
-          min-height: auto;
-          overflow: visible;
-          background: #fff;
-          border: none;
-          box-shadow: none;
-          border-radius: 0;
-          margin: 0;
-          padding: 0;
-          page-break-after: auto;
-          break-after: auto;
-        }
-
-        .pagina-interna {
-          padding: 0;
-          margin: 0;
-        }
-
-        .capa {
-          width: 100%;
-          min-height: 273mm;
-          color: white;
-          background:
-            radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 35%),
-            linear-gradient(135deg, #4a2d1a, #7a4f2f 45%, #c79b58);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          position: relative;
-          overflow: hidden;
-          page-break-after: always;
-          break-after: page;
-          margin: -12mm -10mm 0 -10mm;
-          padding: 12mm 10mm;
-        }
-
-        .capa::before {
-          content: "";
-          position: absolute;
-          inset: 28px;
-          border: 2px solid rgba(255,255,255,0.35);
-          border-radius: 28px;
-        }
-
-        .capa-box {
-          width: 80%;
-          padding: 42px 34px;
-          border-radius: 28px;
-          background: rgba(255,255,255,0.14);
-          border: 1px solid rgba(255,255,255,0.30);
-          position: relative;
-          z-index: 2;
-        }
-
-        .capa h1 {
-          margin: 0 0 16px;
-          font-size: 38px;
-          line-height: 1.12;
-          text-transform: uppercase;
-        }
-
-        .capa h2 {
-          margin: 0;
-          font-size: 18px;
-          line-height: 1.45;
-          font-weight: 500;
-        }
-
-        .selo {
-          display: inline-block;
-          padding: 9px 16px;
-          border-radius: 999px;
-          border: 1px solid rgba(255,255,255,0.35);
-          background: rgba(255,255,255,0.14);
-          font-size: 12px;
-          margin-bottom: 20px;
-          font-weight: bold;
-          letter-spacing: 1px;
-        }
-
-        .pagina-apresentacao-revista {
-          page-break-after: always;
-          break-after: page;
-        }
-
-        .licao-revista {
-          page-break-before: always;
-          break-before: page;
-        }
-
-        .pagina-final-revista {
-          page-break-before: always;
-          break-before: page;
-        }
-
-        .titulo-grande {
-          margin: 0 0 8px;
-          color: #5b3a24;
-          font-size: 23px;
-          line-height: 1.18;
-          page-break-after: avoid;
-          break-after: avoid;
-        }
-
-        .subtitulo {
-          color: #555;
-          font-size: 14px;
-          line-height: 1.4;
-          margin-bottom: 10px;
-        }
-
-        .texto, p {
-          font-size: 12.7px;
-          line-height: 1.48;
-          color: #222;
-          white-space: pre-line;
-          margin: 0 0 5px;
-        }
-
-        .bloco, .topico-revista {
-          margin-top: 7px;
-          padding: 8px 10px;
-          border: 1px solid #ddd;
-          border-radius: 7px;
-          background: #fff;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        .topico-revista {
-          page-break-inside: auto;
-          break-inside: auto;
-        }
-
-        .bloco h3, .topico-revista h3 {
-          margin: 0 0 4px;
-          color: #5b3a24;
-          font-size: 15px;
-          page-break-after: avoid;
-          break-after: avoid;
-        }
-
-        .subtopico-revista {
-          margin-top: 7px;
-          padding: 7px 9px;
-          border-left: 4px solid #c79b58;
-          background: #fff;
-          border-radius: 7px;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        .subtopico-revista h4 {
-          margin: 0 0 4px;
-          color: #333;
-          font-size: 13.8px;
-        }
-
-        .referencia {
-          font-size: 11.5px;
-          color: #7b5a39;
-          font-weight: bold;
-          margin-bottom: 4px;
-        }
-
-        .lista {
-          padding-left: 16px;
-          font-size: 12.7px;
-          line-height: 1.45;
-          margin: 4px 0;
-        }
-
-        .chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
-          margin: 6px 0 8px;
-        }
-
-        .chip {
-          border: 1px solid #ddd;
-          background: #fff;
-          color: #333;
-          font-weight: bold;
-          border-radius: 999px;
-          padding: 3px 7px;
-          font-size: 10px;
-        }
-      `;
-    }
-
     function salvarPDF() {
       finalizarEdicao();
 
@@ -1545,38 +1746,11 @@
         return;
       }
 
-      const janela = window.open("", "_blank");
+      setStatus("Preparando PDF. Na próxima tela, escolha Salvar como PDF.", "ok");
 
-      if (!janela) {
-        setStatus("O navegador bloqueou a janela de impressão. Permita pop-ups ou tente novamente.", "erro");
-        return;
-      }
-
-      janela.document.open();
-      janela.document.write(`
-        <!DOCTYPE html>
-        <html lang="pt-BR">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>VERBO IA - PDF</title>
-          <style>${estilosParaPDF()}</style>
-        </head>
-        <body>
-          ${conteudo}
-          <script>
-            window.onload = function() {
-              setTimeout(function() {
-                window.print();
-              }, 500);
-            };
-          <\/script>
-        </body>
-        </html>
-      `);
-      janela.document.close();
-
-      setStatus("Abrindo uma página limpa para salvar em PDF.", "ok");
+      setTimeout(function () {
+        window.print();
+      }, 300);
     }
 
     function ativarEdicao() {
