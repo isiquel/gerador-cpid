@@ -25,8 +25,10 @@
       box-sizing: border-box;
     }
 
+    html,
     body {
       margin: 0;
+      padding: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: linear-gradient(180deg, #f8f2ea, #eee2d4);
       color: var(--texto);
@@ -263,7 +265,7 @@
       border-radius: 22px;
       border: 1px solid #e6d8c7;
       box-shadow: var(--sombra);
-      overflow: hidden;
+      overflow: visible;
       page-break-after: always;
     }
 
@@ -397,6 +399,8 @@
       margin-top: 28px;
       padding-top: 12px;
       border-top: 1px solid #ddd;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .sermao ul {
@@ -476,8 +480,20 @@
     }
 
     @media print {
+      @page {
+        size: A4;
+        margin: 0;
+      }
+
+      html,
       body {
-        background: white;
+        background: white !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
       }
 
       header,
@@ -487,37 +503,97 @@
       }
 
       .container {
-        display: block;
-        max-width: none;
-        margin: 0;
-        padding: 0;
+        display: block !important;
+        max-width: none !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
       }
 
       .card,
-      #resultado,
-      .pagina {
-        box-shadow: none;
-        border-radius: 0;
-      }
-
+      .card-body,
       #resultado {
-        border: none;
-        padding: 0;
-        background: white;
+        display: block !important;
+        width: 100% !important;
+        max-width: none !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: white !important;
       }
 
       .doc {
-        max-width: none;
-        gap: 0;
+        display: block !important;
+        max-width: none !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+        overflow: visible !important;
       }
 
       .pagina {
-        border: none;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+        background: white !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: auto;
+        break-inside: auto;
+      }
+
+      .pagina:last-child {
+        page-break-after: auto;
+        break-after: auto;
       }
 
       .pagina-interna,
       .sermao .pagina-interna {
-        padding: 22mm 18mm;
+        padding: 18mm 16mm !important;
+      }
+
+      .sermao {
+        display: block !important;
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+
+      .sermao .pagina {
+        page-break-after: auto !important;
+        break-after: auto !important;
+        border: none !important;
+      }
+
+      .sermao h2,
+      .sermao h3,
+      .sermao .ponto,
+      .bloco {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      .placeholder {
+        display: none !important;
       }
 
       * {
@@ -543,11 +619,11 @@
 
       <div class="card-body">
         <div class="aviso">
-          Sermão agora sai como sermão: sem caixa de destaque, sem contracapa, sem dados editoriais e sem aparência de e-book.
+          O botão limpar tudo agora limpa também os campos do formulário, deixando pronto para criar outro material.
         </div>
 
         <label for="materialType">Tipo de material</label>
-        <select id="materialType" onchange="atualizarOpcoesPorTipo()">
+        <select id="materialType" onchange="atualizarOpcoesPorTipo()" autocomplete="off">
           <option value="ebook">E-book cristão</option>
           <option value="livro">Livro cristão</option>
           <option value="sermao">Sermão</option>
@@ -558,26 +634,26 @@
         </select>
 
         <label for="title">Título</label>
-        <input id="title" type="text" value="Coração Blindado: Vencendo a Ansiedade na Presença de Deus" />
+        <input id="title" type="text" autocomplete="off" value="Coração Blindado: Vencendo a Ansiedade na Presença de Deus" />
 
         <label for="subtitle">Subtítulo</label>
-        <input id="subtitle" type="text" value="Fé, descanso e confiança para uma alma sobrecarregada" />
+        <input id="subtitle" type="text" autocomplete="off" value="Fé, descanso e confiança para uma alma sobrecarregada" />
 
         <label for="theme">Tema principal</label>
-        <textarea id="theme">Como vencer a ansiedade, o medo, a sobrecarga emocional e a inquietação da alma por meio da fé, da oração e da confiança em Deus.</textarea>
+        <textarea id="theme" autocomplete="off">Como vencer a ansiedade, o medo, a sobrecarga emocional e a inquietação da alma por meio da fé, da oração e da confiança em Deus.</textarea>
 
         <label for="biblicalBase">Texto bíblico base</label>
-        <input id="biblicalBase" type="text" value="Filipenses 4.6-7; Mateus 6.25-34; 1 Pedro 5.7; Salmos 46.10; Isaías 26.3" />
+        <input id="biblicalBase" type="text" autocomplete="off" value="Filipenses 4.6-7; Mateus 6.25-34; 1 Pedro 5.7; Salmos 46.10; Isaías 26.3" />
 
         <div class="linha">
           <div id="campoQuantidade">
             <label for="quantity" id="labelQuantidade">Quantidade</label>
-            <input id="quantity" type="number" min="1" max="30" value="3" />
+            <input id="quantity" type="number" min="1" max="30" value="3" autocomplete="off" />
           </div>
 
           <div id="campoTopicos">
             <label for="sermonPoints">Tópicos do sermão</label>
-            <select id="sermonPoints">
+            <select id="sermonPoints" autocomplete="off">
               <option value="3" selected>3 tópicos</option>
               <option value="4">4 tópicos</option>
               <option value="5">5 tópicos</option>
@@ -586,24 +662,24 @@
         </div>
 
         <label for="targetAudience">Público-alvo</label>
-        <input id="targetAudience" type="text" value="Igreja em geral" />
+        <input id="targetAudience" type="text" autocomplete="off" value="Igreja em geral" />
 
         <div class="linha">
           <div>
             <label for="author">Autor / comentarista</label>
-            <input id="author" type="text" value="Pr. Isiquel Rodrigues" />
+            <input id="author" type="text" autocomplete="off" value="Pr. Isiquel Rodrigues" />
           </div>
 
           <div>
             <label for="ministry">Editora / ministério</label>
-            <input id="ministry" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
+            <input id="ministry" type="text" autocomplete="off" value="CPID - Casa Publicadora da Igreja de Deus" />
           </div>
         </div>
 
         <div class="linha">
           <div>
             <label for="depthLevel">Profundidade</label>
-            <select id="depthLevel">
+            <select id="depthLevel" autocomplete="off">
               <option value="profundo">Profundo</option>
               <option value="muito profundo" selected>Muito profundo</option>
               <option value="pastoral e profundo">Pastoral e profundo</option>
@@ -612,7 +688,7 @@
 
           <div id="campoVisual">
             <label for="visualStyle">Estilo visual</label>
-            <select id="visualStyle">
+            <select id="visualStyle" autocomplete="off">
               <option value="colorido">Colorido</option>
               <option value="preto e branco" selected>Preto e branco</option>
             </select>
@@ -621,21 +697,21 @@
 
         <div id="campoCapa">
           <label for="coverMode">Capa</label>
-          <select id="coverMode">
+          <select id="coverMode" autocomplete="off">
             <option value="com-capa">Com capa</option>
             <option value="sem-capa" selected>Sem capa</option>
           </select>
         </div>
 
         <label for="tone">Tom do material</label>
-        <input id="tone" type="text" value="pastoral, bíblico, atual, profundo, acolhedor e encorajador" />
+        <input id="tone" type="text" autocomplete="off" value="pastoral, bíblico, atual, profundo, acolhedor e encorajador" />
 
         <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">
           Gerar material
         </button>
 
         <div class="botoes">
-          <button class="btn-verde" type="button" onclick="window.print()">Salvar em PDF</button>
+          <button class="btn-verde" type="button" onclick="salvarPDF()">Salvar em PDF</button>
           <button class="btn-cinza" type="button" onclick="limparTudo()">Limpar tudo</button>
         </div>
 
@@ -729,7 +805,7 @@
         el("campoCapa").classList.add("campo-oculto");
         el("visualStyle").value = "preto e branco";
         el("quantity").value = "1";
-        setStatus("Modo Sermão: sem aparência de e-book, com texto base, introdução, contexto, tópicos, aplicações, conclusão, apelo e oração.", "ok");
+        setStatus("Modo Sermão: texto base, introdução, contexto, tópicos, aplicações, conclusão, apelo e oração.", "ok");
         return;
       }
 
@@ -768,7 +844,7 @@
 
       if (tipo === "revista") {
         el("labelQuantidade").innerText = "Lições";
-        setStatus("Modo Revista: formato de lição bíblica com texto áureo, verdade prática e perguntas.", "ok");
+        setStatus("Modo Revista: lição bíblica com texto áureo, verdade prática e perguntas.", "ok");
       }
     }
 
@@ -1208,16 +1284,52 @@
       `;
     }
 
+    function salvarPDF() {
+      setStatus("Abrindo impressão. Na tela seguinte, escolha Salvar como PDF.", "ok");
+
+      setTimeout(function () {
+        window.print();
+      }, 300);
+    }
+
+    function limparCamposFormulario() {
+      el("materialType").value = "ebook";
+      el("title").value = "";
+      el("subtitle").value = "";
+      el("theme").value = "";
+      el("biblicalBase").value = "";
+      el("quantity").value = "3";
+      el("sermonPoints").value = "3";
+      el("targetAudience").value = "";
+      el("depthLevel").value = "muito profundo";
+      el("visualStyle").value = "preto e branco";
+      el("coverMode").value = "sem-capa";
+      el("tone").value = "";
+
+      el("author").value = "Pr. Isiquel Rodrigues";
+      el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
+
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (e) {}
+
+      atualizarOpcoesPorTipo();
+    }
+
     function limparTudo() {
       materialAtual = null;
+
+      limparCamposFormulario();
+
       setBarra(0);
-      setStatus("Tudo limpo. Pronto para gerar um novo material.", "ok");
+      setStatus("Tudo limpo. Os campos do formulário também foram limpos.", "ok");
 
       el("resultado").innerHTML = `
         <div class="placeholder">
           <div>
             <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
-            <p style="margin:0;">Escolha o tipo de material e clique em <strong>Gerar material</strong>.</p>
+            <p style="margin:0;">Os campos foram limpos. Preencha um novo material e clique em <strong>Gerar material</strong>.</p>
           </div>
         </div>
       `;
@@ -1225,6 +1337,7 @@
 
     function copiarTexto() {
       const textoCopiar = el("resultado").innerText || "";
+
       if (!textoCopiar.trim()) {
         alert("Não há texto para copiar.");
         return;
@@ -1236,22 +1349,22 @@
 
     function preencherTeste() {
       el("materialType").value = "sermao";
-      el("title").value = "Jesus Venceu o Diabo para Libertar a Família";
-      el("subtitle").value = "A vitória de Cristo sobre as trevas";
-      el("theme").value = "Mostre que Jesus venceu o diabo, desfez as obras das trevas e veio para libertar vidas e famílias. O sermão deve ser forte, bíblico, pastoral e aplicável.";
-      el("biblicalBase").value = "1 João 3.8; Colossenses 2.14-15; João 8.36; Lucas 10.19";
-      el("sermonPoints").value = "3";
+      el("title").value = "Missões: O Projeto de Deus que o Inferno Não Pode Parar";
+      el("subtitle").value = "Quando a igreja entende o chamado, ela deixa de ser plateia e se torna instrumento nas mãos de Deus";
+      el("theme").value = "Crie um sermão cristão profundo, bíblico, pastoral e missionário sobre missões como o projeto de Deus para alcançar vidas, famílias, cidades e nações. Mostre que desde o Éden o inimigo tenta frustrar os propósitos de Deus, mas Deus continua levantando homens e mulheres para cumprir Sua missão na terra. Explique que missões não é apenas uma programação da igreja, mas o coração de Deus revelado na história da redenção. Mostre que Deus chamou Abraão para abençoar todas as famílias da terra, enviou profetas para chamar o povo ao arrependimento, enviou Seu Filho Jesus para salvar os perdidos, e agora envia a igreja pelo poder do Espírito Santo. O sermão deve mostrar que o diabo tenta impedir o avanço da missão por meio do pecado, da distração, do medo, da divisão, do comodismo e da frieza espiritual. Mas a igreja cheia do Espírito não recua, não se cala e não perde a visão.";
+      el("biblicalBase").value = "Mateus 28.18-20; Marcos 16.15; Atos 1.8; Gênesis 12.1-3; Romanos 10.13-15";
+      el("sermonPoints").value = "4";
       el("quantity").value = "1";
-      el("targetAudience").value = "Culto de libertação, famílias e igreja em geral";
+      el("targetAudience").value = "Igreja em geral, líderes, obreiros, jovens, evangelistas e todos os crentes que precisam despertar para a obra missionária";
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "preto e branco";
       el("coverMode").value = "sem-capa";
-      el("tone").value = "pastoral, bíblico, forte, profundo, espiritual e encorajador";
+      el("tone").value = "pastoral, bíblico, missionário, forte, profundo, despertador, espiritual, confrontador e encorajador";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste de sermão preenchido. Clique em Gerar material.", "ok");
+      setStatus("Teste de sermão missionário preenchido. Clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
