@@ -28,7 +28,6 @@ module.exports = async function handler(req, res) {
     ].filter(Boolean);
 
     const prompt = buildPrompt(form);
-
     const result = await callGeminiText(apiKey, models, prompt);
     const text = extractText(result.data);
     const material = parseJson(text);
@@ -36,7 +35,7 @@ module.exports = async function handler(req, res) {
     if (!material) {
       return res.status(500).json({
         ok: false,
-        error: "A IA não retornou um JSON válido. Tente gerar novamente."
+        error: "A IA não retornou um JSON válido. Tente novamente."
       });
     }
 
@@ -75,7 +74,12 @@ function normalizeForm(body) {
     3
   );
 
+  let sermonPoints = Number(body.sermonPoints || body.topicos || 3);
+
   if (!Number.isFinite(quantidade)) quantidade = 3;
+  if (!Number.isFinite(sermonPoints)) sermonPoints = 3;
+
+  sermonPoints = Math.max(3, Math.min(sermonPoints, 5));
 
   if (tipo === "sermao") {
     quantidade = 1;
@@ -88,6 +92,7 @@ function normalizeForm(body) {
   return {
     appName: "VERBO IA",
     materialType: tipo,
+    sermonPoints,
     title: String(body.title || body.titulo || "Material cristão").trim(),
     subtitle: String(body.subtitle || body.subtitulo || "").trim(),
     theme: String(body.theme || body.tema || "").trim(),
@@ -97,39 +102,36 @@ function normalizeForm(body) {
     author: String(body.author || body.autor || "Pr. Isiquel Rodrigues").trim(),
     ministry: String(body.ministry || body.ministerio || "CPID - Casa Publicadora da Igreja de Deus").trim(),
     depthLevel: String(body.depthLevel || body.profundidade || "muito profundo").trim(),
-    visualStyle: String(body.visualStyle || body.estiloVisual || "colorido").trim(),
-    coverMode: String(body.coverMode || body.capa || "sem-capa").trim(),
-    tone: String(body.tone || body.tom || "pastoral, bíblico, atual, profundo e encorajador").trim()
+    visualStyle: String(body.visualStyle || body.estiloVisual || "preto e branco").trim(),
+    tone: String(body.tone || body.tom || "pastoral, bíblico, profundo e encorajador").trim()
   };
 }
 
 function buildPrompt(form) {
   if (form.materialType === "sermao") return promptSermao(form);
   if (form.materialType === "livro") return promptLivro(form);
-  if (form.materialType === "ebook") return promptEbook(form);
   if (form.materialType === "devocional") return promptDevocional(form);
   if (form.materialType === "estudo") return promptEstudo(form);
   if (form.materialType === "curso") return promptCurso(form);
   if (form.materialType === "revista") return promptRevista(form);
-
   return promptEbook(form);
 }
 
 function baseDados(form, nome) {
   return `
-DADOS:
+DADOS DO MATERIAL:
 Tipo: ${nome}
 Título: ${form.title}
-Subtítulo: ${form.subtitle || "Crie se necessário"}
+Subtítulo: ${form.subtitle || "Crie se for necessário"}
 Tema: ${form.theme || form.title}
 Texto bíblico base: ${form.biblicalBase || "Escolha textos bíblicos coerentes"}
 Quantidade: ${form.quantity}
+Quantidade de tópicos do sermão: ${form.sermonPoints}
 Público-alvo: ${form.targetAudience}
 Autor: ${form.author}
 Ministério/Editora: ${form.ministry}
 Profundidade: ${form.depthLevel}
 Tom: ${form.tone}
-Estilo visual: ${form.visualStyle}
 `.trim();
 }
 
@@ -152,27 +154,33 @@ function promptSermao(form) {
   return `
 Você é um pregador cristão, expositor bíblico, pastor e teólogo.
 
-Crie um SERMÃO CRISTÃO. 
-Não faça parecer e-book, livro ou revista. 
-O formato precisa ser de sermão pregável no púlpito.
+Crie um SERMÃO CRISTÃO pregável no púlpito.
+Não faça parecer e-book.
+Não faça parecer livro.
+Não faça parecer revista.
+Não coloque "sobre o autor", "contracapa", "dados editoriais" ou "caixa de destaque".
 
 ${baseDados(form, "Sermão cristão")}
 
 ${regrasJson()}
 
 ESTRUTURA DO SERMÃO:
-- Título forte.
+- Título.
 - Texto bíblico base.
 - Tema.
 - Objetivo do sermão.
-- Introdução bem expandida.
-- Contexto bíblico do texto.
-- Explicação do versículo ou passagem.
+- Introdução bem expandida, forte e pastoral.
+- Contexto bíblico da passagem.
+- Explicação do texto bíblico.
 - Proposição central.
-- Frase de transição.
-- 3 ou 4 pontos principais.
-- Cada ponto deve ter explicação bíblica, aplicação e ilustração pastoral.
-- Aplicações práticas para a vida diária.
+- Frase de transição para os pontos.
+- Exatamente ${form.sermonPoints} pontos principais.
+- Cada ponto deve ter:
+  1. Título do ponto.
+  2. Explicação bíblica.
+  3. Aplicação pastoral.
+  4. Ilustração ou exemplo prático.
+- Aplicações práticas finais para a vida diária.
 - Conclusão forte.
 - Apelo final.
 - Oração final.
@@ -197,7 +205,6 @@ FORMATO JSON:
     {
       "title": "",
       "explanation": "",
-      "biblicalSupport": "",
       "pastoralApplication": "",
       "illustration": ""
     }
@@ -207,31 +214,24 @@ FORMATO JSON:
   "appeal": "",
   "finalPrayer": ""
 }
+
+IMPORTANTE:
+O sermão precisa ter exatamente ${form.sermonPoints} pontos.
+A introdução deve ser bem desenvolvida.
+A conclusão deve ser forte e espiritual.
+O sermão deve ser direto para ministração, não para leitura de e-book.
 `.trim();
 }
 
 function promptLivro(form) {
   return `
-Você é um escritor cristão, pastor, teólogo e autor de livros de formação espiritual.
+Você é um escritor cristão, pastor e autor de livros de formação espiritual.
 
 Crie um LIVRO CRISTÃO.
-Não faça parecer e-book curto. 
-Um livro precisa ter tom mais literário, capítulos mais densos, abertura editorial, prefácio e desenvolvimento mais maduro.
+Livro não é e-book. Deve ter tom mais literário, mais maduro e capítulos mais densos.
 
 ${baseDados(form, "Livro cristão")}
-
 ${regrasJson()}
-
-ESTRUTURA DO LIVRO:
-- Capa textual.
-- Prefácio.
-- Apresentação.
-- Introdução geral.
-- Capítulos com tom de livro: mais narrativo, profundo e contínuo.
-- Cada capítulo deve conter abertura literária, desenvolvimento, base bíblica, aplicação pastoral e fechamento.
-- Conclusão final do livro.
-- Palavra ao leitor.
-- Sobre o autor.
 
 FORMATO JSON:
 {
@@ -262,27 +262,20 @@ FORMATO JSON:
   "authorBio": "",
   "backCoverText": ""
 }
+
+Crie exatamente ${form.quantity} capítulos.
 `.trim();
 }
 
 function promptEbook(form) {
   return `
-Você é um escritor cristão, pastor, teólogo e organizador editorial.
+Você é um escritor cristão, pastor e organizador editorial.
 
 Crie um E-BOOK CRISTÃO.
-O e-book deve ser moderno, prático, profundo, organizado e fácil de ler.
-Não faça parecer sermão nem livro longo.
+E-book deve ser moderno, prático, organizado e fácil de ler.
 
 ${baseDados(form, "E-book cristão")}
-
 ${regrasJson()}
-
-ESTRUTURA DO E-BOOK:
-- Capa textual.
-- Apresentação.
-- Sumário.
-- Capítulos objetivos, profundos e práticos.
-- Cada capítulo com abertura, ideia central, 3 seções, destaque, perguntas, aplicação e oração.
 
 FORMATO JSON:
 {
@@ -293,7 +286,6 @@ FORMATO JSON:
   "targetAudience": "",
   "author": "",
   "ministry": "",
-  "coverBadge": "",
   "summaryIntro": "",
   "chapters": [
     {
@@ -315,30 +307,22 @@ FORMATO JSON:
       "conclusion": ""
     }
   ],
-  "closing": "",
-  "authorBio": "",
-  "backCoverText": ""
+  "closing": ""
 }
+
+Crie exatamente ${form.quantity} capítulos.
 `.trim();
 }
 
 function promptDevocional(form) {
   return `
-Você é um escritor devocional cristão, pastor e conselheiro espiritual.
+Você é um escritor devocional cristão e pastor.
 
 Crie um DEVOCIONAL CRISTÃO.
-Devocional não é e-book, não é livro e não é sermão.
-Precisa ser mais curto, direto, reflexivo, bíblico, acolhedor e aplicável ao dia.
+Devocional deve ser curto, direto, reflexivo, bíblico e aplicável ao dia.
 
 ${baseDados(form, "Devocional cristão")}
-
 ${regrasJson()}
-
-ESTRUTURA DO DEVOCIONAL:
-- Título geral.
-- Apresentação curta.
-- Dias devocionais.
-- Cada dia deve conter: título, versículo, reflexão breve, aplicação prática, pergunta de meditação e oração curta.
 
 FORMATO JSON:
 {
@@ -363,32 +347,20 @@ FORMATO JSON:
   ],
   "finalWord": ""
 }
+
+Crie exatamente ${form.quantity} dias devocionais.
 `.trim();
 }
 
 function promptEstudo(form) {
   return `
-Você é um professor de Bíblia, teólogo e expositor das Escrituras.
+Você é um professor de Bíblia e teólogo.
 
 Crie um ESTUDO BÍBLICO/TEOLÓGICO.
-Não faça parecer e-book, livro ou sermão.
-O estudo precisa ser didático, analítico, explicativo e com profundidade bíblica.
+Estudo deve ser didático, analítico, explicativo e bíblico.
 
 ${baseDados(form, "Estudo bíblico/teológico")}
-
 ${regrasJson()}
-
-ESTRUTURA DO ESTUDO:
-- Tema.
-- Objetivo.
-- Texto base.
-- Introdução.
-- Contexto bíblico.
-- Exposição em partes.
-- Análise teológica.
-- Aplicações práticas.
-- Perguntas de revisão.
-- Conclusão.
 
 FORMATO JSON:
 {
@@ -396,9 +368,6 @@ FORMATO JSON:
   "title": "",
   "theme": "",
   "biblicalText": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
   "objective": "",
   "introduction": "",
   "biblicalContext": "",
@@ -414,28 +383,20 @@ FORMATO JSON:
   "reviewQuestions": ["", "", "", ""],
   "conclusion": ""
 }
+
+Crie exatamente ${form.quantity} partes.
 `.trim();
 }
 
 function promptCurso(form) {
   return `
-Você é um professor cristão, pastor e organizador de cursos bíblicos.
+Você é um professor cristão e organizador de cursos bíblicos.
 
 Crie um CURSO CRISTÃO.
-Não faça parecer e-book, livro ou sermão.
-Curso precisa vir em formato de aulas, com objetivos, conteúdo, atividades e tarefas.
+Curso deve vir em formato de aulas, com objetivos, conteúdo, atividades e tarefas.
 
 ${baseDados(form, "Curso cristão")}
-
 ${regrasJson()}
-
-ESTRUTURA DO CURSO:
-- Nome do curso.
-- Descrição.
-- Público-alvo.
-- Objetivo geral.
-- Aulas.
-- Cada aula deve conter: objetivo, introdução, conteúdo, textos bíblicos, atividade, tarefa e resumo.
 
 FORMATO JSON:
 {
@@ -463,26 +424,20 @@ FORMATO JSON:
   "finalEvaluation": "",
   "finalWord": ""
 }
+
+Crie exatamente ${form.quantity} aulas.
 `.trim();
 }
 
 function promptRevista(form) {
   return `
-Você é um comentarista de revista bíblica, pastor, teólogo e professor de EBD.
+Você é um comentarista de revista bíblica, pastor e professor de EBD.
 
 Crie uma REVISTA DE ENSINO BÍBLICO.
-Não faça parecer e-book nem livro.
-Precisa parecer lição de revista bíblica, com estrutura de professor.
+Revista deve parecer lição bíblica, não e-book.
 
 ${baseDados(form, "Revista de ensino bíblico")}
-
 ${regrasJson()}
-
-ESTRUTURA DA REVISTA:
-- Título da revista.
-- Apresentação do trimestre.
-- Lições.
-- Cada lição deve conter: título, texto áureo, verdade prática, leitura bíblica, objetivos, introdução, tópicos, aplicação, conclusão e perguntas com respostas.
 
 FORMATO JSON:
 {
@@ -503,31 +458,24 @@ FORMATO JSON:
       "objectives": ["", "", ""],
       "introduction": "",
       "topics": [
-        {
-          "title": "",
-          "content": ""
-        },
-        {
-          "title": "",
-          "content": ""
-        },
-        {
-          "title": "",
-          "content": ""
-        }
+        { "title": "", "content": "" },
+        { "title": "", "content": "" },
+        { "title": "", "content": "" }
       ],
       "lifeApplication": "",
       "conclusion": "",
       "questionsAndAnswers": [
-        {
-          "question": "",
-          "answer": ""
-        }
+        { "question": "", "answer": "" },
+        { "question": "", "answer": "" },
+        { "question": "", "answer": "" },
+        { "question": "", "answer": "" }
       ]
     }
   ],
   "finalWord": ""
 }
+
+Crie exatamente ${form.quantity} lições.
 `.trim();
 }
 
@@ -546,11 +494,7 @@ async function callGeminiText(apiKey, models, prompt) {
           body: JSON.stringify({
             contents: [
               {
-                parts: [
-                  {
-                    text: prompt
-                  }
-                ]
+                parts: [{ text: prompt }]
               }
             ],
             generationConfig: {
@@ -568,10 +512,7 @@ async function callGeminiText(apiKey, models, prompt) {
         throw new Error(data?.error?.message || `Erro no modelo ${model}`);
       }
 
-      return {
-        modelUsed: model,
-        data
-      };
+      return { modelUsed: model, data };
 
     } catch (error) {
       lastError = error;
@@ -604,7 +545,7 @@ function parseJson(text) {
     if (start >= 0 && end > start) {
       try {
         return JSON.parse(cleaned.slice(start, end + 1));
-      } catch (error) {
+      } catch (_) {
         return null;
       }
     }
