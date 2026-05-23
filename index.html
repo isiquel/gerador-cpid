@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Gerador CPID de Materiais Bíblicos</title>
+  <title>Verbo IA - Gerador de Materiais Bíblicos</title>
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
@@ -19,6 +19,7 @@
       --verde: #2e7d32;
       --vermelho: #b3261e;
       --borda: #ddd;
+      --texto: #222;
     }
 
     * { box-sizing: border-box; }
@@ -27,34 +28,37 @@
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       background: var(--bege);
-      color: #222;
+      color: var(--texto);
     }
 
     header {
       background: linear-gradient(135deg, var(--marrom), var(--marrom-claro));
       color: white;
-      padding: 28px 20px;
+      padding: 30px 20px;
       text-align: center;
       border-bottom: 5px solid var(--dourado);
     }
 
     header h1 {
       margin: 0;
-      font-size: 30px;
+      font-size: 40px;
+      letter-spacing: 1px;
     }
 
     header p {
       margin: 10px 0 0;
       font-size: 16px;
+      opacity: 0.96;
     }
 
     .container {
-      max-width: 1250px;
+      max-width: 1280px;
       margin: 30px auto;
       padding: 0 18px;
       display: grid;
       grid-template-columns: 390px 1fr;
       gap: 22px;
+      align-items: start;
     }
 
     .card {
@@ -95,7 +99,7 @@
 
     textarea {
       resize: vertical;
-      min-height: 95px;
+      min-height: 100px;
     }
 
     input:focus,
@@ -189,25 +193,50 @@
       border: 1px solid #eadcc2;
       border-left: 6px solid var(--dourado);
       border-radius: 10px;
-      padding: 24px;
-      min-height: 590px;
-      line-height: 1.7;
-      font-size: 16px;
+      padding: 34px;
+      min-height: 620px;
+      line-height: 1.75;
+      font-size: 17px;
       overflow-wrap: break-word;
+      max-width: 900px;
+      margin: 0 auto;
     }
 
-    #resultado h1,
-    #resultado h2,
+    #resultado h1 {
+      color: var(--marrom);
+      text-align: center;
+      font-size: 34px;
+      margin-top: 8px;
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--dourado);
+      padding-bottom: 12px;
+    }
+
+    #resultado h2 {
+      color: var(--marrom);
+      font-size: 26px;
+      margin-top: 34px;
+      border-bottom: 1px solid #d7c2a0;
+      padding-bottom: 8px;
+    }
+
     #resultado h3 {
       color: var(--marrom);
+      font-size: 21px;
+      margin-top: 26px;
+    }
+
+    #resultado p {
+      text-align: justify;
     }
 
     #resultado blockquote {
       border-left: 4px solid var(--dourado);
-      padding-left: 14px;
+      padding: 12px 16px;
       color: #5d4300;
       background: #fff8e1;
       margin-left: 0;
+      border-radius: 8px;
     }
 
     .rodape {
@@ -221,22 +250,52 @@
       .container { grid-template-columns: 1fr; }
       .linha { grid-template-columns: 1fr; }
       .botoes { grid-template-columns: 1fr; }
+      #resultado {
+        max-width: 100%;
+        padding: 22px;
+      }
     }
 
     @media print {
       body { background: white; }
       header, .painel, .rodape { display: none !important; }
-      .container { display: block; margin: 0; padding: 0; }
-      .card { box-shadow: none; border: none; }
-      #resultado { border: none; padding: 0; font-size: 17px; }
+
+      .container {
+        display: block;
+        margin: 0;
+        padding: 0;
+      }
+
+      .card {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+      }
+
+      #resultado {
+        border: none;
+        max-width: 100%;
+        padding: 0 45px;
+        font-size: 17px;
+        line-height: 1.75;
+      }
+
+      #resultado h1 {
+        text-align: center;
+        font-size: 32px;
+      }
+
+      #resultado p {
+        text-align: justify;
+      }
     }
   </style>
 </head>
 
 <body>
   <header>
-    <h1>Gerador CPID de Materiais Bíblicos</h1>
-    <p>Revistas de EBD, lições bíblicas, apostilas, sermões, estudos, livros e devocionais com Gemini seguro na Vercel</p>
+    <h1>Verbo IA</h1>
+    <p>Gerador inteligente de sermões, estudos bíblicos, apostilas, cursos, revistas de EBD, livros e devocionais cristãos</p>
   </header>
 
   <main class="container">
@@ -244,7 +303,7 @@
       <h2>Configurar Material</h2>
 
       <div class="aviso">
-        Modo seguro ativado: a chave Gemini não fica no HTML. Ela fica protegida na Vercel como variável de ambiente.
+        Modo expandido ativado: materiais grandes são gerados por partes para ficarem mais profundos, completos e organizados.
       </div>
 
       <label for="tipo">Tipo de material</label>
@@ -252,6 +311,7 @@
         <option value="Revista de EBD para professor">Revista de EBD para professor</option>
         <option value="Revista de EBD para aluno">Revista de EBD para aluno</option>
         <option value="Lição bíblica completa">Lição bíblica completa</option>
+        <option value="Curso teológico">Curso teológico</option>
         <option value="Apostila teológica">Apostila teológica</option>
         <option value="Sermão">Sermão</option>
         <option value="Estudo bíblico">Estudo bíblico</option>
@@ -260,7 +320,7 @@
       </select>
 
       <label for="titulo">Título</label>
-      <input id="titulo" type="text" placeholder="Ex: União" />
+      <input id="titulo" type="text" placeholder="Ex: A Unidade no Corpo de Cristo" />
 
       <label for="tema">Tema principal</label>
       <input id="tema" type="text" placeholder="Ex: A bênção da união" />
@@ -297,15 +357,22 @@
 
       <div class="linha">
         <div>
-          <label for="quantidade">Quantidade de lições/capítulos/dias</label>
+          <label for="quantidade">Quantidade de lições/aulas/capítulos/dias</label>
           <input id="quantidade" type="number" min="1" max="30" value="1" />
         </div>
 
         <div>
-          <label for="perguntas">Perguntas por lição/capítulo</label>
+          <label for="perguntas">Perguntas por lição/aula/capítulo</label>
           <input id="perguntas" type="number" min="1" max="10" value="5" />
         </div>
       </div>
+
+      <label for="profundidade">Profundidade do conteúdo</label>
+      <select id="profundidade">
+        <option value="expandido" selected>Expandido e profundo</option>
+        <option value="muito_expandido">Muito expandido, aula por aula/capítulo por capítulo</option>
+        <option value="resumido">Mais resumido</option>
+      </select>
 
       <label for="autor">Comentarista / Autor</label>
       <input id="autor" type="text" placeholder="Ex: Pr. Isiquel Rodrigues" />
@@ -314,10 +381,10 @@
       <input id="editora" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
 
       <label for="orientacoes">Orientações adicionais</label>
-      <textarea id="orientacoes" placeholder="Ex: crie uma mensagem bíblica forte, pastoral e bem organizada."></textarea>
+      <textarea id="orientacoes" placeholder="Ex: quero um livro cristão profundo, com capítulos bem desenvolvidos, aplicações práticas e base bíblica ampla."></textarea>
 
       <button class="btn-principal" id="btnGerar" type="button" onclick="window.gerarMaterialComGemini()">
-        Gerar Material com Gemini
+        Gerar Material com Verbo IA
       </button>
 
       <button class="btn-prompt" id="btnPrompt" type="button" onclick="window.mostrarPrompt()">
@@ -337,18 +404,20 @@
     <section class="card">
       <h2>Material Gerado</h2>
       <div id="resultado">
-        O resultado aparecerá aqui. Preencha os campos e clique em “Gerar Material com Gemini”.
+        O resultado aparecerá aqui. Preencha os campos e clique em “Gerar Material com Verbo IA”.
       </div>
     </section>
   </main>
 
   <div class="rodape">
-    Gerador CPID de Materiais Bíblicos — Modo seguro com Vercel Functions.
+    Verbo IA — Gerador inteligente de materiais bíblicos.
   </div>
 
   <script>
+    let materialMarkdown = "";
+
     window.onload = function () {
-      mostrarStatus("Aplicativo carregado em modo seguro.", "ok");
+      mostrarStatus("Verbo IA carregado em modo seguro e expandido.", "ok");
     };
 
     window.onerror = function (mensagem, arquivo, linha, coluna, erro) {
@@ -376,177 +445,185 @@
       return campo ? campo.value.trim() : "";
     }
 
+    function numero(id, padrao) {
+      const campo = document.getElementById(id);
+      const n = campo ? parseInt(campo.value, 10) : padrao;
+      return Number.isFinite(n) && n > 0 ? n : padrao;
+    }
+
     function mostrarStatus(mensagem, tipo) {
       const status = document.getElementById("status");
-
       if (status) {
         status.innerText = mensagem;
         status.className = "status " + tipo;
       }
     }
 
-    function criarEstruturaPorTipo(tipo) {
-      if (tipo === "Sermão") {
+    function tipoUsaPartes(tipo, quantidade) {
+      if (quantidade <= 1) return false;
+
+      return [
+        "Livro cristão",
+        "Curso teológico",
+        "Apostila teológica",
+        "Revista de EBD para professor",
+        "Revista de EBD para aluno",
+        "Devocional"
+      ].includes(tipo);
+    }
+
+    function nomeParte(tipo) {
+      if (tipo === "Livro cristão") return "Capítulo";
+      if (tipo === "Curso teológico") return "Aula";
+      if (tipo === "Apostila teológica") return "Aula";
+      if (tipo.includes("Revista")) return "Lição";
+      if (tipo === "Devocional") return "Devocional";
+      return "Parte";
+    }
+
+    function criarListaObrigatoria(tipo, quantidade) {
+      const nome = nomeParte(tipo);
+      let lista = "";
+
+      for (let i = 1; i <= quantidade; i++) {
+        lista += `${nome} ${i}\n`;
+      }
+
+      return lista;
+    }
+
+    function dadosBase() {
+      const tipo = valor("tipo");
+      const quantidade = numero("quantidade", 1);
+
+      return {
+        tipo,
+        titulo: valor("titulo") || "Material Bíblico",
+        tema: valor("tema") || "Tema bíblico a definir",
+        textoBase: valor("textoBase") || "Texto bíblico a definir",
+        publico: valor("publico") || "Igreja em geral",
+        linguagem: valor("linguagem") || "Pastoral, bíblica e didática",
+        quantidade,
+        perguntas: numero("perguntas", 5),
+        profundidade: valor("profundidade") || "expandido",
+        autor: valor("autor") || "Comentarista a definir",
+        editora: valor("editora") || "CPID - Casa Publicadora da Igreja de Deus",
+        orientacoes: valor("orientacoes") || "Sem orientações adicionais.",
+        listaObrigatoria: criarListaObrigatoria(tipo, quantidade)
+      };
+    }
+
+    function regraDeProfundidade(profundidade) {
+      if (profundidade === "resumido") {
         return `
-GERE SOMENTE UM SERMÃO.
-
-Estrutura obrigatória:
-# Título do Sermão
-# Texto Base
-# Tema
-# Introdução
-# Proposição
-# Frase de Transição
-# I - Primeiro ponto
-# II - Segundo ponto
-# III - Terceiro ponto
-# Aplicação para a Igreja
-# Conclusão
-# Apelo
-
-Regras específicas:
-- Não faça capa de revista.
-- Não faça sumário de revista.
-- Não coloque perguntas de EBD, a menos que eu peça nas orientações.
-- Use linguagem de púlpito, pastoral, espiritual e bíblica.
-- Desenvolva bem cada ponto.
-- Inclua aplicações práticas para a vida cristã.
+NÍVEL DE PROFUNDIDADE:
+- Conteúdo objetivo, porém ainda organizado.
+- Evite superficialidade.
+- Cada parte deve ter explicação bíblica clara e aplicação prática.
 `;
       }
 
-      if (tipo === "Devocional") {
+      if (profundidade === "muito_expandido") {
         return `
-GERE SOMENTE UM DEVOCIONAL.
-
-Se a quantidade for 1, crie um devocional único.
-Se a quantidade for maior que 1, crie uma sequência de devocionais conforme a quantidade informada.
-
-Estrutura obrigatória para cada devocional:
-# Devocional
-## Título
-## Texto Bíblico
-## Meditação
-## Aplicação do Dia
-## Pergunta para Reflexão
-## Oração
-
-Regras específicas:
-- Não faça formato de revista.
-- Não faça sumário, texto áureo ou verdade prática.
-- Não faça tópicos longos como sermão.
-- Use linguagem íntima, pastoral, devocional e reflexiva.
-- A meditação deve tocar o coração e conduzir à oração.
+NÍVEL DE PROFUNDIDADE:
+- Conteúdo MUITO EXPANDIDO, profundo e completo.
+- Desenvolva cada parte com bastante conteúdo.
+- Não entregue capítulos ou aulas com poucas linhas.
+- Cada aula/capítulo deve ser tratado como uma unidade completa de ensino.
+- Trabalhe contexto bíblico, explicação teológica, desenvolvimento pastoral, aplicação prática, exemplos ministeriais, perguntas e conclusão.
+- Para livro, cada capítulo deve ter pelo menos 900 a 1500 palavras, se tecnicamente possível.
+- Para curso ou apostila, cada aula deve ser completa, com explicação robusta.
+- É melhor demorar mais e entregar melhor do que gerar algo raso.
 `;
       }
 
-      if (tipo === "Estudo bíblico") {
-        return `
-GERE SOMENTE UM ESTUDO BÍBLICO.
-
-Estrutura obrigatória:
-# Título do Estudo
-# Texto Base
-# Objetivo do Estudo
-# Introdução
-# Contexto Bíblico
-# Explicação do Texto
-# Ensinamentos Principais
-# Aplicações Práticas
-# Perguntas para Discussão
-# Conclusão
-
-Regras específicas:
-- Não faça formato de revista de EBD.
-- O foco deve ser ensino, explicação bíblica e aplicação.
-- Use linguagem clara, didática e bíblica.
+      return `
+NÍVEL DE PROFUNDIDADE:
+- Conteúdo expandido, profundo e bem desenvolvido.
+- Não entregue capítulos, aulas ou lições com apenas poucas linhas.
+- Cada parte precisa ter introdução, desenvolvimento consistente, base bíblica, aplicação prática e conclusão.
+- Evite respostas rasas, genéricas ou curtas demais.
+- Desenvolva o assunto com amplitude bíblica, teológica, pastoral e prática.
 `;
-      }
+    }
+
+    function criarEstruturaParte(tipo, numeroParte) {
+      const nome = nomeParte(tipo);
 
       if (tipo === "Livro cristão") {
         return `
-GERE SOMENTE UM LIVRO CRISTÃO.
-
-A quantidade informada deve ser entendida como quantidade de capítulos.
+Gere SOMENTE o Capítulo ${numeroParte} do livro.
 
 Estrutura obrigatória:
-# Capa Textual
-# Título
-# Autor
-# Editora / Ministério
-# Apresentação
-# Prefácio
-# Sumário
+# Capítulo ${numeroParte} - Título do Capítulo
+## Introdução do Capítulo
+## Desenvolvimento Bíblico e Pastoral
+## Fundamentação Bíblica
+## Aplicações Práticas
+## Reflexão Ministerial
+## Conclusão do Capítulo
 
-Cada capítulo deve ter:
-- Título do capítulo
-- Introdução do capítulo
-- Desenvolvimento bíblico e pastoral
-- Aplicações práticas
-- Conclusão do capítulo
+Regras:
+- O capítulo deve ser profundo, amplo e expandido.
+- Não escreva apenas duas linhas.
+- Desenvolva o conteúdo como capítulo real de livro cristão.
+- Não gere outros capítulos agora.
+`;
+      }
 
-Finalize com:
-# Conclusão Geral
-# Palavra Final ao Leitor
+      if (tipo === "Curso teológico") {
+        return `
+Gere SOMENTE a Aula ${numeroParte} do curso.
 
-Regras específicas:
-- Não faça formato de revista de EBD.
-- Não coloque texto áureo, verdade prática e revisão de conteúdo.
-- Escreva com estilo de livro cristão, organizado, profundo e pastoral.
+Estrutura obrigatória:
+# Aula ${numeroParte} - Título da Aula
+## Texto Bíblico Base
+## Objetivo da Aula
+## Introdução
+## Desenvolvimento Teológico
+## Fundamentação Bíblica
+## Aplicação Ministerial
+## Resumo da Aula
+## Perguntas de Fixação
+## Respostas das Perguntas
+## Tarefa Prática
+
+Regras:
+- A aula deve ser profunda, organizada e completa.
+- Não escreva apenas poucas linhas.
+- Não gere outras aulas agora.
 `;
       }
 
       if (tipo === "Apostila teológica") {
         return `
-GERE SOMENTE UMA APOSTILA TEOLÓGICA.
-
-A quantidade informada deve ser entendida como quantidade de aulas ou capítulos.
+Gere SOMENTE a Aula ${numeroParte} da apostila.
 
 Estrutura obrigatória:
-# Capa Textual
-# Título da Apostila
-# Autor
-# Editora / Ministério
-# Apresentação
-# Ementa
-# Objetivo Geral
-# Objetivos Específicos
-# Sumário
-
-Para cada aula ou capítulo:
-## Aula / Capítulo
-## Tema da Aula
+# Aula ${numeroParte} - Tema da Aula
 ## Texto Bíblico Base
+## Objetivo da Aula
 ## Introdução
 ## Desenvolvimento Teológico
 ## Fundamentação Bíblica
 ## Aplicação Ministerial
 ## Resumo da Aula
 ## Exercícios de Fixação
+## Respostas dos Exercícios
 
-Finalize com:
-# Conclusão Geral
-# Bibliografia Bíblica Sugerida
+Regras:
+- A aula deve ser profunda, organizada e completa.
+- Não escreva apenas poucas linhas.
+- Não gere outras aulas agora.
 `;
       }
 
       if (tipo === "Revista de EBD para professor") {
         return `
-GERE SOMENTE UMA REVISTA DE EBD PARA PROFESSOR.
-
-A quantidade informada deve ser entendida como quantidade de lições.
+Gere SOMENTE a Lição ${numeroParte} da revista do professor.
 
 Estrutura obrigatória:
-# Capa Textual
-# Título da Revista
-# Tema do Trimestre
-# Comentarista
-# Editora / Ministério
-# Apresentação
-# Sumário
-
-Para cada lição:
-## Lição
-## Título da Lição
+# Lição ${numeroParte} - Título da Lição
 ## Texto Áureo
 ## Verdade Prática
 ## Leitura Bíblica em Classe
@@ -564,27 +641,19 @@ Para cada lição:
 
 No Revisando o Conteúdo:
 - Inclua perguntas e respostas.
-- A quantidade de perguntas deve seguir o campo informado.
+
+Regras:
+- A lição deve ser bem desenvolvida.
+- Não gere outras lições agora.
 `;
       }
 
       if (tipo === "Revista de EBD para aluno") {
         return `
-GERE SOMENTE UMA REVISTA DE EBD PARA ALUNO.
-
-A quantidade informada deve ser entendida como quantidade de lições.
+Gere SOMENTE a Lição ${numeroParte} da revista do aluno.
 
 Estrutura obrigatória:
-# Capa Textual
-# Título da Revista
-# Tema do Trimestre
-# Editora / Ministério
-# Apresentação
-# Sumário
-
-Para cada lição:
-## Lição
-## Título da Lição
+# Lição ${numeroParte} - Título da Lição
 ## Texto Áureo
 ## Verdade Prática
 ## Leitura Bíblica em Classe
@@ -598,16 +667,173 @@ Para cada lição:
 ## Revisando o Conteúdo
 
 No Revisando o Conteúdo:
-- Inclua somente as perguntas.
-- Não inclua respostas.
+- Inclua somente perguntas, sem respostas.
+
+Regras:
+- A lição deve ser bem desenvolvida.
+- Não gere outras lições agora.
 `;
       }
 
-      if (tipo === "Lição bíblica completa") {
+      if (tipo === "Devocional") {
         return `
-GERE SOMENTE UMA LIÇÃO BÍBLICA COMPLETA.
+Gere SOMENTE o Devocional ${numeroParte}.
 
 Estrutura obrigatória:
+# Devocional ${numeroParte} - Título
+## Texto Bíblico
+## Meditação
+## Aplicação do Dia
+## Pergunta para Reflexão
+## Oração
+
+Regras:
+- O devocional deve ser profundo, pastoral e tocante.
+- Não gere outros devocionais agora.
+`;
+      }
+
+      return `
+Gere SOMENTE a ${nome} ${numeroParte}.
+Desenvolva com profundidade, organização e aplicação prática.
+`;
+    }
+
+    function criarPromptAbertura(dados) {
+      return `
+Você é o Verbo IA, um assistente editorial cristão, bíblico, teológico e pastoral.
+
+Crie SOMENTE a abertura editorial do material abaixo.
+
+DADOS:
+Tipo: ${dados.tipo}
+Título: ${dados.titulo}
+Tema: ${dados.tema}
+Texto bíblico base: ${dados.textoBase}
+Público-alvo: ${dados.publico}
+Linguagem: ${dados.linguagem}
+Quantidade exata: ${dados.quantidade}
+Autor: ${dados.autor}
+Editora / Ministério: ${dados.editora}
+Orientações adicionais: ${dados.orientacoes}
+
+LISTA OBRIGATÓRIA:
+${dados.listaObrigatoria}
+
+${regraDeProfundidade(dados.profundidade)}
+
+Gere:
+# Capa Textual
+# Título
+# Autor
+# Editora / Ministério
+# Apresentação
+# Objetivo Geral
+# Sumário Detalhado
+
+Regras:
+- Não desenvolva os capítulos/aulas/lições agora.
+- Apenas crie a abertura e o sumário.
+- O sumário deve listar todas as ${dados.quantidade} partes, sem pular nenhuma.
+`;
+    }
+
+    function criarPromptParte(dados, numeroParte) {
+      return `
+Você é o Verbo IA, um assistente editorial cristão, bíblico, teológico e pastoral.
+
+Você está criando um material cristão em partes para garantir profundidade e qualidade.
+
+DADOS GERAIS:
+Tipo: ${dados.tipo}
+Título geral: ${dados.titulo}
+Tema principal: ${dados.tema}
+Texto bíblico base: ${dados.textoBase}
+Público-alvo: ${dados.publico}
+Linguagem: ${dados.linguagem}
+Quantidade total: ${dados.quantidade}
+Parte atual: ${numeroParte} de ${dados.quantidade}
+Perguntas por parte: ${dados.perguntas}
+Autor: ${dados.autor}
+Editora / Ministério: ${dados.editora}
+Orientações adicionais: ${dados.orientacoes}
+
+${regraDeProfundidade(dados.profundidade)}
+
+REGRA PRINCIPAL:
+Gere apenas a parte ${numeroParte}.
+Não gere a parte anterior.
+Não gere a próxima parte.
+Não diga “continua”.
+Não diga “as demais seguem o mesmo padrão”.
+Não resuma por falta de espaço.
+Faça a parte atual com profundidade real.
+
+ESTRUTURA DA PARTE ATUAL:
+${criarEstruturaParte(dados.tipo, numeroParte)}
+
+Antes de finalizar, confira se a parte ${numeroParte} ficou profunda, expandida, organizada, bíblica e útil para ensino.
+`;
+    }
+
+    function criarPromptUnico(dados) {
+      return `
+Você é o Verbo IA, um assistente editorial cristão, bíblico, teológico e pastoral.
+
+DADOS:
+Tipo: ${dados.tipo}
+Título: ${dados.titulo}
+Tema: ${dados.tema}
+Texto bíblico base: ${dados.textoBase}
+Público-alvo: ${dados.publico}
+Linguagem: ${dados.linguagem}
+Quantidade: ${dados.quantidade}
+Perguntas: ${dados.perguntas}
+Autor: ${dados.autor}
+Editora / Ministério: ${dados.editora}
+Orientações adicionais: ${dados.orientacoes}
+
+${regraDeProfundidade(dados.profundidade)}
+
+REGRAS GERAIS:
+1. Escreva em português do Brasil.
+2. Use linguagem bíblica, pastoral, reverente, didática e organizada.
+3. Crie conteúdo original.
+4. Não mencione CPAD.
+5. Use referências bíblicas coerentes.
+6. Evite conteúdo superficial.
+7. Desenvolva com profundidade bíblica, teológica, pastoral e prática.
+8. Não invente citações de autores.
+9. Use formatação em Markdown.
+10. Respeite exatamente o tipo de material escolhido.
+
+Se for sermão, use:
+# Título do Sermão
+# Texto Base
+# Tema
+# Introdução
+# Proposição
+# Frase de Transição
+# I - Primeiro ponto
+# II - Segundo ponto
+# III - Terceiro ponto
+# Aplicação para a Igreja
+# Conclusão
+# Apelo
+
+Se for estudo bíblico, use:
+# Título do Estudo
+# Texto Base
+# Objetivo do Estudo
+# Introdução
+# Contexto Bíblico
+# Explicação do Texto
+# Ensinamentos Principais
+# Aplicações Práticas
+# Perguntas para Discussão
+# Conclusão
+
+Se for lição bíblica completa, use:
 # Título da Lição
 # Texto Áureo
 # Verdade Prática
@@ -622,85 +848,26 @@ Estrutura obrigatória:
 # Conclusão
 # Revisando o Conteúdo
 
-No Revisando o Conteúdo:
-- Inclua perguntas e respostas conforme a quantidade informada.
+Agora gere o material completo e profundo.
 `;
-      }
-
-      return "GERE UM MATERIAL BÍBLICO ORGANIZADO, ORIGINAL, PASTORAL E DIDÁTICO.";
     }
 
-    function criarPromptTexto() {
-      const tipo = valor("tipo");
-      const titulo = valor("titulo") || "Material Bíblico";
-      const tema = valor("tema") || "Tema bíblico a definir";
-      const textoBase = valor("textoBase") || "Texto bíblico a definir";
-      const publico = valor("publico") || "Igreja em geral";
-      const linguagem = valor("linguagem") || "Pastoral, bíblica e didática";
-      const quantidade = valor("quantidade") || "1";
-      const perguntas = valor("perguntas") || "5";
-      const autor = valor("autor") || "Comentarista a definir";
-      const editora = valor("editora") || "CPID - Casa Publicadora da Igreja de Deus";
-      const orientacoes = valor("orientacoes") || "Sem orientações adicionais.";
-      const estrutura = criarEstruturaPorTipo(tipo);
+    async function chamarServidor(prompt) {
+      const resposta = await fetch("/api/gerar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ prompt })
+      });
 
-      return `
-Você é um assistente editorial cristão, bíblico, teológico e pastoral.
+      const dados = await resposta.json();
 
-Crie o material conforme as informações abaixo.
+      if (!resposta.ok || !dados.sucesso) {
+        throw new Error(dados.erro || "Erro ao gerar material.");
+      }
 
-TIPO DE MATERIAL:
-${tipo}
-
-TÍTULO:
-${titulo}
-
-TEMA PRINCIPAL:
-${tema}
-
-TEXTO BÍBLICO BASE:
-${textoBase}
-
-PÚBLICO-ALVO:
-${publico}
-
-LINGUAGEM:
-${linguagem}
-
-QUANTIDADE DE LIÇÕES, CAPÍTULOS OU DIAS:
-${quantidade}
-
-PERGUNTAS POR LIÇÃO OU CAPÍTULO:
-${perguntas}
-
-COMENTARISTA / AUTOR:
-${autor}
-
-EDITORA / MINISTÉRIO:
-${editora}
-
-ORIENTAÇÕES ADICIONAIS:
-${orientacoes}
-
-REGRAS GERAIS:
-1. Escreva em português do Brasil.
-2. Use linguagem bíblica, pastoral, reverente, didática e organizada.
-3. Crie conteúdo original.
-4. Não mencione CPAD.
-5. Use referências bíblicas coerentes.
-6. Evite frases genéricas demais; aprofunde os tópicos.
-7. Mantenha fidelidade bíblica, doutrinária e aplicação prática.
-8. Não invente citações de autores.
-9. Use a Bíblia como base principal.
-10. Use formatação em Markdown com títulos e subtítulos.
-11. Respeite exatamente o tipo de material escolhido.
-12. Não misture estrutura de revista, sermão, livro, apostila, estudo e devocional.
-
-ESTRUTURA ESPECÍFICA PARA ESTE TIPO DE MATERIAL:
-${estrutura}
-
-Agora gere o material completo.
-      `;
+      return dados;
     }
 
     function renderizarResultado(texto) {
@@ -715,63 +882,93 @@ Agora gere o material completo.
       }
     }
 
+    async function gerarPorPartes(dados) {
+      materialMarkdown = "";
+      const painel = document.getElementById("resultado");
+
+      mostrarStatus("Gerando abertura e sumário...", "ok");
+      painel.innerText = "Gerando abertura e sumário do material...";
+
+      const abertura = await chamarServidor(criarPromptAbertura(dados));
+      materialMarkdown += abertura.texto + "\n\n";
+      renderizarResultado(materialMarkdown);
+
+      for (let i = 1; i <= dados.quantidade; i++) {
+        mostrarStatus(`Gerando ${nomeParte(dados.tipo)} ${i} de ${dados.quantidade}...`, "ok");
+
+        materialMarkdown += `\n\n---\n\n`;
+        renderizarResultado(materialMarkdown + `\n\nGerando ${nomeParte(dados.tipo)} ${i} de ${dados.quantidade}... aguarde.`);
+
+        const parte = await chamarServidor(criarPromptParte(dados, i));
+        materialMarkdown += parte.texto + "\n\n";
+        renderizarResultado(materialMarkdown);
+      }
+
+      mostrarStatus("Material completo gerado com profundidade.", "ok");
+    }
+
+    async function gerarUnico(dados) {
+      const painel = document.getElementById("resultado");
+      painel.innerText = "Gerando material profundo com Verbo IA...";
+
+      const resposta = await chamarServidor(criarPromptUnico(dados));
+      materialMarkdown = resposta.texto;
+      renderizarResultado(materialMarkdown);
+      mostrarStatus("Material gerado com sucesso usando: " + resposta.modelo, "ok");
+    }
+
     window.gerarMaterialComGemini = async function () {
       const painel = document.getElementById("resultado");
       const botao = document.getElementById("btnGerar");
+      const dados = dadosBase();
 
-      const titulo = valor("titulo");
-      const tema = valor("tema");
-
-      if (!titulo && !tema) {
+      if (!dados.titulo && !dados.tema) {
         alert("Preencha pelo menos o título ou o tema.");
         return;
       }
 
       botao.disabled = true;
       botao.innerText = "Gerando...";
-      painel.innerText = "Enviando pedido para o servidor seguro da Vercel...";
-      mostrarStatus("Gerando material com segurança...", "ok");
+      painel.innerText = "Preparando geração expandida...";
+      mostrarStatus("Preparando material com Verbo IA...", "ok");
 
       try {
-        const resposta = await fetch("/api/gerar", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            prompt: criarPromptTexto()
-          })
-        });
-
-        const dados = await resposta.json();
-
-        if (!resposta.ok || !dados.sucesso) {
-          throw new Error(dados.erro || "Erro ao gerar material.");
+        if (tipoUsaPartes(dados.tipo, dados.quantidade)) {
+          await gerarPorPartes(dados);
+        } else {
+          await gerarUnico(dados);
         }
-
-        renderizarResultado(dados.texto);
-        mostrarStatus("Material gerado com sucesso usando: " + dados.modelo, "ok");
-
       } catch (erro) {
         painel.innerText =
           "Erro ao gerar material:\n\n" +
           erro.message +
           "\n\nVerifique:\n" +
-          "1. Se o arquivo api/gerar.js existe.\n" +
-          "2. Se a variável GEMINI_API_KEY foi configurada na Vercel.\n" +
-          "3. Se você fez novo deploy depois de configurar a variável.\n" +
-          "4. Se a chave do Gemini está ativa.";
+          "1. Se a variável GEMINI_API_KEY está configurada na Vercel.\n" +
+          "2. Se você fez novo deploy depois de alterar o código.\n" +
+          "3. Se a chave do Gemini está ativa.\n" +
+          "4. Se o material pedido é muito grande, tente gerar em menos partes por vez.";
 
         mostrarStatus("Erro ao gerar. Veja a mensagem no painel.", "erro");
-
       } finally {
         botao.disabled = false;
-        botao.innerText = "Gerar Material com Gemini";
+        botao.innerText = "Gerar Material com Verbo IA";
       }
     };
 
     window.mostrarPrompt = function () {
-      document.getElementById("resultado").innerText = criarPromptTexto();
+      const dados = dadosBase();
+
+      if (tipoUsaPartes(dados.tipo, dados.quantidade)) {
+        document.getElementById("resultado").innerText =
+          "Este material será gerado em modo expandido por partes.\n\n" +
+          "Prompt de abertura:\n\n" +
+          criarPromptAbertura(dados) +
+          "\n\nPrompt da primeira parte:\n\n" +
+          criarPromptParte(dados, 1);
+      } else {
+        document.getElementById("resultado").innerText = criarPromptUnico(dados);
+      }
+
       mostrarStatus("Prompt exibido.", "ok");
     };
 
@@ -794,10 +991,12 @@ Agora gere o material completo.
 
       document.getElementById("quantidade").value = "1";
       document.getElementById("perguntas").value = "5";
+      document.getElementById("profundidade").value = "expandido";
       document.getElementById("editora").value = "CPID - Casa Publicadora da Igreja de Deus";
       document.getElementById("resultado").innerText =
-        "O resultado aparecerá aqui. Preencha os campos e clique em “Gerar Material com Gemini”.";
+        "O resultado aparecerá aqui. Preencha os campos e clique em “Gerar Material com Verbo IA”.";
 
+      materialMarkdown = "";
       mostrarStatus("Campos limpos.", "ok");
     };
   </script>
