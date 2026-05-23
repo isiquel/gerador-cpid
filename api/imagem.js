@@ -37,11 +37,11 @@ module.exports = async function handler(req, res) {
     });
 
     const models = [
-      process.env.GEMINI_IMAGE_MODEL_1 || "gemini-2.0-flash-preview-image-generation",
-      process.env.GEMINI_IMAGE_MODEL_2 || "gemini-2.5-flash-image-preview",
-      process.env.GEMINI_IMAGE_MODEL_3 || "gemini-3.0-flash-image-preview",
-      process.env.GEMINI_IMAGE_MODEL_4 || "gemini-3.1-flash-image-preview"
-    ].filter(Boolean);
+      "gemini-2.0-flash-preview-image-generation",
+      "gemini-2.5-flash-image-preview",
+      "gemini-3.0-flash-image-preview",
+      "gemini-3.1-flash-image-preview"
+    ];
 
     const result = await callImageModels({
       apiKey,
@@ -95,8 +95,6 @@ Requisitos visuais:
 - sem logotipo
 - sem marca d'água
 - imagem limpa, forte, inspiradora e bem iluminada
-- proporção horizontal quando for imagem de capítulo
-- proporção vertical/editorial quando for imagem de capa
 `.trim();
 }
 
