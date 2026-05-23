@@ -565,7 +565,7 @@
 
       <div class="card-body">
         <div class="aviso">
-          Agora você pode gerar um prompt automático pelo tema e também editar o material antes de salvar em PDF.
+          Revista atualizada: agora você pode escolher versão do professor ou aluno, com leitura bíblica em classe completa.
         </div>
 
         <div class="prompt-box">
@@ -590,6 +590,19 @@
           <option value="curso">Curso cristão</option>
           <option value="revista">Revista de ensino bíblico</option>
         </select>
+
+        <div id="campoRevistaVersao" class="campo-oculto">
+          <label for="revistaVersion">Versão da revista</label>
+          <select id="revistaVersion" autocomplete="off">
+            <option value="professor" selected>Revista do professor</option>
+            <option value="aluno">Revista do aluno</option>
+          </select>
+        </div>
+
+        <div id="campoTraducaoBiblica" class="campo-oculto">
+          <label for="bibleVersion">Tradução bíblica padrão</label>
+          <input id="bibleVersion" type="text" autocomplete="off" value="King James Fiel 1611" />
+        </div>
 
         <label for="title">Título</label>
         <input id="title" type="text" autocomplete="off" value="Coração Blindado: Vencendo a Ansiedade na Presença de Deus" />
@@ -767,6 +780,9 @@
       el("campoCapa").classList.remove("campo-oculto");
       el("campoVisual").classList.remove("campo-oculto");
 
+      el("campoRevistaVersao").classList.add("campo-oculto");
+      el("campoTraducaoBiblica").classList.add("campo-oculto");
+
       if (tipo === "sermao") {
         el("campoQuantidade").classList.add("campo-oculto");
         el("campoTopicos").classList.remove("campo-oculto");
@@ -812,7 +828,9 @@
 
       if (tipo === "revista") {
         el("labelQuantidade").innerText = "Lições";
-        setStatus("Modo Revista: lição bíblica com texto áureo, verdade prática e perguntas.", "ok");
+        el("campoRevistaVersao").classList.remove("campo-oculto");
+        el("campoTraducaoBiblica").classList.remove("campo-oculto");
+        setStatus("Modo Revista: escolha professor ou aluno. A leitura bíblica virá com referência e texto completo.", "ok");
       }
     }
 
@@ -821,6 +839,8 @@
 
       return {
         materialType: tipo,
+        revistaVersion: valor("revistaVersion") || "professor",
+        bibleVersion: valor("bibleVersion") || "King James Fiel 1611",
         sermonPoints: Number(valor("sermonPoints") || 3),
         title: valor("title"),
         subtitle: valor("subtitle"),
@@ -1251,14 +1271,23 @@
     }
 
     function renderRevista(m) {
+      const versao = m.revistaVersion || valor("revistaVersion") || "professor";
+      const isAluno = versao === "aluno";
+
       el("resultado").innerHTML = `
         <article class="doc">
-          ${capaMaterial(m, "REVISTA BÍBLICA")}
+          ${capaMaterial(m, isAluno ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR")}
 
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
+
+              <div class="chips">
+                <span class="chip">${isAluno ? "Versão do aluno" : "Versão do professor"}</span>
+                <span class="chip">${escapeHtml(m.bibleVersion || "King James Fiel 1611")}</span>
+              </div>
+
               <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
             </div>
           </section>
@@ -1267,23 +1296,74 @@
             <section class="pagina">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Lição ${escapeHtml(l.lesson)} — ${escapeHtml(l.title)}</h2>
-                <div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>
-                <div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>
-                <div class="bloco"><h3>Leitura bíblica</h3>${divTexto(l.biblicalReading)}</div>
+
+                <div class="bloco">
+                  <h3>Texto áureo</h3>
+                  ${divTexto(l.goldenText)}
+                </div>
+
+                <div class="bloco">
+                  <h3>Verdade prática</h3>
+                  ${divTexto(l.practicalTruth)}
+                </div>
+
+                <div class="bloco">
+                  <h3>Leitura bíblica em classe</h3>
+                  ${renderLeituraBiblica(l)}
+                </div>
+
                 <div class="bloco">
                   <h3>Objetivos</h3>
-                  <ul class="lista">${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}</ul>
+                  <ul class="lista">
+                    ${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}
+                  </ul>
                 </div>
-                <div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>
-                ${(l.topics || []).map(t => `<div class="bloco"><h3>${escapeHtml(t.title)}</h3>${divTexto(t.content)}</div>`).join("")}
-                <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
-                <div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>
+
+                <div class="bloco">
+                  <h3>Introdução</h3>
+                  ${divTexto(l.introduction)}
+                </div>
+
+                ${(l.topics || []).map(t => `
+                  <div class="bloco">
+                    <h3>${escapeHtml(t.title)}</h3>
+                    ${divTexto(t.content)}
+                  </div>
+                `).join("")}
+
+                <div class="bloco">
+                  <h3>Aplicação para a vida</h3>
+                  ${divTexto(l.lifeApplication)}
+                </div>
+
+                ${!isAluno ? `
+                  <div class="bloco">
+                    <h3>Orientações para o professor</h3>
+                    ${divTexto(l.teacherNotes)}
+                  </div>
+
+                  <div class="bloco">
+                    <h3>Sugestão de abordagem em classe</h3>
+                    ${divTexto(l.classApproach)}
+                  </div>
+                ` : `
+                  <div class="bloco">
+                    <h3>Espaço para anotações</h3>
+                    <p>__________________________________________________________________</p>
+                    <p>__________________________________________________________________</p>
+                    <p>__________________________________________________________________</p>
+                    <p>__________________________________________________________________</p>
+                  </div>
+                `}
+
+                <div class="bloco">
+                  <h3>Conclusão</h3>
+                  ${divTexto(l.conclusion)}
+                </div>
+
                 <div class="bloco">
                   <h3>Revisando o conteúdo</h3>
-                  ${(l.questionsAndAnswers || []).map(qa => `
-                    <p><strong>Pergunta:</strong> ${escapeHtml(qa.question)}</p>
-                    <p><strong>Resposta:</strong> ${escapeHtml(qa.answer)}</p>
-                  `).join("")}
+                  ${isAluno ? renderPerguntasAluno(l) : renderPerguntasProfessor(l)}
                 </div>
               </div>
             </section>
@@ -1297,6 +1377,43 @@
           </section>
         </article>
       `;
+    }
+
+    function renderLeituraBiblica(l) {
+      const leituras = l.biblicalReadingFull || [];
+
+      if (leituras.length > 0) {
+        return leituras.map(item => `
+          <div style="margin-bottom:14px;">
+            <p><strong>${escapeHtml(item.reference || "")}</strong></p>
+            <div class="texto">${escapeHtml(item.text || "")}</div>
+          </div>
+        `).join("");
+      }
+
+      return `
+        <p><strong>${escapeHtml(l.biblicalReadingReference || l.biblicalReading || "")}</strong></p>
+        <p style="color:#a12d2d;"><strong>Atenção:</strong> o texto completo da leitura bíblica não veio nesta geração. Gere novamente ou edite manualmente antes de salvar.</p>
+      `;
+    }
+
+    function renderPerguntasProfessor(l) {
+      return (l.questionsAndAnswers || []).map((qa, index) => `
+        <p><strong>${index + 1}. ${escapeHtml(qa.question || "")}</strong></p>
+        <p><strong>Resposta:</strong> ${escapeHtml(qa.answer || "")}</p>
+      `).join("");
+    }
+
+    function renderPerguntasAluno(l) {
+      const perguntas = l.questionsOnly && l.questionsOnly.length > 0
+        ? l.questionsOnly
+        : (l.questionsAndAnswers || []).map(qa => qa.question);
+
+      return perguntas.map((q, index) => `
+        <p><strong>${index + 1}. ${escapeHtml(q || "")}</strong></p>
+        <p>Resposta: ____________________________________________________________</p>
+        <p>____________________________________________________________________</p>
+      `).join("");
     }
 
     function estilosParaPDF() {
@@ -1603,6 +1720,8 @@
       el("visualStyle").value = "preto e branco";
       el("coverMode").value = "sem-capa";
       el("tone").value = "";
+      el("revistaVersion").value = "professor";
+      el("bibleVersion").value = "King James Fiel 1611";
 
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
@@ -1646,23 +1765,24 @@
     }
 
     function preencherTeste() {
-      el("materialType").value = "sermao";
-      el("title").value = "Missões: O Projeto de Deus que o Inferno Não Pode Parar";
-      el("subtitle").value = "Quando a igreja entende o chamado, ela deixa de ser plateia e se torna instrumento nas mãos de Deus";
-      el("theme").value = "Crie um sermão cristão profundo, bíblico, pastoral e missionário sobre missões como o projeto de Deus para alcançar vidas, famílias, cidades e nações. Mostre que desde o Éden o inimigo tenta frustrar os propósitos de Deus, mas Deus continua levantando homens e mulheres para cumprir Sua missão na terra. Explique que missões não é apenas uma programação da igreja, mas o coração de Deus revelado na história da redenção. Mostre que Deus chamou Abraão para abençoar todas as famílias da terra, enviou profetas para chamar o povo ao arrependimento, enviou Seu Filho Jesus para salvar os perdidos, e agora envia a igreja pelo poder do Espírito Santo. O sermão deve mostrar que o diabo tenta impedir o avanço da missão por meio do pecado, da distração, do medo, da divisão, do comodismo e da frieza espiritual. Mas a igreja cheia do Espírito não recua, não se cala e não perde a visão.";
-      el("biblicalBase").value = "Mateus 28.18-20; Marcos 16.15; Atos 1.8; Gênesis 12.1-3; Romanos 10.13-15";
-      el("sermonPoints").value = "4";
-      el("quantity").value = "1";
-      el("targetAudience").value = "Igreja em geral, líderes, obreiros, jovens, evangelistas e todos os crentes que precisam despertar para a obra missionária";
+      el("materialType").value = "revista";
+      el("title").value = "Doutrinas Fundamentais da Fé Cristã";
+      el("subtitle").value = "Lições bíblicas profundas para formação espiritual e doutrinária";
+      el("theme").value = "Crie uma revista de ensino bíblico profunda, pastoral e doutrinária, com lições organizadas para ensinar os fundamentos da fé cristã. A revista deve trazer texto áureo, verdade prática, leitura bíblica em classe com referência e texto completo, objetivos, introdução, tópicos desenvolvidos, aplicação para a vida, conclusão e revisão do conteúdo. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons espirituais, igreja e escatologia, siga o pentecostalismo clássico.";
+      el("biblicalBase").value = "2 Timóteo 3.16-17; Atos 1.8; Atos 2.1-4; Romanos 10.9-17; Mateus 28.18-20";
+      el("quantity").value = "3";
+      el("targetAudience").value = "Professores, alunos da EBD, obreiros, líderes e membros da igreja";
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "preto e branco";
       el("coverMode").value = "sem-capa";
-      el("tone").value = "pastoral, bíblico, missionário, forte, profundo, despertador, espiritual, confrontador e encorajador";
+      el("tone").value = "bíblico, pastoral, doutrinário, profundo, didático, pentecostal clássico e aplicável";
+      el("revistaVersion").value = "professor";
+      el("bibleVersion").value = "King James Fiel 1611";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste de sermão missionário preenchido. Clique em Gerar material.", "ok");
+      setStatus("Teste de revista preenchido. Escolha professor ou aluno e clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
