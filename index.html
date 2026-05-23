@@ -13,7 +13,6 @@
       --dourado: #c79b58;
       --texto: #222;
       --muted: #666;
-      --linha: #ddd;
       --verde: #237a45;
       --vermelho: #a12d2d;
       --sombra: 0 12px 32px rgba(0,0,0,0.08);
@@ -264,7 +263,6 @@
       border: 1px solid #e6d8c7;
       box-shadow: var(--sombra);
       overflow: visible;
-      page-break-after: always;
     }
 
     .pagina-interna {
@@ -397,8 +395,6 @@
       margin-top: 28px;
       padding-top: 12px;
       border-top: 1px solid #ddd;
-      page-break-inside: avoid;
-      break-inside: avoid;
     }
 
     .sermao ul {
@@ -524,7 +520,7 @@
 
       <div class="card-body">
         <div class="aviso">
-          O botão Salvar em PDF agora imprime somente o material gerado, sem o menu lateral.
+          PDF melhorado: capa em página própria e conteúdo fluindo melhor, com menos espaços vazios.
         </div>
 
         <label for="materialType">Tipo de material</label>
@@ -881,11 +877,8 @@
               ${(m.points || []).map((pt, i) => `
                 <div class="ponto">
                   <h3>${escapeHtml(pt.title || `Ponto ${i + 1}`)}</h3>
-
                   <p><strong>Explicação bíblica:</strong><br>${escapeHtml(pt.explanation || "")}</p>
-
                   <p><strong>Aplicação pastoral:</strong><br>${escapeHtml(pt.pastoralApplication || "")}</p>
-
                   <p><strong>Ilustração / exemplo prático:</strong><br>${escapeHtml(pt.illustration || "")}</p>
                 </div>
               `).join("")}
@@ -932,7 +925,6 @@
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
               <div class="bloco"><h3>Prefácio</h3>${divTexto(m.preface)}</div>
               <div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>
               <div class="bloco"><h3>Introdução geral</h3>${divTexto(m.generalIntroduction)}</div>
@@ -943,11 +935,7 @@
             <section class="pagina">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Capítulo ${escapeHtml(ch.number)} — ${escapeHtml(ch.title)}</h2>
-
-                <div class="chips">
-                  ${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
-                </div>
-
+                <div class="chips">${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}</div>
                 <div class="bloco"><h3>Abertura literária</h3>${divTexto(ch.openingNarrative)}</div>
                 <div class="bloco"><h3>Desenvolvimento</h3>${divTexto(ch.development)}</div>
                 <div class="bloco"><h3>Reflexão teológica</h3>${divTexto(ch.theologicalReflection)}</div>
@@ -988,27 +976,15 @@
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Capítulo ${escapeHtml(ch.number)} — ${escapeHtml(ch.title)}</h2>
                 ${divTexto(ch.heroCaption)}
-
-                <div class="chips">
-                  ${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
-                </div>
-
+                <div class="chips">${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}</div>
                 <div class="bloco"><h3>Abertura</h3>${divTexto(ch.opening)}</div>
                 <div class="bloco"><h3>Ideia central</h3>${divTexto(ch.centralIdea)}</div>
-
-                ${(ch.sections || []).map(s => `
-                  <div class="bloco"><h3>${escapeHtml(s.title)}</h3>${divTexto(s.content)}</div>
-                `).join("")}
-
+                ${(ch.sections || []).map(s => `<div class="bloco"><h3>${escapeHtml(s.title)}</h3>${divTexto(s.content)}</div>`).join("")}
                 <div class="bloco"><h3>Destaque</h3>${divTexto(ch.highlightQuote)}</div>
-
                 <div class="bloco">
                   <h3>Perguntas de reflexão</h3>
-                  <ul class="lista">
-                    ${(ch.reflectionQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-                  </ul>
+                  <ul class="lista">${(ch.reflectionQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul>
                 </div>
-
                 <div class="bloco"><h3>Aplicação prática</h3>${divTexto(ch.practice)}</div>
                 <div class="bloco"><h3>Oração</h3>${divTexto(ch.prayer)}</div>
                 <div class="bloco"><h3>Conclusão</h3>${divTexto(ch.conclusion)}</div>
@@ -1060,7 +1036,6 @@
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.theme || "")}</div>
-
               <div class="bloco"><h3>Texto bíblico</h3>${divTexto(m.biblicalText)}</div>
               <div class="bloco"><h3>Objetivo</h3>${divTexto(m.objective)}</div>
               <div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction)}</div>
@@ -1077,9 +1052,7 @@
 
               <div class="bloco">
                 <h3>Perguntas de revisão</h3>
-                <ul class="lista">
-                  ${(m.reviewQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}
-                </ul>
+                <ul class="lista">${(m.reviewQuestions || []).map(q => `<li>${escapeHtml(q)}</li>`).join("")}</ul>
               </div>
 
               <div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion)}</div>
@@ -1107,11 +1080,7 @@
                 <h2 class="titulo-grande">Aula ${escapeHtml(a.lesson)} — ${escapeHtml(a.title)}</h2>
                 <div class="bloco"><h3>Objetivo da aula</h3>${divTexto(a.objective)}</div>
                 <div class="bloco"><h3>Introdução</h3>${divTexto(a.introduction)}</div>
-
-                <div class="chips">
-                  ${(a.biblicalTexts || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
-                </div>
-
+                <div class="chips">${(a.biblicalTexts || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}</div>
                 <div class="bloco"><h3>Conteúdo</h3>${divTexto(a.content)}</div>
                 <div class="bloco"><h3>Atividade em classe</h3>${divTexto(a.classActivity)}</div>
                 <div class="bloco"><h3>Tarefa da semana</h3>${divTexto(a.homework)}</div>
@@ -1151,23 +1120,14 @@
                 <div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>
                 <div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>
                 <div class="bloco"><h3>Leitura bíblica</h3>${divTexto(l.biblicalReading)}</div>
-
                 <div class="bloco">
                   <h3>Objetivos</h3>
-                  <ul class="lista">
-                    ${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}
-                  </ul>
+                  <ul class="lista">${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}</ul>
                 </div>
-
                 <div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>
-
-                ${(l.topics || []).map(t => `
-                  <div class="bloco"><h3>${escapeHtml(t.title)}</h3>${divTexto(t.content)}</div>
-                `).join("")}
-
+                ${(l.topics || []).map(t => `<div class="bloco"><h3>${escapeHtml(t.title)}</h3>${divTexto(t.content)}</div>`).join("")}
                 <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
                 <div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>
-
                 <div class="bloco">
                   <h3>Revisando o conteúdo</h3>
                   ${(l.questionsAndAnswers || []).map(qa => `
@@ -1193,7 +1153,7 @@
       return `
         @page {
           size: A4;
-          margin: 0;
+          margin: 14mm 12mm;
         }
 
         * {
@@ -1222,153 +1182,32 @@
         .pagina {
           display: block;
           width: 100%;
-          min-height: auto;
           height: auto;
+          min-height: auto;
           overflow: visible;
           background: #fff;
           border: none;
           box-shadow: none;
           border-radius: 0;
           margin: 0;
-          page-break-after: always;
-          break-after: page;
-        }
-
-        .pagina:last-child {
+          padding: 0;
           page-break-after: auto;
           break-after: auto;
+          page-break-before: auto;
+          break-before: auto;
+          page-break-inside: auto;
+          break-inside: auto;
         }
 
         .pagina-interna,
         .sermao .pagina-interna {
-          padding: 18mm 16mm;
-        }
-
-        .titulo-grande {
-          margin: 0 0 12px;
-          color: #5b3a24;
-          font-size: 30px;
-          line-height: 1.2;
-        }
-
-        .subtitulo {
-          color: #555;
-          font-size: 17px;
-          line-height: 1.5;
-          margin-bottom: 18px;
-        }
-
-        .texto {
-          font-size: 15.5px;
-          line-height: 1.75;
-          color: #222;
-          white-space: pre-line;
-        }
-
-        .bloco {
-          margin-top: 16px;
-          padding: 18px;
-          border: 1px solid #ddd;
-          border-radius: 12px;
-          background: #fff;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        .bloco h3 {
-          margin: 0 0 8px;
-          color: #5b3a24;
-          font-size: 20px;
-        }
-
-        .lista {
-          padding-left: 22px;
-          font-size: 15.5px;
-          line-height: 1.7;
-        }
-
-        .chips {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 7px;
-          margin: 14px 0 16px;
-        }
-
-        .chip {
-          border: 1px solid #ddd;
-          background: #fff;
-          color: #333;
-          font-weight: bold;
-          border-radius: 999px;
-          padding: 6px 10px;
-          font-size: 12px;
-        }
-
-        .sermao .titulo-sermao {
-          margin: 0 0 14px;
-          text-align: center;
-          color: #111;
-          font-size: 28px;
-          line-height: 1.25;
-          text-transform: uppercase;
-        }
-
-        .sermao .subtitulo-sermao {
-          text-align: center;
-          color: #333;
-          font-size: 16px;
-          margin-bottom: 24px;
-          line-height: 1.5;
-        }
-
-        .sermao .linha-info {
-          border-top: 1px solid #222;
-          border-bottom: 1px solid #222;
-          padding: 12px 0;
-          margin: 18px 0 22px;
-          font-size: 15.5px;
-          line-height: 1.7;
-          color: #111;
-        }
-
-        .sermao h2 {
-          margin: 26px 0 10px;
-          color: #111;
-          font-size: 21px;
-          border-bottom: 1px solid #ccc;
-          padding-bottom: 7px;
-        }
-
-        .sermao h3 {
-          margin: 20px 0 8px;
-          color: #111;
-          font-size: 18px;
-        }
-
-        .sermao p {
-          font-size: 15.5px;
-          line-height: 1.75;
-          color: #111;
-          margin: 0 0 13px;
-          white-space: pre-line;
-        }
-
-        .sermao .ponto {
-          margin-top: 22px;
-          padding-top: 10px;
-          border-top: 1px solid #ddd;
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        .sermao ul {
-          font-size: 15.5px;
-          line-height: 1.75;
-          color: #111;
+          padding: 0;
+          margin: 0;
         }
 
         .capa {
-          min-height: 297mm;
+          width: 100%;
+          min-height: 269mm;
           color: white;
           background: linear-gradient(135deg, #5b3a24, #c79b58);
           display: flex;
@@ -1377,6 +1216,10 @@
           text-align: center;
           position: relative;
           overflow: hidden;
+          page-break-after: always;
+          break-after: page;
+          margin: -14mm -12mm 0 -12mm;
+          padding: 14mm 12mm;
         }
 
         .capa-box {
@@ -1389,14 +1232,14 @@
 
         .capa h1 {
           margin: 0 0 16px;
-          font-size: 42px;
+          font-size: 40px;
           line-height: 1.12;
           text-transform: uppercase;
         }
 
         .capa h2 {
           margin: 0;
-          font-size: 20px;
+          font-size: 19px;
           line-height: 1.45;
           font-weight: 500;
         }
@@ -1407,10 +1250,143 @@
           border-radius: 999px;
           border: 1px solid rgba(255,255,255,0.35);
           background: rgba(255,255,255,0.14);
-          font-size: 13px;
+          font-size: 12px;
           margin-bottom: 20px;
           font-weight: bold;
           letter-spacing: 1px;
+        }
+
+        .titulo-grande {
+          margin: 0 0 10px;
+          color: #5b3a24;
+          font-size: 25px;
+          line-height: 1.2;
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+
+        .subtitulo {
+          color: #555;
+          font-size: 15px;
+          line-height: 1.45;
+          margin-bottom: 12px;
+        }
+
+        .texto {
+          font-size: 13.8px;
+          line-height: 1.62;
+          color: #222;
+          white-space: pre-line;
+        }
+
+        .bloco {
+          margin-top: 9px;
+          padding: 10px 12px;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          background: #fff;
+          page-break-inside: auto;
+          break-inside: auto;
+        }
+
+        .bloco h3 {
+          margin: 0 0 5px;
+          color: #5b3a24;
+          font-size: 16px;
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+
+        .lista {
+          padding-left: 18px;
+          font-size: 13.8px;
+          line-height: 1.55;
+          margin: 5px 0;
+        }
+
+        .chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 5px;
+          margin: 8px 0 10px;
+        }
+
+        .chip {
+          border: 1px solid #ddd;
+          background: #fff;
+          color: #333;
+          font-weight: bold;
+          border-radius: 999px;
+          padding: 4px 8px;
+          font-size: 10.5px;
+        }
+
+        .sermao .titulo-sermao {
+          margin: 0 0 10px;
+          text-align: center;
+          color: #111;
+          font-size: 25px;
+          line-height: 1.25;
+          text-transform: uppercase;
+        }
+
+        .sermao .subtitulo-sermao {
+          text-align: center;
+          color: #333;
+          font-size: 14px;
+          margin-bottom: 18px;
+          line-height: 1.45;
+        }
+
+        .sermao .linha-info {
+          border-top: 1px solid #222;
+          border-bottom: 1px solid #222;
+          padding: 9px 0;
+          margin: 12px 0 16px;
+          font-size: 13.8px;
+          line-height: 1.55;
+          color: #111;
+        }
+
+        .sermao h2 {
+          margin: 18px 0 7px;
+          color: #111;
+          font-size: 17px;
+          border-bottom: 1px solid #ccc;
+          padding-bottom: 5px;
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+
+        .sermao h3 {
+          margin: 14px 0 6px;
+          color: #111;
+          font-size: 15.5px;
+          page-break-after: avoid;
+          break-after: avoid;
+        }
+
+        .sermao p {
+          font-size: 13.8px;
+          line-height: 1.62;
+          color: #111;
+          margin: 0 0 8px;
+          white-space: pre-line;
+        }
+
+        .sermao .ponto {
+          margin-top: 14px;
+          padding-top: 8px;
+          border-top: 1px solid #ddd;
+          page-break-inside: auto;
+          break-inside: auto;
+        }
+
+        .sermao ul {
+          font-size: 13.8px;
+          line-height: 1.6;
+          color: #111;
+          margin: 6px 0;
         }
       `;
     }
@@ -1454,7 +1430,7 @@
       `);
       janela.document.close();
 
-      setStatus("Abrindo uma página limpa para salvar em PDF. Ela não deve mostrar o menu lateral.", "ok");
+      setStatus("Abrindo uma página limpa para salvar em PDF. O conteúdo agora deve ocupar melhor as páginas.", "ok");
     }
 
     function limparCamposFormulario() {
