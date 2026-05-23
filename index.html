@@ -13,13 +13,12 @@
       --dourado: #c79b58;
       --bege: #f6efe6;
       --papel: #ffffff;
-      --texto: #2b2520;
-      --muted: #74675c;
-      --linha: #e6d8c7;
+      --texto: #222;
+      --muted: #666;
+      --linha: #ddd;
       --verde: #237a45;
       --vermelho: #a12d2d;
-      --azul: #315f9a;
-      --sombra: 0 14px 36px rgba(0,0,0,0.10);
+      --sombra: 0 12px 32px rgba(0,0,0,0.08);
     }
 
     * {
@@ -36,7 +35,7 @@
     header {
       background: linear-gradient(135deg, var(--marrom), var(--marrom2));
       color: white;
-      padding: 28px 18px;
+      padding: 26px 18px;
       text-align: center;
       border-bottom: 5px solid var(--dourado);
       box-shadow: var(--sombra);
@@ -44,7 +43,7 @@
 
     header h1 {
       margin: 0;
-      font-size: 38px;
+      font-size: 36px;
       letter-spacing: 1px;
     }
 
@@ -75,7 +74,7 @@
     .card-head {
       padding: 18px 20px;
       background: linear-gradient(180deg, #fffdf9, #fbf5ec);
-      border-bottom: 1px solid var(--linha);
+      border-bottom: 1px solid #e6d8c7;
     }
 
     .card-head h2 {
@@ -157,17 +156,11 @@
       font-weight: bold;
       cursor: pointer;
       font-size: 14px;
-      transition: 0.15s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
     }
 
     button:disabled {
       opacity: 0.65;
       cursor: not-allowed;
-      transform: none;
     }
 
     .btn-principal {
@@ -259,37 +252,37 @@
     }
 
     .doc {
-      max-width: 1050px;
+      max-width: 980px;
       margin: 0 auto;
       display: grid;
-      gap: 24px;
+      gap: 22px;
     }
 
     .pagina {
       background: white;
-      border-radius: 24px;
-      border: 1px solid var(--linha);
+      border-radius: 22px;
+      border: 1px solid #e6d8c7;
       box-shadow: var(--sombra);
       overflow: hidden;
       page-break-after: always;
     }
 
     .pagina-interna {
-      padding: 42px 46px;
+      padding: 40px 46px;
     }
 
     .titulo-grande {
       margin: 0 0 12px;
       color: var(--marrom);
-      font-size: 38px;
+      font-size: 36px;
       line-height: 1.18;
     }
 
     .subtitulo {
       color: var(--muted);
-      font-size: 20px;
+      font-size: 19px;
       line-height: 1.5;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .texto {
@@ -302,15 +295,21 @@
     .bloco {
       margin-top: 22px;
       padding: 24px;
-      border: 1px solid var(--linha);
-      border-radius: 20px;
+      border: 1px solid #e6d8c7;
+      border-radius: 18px;
       background: #fffdf9;
     }
 
     .bloco h3 {
       margin: 0 0 10px;
       color: var(--marrom);
-      font-size: 24px;
+      font-size: 23px;
+    }
+
+    .lista {
+      padding-left: 22px;
+      font-size: 17px;
+      line-height: 1.8;
     }
 
     .chips {
@@ -321,7 +320,7 @@
     }
 
     .chip {
-      border: 1px solid var(--linha);
+      border: 1px solid #e6d8c7;
       background: #fffdf9;
       color: #7b5a39;
       font-weight: bold;
@@ -330,8 +329,84 @@
       font-size: 13px;
     }
 
+    .sermao {
+      max-width: 900px;
+    }
+
+    .sermao .pagina {
+      border-radius: 8px;
+      border: 1px solid #d5d5d5;
+      box-shadow: none;
+      background: #fff;
+    }
+
+    .sermao .pagina-interna {
+      padding: 46px 56px;
+    }
+
+    .sermao .titulo-sermao {
+      margin: 0 0 18px;
+      text-align: center;
+      color: #111;
+      font-size: 34px;
+      line-height: 1.25;
+      text-transform: uppercase;
+    }
+
+    .sermao .subtitulo-sermao {
+      text-align: center;
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+
+    .sermao .linha-info {
+      border-top: 1px solid #222;
+      border-bottom: 1px solid #222;
+      padding: 14px 0;
+      margin: 20px 0 26px;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #111;
+    }
+
+    .sermao h2 {
+      margin: 32px 0 12px;
+      color: #111;
+      font-size: 24px;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 8px;
+    }
+
+    .sermao h3 {
+      margin: 26px 0 10px;
+      color: #111;
+      font-size: 21px;
+    }
+
+    .sermao p {
+      font-size: 18px;
+      line-height: 1.9;
+      color: #111;
+      margin: 0 0 16px;
+      white-space: pre-line;
+    }
+
+    .sermao .ponto {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px solid #ddd;
+    }
+
+    .sermao ul {
+      font-size: 18px;
+      line-height: 1.9;
+      color: #111;
+    }
+
     .capa {
-      min-height: 900px;
+      min-height: 850px;
       color: white;
       background: linear-gradient(135deg, #5b3a24, #c79b58);
       display: flex;
@@ -342,37 +417,24 @@
       overflow: hidden;
     }
 
-    .capa::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at 15% 15%, rgba(255,255,255,0.20), transparent 20%),
-        radial-gradient(circle at 80% 15%, rgba(255,255,255,0.15), transparent 18%),
-        linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.34));
-    }
-
     .capa-box {
-      position: relative;
-      z-index: 2;
       width: min(760px, 90%);
       padding: 42px 34px;
       border-radius: 28px;
       background: rgba(255,255,255,0.14);
       border: 1px solid rgba(255,255,255,0.30);
-      box-shadow: 0 18px 46px rgba(0,0,0,0.25);
     }
 
     .capa h1 {
       margin: 0 0 16px;
-      font-size: 48px;
+      font-size: 46px;
       line-height: 1.12;
       text-transform: uppercase;
     }
 
     .capa h2 {
       margin: 0;
-      font-size: 23px;
+      font-size: 22px;
       line-height: 1.45;
       font-weight: 500;
     }
@@ -389,112 +451,6 @@
       letter-spacing: 1px;
     }
 
-    .livro .pagina {
-      background: #fffdfa;
-    }
-
-    .livro .texto {
-      font-size: 19px;
-      line-height: 2;
-      text-align: justify;
-    }
-
-    .sermao .pagina {
-      box-shadow: none;
-      border-radius: 8px;
-      border: 1px solid #d8d8d8;
-    }
-
-    .sermao .pagina-interna {
-      padding: 44px 52px;
-    }
-
-    .sermao .titulo-grande {
-      color: #111;
-      text-align: center;
-      font-size: 36px;
-      text-transform: uppercase;
-    }
-
-    .sermao .bloco {
-      background: #fff;
-      border-radius: 8px;
-      border: 1px solid #dcdcdc;
-    }
-
-    .sermao .bloco h3 {
-      color: #111;
-    }
-
-    .sermao .texto {
-      color: #111;
-    }
-
-    .devocional .dia {
-      background: #fffdf9;
-      border: 1px solid var(--linha);
-      border-radius: 22px;
-      padding: 24px;
-      margin-top: 18px;
-    }
-
-    .devocional .dia-numero {
-      color: var(--dourado);
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 13px;
-      margin-bottom: 8px;
-    }
-
-    .devocional h3 {
-      margin: 0 0 10px;
-      color: var(--marrom);
-      font-size: 26px;
-    }
-
-    .revista .licao-topo {
-      background: linear-gradient(135deg, #fff7eb, #ffffff);
-      border: 1px solid var(--linha);
-      border-radius: 22px;
-      padding: 24px;
-      margin-top: 18px;
-    }
-
-    .revista .badge {
-      display: inline-block;
-      background: var(--marrom);
-      color: white;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    .lista {
-      padding-left: 22px;
-      font-size: 17px;
-      line-height: 1.8;
-    }
-
-    .qa {
-      display: grid;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .qa-item {
-      border: 1px solid var(--linha);
-      border-radius: 16px;
-      padding: 16px;
-      background: #fff;
-    }
-
-    .qa-item strong {
-      color: var(--marrom);
-    }
-
     @media (max-width: 1100px) {
       .container {
         grid-template-columns: 1fr;
@@ -505,16 +461,17 @@
         grid-template-columns: 1fr;
       }
 
-      .pagina-interna {
+      .pagina-interna,
+      .sermao .pagina-interna {
         padding: 30px 24px;
       }
 
-      .capa h1 {
-        font-size: 34px;
+      .titulo-grande {
+        font-size: 30px;
       }
 
-      .titulo-grande {
-        font-size: 31px;
+      .sermao .titulo-sermao {
+        font-size: 28px;
       }
     }
 
@@ -525,8 +482,7 @@
 
       header,
       .painel,
-      .card-head,
-      .botoes-topo {
+      .card-head {
         display: none !important;
       }
 
@@ -559,7 +515,8 @@
         border: none;
       }
 
-      .pagina-interna {
+      .pagina-interna,
+      .sermao .pagina-interna {
         padding: 22mm 18mm;
       }
 
@@ -574,19 +531,19 @@
 <body>
   <header>
     <h1>VERBO IA</h1>
-    <p>Gerador inteligente de materiais cristãos: livro, e-book, sermão, devocional, estudo, curso e revista.</p>
+    <p>Gerador inteligente de materiais cristãos.</p>
   </header>
 
   <main class="container">
     <section class="card painel">
       <div class="card-head">
         <h2>Configurar material</h2>
-        <p>Escolha o tipo. O sistema mudará o formato automaticamente.</p>
+        <p>Escolha o tipo de material. Cada tipo terá uma estrutura própria.</p>
       </div>
 
       <div class="card-body">
         <div class="aviso">
-          Agora cada função tem seu próprio formato: sermão parece sermão, livro parece livro, devocional parece devocional e revista parece revista.
+          Sermão agora sai como sermão: sem caixa de destaque, sem contracapa, sem dados editoriais e sem aparência de e-book.
         </div>
 
         <label for="materialType">Tipo de material</label>
@@ -603,10 +560,8 @@
         <label for="title">Título</label>
         <input id="title" type="text" value="Coração Blindado: Vencendo a Ansiedade na Presença de Deus" />
 
-        <div id="campoSubtitulo">
-          <label for="subtitle">Subtítulo</label>
-          <input id="subtitle" type="text" value="Fé, descanso e confiança para uma alma sobrecarregada" />
-        </div>
+        <label for="subtitle">Subtítulo</label>
+        <input id="subtitle" type="text" value="Fé, descanso e confiança para uma alma sobrecarregada" />
 
         <label for="theme">Tema principal</label>
         <textarea id="theme">Como vencer a ansiedade, o medo, a sobrecarga emocional e a inquietação da alma por meio da fé, da oração e da confiança em Deus.</textarea>
@@ -620,11 +575,18 @@
             <input id="quantity" type="number" min="1" max="30" value="3" />
           </div>
 
-          <div>
-            <label for="targetAudience">Público-alvo</label>
-            <input id="targetAudience" type="text" value="Igreja em geral" />
+          <div id="campoTopicos">
+            <label for="sermonPoints">Tópicos do sermão</label>
+            <select id="sermonPoints">
+              <option value="3" selected>3 tópicos</option>
+              <option value="4">4 tópicos</option>
+              <option value="5">5 tópicos</option>
+            </select>
           </div>
         </div>
+
+        <label for="targetAudience">Público-alvo</label>
+        <input id="targetAudience" type="text" value="Igreja em geral" />
 
         <div class="linha">
           <div>
@@ -651,24 +613,22 @@
           <div id="campoVisual">
             <label for="visualStyle">Estilo visual</label>
             <select id="visualStyle">
-              <option value="colorido" selected>Colorido</option>
-              <option value="preto e branco">Preto e branco</option>
+              <option value="colorido">Colorido</option>
+              <option value="preto e branco" selected>Preto e branco</option>
             </select>
           </div>
         </div>
 
-        <div class="linha">
-          <div id="campoCapa">
-            <label for="coverMode">Capa</label>
-            <select id="coverMode">
-              <option value="com-capa">Com capa</option>
-              <option value="sem-capa" selected>Sem capa</option>
-            </select>
-          </div>
+        <div id="campoCapa">
+          <label for="coverMode">Capa</label>
+          <select id="coverMode">
+            <option value="com-capa">Com capa</option>
+            <option value="sem-capa" selected>Sem capa</option>
+          </select>
         </div>
 
         <label for="tone">Tom do material</label>
-        <input id="tone" type="text" value="pastoral, bíblico, atual, profundo, acolhedor, moderno e encorajador" />
+        <input id="tone" type="text" value="pastoral, bíblico, atual, profundo, acolhedor e encorajador" />
 
         <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">
           Gerar material
@@ -733,7 +693,11 @@
         .replaceAll("'", "&#039;");
     }
 
-    function texto(texto) {
+    function p(texto) {
+      return `<p>${escapeHtml(texto || "")}</p>`;
+    }
+
+    function divTexto(texto) {
       return `<div class="texto">${escapeHtml(texto || "")}</div>`;
     }
 
@@ -755,43 +719,43 @@
       const tipo = tipoAtual();
 
       el("campoQuantidade").classList.remove("campo-oculto");
-      el("campoVisual").classList.remove("campo-oculto");
+      el("campoTopicos").classList.add("campo-oculto");
       el("campoCapa").classList.remove("campo-oculto");
+      el("campoVisual").classList.remove("campo-oculto");
 
       if (tipo === "sermao") {
         el("campoQuantidade").classList.add("campo-oculto");
+        el("campoTopicos").classList.remove("campo-oculto");
         el("campoCapa").classList.add("campo-oculto");
-        el("campoVisual").classList.remove("campo-oculto");
         el("visualStyle").value = "preto e branco";
         el("quantity").value = "1";
-        setStatus("Modo Sermão: formato pregável, preto e branco, com introdução, contexto, pontos, aplicações e apelo.", "ok");
+        setStatus("Modo Sermão: sem aparência de e-book, com texto base, introdução, contexto, tópicos, aplicações, conclusão, apelo e oração.", "ok");
         return;
       }
 
       if (tipo === "livro") {
         el("labelQuantidade").innerText = "Capítulos";
-        setStatus("Modo Livro: formato literário, com prefácio, apresentação, capítulos densos e conclusão final.", "ok");
+        setStatus("Modo Livro: formato literário, com prefácio, apresentação, capítulos densos e conclusão.", "ok");
         return;
       }
 
       if (tipo === "ebook") {
         el("labelQuantidade").innerText = "Capítulos";
-        setStatus("Modo E-book: formato moderno, prático, organizado e direto.", "ok");
+        setStatus("Modo E-book: formato moderno e organizado.", "ok");
         return;
       }
 
       if (tipo === "devocional") {
         el("labelQuantidade").innerText = "Dias devocionais";
         el("campoCapa").classList.add("campo-oculto");
-        setStatus("Modo Devocional: textos mais curtos, reflexivos, diretos e com oração.", "ok");
+        setStatus("Modo Devocional: curto, direto, reflexivo e com oração.", "ok");
         return;
       }
 
       if (tipo === "estudo") {
         el("labelQuantidade").innerText = "Partes do estudo";
         el("campoCapa").classList.add("campo-oculto");
-        el("campoVisual").classList.add("campo-oculto");
-        setStatus("Modo Estudo: exposição bíblica, contexto, análise teológica e revisão.", "ok");
+        setStatus("Modo Estudo: exposição bíblica, contexto, análise e aplicação.", "ok");
         return;
       }
 
@@ -805,7 +769,6 @@
       if (tipo === "revista") {
         el("labelQuantidade").innerText = "Lições";
         setStatus("Modo Revista: formato de lição bíblica com texto áureo, verdade prática e perguntas.", "ok");
-        return;
       }
     }
 
@@ -814,6 +777,7 @@
 
       return {
         materialType: tipo,
+        sermonPoints: Number(valor("sermonPoints") || 3),
         title: valor("title"),
         subtitle: valor("subtitle"),
         theme: valor("theme"),
@@ -840,8 +804,8 @@
 
       btn.disabled = true;
       btn.innerText = "Gerando...";
-      setBarra(12);
-      setStatus("Gerando conteúdo com o formato correto...", "");
+      setBarra(10);
+      setStatus("Gerando conteúdo no formato correto...", "");
 
       el("resultado").innerHTML = `
         <div class="placeholder">
@@ -868,7 +832,7 @@
         }
 
         materialAtual = json.material;
-        setBarra(85);
+        setBarra(90);
         renderizarMaterial(materialAtual);
         setBarra(100);
         setStatus("Material gerado com sucesso.", "ok");
@@ -895,13 +859,73 @@
 
       if (type === "sermao") return renderSermao(material);
       if (type === "livro") return renderLivro(material);
-      if (type === "ebook") return renderEbook(material);
       if (type === "devocional") return renderDevocional(material);
       if (type === "estudo") return renderEstudo(material);
       if (type === "curso") return renderCurso(material);
       if (type === "revista") return renderRevista(material);
+      return renderEbook(material);
+    }
 
-      renderEbook(material);
+    function renderSermao(m) {
+      el("resultado").innerHTML = `
+        <article class="doc sermao">
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-sermao">${escapeHtml(m.title || "")}</h1>
+              <div class="subtitulo-sermao">${escapeHtml(m.subtitle || "")}</div>
+
+              <div class="linha-info">
+                <strong>Texto bíblico:</strong> ${escapeHtml(m.biblicalText || "")}<br>
+                <strong>Tema:</strong> ${escapeHtml(m.theme || "")}<br>
+                <strong>Objetivo:</strong> ${escapeHtml(m.objective || "")}
+              </div>
+
+              <h2>Introdução</h2>
+              ${p(m.introduction)}
+
+              <h2>Contexto bíblico</h2>
+              ${p(m.biblicalContext)}
+
+              <h2>Explicação do texto</h2>
+              ${p(m.textExplanation)}
+
+              <h2>Proposição central</h2>
+              ${p(m.centralProposition)}
+
+              <h2>Frase de transição</h2>
+              ${p(m.transitionPhrase)}
+
+              <h2>Desenvolvimento</h2>
+
+              ${(m.points || []).map((pt, i) => `
+                <div class="ponto">
+                  <h3>${escapeHtml(pt.title || `Ponto ${i + 1}`)}</h3>
+
+                  <p><strong>Explicação bíblica:</strong><br>${escapeHtml(pt.explanation || "")}</p>
+
+                  <p><strong>Aplicação pastoral:</strong><br>${escapeHtml(pt.pastoralApplication || "")}</p>
+
+                  <p><strong>Ilustração / exemplo prático:</strong><br>${escapeHtml(pt.illustration || "")}</p>
+                </div>
+              `).join("")}
+
+              <h2>Aplicações práticas para a vida diária</h2>
+              <ul>
+                ${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}
+              </ul>
+
+              <h2>Conclusão</h2>
+              ${p(m.conclusion)}
+
+              <h2>Apelo final</h2>
+              ${p(m.appeal)}
+
+              <h2>Oração final</h2>
+              ${p(m.finalPrayer)}
+            </div>
+          </section>
+        </article>
+      `;
     }
 
     function capaMaterial(m, selo) {
@@ -913,123 +937,14 @@
             <div class="selo">${escapeHtml(selo || "VERBO IA")}</div>
             <h1>${escapeHtml(m.title || "")}</h1>
             <h2>${escapeHtml(m.subtitle || "")}</h2>
-            <div style="margin-top:28px;font-size:15px;line-height:1.7;">
-              <div><strong>Autor:</strong> ${escapeHtml(m.author || "")}</div>
-              <div><strong>Ministério:</strong> ${escapeHtml(m.ministry || "")}</div>
-            </div>
           </div>
         </section>
       `;
     }
 
-    function renderSermao(m) {
-      el("resultado").innerHTML = `
-        <article class="doc sermao">
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="bloco">
-                <h3>Texto bíblico</h3>
-                ${texto(m.biblicalText)}
-              </div>
-
-              <div class="bloco">
-                <h3>Tema</h3>
-                ${texto(m.theme)}
-              </div>
-
-              <div class="bloco">
-                <h3>Objetivo do sermão</h3>
-                ${texto(m.objective)}
-              </div>
-
-              <div class="bloco">
-                <h3>Introdução</h3>
-                ${texto(m.introduction)}
-              </div>
-
-              <div class="bloco">
-                <h3>Contexto bíblico</h3>
-                ${texto(m.biblicalContext)}
-              </div>
-
-              <div class="bloco">
-                <h3>Explicação do texto</h3>
-                ${texto(m.textExplanation)}
-              </div>
-
-              <div class="bloco">
-                <h3>Proposição central</h3>
-                ${texto(m.centralProposition)}
-              </div>
-
-              <div class="bloco">
-                <h3>Frase de transição</h3>
-                ${texto(m.transitionPhrase)}
-              </div>
-            </div>
-          </section>
-
-          ${(m.points || []).map((p, i) => `
-            <section class="pagina">
-              <div class="pagina-interna">
-                <h2 class="titulo-grande">${escapeHtml(p.title || `Ponto ${i + 1}`)}</h2>
-
-                <div class="bloco">
-                  <h3>Explicação</h3>
-                  ${texto(p.explanation)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Base bíblica</h3>
-                  ${texto(p.biblicalSupport)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Aplicação pastoral</h3>
-                  ${texto(p.pastoralApplication)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Ilustração</h3>
-                  ${texto(p.illustration)}
-                </div>
-              </div>
-            </section>
-          `).join("")}
-
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h2 class="titulo-grande">Aplicações práticas</h2>
-              <ul class="lista">
-                ${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}
-              </ul>
-
-              <div class="bloco">
-                <h3>Conclusão</h3>
-                ${texto(m.conclusion)}
-              </div>
-
-              <div class="bloco">
-                <h3>Apelo</h3>
-                ${texto(m.appeal)}
-              </div>
-
-              <div class="bloco">
-                <h3>Oração final</h3>
-                ${texto(m.finalPrayer)}
-              </div>
-            </div>
-          </section>
-        </article>
-      `;
-    }
-
     function renderLivro(m) {
       el("resultado").innerHTML = `
-        <article class="doc livro">
+        <article class="doc">
           ${capaMaterial(m, "LIVRO CRISTÃO")}
 
           <section class="pagina">
@@ -1037,20 +952,9 @@
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
 
-              <div class="bloco">
-                <h3>Prefácio</h3>
-                ${texto(m.preface)}
-              </div>
-
-              <div class="bloco">
-                <h3>Apresentação</h3>
-                ${texto(m.presentation)}
-              </div>
-
-              <div class="bloco">
-                <h3>Introdução geral</h3>
-                ${texto(m.generalIntroduction)}
-              </div>
+              <div class="bloco"><h3>Prefácio</h3>${divTexto(m.preface)}</div>
+              <div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>
+              <div class="bloco"><h3>Introdução geral</h3>${divTexto(m.generalIntroduction)}</div>
             </div>
           </section>
 
@@ -1063,30 +967,11 @@
                   ${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
                 </div>
 
-                <div class="bloco">
-                  <h3>Abertura literária</h3>
-                  ${texto(ch.openingNarrative)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Desenvolvimento</h3>
-                  ${texto(ch.development)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Reflexão teológica</h3>
-                  ${texto(ch.theologicalReflection)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Aplicação pastoral</h3>
-                  ${texto(ch.pastoralApplication)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Fechamento do capítulo</h3>
-                  ${texto(ch.chapterClosing)}
-                </div>
+                <div class="bloco"><h3>Abertura literária</h3>${divTexto(ch.openingNarrative)}</div>
+                <div class="bloco"><h3>Desenvolvimento</h3>${divTexto(ch.development)}</div>
+                <div class="bloco"><h3>Reflexão teológica</h3>${divTexto(ch.theologicalReflection)}</div>
+                <div class="bloco"><h3>Aplicação pastoral</h3>${divTexto(ch.pastoralApplication)}</div>
+                <div class="bloco"><h3>Fechamento do capítulo</h3>${divTexto(ch.chapterClosing)}</div>
               </div>
             </section>
           `).join("")}
@@ -1094,22 +979,10 @@
           <section class="pagina">
             <div class="pagina-interna">
               <h2 class="titulo-grande">Conclusão final</h2>
-              ${texto(m.finalConclusion)}
-
-              <div class="bloco">
-                <h3>Palavra ao leitor</h3>
-                ${texto(m.wordToReader)}
-              </div>
-
-              <div class="bloco">
-                <h3>Sobre o autor</h3>
-                ${texto(m.authorBio)}
-              </div>
-
-              <div class="bloco">
-                <h3>Texto de contracapa</h3>
-                ${texto(m.backCoverText)}
-              </div>
+              ${divTexto(m.finalConclusion)}
+              <div class="bloco"><h3>Palavra ao leitor</h3>${divTexto(m.wordToReader)}</div>
+              <div class="bloco"><h3>Sobre o autor</h3>${divTexto(m.authorBio)}</div>
+              <div class="bloco"><h3>Texto de contracapa</h3>${divTexto(m.backCoverText)}</div>
             </div>
           </section>
         </article>
@@ -1118,18 +991,14 @@
 
     function renderEbook(m) {
       el("resultado").innerHTML = `
-        <article class="doc ebook">
+        <article class="doc">
           ${capaMaterial(m, "E-BOOK CRISTÃO")}
 
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="bloco">
-                <h3>Apresentação</h3>
-                ${texto(m.summaryIntro)}
-              </div>
+              <div class="bloco"><h3>Apresentação</h3>${divTexto(m.summaryIntro)}</div>
             </div>
           </section>
 
@@ -1137,33 +1006,20 @@
             <section class="pagina">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Capítulo ${escapeHtml(ch.number)} — ${escapeHtml(ch.title)}</h2>
-                ${texto(ch.heroCaption)}
+                ${divTexto(ch.heroCaption)}
 
                 <div class="chips">
                   ${(ch.biblicalBase || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
                 </div>
 
-                <div class="bloco">
-                  <h3>Abertura</h3>
-                  ${texto(ch.opening)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Ideia central</h3>
-                  ${texto(ch.centralIdea)}
-                </div>
+                <div class="bloco"><h3>Abertura</h3>${divTexto(ch.opening)}</div>
+                <div class="bloco"><h3>Ideia central</h3>${divTexto(ch.centralIdea)}</div>
 
                 ${(ch.sections || []).map(s => `
-                  <div class="bloco">
-                    <h3>${escapeHtml(s.title)}</h3>
-                    ${texto(s.content)}
-                  </div>
+                  <div class="bloco"><h3>${escapeHtml(s.title)}</h3>${divTexto(s.content)}</div>
                 `).join("")}
 
-                <div class="bloco">
-                  <h3>Destaque</h3>
-                  ${texto(ch.highlightQuote)}
-                </div>
+                <div class="bloco"><h3>Destaque</h3>${divTexto(ch.highlightQuote)}</div>
 
                 <div class="bloco">
                   <h3>Perguntas de reflexão</h3>
@@ -1172,20 +1028,9 @@
                   </ul>
                 </div>
 
-                <div class="bloco">
-                  <h3>Aplicação prática</h3>
-                  ${texto(ch.practice)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Oração</h3>
-                  ${texto(ch.prayer)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Conclusão</h3>
-                  ${texto(ch.conclusion)}
-                </div>
+                <div class="bloco"><h3>Aplicação prática</h3>${divTexto(ch.practice)}</div>
+                <div class="bloco"><h3>Oração</h3>${divTexto(ch.prayer)}</div>
+                <div class="bloco"><h3>Conclusão</h3>${divTexto(ch.conclusion)}</div>
               </div>
             </section>
           `).join("")}
@@ -1193,7 +1038,7 @@
           <section class="pagina">
             <div class="pagina-interna">
               <h2 class="titulo-grande">Conclusão final</h2>
-              ${texto(m.closing)}
+              ${divTexto(m.closing)}
             </div>
           </section>
         </article>
@@ -1202,52 +1047,25 @@
 
     function renderDevocional(m) {
       el("resultado").innerHTML = `
-        <article class="doc devocional">
+        <article class="doc">
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="bloco">
-                <h3>Apresentação</h3>
-                ${texto(m.presentation)}
-              </div>
+              <div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>
 
               ${(m.days || []).map(d => `
-                <div class="dia">
-                  <div class="dia-numero">Dia ${escapeHtml(d.day)}</div>
-                  <h3>${escapeHtml(d.title)}</h3>
-
-                  <div class="chips">
-                    <span class="chip">${escapeHtml(d.verse)}</span>
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Reflexão</h3>
-                    ${texto(d.reflection)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Aplicação prática</h3>
-                    ${texto(d.practicalApplication)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Pergunta para meditação</h3>
-                    ${texto(d.meditationQuestion)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Oração</h3>
-                    ${texto(d.prayer)}
-                  </div>
+                <div class="bloco">
+                  <h3>Dia ${escapeHtml(d.day)} — ${escapeHtml(d.title)}</h3>
+                  <div class="chips"><span class="chip">${escapeHtml(d.verse)}</span></div>
+                  <h3>Reflexão</h3>${divTexto(d.reflection)}
+                  <h3>Aplicação prática</h3>${divTexto(d.practicalApplication)}
+                  <h3>Pergunta para meditação</h3>${divTexto(d.meditationQuestion)}
+                  <h3>Oração</h3>${divTexto(d.prayer)}
                 </div>
               `).join("")}
 
-              <div class="bloco">
-                <h3>Palavra final</h3>
-                ${texto(m.finalWord)}
-              </div>
+              <div class="bloco"><h3>Palavra final</h3>${divTexto(m.finalWord)}</div>
             </div>
           </section>
         </article>
@@ -1256,40 +1074,23 @@
 
     function renderEstudo(m) {
       el("resultado").innerHTML = `
-        <article class="doc estudo">
+        <article class="doc">
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.theme || "")}</div>
 
-              <div class="bloco">
-                <h3>Texto bíblico</h3>
-                ${texto(m.biblicalText)}
-              </div>
+              <div class="bloco"><h3>Texto bíblico</h3>${divTexto(m.biblicalText)}</div>
+              <div class="bloco"><h3>Objetivo</h3>${divTexto(m.objective)}</div>
+              <div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction)}</div>
+              <div class="bloco"><h3>Contexto bíblico</h3>${divTexto(m.biblicalContext)}</div>
 
-              <div class="bloco">
-                <h3>Objetivo</h3>
-                ${texto(m.objective)}
-              </div>
-
-              <div class="bloco">
-                <h3>Introdução</h3>
-                ${texto(m.introduction)}
-              </div>
-
-              <div class="bloco">
-                <h3>Contexto bíblico</h3>
-                ${texto(m.biblicalContext)}
-              </div>
-
-              ${(m.parts || []).map(p => `
+              ${(m.parts || []).map(pt => `
                 <div class="bloco">
-                  <h3>${escapeHtml(p.number)}. ${escapeHtml(p.title)}</h3>
-                  ${texto(p.explanation)}
-                  <h3>Análise teológica</h3>
-                  ${texto(p.theologicalAnalysis)}
-                  <h3>Aplicação prática</h3>
-                  ${texto(p.practicalApplication)}
+                  <h3>${escapeHtml(pt.number)}. ${escapeHtml(pt.title)}</h3>
+                  ${divTexto(pt.explanation)}
+                  <h3>Análise teológica</h3>${divTexto(pt.theologicalAnalysis)}
+                  <h3>Aplicação prática</h3>${divTexto(pt.practicalApplication)}
                 </div>
               `).join("")}
 
@@ -1300,10 +1101,7 @@
                 </ul>
               </div>
 
-              <div class="bloco">
-                <h3>Conclusão</h3>
-                ${texto(m.conclusion)}
-              </div>
+              <div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion)}</div>
             </div>
           </section>
         </article>
@@ -1312,21 +1110,13 @@
 
     function renderCurso(m) {
       el("resultado").innerHTML = `
-        <article class="doc curso">
+        <article class="doc">
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="bloco">
-                <h3>Descrição do curso</h3>
-                ${texto(m.courseDescription)}
-              </div>
-
-              <div class="bloco">
-                <h3>Objetivo geral</h3>
-                ${texto(m.generalObjective)}
-              </div>
+              <div class="bloco"><h3>Descrição do curso</h3>${divTexto(m.courseDescription)}</div>
+              <div class="bloco"><h3>Objetivo geral</h3>${divTexto(m.generalObjective)}</div>
             </div>
           </section>
 
@@ -1334,40 +1124,17 @@
             <section class="pagina">
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Aula ${escapeHtml(a.lesson)} — ${escapeHtml(a.title)}</h2>
-
-                <div class="bloco">
-                  <h3>Objetivo da aula</h3>
-                  ${texto(a.objective)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Introdução</h3>
-                  ${texto(a.introduction)}
-                </div>
+                <div class="bloco"><h3>Objetivo da aula</h3>${divTexto(a.objective)}</div>
+                <div class="bloco"><h3>Introdução</h3>${divTexto(a.introduction)}</div>
 
                 <div class="chips">
                   ${(a.biblicalTexts || []).map(v => `<span class="chip">${escapeHtml(v)}</span>`).join("")}
                 </div>
 
-                <div class="bloco">
-                  <h3>Conteúdo</h3>
-                  ${texto(a.content)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Atividade em classe</h3>
-                  ${texto(a.classActivity)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Tarefa da semana</h3>
-                  ${texto(a.homework)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Resumo da aula</h3>
-                  ${texto(a.summary)}
-                </div>
+                <div class="bloco"><h3>Conteúdo</h3>${divTexto(a.content)}</div>
+                <div class="bloco"><h3>Atividade em classe</h3>${divTexto(a.classActivity)}</div>
+                <div class="bloco"><h3>Tarefa da semana</h3>${divTexto(a.homework)}</div>
+                <div class="bloco"><h3>Resumo da aula</h3>${divTexto(a.summary)}</div>
               </div>
             </section>
           `).join("")}
@@ -1375,12 +1142,8 @@
           <section class="pagina">
             <div class="pagina-interna">
               <h2 class="titulo-grande">Avaliação final</h2>
-              ${texto(m.finalEvaluation)}
-
-              <div class="bloco">
-                <h3>Palavra final</h3>
-                ${texto(m.finalWord)}
-              </div>
+              ${divTexto(m.finalEvaluation)}
+              <div class="bloco"><h3>Palavra final</h3>${divTexto(m.finalWord)}</div>
             </div>
           </section>
         </article>
@@ -1389,83 +1152,47 @@
 
     function renderRevista(m) {
       el("resultado").innerHTML = `
-        <article class="doc revista">
+        <article class="doc">
           ${capaMaterial(m, "REVISTA BÍBLICA")}
 
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="bloco">
-                <h3>Apresentação da revista</h3>
-                ${texto(m.quarterPresentation)}
-              </div>
+              <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
             </div>
           </section>
 
           ${(m.lessons || []).map(l => `
             <section class="pagina">
               <div class="pagina-interna">
-                <div class="licao-topo">
-                  <span class="badge">LIÇÃO ${escapeHtml(l.lesson)}</span>
-                  <h2 class="titulo-grande">${escapeHtml(l.title)}</h2>
-
-                  <div class="bloco">
-                    <h3>Texto áureo</h3>
-                    ${texto(l.goldenText)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Verdade prática</h3>
-                    ${texto(l.practicalTruth)}
-                  </div>
-
-                  <div class="bloco">
-                    <h3>Leitura bíblica em classe</h3>
-                    ${texto(l.biblicalReading)}
-                  </div>
-                </div>
+                <h2 class="titulo-grande">Lição ${escapeHtml(l.lesson)} — ${escapeHtml(l.title)}</h2>
+                <div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>
+                <div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>
+                <div class="bloco"><h3>Leitura bíblica</h3>${divTexto(l.biblicalReading)}</div>
 
                 <div class="bloco">
-                  <h3>Objetivos da lição</h3>
+                  <h3>Objetivos</h3>
                   <ul class="lista">
                     ${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}
                   </ul>
                 </div>
 
-                <div class="bloco">
-                  <h3>Introdução</h3>
-                  ${texto(l.introduction)}
-                </div>
+                <div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>
 
                 ${(l.topics || []).map(t => `
-                  <div class="bloco">
-                    <h3>${escapeHtml(t.title)}</h3>
-                    ${texto(t.content)}
-                  </div>
+                  <div class="bloco"><h3>${escapeHtml(t.title)}</h3>${divTexto(t.content)}</div>
                 `).join("")}
 
-                <div class="bloco">
-                  <h3>Aplicação para a vida</h3>
-                  ${texto(l.lifeApplication)}
-                </div>
-
-                <div class="bloco">
-                  <h3>Conclusão</h3>
-                  ${texto(l.conclusion)}
-                </div>
+                <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
+                <div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>
 
                 <div class="bloco">
                   <h3>Revisando o conteúdo</h3>
-                  <div class="qa">
-                    ${(l.questionsAndAnswers || []).map(qa => `
-                      <div class="qa-item">
-                        <strong>Pergunta:</strong> ${escapeHtml(qa.question)}<br><br>
-                        <strong>Resposta:</strong> ${escapeHtml(qa.answer)}
-                      </div>
-                    `).join("")}
-                  </div>
+                  ${(l.questionsAndAnswers || []).map(qa => `
+                    <p><strong>Pergunta:</strong> ${escapeHtml(qa.question)}</p>
+                    <p><strong>Resposta:</strong> ${escapeHtml(qa.answer)}</p>
+                  `).join("")}
                 </div>
               </div>
             </section>
@@ -1474,7 +1201,7 @@
           <section class="pagina">
             <div class="pagina-interna">
               <h2 class="titulo-grande">Palavra final</h2>
-              ${texto(m.finalWord)}
+              ${divTexto(m.finalWord)}
             </div>
           </section>
         </article>
@@ -1513,6 +1240,7 @@
       el("subtitle").value = "A vitória de Cristo sobre as trevas";
       el("theme").value = "Mostre que Jesus venceu o diabo, desfez as obras das trevas e veio para libertar vidas e famílias. O sermão deve ser forte, bíblico, pastoral e aplicável.";
       el("biblicalBase").value = "1 João 3.8; Colossenses 2.14-15; João 8.36; Lucas 10.19";
+      el("sermonPoints").value = "3";
       el("quantity").value = "1";
       el("targetAudience").value = "Culto de libertação, famílias e igreja em geral";
       el("author").value = "Pr. Isiquel Rodrigues";
