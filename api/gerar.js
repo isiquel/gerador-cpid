@@ -28,26 +28,28 @@ module.exports = async function handler(req, res) {
     ].filter(Boolean);
 
     const prompt = buildPrompt(form);
+
     const result = await callGeminiText(apiKey, models, prompt);
     const text = extractText(result.data);
-    const book = parseJson(text);
+    const material = parseJson(text);
 
-    if (!book || !Array.isArray(book.chapters)) {
+    if (!material) {
       return res.status(500).json({
         ok: false,
-        error: "A IA não retornou o formato correto. Tente gerar novamente."
+        error: "A IA não retornou um JSON válido. Tente gerar novamente."
       });
     }
 
-    book.chapters = book.chapters.map((chapter, index) => ({
-      ...chapter,
-      number: index + 1
-    }));
+    material.appName = "VERBO IA";
+    material.selectedType = form.materialType;
+    material.author = material.author || form.author;
+    material.ministry = material.ministry || form.ministry;
+    material.visualStyle = form.visualStyle;
 
     return res.status(200).json({
       ok: true,
       modelUsed: result.modelUsed,
-      book
+      material
     });
 
   } catch (error) {
@@ -63,21 +65,22 @@ module.exports = async function handler(req, res) {
 function normalizeForm(body) {
   const tipo = String(body.materialType || body.tipo || "ebook").trim();
 
-  const quantidadeBruta =
+  let quantidade = Number(
     body.quantity ||
     body.quantidade ||
     body.capitulos ||
     body.dias ||
-    3;
+    body.aulas ||
+    body.licoes ||
+    3
+  );
 
-  let quantidade = Number(quantidadeBruta);
-
-  if (!Number.isFinite(quantidade)) {
-    quantidade = 3;
-  }
+  if (!Number.isFinite(quantidade)) quantidade = 3;
 
   if (tipo === "sermao") {
     quantidade = 1;
+  } else if (tipo === "devocional") {
+    quantidade = Math.max(1, Math.min(quantidade, 30));
   } else {
     quantidade = Math.max(1, Math.min(quantidade, 10));
   }
@@ -101,178 +104,429 @@ function normalizeForm(body) {
 }
 
 function buildPrompt(form) {
-  const materialNames = {
-    ebook: "E-book cristão",
-    livro: "Livro cristão",
-    devocional: "Devocional cristão",
-    estudo: "Estudo teológico",
-    curso: "Curso cristão",
-    revista: "Revista de ensino bíblico",
-    sermao: "Sermão cristão"
-  };
+  if (form.materialType === "sermao") return promptSermao(form);
+  if (form.materialType === "livro") return promptLivro(form);
+  if (form.materialType === "ebook") return promptEbook(form);
+  if (form.materialType === "devocional") return promptDevocional(form);
+  if (form.materialType === "estudo") return promptEstudo(form);
+  if (form.materialType === "curso") return promptCurso(form);
+  if (form.materialType === "revista") return promptRevista(form);
 
-  const materialName = materialNames[form.materialType] || "E-book cristão";
-
-  if (form.materialType === "sermao") {
-    return buildPromptSermao(form, materialName);
-  }
-
-  return buildPromptMaterial(form, materialName);
+  return promptEbook(form);
 }
 
-function buildPromptMaterial(form, materialName) {
+function baseDados(form, nome) {
   return `
-Você é um escritor cristão, teólogo, pastor, comentarista bíblico e organizador editorial.
-
-Crie um ${materialName} em português do Brasil.
-
-DADOS DO MATERIAL:
-Nome do app: ${form.appName}
-Tipo: ${materialName}
+DADOS:
+Tipo: ${nome}
 Título: ${form.title}
-Subtítulo: ${form.subtitle || "Crie um subtítulo forte, bonito e moderno"}
+Subtítulo: ${form.subtitle || "Crie se necessário"}
 Tema: ${form.theme || form.title}
-Texto bíblico base: ${form.biblicalBase || "Escolha textos bíblicos coerentes com o tema"}
-Quantidade exata de capítulos/lições/dias/aulas: ${form.quantity}
+Texto bíblico base: ${form.biblicalBase || "Escolha textos bíblicos coerentes"}
+Quantidade: ${form.quantity}
 Público-alvo: ${form.targetAudience}
-Autor/comentarista: ${form.author}
+Autor: ${form.author}
 Ministério/Editora: ${form.ministry}
 Profundidade: ${form.depthLevel}
-Estilo visual: ${form.visualStyle}
 Tom: ${form.tone}
-
-REGRAS DE VELOCIDADE E ORGANIZAÇÃO:
-1. Gere somente o conteúdo textual.
-2. Não gere imagem.
-3. Não gere PDF.
-4. Não monte HTML.
-5. Não escreva mensagens de processo.
-6. Não escreva "estou organizando".
-7. Não use markdown.
-8. Responda apenas em JSON válido.
-9. Crie exatamente ${form.quantity} partes, sem pular numeração.
-10. Não repita o nome do autor em todos os capítulos.
-11. Não use a frase "nova seção do material".
-12. O conteúdo deve ser profundo, mas objetivo o bastante para a resposta terminar.
-13. Cada parte deve ter conteúdo expandido, bíblico, pastoral e aplicável.
-14. Cada parte deve ter um prompt de imagem em inglês, apenas como texto no campo "illustrationPrompt".
-15. A capa deve ter um prompt de imagem em inglês no campo "coverIllustrationPrompt", mas não gere imagem.
-
-FORMATO JSON OBRIGATÓRIO:
-{
-  "appName": "VERBO IA",
-  "materialType": "${materialName}",
-  "title": "string",
-  "subtitle": "string",
-  "coverBadge": "string",
-  "coverTagline": "string",
-  "theme": "string",
-  "targetAudience": "string",
-  "language": "Português",
-  "author": "string",
-  "ministry": "string",
-  "visualStyle": "string",
-  "biblicalBase": ["string"],
-  "summaryIntro": "string",
-  "coverIllustrationPrompt": "string",
-  "chapters": [
-    {
-      "number": 1,
-      "title": "string",
-      "heroCaption": "string",
-      "illustrationPrompt": "string",
-      "biblicalBase": ["string"],
-      "opening": "string",
-      "centralIdea": "string",
-      "sections": [
-        { "title": "string", "content": "string" },
-        { "title": "string", "content": "string" },
-        { "title": "string", "content": "string" }
-      ],
-      "highlightQuote": "string",
-      "reflectionQuestions": ["string", "string", "string"],
-      "practice": "string",
-      "prayer": "string",
-      "conclusion": "string"
-    }
-  ],
-  "closing": "string",
-  "authorBio": "string",
-  "backCoverText": "string"
-}
-
-IMPORTANTE:
-O material precisa ser profundo, edificante, bem organizado e pastoral.
+Estilo visual: ${form.visualStyle}
 `.trim();
 }
 
-function buildPromptSermao(form, materialName) {
+function regrasJson() {
+  return `
+REGRAS OBRIGATÓRIAS:
+1. Responda somente em JSON válido.
+2. Não use markdown.
+3. Não escreva explicações fora do JSON.
+4. Não diga "estou gerando".
+5. Não gere imagem.
+6. Não gere PDF.
+7. Não monte HTML.
+8. Use português do Brasil.
+9. O conteúdo precisa ser bíblico, profundo, pastoral, claro e aplicável.
+`.trim();
+}
+
+function promptSermao(form) {
   return `
 Você é um pregador cristão, expositor bíblico, pastor e teólogo.
 
-Crie um sermão cristão profundo, bíblico, pastoral e organizado em português do Brasil.
+Crie um SERMÃO CRISTÃO. 
+Não faça parecer e-book, livro ou revista. 
+O formato precisa ser de sermão pregável no púlpito.
 
-DADOS DO SERMÃO:
-Título: ${form.title}
-Tema: ${form.theme || form.title}
-Texto bíblico base: ${form.biblicalBase || "Escolha um texto bíblico coerente com o tema"}
-Público-alvo: ${form.targetAudience}
-Autor/comentarista: ${form.author}
-Ministério/Editora: ${form.ministry}
-Profundidade: ${form.depthLevel}
-Tom: ${form.tone}
+${baseDados(form, "Sermão cristão")}
 
-REGRAS:
-1. Responda apenas em JSON válido.
-2. Não use markdown.
-3. Não gere imagem.
-4. Não gere capa.
-5. Não gere PDF.
-6. Não use a frase "nova seção do material".
-7. O sermão precisa ser profundo, bíblico, pastoral, aplicável e pregável.
-8. O sermão deve conter introdução forte, proposição, frase de transição, pontos principais, aplicações, conclusão, apelo e oração final.
+${regrasJson()}
 
-FORMATO JSON OBRIGATÓRIO:
+ESTRUTURA DO SERMÃO:
+- Título forte.
+- Texto bíblico base.
+- Tema.
+- Objetivo do sermão.
+- Introdução bem expandida.
+- Contexto bíblico do texto.
+- Explicação do versículo ou passagem.
+- Proposição central.
+- Frase de transição.
+- 3 ou 4 pontos principais.
+- Cada ponto deve ter explicação bíblica, aplicação e ilustração pastoral.
+- Aplicações práticas para a vida diária.
+- Conclusão forte.
+- Apelo final.
+- Oração final.
+
+FORMATO JSON:
 {
-  "appName": "VERBO IA",
-  "materialType": "${materialName}",
-  "title": "string",
-  "subtitle": "string",
-  "coverBadge": "Sermão",
-  "coverTagline": "string",
-  "theme": "string",
-  "targetAudience": "string",
-  "language": "Português",
-  "author": "string",
-  "ministry": "string",
-  "visualStyle": "texto",
-  "biblicalBase": ["string"],
-  "summaryIntro": "string",
-  "coverIllustrationPrompt": "",
+  "type": "sermao",
+  "title": "",
+  "subtitle": "",
+  "theme": "",
+  "biblicalText": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "objective": "",
+  "introduction": "",
+  "biblicalContext": "",
+  "textExplanation": "",
+  "centralProposition": "",
+  "transitionPhrase": "",
+  "points": [
+    {
+      "title": "",
+      "explanation": "",
+      "biblicalSupport": "",
+      "pastoralApplication": "",
+      "illustration": ""
+    }
+  ],
+  "dailyApplications": ["", "", "", ""],
+  "conclusion": "",
+  "appeal": "",
+  "finalPrayer": ""
+}
+`.trim();
+}
+
+function promptLivro(form) {
+  return `
+Você é um escritor cristão, pastor, teólogo e autor de livros de formação espiritual.
+
+Crie um LIVRO CRISTÃO.
+Não faça parecer e-book curto. 
+Um livro precisa ter tom mais literário, capítulos mais densos, abertura editorial, prefácio e desenvolvimento mais maduro.
+
+${baseDados(form, "Livro cristão")}
+
+${regrasJson()}
+
+ESTRUTURA DO LIVRO:
+- Capa textual.
+- Prefácio.
+- Apresentação.
+- Introdução geral.
+- Capítulos com tom de livro: mais narrativo, profundo e contínuo.
+- Cada capítulo deve conter abertura literária, desenvolvimento, base bíblica, aplicação pastoral e fechamento.
+- Conclusão final do livro.
+- Palavra ao leitor.
+- Sobre o autor.
+
+FORMATO JSON:
+{
+  "type": "livro",
+  "title": "",
+  "subtitle": "",
+  "theme": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "preface": "",
+  "presentation": "",
+  "generalIntroduction": "",
   "chapters": [
     {
       "number": 1,
-      "title": "string",
-      "heroCaption": "Texto base, tema e objetivo do sermão",
-      "illustrationPrompt": "",
-      "biblicalBase": ["string"],
-      "opening": "Introdução forte do sermão",
-      "centralIdea": "Proposição central do sermão",
-      "sections": [
-        { "title": "I - Primeiro ponto do sermão", "content": "string" },
-        { "title": "II - Segundo ponto do sermão", "content": "string" },
-        { "title": "III - Terceiro ponto do sermão", "content": "string" }
-      ],
-      "highlightQuote": "Frase de impacto do sermão",
-      "reflectionQuestions": ["Aplicação 1", "Aplicação 2", "Aplicação 3"],
-      "practice": "Aplicação prática para a igreja",
-      "prayer": "Oração final",
-      "conclusion": "Conclusão e apelo"
+      "title": "",
+      "openingNarrative": "",
+      "biblicalBase": ["", ""],
+      "development": "",
+      "theologicalReflection": "",
+      "pastoralApplication": "",
+      "chapterClosing": ""
     }
   ],
-  "closing": "string",
-  "authorBio": "string",
-  "backCoverText": "string"
+  "finalConclusion": "",
+  "wordToReader": "",
+  "authorBio": "",
+  "backCoverText": ""
+}
+`.trim();
+}
+
+function promptEbook(form) {
+  return `
+Você é um escritor cristão, pastor, teólogo e organizador editorial.
+
+Crie um E-BOOK CRISTÃO.
+O e-book deve ser moderno, prático, profundo, organizado e fácil de ler.
+Não faça parecer sermão nem livro longo.
+
+${baseDados(form, "E-book cristão")}
+
+${regrasJson()}
+
+ESTRUTURA DO E-BOOK:
+- Capa textual.
+- Apresentação.
+- Sumário.
+- Capítulos objetivos, profundos e práticos.
+- Cada capítulo com abertura, ideia central, 3 seções, destaque, perguntas, aplicação e oração.
+
+FORMATO JSON:
+{
+  "type": "ebook",
+  "title": "",
+  "subtitle": "",
+  "theme": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "coverBadge": "",
+  "summaryIntro": "",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "",
+      "heroCaption": "",
+      "biblicalBase": ["", ""],
+      "opening": "",
+      "centralIdea": "",
+      "sections": [
+        { "title": "", "content": "" },
+        { "title": "", "content": "" },
+        { "title": "", "content": "" }
+      ],
+      "highlightQuote": "",
+      "reflectionQuestions": ["", "", ""],
+      "practice": "",
+      "prayer": "",
+      "conclusion": ""
+    }
+  ],
+  "closing": "",
+  "authorBio": "",
+  "backCoverText": ""
+}
+`.trim();
+}
+
+function promptDevocional(form) {
+  return `
+Você é um escritor devocional cristão, pastor e conselheiro espiritual.
+
+Crie um DEVOCIONAL CRISTÃO.
+Devocional não é e-book, não é livro e não é sermão.
+Precisa ser mais curto, direto, reflexivo, bíblico, acolhedor e aplicável ao dia.
+
+${baseDados(form, "Devocional cristão")}
+
+${regrasJson()}
+
+ESTRUTURA DO DEVOCIONAL:
+- Título geral.
+- Apresentação curta.
+- Dias devocionais.
+- Cada dia deve conter: título, versículo, reflexão breve, aplicação prática, pergunta de meditação e oração curta.
+
+FORMATO JSON:
+{
+  "type": "devocional",
+  "title": "",
+  "subtitle": "",
+  "theme": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "presentation": "",
+  "days": [
+    {
+      "day": 1,
+      "title": "",
+      "verse": "",
+      "reflection": "",
+      "practicalApplication": "",
+      "meditationQuestion": "",
+      "prayer": ""
+    }
+  ],
+  "finalWord": ""
+}
+`.trim();
+}
+
+function promptEstudo(form) {
+  return `
+Você é um professor de Bíblia, teólogo e expositor das Escrituras.
+
+Crie um ESTUDO BÍBLICO/TEOLÓGICO.
+Não faça parecer e-book, livro ou sermão.
+O estudo precisa ser didático, analítico, explicativo e com profundidade bíblica.
+
+${baseDados(form, "Estudo bíblico/teológico")}
+
+${regrasJson()}
+
+ESTRUTURA DO ESTUDO:
+- Tema.
+- Objetivo.
+- Texto base.
+- Introdução.
+- Contexto bíblico.
+- Exposição em partes.
+- Análise teológica.
+- Aplicações práticas.
+- Perguntas de revisão.
+- Conclusão.
+
+FORMATO JSON:
+{
+  "type": "estudo",
+  "title": "",
+  "theme": "",
+  "biblicalText": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "objective": "",
+  "introduction": "",
+  "biblicalContext": "",
+  "parts": [
+    {
+      "number": 1,
+      "title": "",
+      "explanation": "",
+      "theologicalAnalysis": "",
+      "practicalApplication": ""
+    }
+  ],
+  "reviewQuestions": ["", "", "", ""],
+  "conclusion": ""
+}
+`.trim();
+}
+
+function promptCurso(form) {
+  return `
+Você é um professor cristão, pastor e organizador de cursos bíblicos.
+
+Crie um CURSO CRISTÃO.
+Não faça parecer e-book, livro ou sermão.
+Curso precisa vir em formato de aulas, com objetivos, conteúdo, atividades e tarefas.
+
+${baseDados(form, "Curso cristão")}
+
+${regrasJson()}
+
+ESTRUTURA DO CURSO:
+- Nome do curso.
+- Descrição.
+- Público-alvo.
+- Objetivo geral.
+- Aulas.
+- Cada aula deve conter: objetivo, introdução, conteúdo, textos bíblicos, atividade, tarefa e resumo.
+
+FORMATO JSON:
+{
+  "type": "curso",
+  "title": "",
+  "subtitle": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "courseDescription": "",
+  "generalObjective": "",
+  "lessons": [
+    {
+      "lesson": 1,
+      "title": "",
+      "objective": "",
+      "introduction": "",
+      "biblicalTexts": ["", ""],
+      "content": "",
+      "classActivity": "",
+      "homework": "",
+      "summary": ""
+    }
+  ],
+  "finalEvaluation": "",
+  "finalWord": ""
+}
+`.trim();
+}
+
+function promptRevista(form) {
+  return `
+Você é um comentarista de revista bíblica, pastor, teólogo e professor de EBD.
+
+Crie uma REVISTA DE ENSINO BÍBLICO.
+Não faça parecer e-book nem livro.
+Precisa parecer lição de revista bíblica, com estrutura de professor.
+
+${baseDados(form, "Revista de ensino bíblico")}
+
+${regrasJson()}
+
+ESTRUTURA DA REVISTA:
+- Título da revista.
+- Apresentação do trimestre.
+- Lições.
+- Cada lição deve conter: título, texto áureo, verdade prática, leitura bíblica, objetivos, introdução, tópicos, aplicação, conclusão e perguntas com respostas.
+
+FORMATO JSON:
+{
+  "type": "revista",
+  "title": "",
+  "subtitle": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "quarterPresentation": "",
+  "lessons": [
+    {
+      "lesson": 1,
+      "title": "",
+      "goldenText": "",
+      "practicalTruth": "",
+      "biblicalReading": "",
+      "objectives": ["", "", ""],
+      "introduction": "",
+      "topics": [
+        {
+          "title": "",
+          "content": ""
+        },
+        {
+          "title": "",
+          "content": ""
+        },
+        {
+          "title": "",
+          "content": ""
+        }
+      ],
+      "lifeApplication": "",
+      "conclusion": "",
+      "questionsAndAnswers": [
+        {
+          "question": "",
+          "answer": ""
+        }
+      ]
+    }
+  ],
+  "finalWord": ""
 }
 `.trim();
 }
@@ -302,7 +556,7 @@ async function callGeminiText(apiKey, models, prompt) {
             generationConfig: {
               temperature: 0.72,
               topP: 0.9,
-              maxOutputTokens: 16000
+              maxOutputTokens: 18000
             }
           })
         }
