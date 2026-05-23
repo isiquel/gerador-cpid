@@ -1,0 +1,10 @@
+{
+  "name": "gerador-cpid-gemini",
+  "version": "1.0.0",
+  "description": "Gerador CPID de materiais bíblicos com Gemini em modo seguro na Vercel",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {}
+}
