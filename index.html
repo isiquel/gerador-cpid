@@ -3,1896 +3,1514 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Verbo IA - Gerador de Materiais Bíblicos</title>
-
+  <title>VERBO IA - Gerador de Materiais Cristãos</title>
   <style>
-    :root {
-      --marrom: #4b2e1e;
-      --marrom-claro: #7a4a30;
-      --bege: #f4efe6;
-      --dourado: #c4974f;
-      --branco: #ffffff;
-      --verde: #2e7d32;
-      --vermelho: #b3261e;
-      --grafite: #263238;
-      --texto: #222;
-      --borda: #ddd;
+    :root{
+      --bg:#f6f1ea;
+      --paper:#ffffff;
+      --ink:#2f2a26;
+      --muted:#6e655d;
+      --line:#dccbb8;
+      --gold:#c4984f;
+      --gold-dark:#8b6833;
+      --brown:#5b3a24;
+      --brown-soft:#8a6246;
+      --cream:#fffaf3;
+      --green:#3f7f52;
+      --red:#a94337;
+      --blue:#3d6b99;
+      --shadow: 0 12px 35px rgba(0,0,0,0.10);
+      --radius: 18px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    *{ box-sizing:border-box; }
 
-    @page {
-      size: A4;
-      margin: 10mm;
-    }
-
-    body {
-      margin: 0;
+    body{
+      margin:0;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #f6f0e8 0%, #efe7da 100%);
-      color: var(--texto);
+      background: linear-gradient(180deg, #f7f2eb 0%, #f2ebe2 100%);
+      color:var(--ink);
     }
 
-    header {
-      background: linear-gradient(135deg, var(--marrom), var(--marrom-claro));
-      color: white;
-      padding: 32px 20px;
-      text-align: center;
-      border-bottom: 5px solid var(--dourado);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 42px;
-      letter-spacing: 1px;
-    }
-
-    header p {
-      margin: 10px 0 0;
-      font-size: 16px;
-      opacity: 0.97;
-    }
-
-    .container {
-      max-width: 1380px;
-      margin: 28px auto;
-      padding: 0 18px;
-      display: grid;
-      grid-template-columns: 400px 1fr;
-      gap: 22px;
-      align-items: start;
-    }
-
-    .card {
-      background: var(--branco);
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-      border: 1px solid #eee;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      color: var(--marrom);
-      font-size: 22px;
-      border-bottom: 2px solid var(--dourado);
-      padding-bottom: 10px;
-    }
-
-    label {
-      display: block;
-      margin-top: 14px;
-      font-weight: bold;
-      color: var(--marrom);
-      font-size: 14px;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      margin-top: 7px;
-      padding: 12px;
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      font-size: 15px;
-      outline: none;
-      background: #fff;
-      color: #222;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 96px;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--dourado);
-      box-shadow: 0 0 0 3px rgba(196, 151, 79, 0.15);
-    }
-
-    .linha {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .linha-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-    }
-
-    .aviso {
-      background: #e8f5e9;
-      color: #1b5e20;
-      border-left: 5px solid var(--verde);
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 16px;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    button {
-      width: 100%;
-      border: none;
-      padding: 13px;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 12px;
-      transition: 0.15s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-principal {
-      background: var(--marrom);
-      color: white;
-    }
-
-    .btn-principal:hover {
-      background: var(--marrom-claro);
-    }
-
-    .btn-prompt {
-      background: var(--dourado);
-      color: white;
-    }
-
-    .btn-copiar {
-      background: var(--verde);
-      color: white;
-    }
-
-    .btn-imprimir {
-      background: var(--grafite);
-      color: white;
-    }
-
-    .btn-limpar {
-      background: #eee;
-      color: #333;
-    }
-
-    .botoes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .status {
-      margin-top: 14px;
-      font-size: 14px;
-      font-weight: bold;
-      line-height: 1.5;
-      min-height: 24px;
-    }
-
-    .ok {
-      color: var(--verde);
-    }
-
-    .erro {
-      color: var(--vermelho);
-    }
-
-    .progresso {
-      margin-top: 12px;
-      background: #f2eee8;
-      border-radius: 999px;
-      overflow: hidden;
-      height: 10px;
-      border: 1px solid #e6dccf;
-    }
-
-    .progresso-barra {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--marrom), var(--dourado));
-      transition: width 0.25s ease;
-    }
-
-    #resultado {
-      background: #fffefb;
-      border: 1px solid #eadcc2;
-      border-left: 6px solid var(--dourado);
-      border-radius: 16px;
-      padding: 24px;
-      min-height: 760px;
-      line-height: 1.75;
-      font-size: 17px;
-      overflow-wrap: break-word;
-    }
-
-    .placeholder {
-      color: #6f5a48;
-      text-align: center;
-      padding: 80px 18px;
-      font-size: 18px;
-      line-height: 1.8;
-    }
-
-    .documento {
-      width: 100%;
-      max-width: 980px;
-      margin: 0 auto;
-    }
-
-    .documento.modo-colorido {
-      --doc-primaria: #5b2f1c;
-      --doc-secundaria: #c4974f;
-      --doc-terciaria: #355c7d;
-      --doc-quarta: #7b3f61;
-      --doc-caixa: #fff7eb;
-      --doc-caixa2: #eef6ff;
-      --doc-borda: #e8d2ad;
-      --doc-titulo: #4b2e1e;
-      --doc-texto: #2b2b2b;
-      --doc-meta: #6b5b4a;
-      --doc-pagina-bg: #ffffff;
-      --doc-selo: linear-gradient(135deg, #6f3f26, #c4974f);
-    }
-
-    .documento.modo-pb {
-      --doc-primaria: #1f1f1f;
-      --doc-secundaria: #666666;
-      --doc-terciaria: #444444;
-      --doc-quarta: #333333;
-      --doc-caixa: #f5f5f5;
-      --doc-caixa2: #f2f2f2;
-      --doc-borda: #d7d7d7;
-      --doc-titulo: #1d1d1d;
-      --doc-texto: #222222;
-      --doc-meta: #5b5b5b;
-      --doc-pagina-bg: #ffffff;
-      --doc-selo: linear-gradient(135deg, #111111, #666666);
-    }
-
-    .pagina {
-      position: relative;
+    header{
       background:
-        radial-gradient(circle at 96% 4%, rgba(196,151,79,0.10), transparent 18%),
-        radial-gradient(circle at 2% 98%, rgba(53,92,125,0.08), transparent 22%),
-        linear-gradient(180deg, #ffffff 0%, #fffdf8 100%);
-      border: 1px solid var(--doc-borda);
-      border-radius: 22px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-      padding: 46px;
-      margin-bottom: 26px;
-      overflow: hidden;
+        radial-gradient(circle at top right, rgba(255,255,255,.18), transparent 22%),
+        linear-gradient(135deg, var(--brown), var(--brown-soft));
+      color:#fff;
+      padding:28px 20px;
+      text-align:center;
+      border-bottom: 5px solid var(--gold);
+      box-shadow: 0 3px 14px rgba(0,0,0,.12);
     }
 
-    .pagina::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 12px;
-      background: linear-gradient(90deg, var(--doc-primaria), var(--doc-secundaria), var(--doc-terciaria));
-    }
-
-    .pagina::after {
-      content: "";
-      position: absolute;
-      right: -70px;
-      bottom: -70px;
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      background: rgba(196, 151, 79, 0.08);
-      pointer-events: none;
-    }
-
-    .capa {
-      min-height: 1120px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: white;
-      background:
-        radial-gradient(circle at 15% 15%, rgba(255,255,255,0.24), transparent 18%),
-        radial-gradient(circle at 90% 20%, rgba(255,255,255,0.18), transparent 15%),
-        radial-gradient(circle at 20% 90%, rgba(255,255,255,0.16), transparent 18%),
-        linear-gradient(135deg, var(--doc-primaria), var(--doc-secundaria) 55%, var(--doc-terciaria));
-    }
-
-    .capa::before {
-      height: 100%;
-      background:
-        linear-gradient(120deg, rgba(255,255,255,0.08), transparent 32%),
-        linear-gradient(300deg, rgba(0,0,0,0.14), transparent 36%);
-    }
-
-    .capa::after {
-      content: "";
-      position: absolute;
-      inset: 34px;
-      border: 2px solid rgba(255,255,255,0.22);
-      border-radius: 28px;
-      pointer-events: none;
-      background:
-        linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
-    }
-
-    .miolo-capa {
-      position: relative;
-      z-index: 3;
-      max-width: 735px;
-      padding: 48px 38px;
-      border-radius: 28px;
-      background: rgba(255,255,255,0.14);
-      border: 1px solid rgba(255,255,255,0.28);
-      box-shadow: 0 14px 38px rgba(0,0,0,0.18);
-    }
-
-    .marca-capa {
-      font-size: 18px;
-      font-weight: bold;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      opacity: 0.95;
-    }
-
-    .tipo-capa {
-      display: inline-block;
-      margin-top: 18px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.32);
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 0.3px;
-    }
-
-    .titulo-capa {
-      font-size: 43px;
-      font-weight: 900;
-      line-height: 1.16;
-      margin: 24px 0 16px;
-      text-transform: uppercase;
-      text-shadow: 0 3px 10px rgba(0,0,0,0.18);
-    }
-
-    .tema-capa {
-      font-size: 20px;
-      line-height: 1.5;
-      opacity: 0.98;
-      margin-bottom: 18px;
-      font-weight: 600;
-    }
-
-    .meta-capa {
-      margin-top: 25px;
-      display: grid;
-      gap: 8px;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .faixa-capa {
-      margin-top: 28px;
-      display: inline-block;
-      padding: 12px 20px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.28);
-      font-size: 14px;
-      font-weight: bold;
-    }
-
-    .decor-balao {
-      position: absolute;
-      left: var(--x);
-      top: var(--y);
-      width: var(--size);
-      height: var(--size);
-      border-radius: 50%;
-      z-index: 1;
-      opacity: 0.72;
-    }
-
-    .ornamento {
-      position: absolute;
-      z-index: 2;
-      opacity: 0.16;
-      color: white;
-      font-size: 130px;
-      font-weight: bold;
-      line-height: 1;
-      pointer-events: none;
-    }
-
-    .ornamento.um {
-      top: 65px;
-      left: 55px;
-    }
-
-    .ornamento.dois {
-      bottom: 70px;
-      right: 70px;
-      transform: rotate(-12deg);
-    }
-
-    .pagina-topo {
-      position: relative;
-      border-bottom: 2px solid var(--doc-borda);
-      padding-bottom: 18px;
-      margin-bottom: 25px;
-      z-index: 2;
-    }
-
-    .pagina-topo h1 {
-      margin: 0;
-      color: var(--doc-titulo);
-      text-align: center;
-      line-height: 1.25;
-      font-size: 36px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .pagina-topo .sub {
-      margin-top: 10px;
-      text-align: center;
-      color: var(--doc-meta);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    .ficha {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .ficha-item {
-      background: var(--doc-caixa);
-      border: 1px solid var(--doc-borda);
-      border-radius: 14px;
-      padding: 10px 12px;
-      text-align: center;
-    }
-
-    .ficha-item .rotulo {
-      display: block;
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
-      color: var(--doc-secundaria);
-      margin-bottom: 5px;
-      letter-spacing: 0.4px;
-    }
-
-    .ficha-item .valor {
-      display: block;
-      font-size: 14px;
-      color: var(--doc-texto);
-      line-height: 1.4;
-      font-weight: 600;
-    }
-
-    .selo-editorial {
-      display: inline-block;
-      background: var(--doc-selo);
-      color: white;
-      border-radius: 999px;
-      padding: 8px 16px;
-      font-size: 12px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 12px;
-    }
-
-    .conteudo-html {
-      position: relative;
-      z-index: 2;
-      color: var(--doc-texto);
-      line-height: 1.82;
-      font-size: 17px;
-    }
-
-    .conteudo-html h1,
-    .conteudo-html h2,
-    .conteudo-html h3,
-    .conteudo-html h4 {
-      color: var(--doc-titulo);
-      line-height: 1.35;
-    }
-
-    .conteudo-html h1 {
-      text-align: center;
+    header h1{
+      margin:0;
       font-size: 34px;
-      border-bottom: 3px solid var(--doc-secundaria);
-      padding-bottom: 12px;
-      margin-top: 14px;
-      margin-bottom: 24px;
-      text-transform: uppercase;
+      letter-spacing: .5px;
     }
 
-    .conteudo-html h2 {
-      font-size: 25px;
-      margin-top: 30px;
-      margin-bottom: 16px;
-      border-left: 7px solid var(--doc-secundaria);
-      background: linear-gradient(90deg, rgba(196,151,79,0.16), rgba(255,255,255,0));
-      padding: 12px 15px;
-      border-radius: 13px;
+    header p{
+      margin:8px 0 0;
+      opacity:.95;
+      font-size:15px;
     }
 
-    .conteudo-html h3 {
-      font-size: 21px;
-      margin-top: 24px;
-      margin-bottom: 12px;
-      padding-bottom: 6px;
-      border-bottom: 1px dashed var(--doc-borda);
+    .wrap{
+      max-width: 1450px;
+      margin: 24px auto;
+      padding: 0 16px 30px;
     }
 
-    .conteudo-html p {
-      text-align: justify;
-      margin: 12px 0;
+    .grid{
+      display:grid;
+      grid-template-columns: 390px 1fr;
+      gap:20px;
+      align-items:start;
     }
 
-    .conteudo-html ul,
-    .conteudo-html ol {
-      margin: 10px 0 16px 18px;
-      padding-left: 14px;
+    .card{
+      background:var(--paper);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      border:1px solid #efe4d7;
+      overflow:hidden;
     }
 
-    .conteudo-html li {
-      margin-bottom: 8px;
+    .card-head{
+      padding:18px 20px 12px;
+      border-bottom:1px solid #efe7dc;
+      background: linear-gradient(180deg, #fffdfb 0%, #fbf7f1 100%);
     }
 
-    .conteudo-html blockquote,
-    .destaque-e-book {
-      margin: 20px 0;
-      padding: 18px 20px;
-      border-left: 7px solid var(--doc-secundaria);
+    .card-head h2{
+      margin:0;
+      font-size:24px;
+      color:var(--brown);
+    }
+
+    .card-body{
+      padding:18px;
+    }
+
+    .notice{
+      border-left:5px solid var(--green);
+      background:#eef8f0;
+      color:#295538;
+      padding:12px 12px;
+      border-radius:12px;
+      font-size:14px;
+      margin-bottom:14px;
+      line-height:1.45;
+    }
+
+    .notice.warn{
+      border-left-color:var(--gold);
+      background:#fff8eb;
+      color:#6b552c;
+    }
+
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:700;
+      color:#51453b;
+      margin-bottom:6px;
+    }
+
+    .field{ margin-bottom:14px; }
+
+    input, select, textarea{
+      width:100%;
+      border:1px solid #dccfc1;
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:14px;
+      background:#fff;
+      color:var(--ink);
+      outline:none;
+    }
+
+    input:focus, select:focus, textarea:focus{
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(196,152,79,.12);
+    }
+
+    textarea{
+      min-height:110px;
+      resize:vertical;
+      line-height:1.5;
+    }
+
+    .row-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .row-3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+    }
+
+    button{
+      border:none;
+      border-radius:12px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    button:hover{ transform: translateY(-1px); }
+
+    .btn-primary{
+      background: linear-gradient(135deg, var(--brown), var(--brown-soft));
+      color:#fff;
+      width:100%;
+      margin-top:8px;
+    }
+
+    .btn-secondary{
+      background:#f5eadf;
+      color:var(--brown);
+      width:100%;
+      margin-top:10px;
+      border:1px solid #e5d4bf;
+    }
+
+    .btn-inline{
+      background:#f0f5ff;
+      color:#274a73;
+      border:1px solid #d7e4ff;
+    }
+
+    .status{
+      margin-top:12px;
+      font-size:14px;
+      line-height:1.45;
+      min-height:22px;
+    }
+
+    .status.ok{ color:var(--green); }
+    .status.error{ color:var(--red); }
+    .status.info{ color:var(--blue); }
+
+    .result-toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:14px;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .toolbar-left,
+    .toolbar-right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f7f3ed;
+      border:1px solid #eadaca;
+      font-size:13px;
+      color:#5d5147;
+    }
+
+    .viewer{
+      background:#efe7db;
+      border:1px solid #e2d5c6;
+      border-radius:18px;
+      padding:18px;
+      min-height:600px;
+    }
+
+    .empty{
+      min-height:500px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color:#786b60;
       background:
-        radial-gradient(circle at 100% 0%, rgba(196,151,79,0.13), transparent 30%),
-        var(--doc-caixa);
-      border-radius: 16px;
-      color: var(--doc-texto);
-      font-weight: 600;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+        radial-gradient(circle at 20% 20%, rgba(196,152,79,.10), transparent 18%),
+        radial-gradient(circle at 90% 10%, rgba(91,58,36,.06), transparent 20%),
+        linear-gradient(180deg, #fffdfb 0%, #fbf6ef 100%);
+      border-radius:16px;
+      border:1px dashed #dbc7b2;
+      padding:30px;
     }
 
-    .pagina-ebook {
+    /* DOCUMENTO */
+    .book-shell{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .print-page{
+      width:100%;
+      max-width:980px;
+      margin:0 auto;
+      background:#fff;
+      border-radius:18px;
+      box-shadow: 0 16px 36px rgba(0,0,0,.10);
+      overflow:hidden;
+      page-break-after: always;
+      position:relative;
+    }
+
+    .page-inner{
+      padding:38px 42px;
+    }
+
+    .page-footer{
+      border-top:1px solid #eee2d3;
+      padding:10px 20px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:12px;
+      color:#786a5c;
+      background:#fffdfb;
+    }
+
+    .cover-page{
+      color:#fff;
+      min-height:1220px;
       background:
-        radial-gradient(circle at 92% 8%, rgba(196,151,79,0.15), transparent 15%),
-        radial-gradient(circle at 5% 95%, rgba(53,92,125,0.10), transparent 18%),
-        linear-gradient(180deg, #ffffff 0%, #fffaf0 100%);
+        radial-gradient(circle at 15% 15%, rgba(255,255,255,.20), transparent 12%),
+        radial-gradient(circle at 88% 13%, rgba(255,255,255,.16), transparent 10%),
+        radial-gradient(circle at 80% 74%, rgba(255,255,255,.11), transparent 10%),
+        radial-gradient(circle at 20% 88%, rgba(255,255,255,.12), transparent 9%),
+        linear-gradient(135deg, #6b4626, #c08b43 45%, #5e7aa7 100%);
+      position:relative;
+      overflow:hidden;
     }
 
-    .pagina-ebook .capitulo-topo {
-      text-align: center;
-      padding: 18px 12px 24px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid var(--doc-borda);
+    .cover-page::before{
+      content:"";
+      position:absolute;
+      inset:28px;
+      border:1px solid rgba(255,255,255,.24);
+      border-radius:26px;
     }
 
-    .capitulo-numero {
-      display: inline-block;
-      background: var(--doc-selo);
-      color: white;
-      padding: 9px 18px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: bold;
-      letter-spacing: 0.7px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+    .cover-wrap{
+      min-height:1220px;
+      padding:60px 60px 45px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      position:relative;
+      z-index:2;
     }
 
-    .mini-ilustracao {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 14px 0 2px;
+    .cover-brand{
+      text-align:center;
+      font-weight:800;
+      letter-spacing:1px;
+      font-size:30px;
+      margin-bottom:10px;
     }
 
-    .mini-ilustracao span {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: var(--doc-secundaria);
-      opacity: 0.8;
+    .cover-kicker{
+      display:inline-block;
+      padding:10px 18px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.35);
+      background:rgba(255,255,255,.12);
+      font-size:14px;
+      margin:0 auto 28px;
+      text-align:center;
     }
 
-    .mini-ilustracao span:nth-child(2) {
-      background: var(--doc-terciaria);
+    .cover-main{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:30px;
+      align-items:center;
+      margin-top:10px;
+      flex:1;
     }
 
-    .mini-ilustracao span:nth-child(3) {
-      background: var(--doc-quarta);
+    .cover-title{
+      font-size:60px;
+      line-height:1.05;
+      font-weight:900;
+      margin:0 0 16px;
+      text-transform:uppercase;
     }
 
-    .caixa-observacao {
-      position: relative;
-      z-index: 2;
-      margin-top: 24px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.95));
-      border: 1px solid var(--doc-borda);
-      border-left: 6px solid var(--doc-secundaria);
-      border-radius: 16px;
-      padding: 15px 16px;
-      color: var(--doc-meta);
-      font-size: 14px;
-      line-height: 1.6;
+    .cover-subtitle{
+      font-size:26px;
+      line-height:1.35;
+      margin:0 0 18px;
+      color:rgba(255,255,255,.94);
+      font-weight:700;
     }
 
-    .rodape-doc {
-      position: relative;
-      z-index: 2;
-      margin-top: 26px;
-      padding-top: 16px;
-      border-top: 1px solid var(--doc-borda);
-      text-align: center;
-      color: var(--doc-meta);
-      font-size: 13px;
-      line-height: 1.5;
+    .cover-meta{
+      margin-top:20px;
+      display:grid;
+      gap:10px;
     }
 
-    .rodape-geral {
-      text-align: center;
-      color: #6b5a4d;
-      padding: 20px;
-      font-size: 14px;
+    .cover-meta .meta-line{
+      font-size:16px;
+      line-height:1.5;
+      color:rgba(255,255,255,.96);
     }
 
-    pre.prompt-pre {
-      white-space: pre-wrap;
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.7;
-      background: #fff;
-      padding: 18px;
-      border-radius: 12px;
-      border: 1px solid #eee;
-      color: #222;
+    .cover-badge-row{
+      margin-top:28px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
     }
 
-    @media (max-width: 1080px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+    .cover-badge{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.24);
+      padding:10px 14px;
+      border-radius:999px;
+      font-size:13px;
+      color:#fff;
     }
 
-    @media (max-width: 760px) {
-      .linha,
-      .linha-3,
-      .botoes,
-      .ficha {
-        grid-template-columns: 1fr;
-      }
-
-      header h1 {
-        font-size: 34px;
-      }
-
-      .titulo-capa {
-        font-size: 30px;
-      }
-
-      .pagina {
-        padding: 28px 20px 32px 20px;
-      }
-
-      #resultado {
-        padding: 15px;
-      }
+    .cover-art{
+      min-height:520px;
+      border-radius:28px;
+      background-size:cover;
+      background-position:center;
+      border:1px solid rgba(255,255,255,.24);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 14px 28px rgba(0,0,0,.18);
+      background-color: rgba(255,255,255,.08);
+      backdrop-filter: blur(2px);
     }
 
-    @media print {
-      body {
-        background: white !important;
+    .cover-bottom-note{
+      margin-top:26px;
+      font-size:14px;
+      text-align:center;
+      opacity:.92;
+    }
+
+    .summary-page{
+      background: linear-gradient(180deg, #fffdf9 0%, #fffaf2 100%);
+    }
+
+    .section-tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:#fbf3e7;
+      color:var(--brown);
+      border:1px solid #ebdcc8;
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:12px;
+    }
+
+    .doc-title{
+      font-size:34px;
+      margin:0 0 8px;
+      color:var(--brown);
+    }
+
+    .doc-subtitle{
+      margin:0 0 20px;
+      color:#6b5d50;
+      font-size:16px;
+      line-height:1.6;
+    }
+
+    .toc-list{
+      display:grid;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .toc-item{
+      background:#fff;
+      border:1px solid #ebdecf;
+      border-radius:16px;
+      padding:14px 16px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+    }
+
+    .toc-item strong{
+      color:var(--brown);
+      font-size:16px;
+    }
+
+    .toc-item span{
+      color:#6f6357;
+      font-size:14px;
+    }
+
+    .chapter-cover{
+      min-height:260px;
+      border-radius:24px;
+      overflow:hidden;
+      margin-bottom:24px;
+      background-size:cover;
+      background-position:center;
+      border:1px solid #eadccf;
+    }
+
+    .chapter-num{
+      display:inline-block;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.6px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f8eee0;
+      color:#8a622e;
+      border:1px solid #ebd9bf;
+      margin-bottom:16px;
+      text-transform:uppercase;
+    }
+
+    .chapter-title{
+      font-size:36px;
+      line-height:1.15;
+      color:var(--brown);
+      margin:0 0 8px;
+    }
+
+    .chapter-opening{
+      font-size:17px;
+      line-height:1.85;
+      color:#4b433d;
+      margin:16px 0 26px;
+    }
+
+    .central-truth{
+      background: linear-gradient(135deg, #fff8ee, #fff2de);
+      border:1px solid #efd8b6;
+      border-left: 6px solid var(--gold);
+      border-radius:18px;
+      padding:18px 18px;
+      margin:24px 0 28px;
+    }
+
+    .central-truth h4{
+      margin:0 0 10px;
+      color:#7a5925;
+      font-size:17px;
+    }
+
+    .central-truth p{
+      margin:0;
+      font-size:17px;
+      line-height:1.7;
+      color:#5d4931;
+      font-weight:700;
+    }
+
+    .section-block{
+      margin:0 0 26px;
+      padding:22px 22px;
+      border:1px solid #ece0d2;
+      border-radius:18px;
+      background:#fff;
+      box-shadow: 0 8px 18px rgba(0,0,0,.03);
+    }
+
+    .section-block h3{
+      margin:0 0 12px;
+      font-size:24px;
+      color:#5d3d26;
+    }
+
+    .section-block p{
+      margin:0 0 10px;
+      line-height:1.9;
+      font-size:16px;
+      color:#3e3a35;
+      white-space:pre-line;
+    }
+
+    .verse-list{
+      margin-top:12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .verse-chip{
+      font-size:12px;
+      background:#f7f2ed;
+      color:#6b5f54;
+      border:1px solid #e8dbcd;
+      border-radius:999px;
+      padding:7px 10px;
+    }
+
+    .visual-box{
+      margin-top:14px;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid #eadfd4;
+      background:#f8f4ef;
+    }
+
+    .visual-box .visual-art{
+      height:190px;
+      background-size:cover;
+      background-position:center;
+    }
+
+    .visual-box .visual-caption{
+      padding:12px 14px;
+      font-size:13px;
+      color:#6e6255;
+      background:#fffdfa;
+    }
+
+    .quote-card{
+      margin:24px 0;
+      padding:24px;
+      border-radius:20px;
+      background: linear-gradient(135deg, #6b4626, #a37438);
+      color:#fff;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .quote-card::before{
+      content:"“";
+      position:absolute;
+      right:16px;
+      top:-8px;
+      font-size:100px;
+      opacity:.12;
+      font-weight:900;
+    }
+
+    .quote-card h4{
+      margin:0 0 12px;
+      font-size:16px;
+      text-transform:uppercase;
+      letter-spacing:.6px;
+      opacity:.92;
+    }
+
+    .quote-card p{
+      margin:0;
+      font-size:24px;
+      line-height:1.55;
+      font-weight:800;
+    }
+
+    .reflection-box,
+    .prayer-box,
+    .questions-box{
+      margin-top:22px;
+      border-radius:18px;
+      padding:22px;
+      border:1px solid #ece0d2;
+      background:#fffdfa;
+    }
+
+    .reflection-box h4,
+    .prayer-box h4,
+    .questions-box h4{
+      margin:0 0 12px;
+      color:#6a4b2e;
+      font-size:22px;
+    }
+
+    .reflection-box p,
+    .prayer-box p{
+      margin:0;
+      font-size:16px;
+      line-height:1.85;
+      color:#44403a;
+      white-space:pre-line;
+    }
+
+    .questions-list{
+      display:grid;
+      gap:14px;
+      margin-top:12px;
+    }
+
+    .qa-item{
+      border:1px solid #ebdecf;
+      border-radius:16px;
+      padding:16px;
+      background:#fff;
+    }
+
+    .qa-item .q{
+      font-weight:800;
+      color:#5b3a24;
+      margin-bottom:8px;
+      line-height:1.6;
+    }
+
+    .qa-item .a{
+      color:#4a443d;
+      line-height:1.8;
+      font-size:15px;
+    }
+
+    .back-page{
+      background:
+        radial-gradient(circle at 85% 20%, rgba(255,255,255,.06), transparent 16%),
+        linear-gradient(135deg, #5a3b25 0%, #7b552d 45%, #4e688f 100%);
+      color:#fff;
+      min-height:900px;
+    }
+
+    .back-page .page-inner{
+      padding:60px 48px;
+      display:flex;
+      min-height:900px;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+
+    .back-page h2{
+      font-size:42px;
+      margin:0 0 12px;
+    }
+
+    .back-page p{
+      font-size:18px;
+      line-height:1.85;
+      opacity:.96;
+      margin:0;
+      white-space:pre-line;
+    }
+
+    .back-page .closing-box{
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.18);
+      padding:24px;
+      border-radius:22px;
+      margin-top:20px;
+      backdrop-filter: blur(3px);
+    }
+
+    .legend{
+      font-size:13px;
+      color:#786a5d;
+      margin-top:8px;
+    }
+
+    .muted{
+      color:#7d7165;
+      font-size:13px;
+    }
+
+    @media (max-width: 1200px){
+      .grid{ grid-template-columns: 1fr; }
+      .cover-main{ grid-template-columns: 1fr; }
+      .cover-title{ font-size:46px; }
+    }
+
+    @media (max-width: 720px){
+      .row-2, .row-3{ grid-template-columns:1fr; }
+      .page-inner{ padding:24px 20px; }
+      .cover-wrap{ padding:32px 22px; }
+      .cover-title{ font-size:36px; }
+      .cover-subtitle{ font-size:20px; }
+      .doc-title{ font-size:28px; }
+      .chapter-title{ font-size:30px; }
+      header h1{ font-size:28px; }
+    }
+
+    @media print{
+      body{
+        background:#fff !important;
       }
 
-      header,
-      .painel,
-      .rodape-geral {
-        display: none !important;
+      header, .config-panel, .result-toolbar, .status, .viewer > .empty {
+        display:none !important;
       }
 
-      .container {
-        display: block;
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
+      .wrap{
+        max-width:none;
+        margin:0;
+        padding:0;
       }
 
-      .card {
-        box-shadow: none;
-        border: none;
-        padding: 0;
-        background: white;
+      .grid{
+        display:block;
       }
 
-      #resultado {
-        border: none;
-        padding: 0;
-        min-height: auto;
-        background: white;
-        box-shadow: none;
+      .card{
+        box-shadow:none !important;
+        border:none !important;
+        border-radius:0 !important;
       }
 
-      .documento {
-        max-width: 100%;
+      .card-body{
+        padding:0 !important;
       }
 
-      .pagina {
-        box-shadow: none;
-        margin: 0 0 10mm 0;
-        border-radius: 0;
-        page-break-inside: avoid;
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
+      .viewer{
+        background:#fff !important;
+        border:none !important;
+        padding:0 !important;
       }
 
-      .capa {
-        page-break-after: always;
-        min-height: 265mm;
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
+      .print-page{
+        max-width:none;
+        border-radius:0;
+        box-shadow:none;
+        border:none;
+        margin:0;
+        page-break-after:always;
       }
 
-      .decor-balao,
-      .conteudo-html,
-      .conteudo-html p,
-      .conteudo-html li,
-      .conteudo-html h1,
-      .conteudo-html h2,
-      .conteudo-html h3,
-      .conteudo-html h4,
-      .pagina,
-      .capa {
-        print-color-adjust: exact;
-        -webkit-print-color-adjust: exact;
+      .page-footer{
+        font-size:11px;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
     }
   </style>
 </head>
-
 <body>
   <header>
-    <h1>Verbo IA</h1>
-    <p>Gerador inteligente de sermões, estudos bíblicos, apostilas, cursos, revistas de EBD, livros, devocionais e e-books cristãos</p>
+    <h1>VERBO IA</h1>
+    <p>Gerador inteligente de materiais cristãos: e-books, revistas, estudos, devocionais, sermões, apostilas e cursos.</p>
   </header>
 
-  <main class="container">
-    <section class="card painel">
-      <h2>Configurar Material</h2>
-
-      <div class="aviso">
-        Modo e-book melhorado: agora o conteúdo inteiro é diagramado em páginas coloridas, não somente a capa.
-      </div>
-
-      <label for="tipo">Tipo de material</label>
-      <select id="tipo">
-        <option value="Revista de EBD para professor">Revista de EBD para professor</option>
-        <option value="Revista de EBD para aluno">Revista de EBD para aluno</option>
-        <option value="Lição bíblica completa">Lição bíblica completa</option>
-        <option value="Curso teológico">Curso teológico</option>
-        <option value="Apostila teológica">Apostila teológica</option>
-        <option value="Sermão">Sermão</option>
-        <option value="Estudo bíblico">Estudo bíblico</option>
-        <option value="Livro cristão">Livro cristão</option>
-        <option value="E-book cristão">E-book cristão</option>
-        <option value="Devocional">Devocional</option>
-      </select>
-
-      <label for="titulo">Título</label>
-      <input id="titulo" type="text" placeholder="Ex: A Unidade no Corpo de Cristo" />
-
-      <label for="tema">Tema principal</label>
-      <input id="tema" type="text" placeholder="Ex: A bênção da união" />
-
-      <label for="textoBase">Texto bíblico base</label>
-      <input id="textoBase" type="text" placeholder="Ex: Salmos 133" />
-
-      <div class="linha">
-        <div>
-          <label for="publico">Público-alvo</label>
-          <select id="publico">
-            <option>Jovens</option>
-            <option>Adolescentes</option>
-            <option>Adultos</option>
-            <option>Novos Convertidos</option>
-            <option>Professores de EBD</option>
-            <option>Liderança da Igreja</option>
-            <option>Obreiros</option>
-            <option>Igreja em geral</option>
-          </select>
+  <div class="wrap">
+    <div class="grid">
+      <!-- PAINEL -->
+      <section class="card config-panel">
+        <div class="card-head">
+          <h2>Configurar Material</h2>
         </div>
 
-        <div>
-          <label for="linguagem">Linguagem</label>
-          <select id="linguagem">
-            <option>Pastoral, bíblica e didática</option>
-            <option>Teológica e profunda</option>
-            <option>Simples e objetiva</option>
-            <option>Jovem e dinâmica</option>
-            <option>Expositiva e doutrinária</option>
-          </select>
+        <div class="card-body">
+          <div class="notice">
+            <strong>Modo seguro:</strong> este aplicativo usa a chave do Gemini pela <strong>Vercel</strong>, então a chave não fica exposta no HTML.
+          </div>
+
+          <div class="notice warn">
+            Para e-books e materiais longos, a geração pode demorar um pouco mais, porque o app foi ajustado para entregar algo mais profundo, bonito e organizado.
+          </div>
+
+          <div class="field">
+            <label for="tipo">Tipo de material</label>
+            <select id="tipo">
+              <option value="ebook">E-book cristão</option>
+              <option value="revista_ebd_professor">Revista de EBD para professor</option>
+              <option value="revista_ebd_aluno">Revista de EBD para aluno</option>
+              <option value="devocional">Devocional</option>
+              <option value="estudo_biblico">Estudo bíblico</option>
+              <option value="curso_teologico">Curso / estudo teológico</option>
+              <option value="apostila">Apostila</option>
+              <option value="livro_cristao">Livro cristão</option>
+              <option value="sermao">Sermão</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="titulo">Título</label>
+            <input id="titulo" type="text" placeholder="Ex.: 7 Princípios para uma Vida Cheia da Presença de Deus" />
+          </div>
+
+          <div class="field">
+            <label for="tema">Tema principal</label>
+            <input id="tema" type="text" placeholder="Ex.: intimidade com Deus, oração e vida espiritual" />
+          </div>
+
+          <div class="field">
+            <label for="textoBase">Texto bíblico base</label>
+            <input id="textoBase" type="text" placeholder="Ex.: Salmos 91.1; Mateus 6.6; João 15.5" />
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label for="publico">Público-alvo</label>
+              <select id="publico">
+                <option>Jovens</option>
+                <option>Adultos</option>
+                <option>Crianças</option>
+                <option>Liderança da Igreja</option>
+                <option>Igreja em geral</option>
+                <option>Obreiros e líderes</option>
+                <option>Novos convertidos</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="linguagem">Linguagem</label>
+              <select id="linguagem">
+                <option>Pastoral, bíblica e didática</option>
+                <option>Pastoral e inspiradora</option>
+                <option>Teológica e profunda</option>
+                <option>Simples e objetiva</option>
+                <option>Acadêmica e bíblica</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row-3">
+            <div class="field">
+              <label for="quantidade">Quantidade de lições/capítulos/dias</label>
+              <input id="quantidade" type="number" min="1" max="50" value="7" />
+            </div>
+
+            <div class="field">
+              <label for="perguntas">Perguntas por capítulo</label>
+              <input id="perguntas" type="number" min="0" max="15" value="3" />
+            </div>
+
+            <div class="field">
+              <label for="profundidade">Profundidade</label>
+              <select id="profundidade">
+                <option value="alta">Alta</option>
+                <option value="muito_alta" selected>Muito expandido</option>
+                <option value="media">Média</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row-3">
+            <div class="field">
+              <label for="capa">Gerar capa</label>
+              <select id="capa">
+                <option value="sim" selected>Sim</option>
+                <option value="nao">Não</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="visual">Estilo visual</label>
+              <select id="visual">
+                <option value="colorido" selected>Colorido</option>
+                <option value="pb">Preto e branco</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="tamanho">Tamanho do material</label>
+              <select id="tamanho">
+                <option value="normal">Normal</option>
+                <option value="grande" selected>Grande</option>
+                <option value="muito_grande">Muito grande</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row-2">
+            <div class="field">
+              <label for="autor">Autor / Comentarista</label>
+              <input id="autor" type="text" value="Pr. Isiquel Rodrigues" />
+            </div>
+            <div class="field">
+              <label for="ministerio">Editora / Ministério</label>
+              <input id="ministerio" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="instrucoes">Orientações adicionais</label>
+            <textarea id="instrucoes" placeholder="Ex.: quero algo profundo, bonito, sem repetir blocos, pronto para PDF, com aplicações práticas, caixas de destaque, oração final e visual profissional."></textarea>
+          </div>
+
+          <button class="btn-primary" id="btnGerar">Gerar Material com VERBO IA</button>
+          <button class="btn-secondary" id="btnImprimir" type="button">Imprimir / Salvar em PDF</button>
+
+          <div id="status" class="status info"></div>
         </div>
-      </div>
+      </section>
 
-      <div class="linha">
-        <div>
-          <label for="quantidade">Quantidade de lições/aulas/capítulos/dias</label>
-          <input id="quantidade" type="number" min="1" max="30" value="1" />
+      <!-- RESULTADO -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Material Gerado</h2>
         </div>
 
-        <div>
-          <label for="perguntas">Perguntas por lição/aula/capítulo</label>
-          <input id="perguntas" type="number" min="1" max="10" value="5" />
+        <div class="card-body">
+          <div class="result-toolbar">
+            <div class="toolbar-left">
+              <div class="pill" id="pillTipo">Tipo: -</div>
+              <div class="pill" id="pillModelo">Modelo: -</div>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn-inline" id="btnTopo" type="button">Ir para o topo</button>
+            </div>
+          </div>
+
+          <div class="viewer" id="viewer">
+            <div class="empty">
+              <div>
+                <h3 style="margin:0 0 8px;color:#5b3a24;">Seu material aparecerá aqui</h3>
+                <p style="margin:0; line-height:1.7;">
+                  Preencha os campos, clique em <strong>Gerar Material com VERBO IA</strong> e o conteúdo será montado com visual mais bonito, profissional e pronto para PDF.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div class="linha-3">
-        <div>
-          <label for="profundidade">Profundidade</label>
-          <select id="profundidade">
-            <option value="expandido">Expandido e profundo</option>
-            <option value="muito_expandido" selected>Muito expandido</option>
-            <option value="resumido">Mais resumido</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="gerarCapa">Gerar capa?</label>
-          <select id="gerarCapa">
-            <option value="sim" selected>Sim</option>
-            <option value="nao">Não</option>
-          </select>
-        </div>
-
-        <div>
-          <label for="modoVisual">Estilo visual</label>
-          <select id="modoVisual">
-            <option value="colorido" selected>Colorido</option>
-            <option value="pb">Preto e branco</option>
-          </select>
-        </div>
-      </div>
-
-      <label for="autor">Comentarista / Autor</label>
-      <input id="autor" type="text" placeholder="Ex: Pr. Isiquel Rodrigues" />
-
-      <label for="editora">Editora / Ministério</label>
-      <input id="editora" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
-
-      <label for="orientacoes">Orientações adicionais</label>
-      <textarea id="orientacoes" placeholder="Ex: quero um e-book colorido, decorativo, com linguagem profunda, pronto para PDF, com capítulos bem desenvolvidos."></textarea>
-
-      <button class="btn-principal" id="btnGerar" type="button" onclick="window.gerarMaterialComGemini()">
-        Gerar Material com Verbo IA
-      </button>
-
-      <button class="btn-prompt" type="button" onclick="window.mostrarPrompt()">
-        Ver Prompt Antes de Gerar
-      </button>
-
-      <div class="botoes">
-        <button class="btn-copiar" type="button" onclick="window.copiarResultado()">Copiar Texto</button>
-        <button class="btn-imprimir" type="button" onclick="window.print()">Imprimir / Salvar PDF</button>
-      </div>
-
-      <button class="btn-limpar" type="button" onclick="window.limparTudo()">Limpar Tudo</button>
-
-      <div class="progresso" aria-hidden="true">
-        <div class="progresso-barra" id="barraProgresso"></div>
-      </div>
-
-      <div id="status" class="status"></div>
-    </section>
-
-    <section class="card">
-      <h2>Material Gerado</h2>
-      <div id="resultado">
-        <div class="placeholder">
-          O resultado aparecerá aqui.<br>
-          Preencha os campos e clique em <strong>“Gerar Material com Verbo IA”</strong>.
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="rodape-geral">
-    Verbo IA — Gerador inteligente de materiais bíblicos.
+      </section>
+    </div>
   </div>
 
   <script>
-    let materialMarkdown = "";
-    let ultimoDocumentoHTML = "";
-    let ultimoDados = null;
+    const btnGerar = document.getElementById('btnGerar');
+    const btnImprimir = document.getElementById('btnImprimir');
+    const btnTopo = document.getElementById('btnTopo');
+    const statusEl = document.getElementById('status');
+    const viewer = document.getElementById('viewer');
+    const pillTipo = document.getElementById('pillTipo');
+    const pillModelo = document.getElementById('pillModelo');
 
-    window.onload = function () {
-      mostrarStatus("Verbo IA carregado em modo e-book melhorado.", "ok");
-    };
+    let ultimoHtmlGerado = "";
+    let ultimoDocumento = null;
 
-    window.onerror = function (mensagem, arquivo, linha, coluna) {
-      const painel = document.getElementById("resultado");
-      painel.innerHTML = "<pre class='prompt-pre' style='color:#b3261e;'>Erro no JavaScript:\\n\\n" +
-        escaparHtml(String(mensagem)) + "\\n\\nLinha: " + linha + "\\nColuna: " + coluna + "</pre>";
-      mostrarStatus("Erro no código. Veja o painel de resultado.", "erro");
-      return false;
-    };
-
-    function valor(id) {
-      const el = document.getElementById(id);
-      return el ? el.value.trim() : "";
-    }
-
-    function numero(id, padrao) {
-      const el = document.getElementById(id);
-      const n = el ? parseInt(el.value, 10) : padrao;
-      return Number.isFinite(n) && n > 0 ? n : padrao;
-    }
-
-    function mostrarStatus(mensagem, tipo) {
-      const status = document.getElementById("status");
-      status.innerText = mensagem;
-      status.className = "status " + tipo;
-    }
-
-    function atualizarBarra(percentual) {
-      const barra = document.getElementById("barraProgresso");
-      barra.style.width = Math.max(0, Math.min(100, percentual)) + "%";
-    }
-
-    function formatarDataAtual() {
-      const d = new Date();
-      return d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-    }
-
-    function nomeParte(tipo) {
-      if (tipo === "Livro cristão") return "Capítulo";
-      if (tipo === "E-book cristão") return "Capítulo";
-      if (tipo === "Curso teológico") return "Aula";
-      if (tipo === "Apostila teológica") return "Aula";
-      if (tipo.includes("Revista")) return "Lição";
-      if (tipo === "Devocional") return "Devocional";
-      return "Parte";
-    }
-
-    function tipoUsaPartes(tipo, quantidade) {
-      if (quantidade <= 1) return false;
-
-      return [
-        "Livro cristão",
-        "E-book cristão",
-        "Curso teológico",
-        "Apostila teológica",
-        "Revista de EBD para professor",
-        "Revista de EBD para aluno",
-        "Devocional"
-      ].includes(tipo);
-    }
-
-    function criarListaObrigatoria(tipo, quantidade) {
-      const nome = nomeParte(tipo);
-      let lista = "";
-      for (let i = 1; i <= quantidade; i++) {
-        lista += nome + " " + i + "\\n";
-      }
-      return lista;
-    }
-
-    function dadosBase() {
-      const tipo = valor("tipo");
-      const quantidade = numero("quantidade", 1);
-
+    function getFormData() {
       return {
-        tipo,
-        titulo: valor("titulo") || "Material Bíblico",
-        tema: valor("tema") || "Tema bíblico a definir",
-        textoBase: valor("textoBase") || "Texto bíblico a definir",
-        publico: valor("publico") || "Igreja em geral",
-        linguagem: valor("linguagem") || "Pastoral, bíblica e didática",
-        quantidade,
-        perguntas: numero("perguntas", 5),
-        profundidade: valor("profundidade") || "expandido",
-        autor: valor("autor") || "Comentarista a definir",
-        editora: valor("editora") || "CPID - Casa Publicadora da Igreja de Deus",
-        orientacoes: valor("orientacoes") || "Sem orientações adicionais.",
-        gerarCapa: valor("gerarCapa") === "sim",
-        modoVisual: valor("modoVisual") || "colorido",
-        listaObrigatoria: criarListaObrigatoria(tipo, quantidade)
+        appNome: "VERBO IA",
+        tipo: document.getElementById('tipo').value,
+        titulo: document.getElementById('titulo').value.trim(),
+        tema: document.getElementById('tema').value.trim(),
+        textoBase: document.getElementById('textoBase').value.trim(),
+        publico: document.getElementById('publico').value,
+        linguagem: document.getElementById('linguagem').value,
+        quantidade: Number(document.getElementById('quantidade').value || 7),
+        perguntas: Number(document.getElementById('perguntas').value || 3),
+        profundidade: document.getElementById('profundidade').value,
+        capa: document.getElementById('capa').value,
+        visual: document.getElementById('visual').value,
+        tamanho: document.getElementById('tamanho').value,
+        autor: document.getElementById('autor').value.trim(),
+        ministerio: document.getElementById('ministerio').value.trim(),
+        instrucoes: document.getElementById('instrucoes').value.trim()
       };
     }
 
-    function regraDeProfundidade(profundidade) {
-      if (profundidade === "resumido") {
-        return `
-NÍVEL DE PROFUNDIDADE:
-- Conteúdo objetivo, porém organizado.
-- Não seja superficial.
-- Cada parte deve ter explicação bíblica clara e aplicação prática.
-`;
-      }
-
-      if (profundidade === "muito_expandido") {
-        return `
-NÍVEL DE PROFUNDIDADE:
-- Conteúdo MUITO EXPANDIDO, profundo e completo.
-- Desenvolva cada parte com riqueza de detalhes.
-- Não entregue capítulos, aulas ou lições com poucas linhas.
-- Cada unidade deve parecer material real de livro, e-book, apostila, curso ou revista.
-- É melhor demorar mais e entregar melhor do que responder raso.
-- Traga base bíblica, explicação teológica, aplicação pastoral, exemplos práticos e conclusão.
-`;
-      }
-
-      return `
-NÍVEL DE PROFUNDIDADE:
-- Conteúdo expandido, profundo e bem desenvolvido.
-- Evite respostas curtas, rasas ou genéricas.
-- Cada parte precisa ter base bíblica, explicação, aplicação e conclusão.
-`;
+    function setStatus(message, type = "info") {
+      statusEl.className = "status " + type;
+      statusEl.textContent = message;
     }
 
-    function criarEstruturaParte(tipo, numeroParte) {
-      if (tipo === "Livro cristão") {
-        return `
-Gere SOMENTE o Capítulo ${numeroParte} do livro.
-
-Estrutura obrigatória:
-# Capítulo ${numeroParte} - Título do Capítulo
-## Introdução do Capítulo
-## Desenvolvimento Bíblico e Pastoral
-## Fundamentação Bíblica
-## Aplicações Práticas
-## Reflexão Ministerial
-## Conclusão do Capítulo
-`;
-      }
-
-      if (tipo === "E-book cristão") {
-        return `
-Gere SOMENTE o Capítulo ${numeroParte} do e-book.
-
-Estrutura obrigatória:
-# Capítulo ${numeroParte} - Título do Capítulo
-## Abertura do Capítulo
-## Ideia Central
-## Desenvolvimento Bíblico e Pastoral
-## Aplicação Prática
-## Caixa de Destaque
-Inclua uma frase forte, curta e marcante para o leitor.
-## Exercício de Reflexão
-## Oração ou Aplicação Final
-## Conclusão do Capítulo
-
-Regras específicas:
-- O capítulo precisa ter linguagem de e-book cristão, envolvente, clara, espiritual e profunda.
-- Não escreva poucas linhas.
-- Não gere outros capítulos agora.
-- Escreva como material pronto para PDF, venda, envio ou distribuição.
-- Crie frases de impacto, aplicações práticas e conteúdo edificante.
-`;
-      }
-
-      if (tipo === "Curso teológico") {
-        return `
-Gere SOMENTE a Aula ${numeroParte} do curso.
-
-Estrutura obrigatória:
-# Aula ${numeroParte} - Título da Aula
-## Texto Bíblico Base
-## Objetivo da Aula
-## Introdução
-## Desenvolvimento Teológico
-## Fundamentação Bíblica
-## Aplicação Ministerial
-## Resumo da Aula
-## Perguntas de Fixação
-## Respostas das Perguntas
-## Tarefa Prática
-`;
-      }
-
-      if (tipo === "Apostila teológica") {
-        return `
-Gere SOMENTE a Aula ${numeroParte} da apostila.
-
-Estrutura obrigatória:
-# Aula ${numeroParte} - Tema da Aula
-## Texto Bíblico Base
-## Objetivo da Aula
-## Introdução
-## Desenvolvimento Teológico
-## Fundamentação Bíblica
-## Aplicação Ministerial
-## Resumo da Aula
-## Exercícios de Fixação
-## Respostas dos Exercícios
-`;
-      }
-
-      if (tipo === "Revista de EBD para professor") {
-        return `
-Gere SOMENTE a Lição ${numeroParte} da revista do professor.
-
-Estrutura obrigatória:
-# Lição ${numeroParte} - Título da Lição
-## Texto Áureo
-## Verdade Prática
-## Leitura Bíblica em Classe
-## Objetivos da Lição
-## Palavra-chave
-## Introdução
-## I - Primeiro tópico
-## II - Segundo tópico
-## III - Terceiro tópico
-## Auxílio ao Professor
-## Aplicação Pessoal
-## Sinopse da Lição
-## Conclusão
-## Revisando o Conteúdo
-
-No Revisando o Conteúdo:
-- Inclua perguntas e respostas.
-`;
-      }
-
-      if (tipo === "Revista de EBD para aluno") {
-        return `
-Gere SOMENTE a Lição ${numeroParte} da revista do aluno.
-
-Estrutura obrigatória:
-# Lição ${numeroParte} - Título da Lição
-## Texto Áureo
-## Verdade Prática
-## Leitura Bíblica em Classe
-## Objetivos da Lição
-## Introdução
-## I - Primeiro tópico
-## II - Segundo tópico
-## III - Terceiro tópico
-## Aplicação Pessoal
-## Conclusão
-## Revisando o Conteúdo
-
-No Revisando o Conteúdo:
-- Inclua somente perguntas, sem respostas.
-`;
-      }
-
-      if (tipo === "Devocional") {
-        return `
-Gere SOMENTE o Devocional ${numeroParte}.
-
-Estrutura obrigatória:
-# Devocional ${numeroParte} - Título
-## Texto Bíblico
-## Meditação
-## Aplicação do Dia
-## Pergunta para Reflexão
-## Oração
-`;
-      }
-
-      return `
-Gere SOMENTE a parte ${numeroParte}.
-Faça de modo profundo, organizado, bíblico e útil.
-`;
+    function escapeHtml(str = "") {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function criarPromptAbertura(dados) {
-      let blocoEbook = "";
+    function normalizeText(value) {
+      return String(value || "").trim();
+    }
 
-      if (dados.tipo === "E-book cristão") {
-        blocoEbook = `
-REGRAS ESPECIAIS PARA E-BOOK:
-- Crie uma abertura com linguagem de e-book cristão profissional.
-- O material deve parecer pronto para vender, enviar ou distribuir em PDF.
-- Inclua uma apresentação envolvente.
-- Inclua uma sugestão de subtítulo.
-- Inclua uma página "Como usar este e-book".
-- Inclua um sumário atrativo, com títulos fortes para todos os capítulos.
-- Use linguagem elegante, pastoral, espiritual e clara.
-`;
+    function tipoBonito(tipo) {
+      const map = {
+        ebook: "E-book cristão",
+        revista_ebd_professor: "Revista de EBD para professor",
+        revista_ebd_aluno: "Revista de EBD para aluno",
+        devocional: "Devocional",
+        estudo_biblico: "Estudo bíblico",
+        curso_teologico: "Curso / estudo teológico",
+        apostila: "Apostila",
+        livro_cristao: "Livro cristão",
+        sermao: "Sermão"
+      };
+      return map[tipo] || tipo;
+    }
+
+    function paletteFromTheme(theme = "", visual = "colorido") {
+      if (visual === "pb") {
+        return {
+          cover: ["#333333", "#666666", "#999999"],
+          section: "#444444",
+          accent: "#777777",
+          soft: "#f2f2f2"
+        };
       }
 
-      return `
-Você é o Verbo IA, um assistente editorial cristão, bíblico, teológico e pastoral.
+      const t = theme.toLowerCase();
 
-Crie SOMENTE a abertura editorial do material abaixo.
-
-DADOS:
-Tipo: ${dados.tipo}
-Título: ${dados.titulo}
-Tema: ${dados.tema}
-Texto bíblico base: ${dados.textoBase}
-Público-alvo: ${dados.publico}
-Linguagem: ${dados.linguagem}
-Quantidade exata: ${dados.quantidade}
-Autor: ${dados.autor}
-Editora / Ministério: ${dados.editora}
-Orientações adicionais: ${dados.orientacoes}
-
-LISTA OBRIGATÓRIA:
-${dados.listaObrigatoria}
-
-${regraDeProfundidade(dados.profundidade)}
-
-${blocoEbook}
-
-Gere:
-# Capa Textual
-# Título
-# Subtítulo
-# Autor
-# Editora / Ministério
-# Apresentação
-# Como Usar Este Material
-# Objetivo Geral
-# Sumário Detalhado
-
-Regras:
-- Não desenvolva os capítulos/aulas/lições agora.
-- Apenas crie a abertura e o sumário.
-- O sumário deve listar todas as ${dados.quantidade} partes, sem pular nenhuma.
-`;
-    }
-
-    function criarPromptParte(dados, numeroParte) {
-      return `
-Você é o Verbo IA, um assistente editorial cristão, bíblico, teológico e pastoral.
-
-Você está criando um material cristão em partes para garantir profundidade e qualidade.
-
-DADOS GERAIS:
-Tipo: ${dados.tipo}
-Título geral: ${dados.titulo}
-Tema principal: ${dados.tema}
-Texto bíblico base: ${dados.textoBase}
-Público-alvo: ${dados.publico}
-Linguagem: ${dados.linguagem}
-Quantidade total: ${dados.quantidade}
-Parte atual: ${numeroParte} de ${dados.quantidade}
-Perguntas por parte: ${dados.perguntas}
-Autor: ${dados.autor}
-Editora / Ministério: ${dados.editora}
-Orientações adicionais: ${dados.orientacoes}
-
-${regraDeProfundidade(dados.profundidade)}
-
-REGRA PRINCIPAL:
-- Gere apenas a parte ${numeroParte}.
-- Não gere a parte anterior.
-- Não gere a próxima parte.
-- Não diga “continua”.
-- Não diga “as demais seguem o mesmo padrão”.
-- Não resuma por falta de espaço.
-- Faça a parte atual com profundidade real.
-
-ESTRUTURA DA PARTE ATUAL:
-${criarEstruturaParte(dados.tipo, numeroParte)}
-
-Antes de finalizar, confira se a parte ${numeroParte} ficou profunda, expandida, organizada, bíblica e útil para ensino.
-`;
-    }
-
-    function criarPromptUnico(dados) {
-      let blocoEbook = "";
-
-      if (dados.tipo === "E-book cristão") {
-        blocoEbook = `
-ESTRUTURA PARA E-BOOK CRISTÃO:
-# Capa Textual
-# Título
-# Subtítulo
-# Autor
-# Apresentação
-# Como Usar Este E-book
-# Introdução
-# Capítulo 1 - Título
-## Abertura do Capítulo
-## Ideia Central
-## Desenvolvimento Bíblico e Pastoral
-## Aplicação Prática
-## Caixa de Destaque
-## Exercício de Reflexão
-## Oração ou Aplicação Final
-# Conclusão
-# Palavra Final ao Leitor
-
-REGRAS PARA E-BOOK:
-- Escreva como e-book cristão profissional.
-- Faça conteúdo bonito, profundo, envolvente e pronto para PDF.
-- Evite linguagem rasa.
-- Traga aplicações práticas e reflexão para o leitor.
-`;
+      if (t.includes("oração") || t.includes("intimidade") || t.includes("presença")) {
+        return {
+          cover: ["#6b4626", "#c08b43", "#5e7aa7"],
+          section: "#7b552d",
+          accent: "#c4984f",
+          soft: "#fff4e6"
+        };
       }
 
-      return `
-Você é o Verbo IA, um assistente editorial cristão, bíblico, teológico e pastoral.
-
-DADOS:
-Tipo: ${dados.tipo}
-Título: ${dados.titulo}
-Tema: ${dados.tema}
-Texto bíblico base: ${dados.textoBase}
-Público-alvo: ${dados.publico}
-Linguagem: ${dados.linguagem}
-Quantidade: ${dados.quantidade}
-Perguntas: ${dados.perguntas}
-Autor: ${dados.autor}
-Editora / Ministério: ${dados.editora}
-Orientações adicionais: ${dados.orientacoes}
-
-${regraDeProfundidade(dados.profundidade)}
-
-${blocoEbook}
-
-REGRAS GERAIS:
-1. Escreva em português do Brasil.
-2. Use linguagem bíblica, pastoral, reverente, didática e organizada.
-3. Crie conteúdo original.
-4. Não mencione CPAD.
-5. Use referências bíblicas coerentes.
-6. Evite superficialidade.
-7. Desenvolva com profundidade bíblica, teológica, pastoral e prática.
-8. Não invente citações de autores.
-9. Use formatação em Markdown com títulos e subtítulos.
-10. Respeite exatamente o tipo de material escolhido.
-11. Não misture estrutura de sermão com revista, ou devocional com curso, etc.
-
-Se for sermão, use:
-# Título do Sermão
-# Texto Base
-# Tema
-# Introdução
-# Proposição
-# Frase de Transição
-# I - Primeiro ponto
-# II - Segundo ponto
-# III - Terceiro ponto
-# Aplicação para a Igreja
-# Conclusão
-# Apelo
-
-Se for estudo bíblico, use:
-# Título do Estudo
-# Texto Base
-# Objetivo do Estudo
-# Introdução
-# Contexto Bíblico
-# Explicação do Texto
-# Ensinamentos Principais
-# Aplicações Práticas
-# Perguntas para Discussão
-# Conclusão
-
-Se for lição bíblica completa, use:
-# Título da Lição
-# Texto Áureo
-# Verdade Prática
-# Leitura Bíblica em Classe
-# Objetivos da Lição
-# Introdução
-# I - Primeiro tópico
-# II - Segundo tópico
-# III - Terceiro tópico
-# Aplicação Pessoal
-# Sinopse da Lição
-# Conclusão
-# Revisando o Conteúdo
-
-Se for devocional e a quantidade for 1, use:
-# Devocional - Título
-## Texto Bíblico
-## Meditação
-## Aplicação do Dia
-## Pergunta para Reflexão
-## Oração
-
-Agora gere o material completo e profundo.
-`;
-    }
-
-    async function chamarServidor(prompt) {
-      const resposta = await fetch("/api/gerar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ prompt })
-      });
-
-      const dados = await resposta.json();
-
-      if (!resposta.ok || !dados.sucesso) {
-        throw new Error(dados.erro || "Erro ao gerar material.");
+      if (t.includes("família") || t.includes("lar")) {
+        return {
+          cover: ["#7d4a30", "#d09c63", "#769a8b"],
+          section: "#7b4e2c",
+          accent: "#ca9a59",
+          soft: "#fff4e7"
+        };
       }
 
-      return dados;
-    }
-
-    function escaparHtml(texto) {
-      return String(texto)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function markdownParaHtml(markdown) {
-      const linhas = String(markdown || "").split(/\r?\n/);
-      let html = "";
-      let emLista = false;
-
-      function fecharLista() {
-        if (emLista) {
-          html += "</ul>";
-          emLista = false;
-        }
+      if (t.includes("miss") || t.includes("evangel")) {
+        return {
+          cover: ["#264c7a", "#4f8ed8", "#c79a52"],
+          section: "#315f98",
+          accent: "#c79a52",
+          soft: "#eef5ff"
+        };
       }
 
-      for (let linha of linhas) {
-        let t = linha.trim();
-
-        if (!t) {
-          fecharLista();
-          continue;
-        }
-
-        if (t === "---") {
-          fecharLista();
-          html += "<div class='destaque-e-book'>✦ Nova seção do material</div>";
-          continue;
-        }
-
-        if (t.startsWith("# ")) {
-          fecharLista();
-          html += "<h1>" + formatarInline(t.replace(/^# /, "")) + "</h1>";
-          continue;
-        }
-
-        if (t.startsWith("## ")) {
-          fecharLista();
-          html += "<h2>" + formatarInline(t.replace(/^## /, "")) + "</h2>";
-          continue;
-        }
-
-        if (t.startsWith("### ")) {
-          fecharLista();
-          html += "<h3>" + formatarInline(t.replace(/^### /, "")) + "</h3>";
-          continue;
-        }
-
-        if (t.startsWith("#### ")) {
-          fecharLista();
-          html += "<h4>" + formatarInline(t.replace(/^#### /, "")) + "</h4>";
-          continue;
-        }
-
-        if (t.startsWith(">")) {
-          fecharLista();
-          html += "<blockquote>" + formatarInline(t.replace(/^>\s?/, "")) + "</blockquote>";
-          continue;
-        }
-
-        if (/^[-*]\s+/.test(t)) {
-          if (!emLista) {
-            html += "<ul>";
-            emLista = true;
-          }
-          html += "<li>" + formatarInline(t.replace(/^[-*]\s+/, "")) + "</li>";
-          continue;
-        }
-
-        fecharLista();
-        html += "<p>" + formatarInline(t) + "</p>";
+      if (t.includes("lider") || t.includes("minist")) {
+        return {
+          cover: ["#5d2e21", "#a8674b", "#d0a055"],
+          section: "#7a4330",
+          accent: "#c99851",
+          soft: "#fff3eb"
+        };
       }
 
-      fecharLista();
-      return html;
+      return {
+        cover: ["#6b4626", "#b98a48", "#6281af"],
+        section: "#6a4a2d",
+        accent: "#c4984f",
+        soft: "#fff5e9"
+      };
     }
 
-    function formatarInline(texto) {
-      let s = escaparHtml(texto);
-
-      s = s.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-      s = s.replace(/\*(.*?)\*/g, "<em>$1</em>");
-      s = s.replace(/`(.*?)`/g, "<code>$1</code>");
-
-      return s;
+    function inferThemeKind(text = "") {
+      const t = text.toLowerCase();
+      if (t.includes("oração") || t.includes("intimidade") || t.includes("altar") || t.includes("presença")) return "prayer";
+      if (t.includes("família") || t.includes("lar") || t.includes("casamento")) return "family";
+      if (t.includes("miss") || t.includes("evangel") || t.includes("nações")) return "mission";
+      if (t.includes("lider") || t.includes("minist")) return "leadership";
+      if (t.includes("jovens") || t.includes("adolesc")) return "youth";
+      return "general";
     }
 
-    function gerarBaloesDecorativos(qtd, modoVisual) {
-      const coresColoridas = [
-        "rgba(255,255,255,0.18)",
-        "rgba(255,240,200,0.18)",
-        "rgba(196,151,79,0.20)",
-        "rgba(255,255,255,0.12)",
-        "rgba(53,92,125,0.15)",
-        "rgba(123,63,97,0.16)"
-      ];
-
-      const coresPb = [
-        "rgba(255,255,255,0.10)",
-        "rgba(220,220,220,0.16)",
-        "rgba(245,245,245,0.10)"
-      ];
-
-      const cores = modoVisual === "pb" ? coresPb : coresColoridas;
-
-      let html = "";
-      for (let i = 0; i < qtd; i++) {
-        const x = ((i * 13) % 88) + 2;
-        const y = ((i * 17) % 92) + 2;
-        const size = 26 + ((i * 9) % 64);
-        const cor = cores[i % cores.length];
-
-        html += `<span class="decor-balao" style="--x:${x}%; --y:${y}%; --size:${size}px; background:${cor};"></span>`;
-      }
-      return html;
+    function svgDataUri(svg) {
+      return `url("data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}")`;
     }
 
-    function gerarCapaHTML(dados) {
-      if (!dados.gerarCapa) return "";
+    function buildIllustrationSVG(title = "", subtitle = "", kind = "general", palette = null) {
+      const p = palette || paletteFromTheme(title + " " + subtitle, "colorido");
+      const c1 = p.cover[0], c2 = p.cover[1], c3 = p.cover[2], accent = p.accent;
 
-      return `
-        <section class="pagina capa">
-          ${gerarBaloesDecorativos(34, dados.modoVisual)}
-          <div class="ornamento um">✦</div>
-          <div class="ornamento dois">✧</div>
-
-          <div class="miolo-capa">
-            <div class="marca-capa">Verbo IA</div>
-            <div class="tipo-capa">${escaparHtml(dados.tipo)}</div>
-            <div class="titulo-capa">${escaparHtml(dados.titulo)}</div>
-            <div class="tema-capa">${escaparHtml(dados.tema)}</div>
-
-            <div class="meta-capa">
-              <div><strong>Texto bíblico base:</strong> ${escaparHtml(dados.textoBase)}</div>
-              <div><strong>Autor / Comentarista:</strong> ${escaparHtml(dados.autor)}</div>
-              <div><strong>Editora / Ministério:</strong> ${escaparHtml(dados.editora)}</div>
-              <div><strong>Público-alvo:</strong> ${escaparHtml(dados.publico)}</div>
-            </div>
-
-            <div class="faixa-capa">
-              ${dados.tipo === "E-book cristão" ? "E-book cristão pronto para PDF" : "Material gerado automaticamente"} • ${dados.modoVisual === "pb" ? "Modo preto e branco" : "Modo colorido"}
-            </div>
-          </div>
-        </section>
+      let symbol = `
+        <circle cx="630" cy="150" r="55" fill="rgba(255,255,255,0.18)"/>
+        <circle cx="700" cy="470" r="24" fill="rgba(255,255,255,0.15)"/>
       `;
-    }
 
-    function dividirEbookEmPaginas(markdown, dados) {
-      if (dados.tipo !== "E-book cristão") {
-        return `
-          <section class="pagina">
-            <div class="conteudo-html">
-              ${markdownParaHtml(markdown)}
-            </div>
-
-            <div class="caixa-observacao">
-              <strong>Observação editorial:</strong> este documento foi formatado automaticamente pelo Verbo IA para leitura, impressão e PDF.
-            </div>
-
-            <div class="rodape-doc">
-              Verbo IA • ${escaparHtml(dados.editora)} • Material organizado automaticamente
-            </div>
-          </section>
+      if (kind === "prayer") {
+        symbol = `
+          <path d="M562 360 C585 300 635 255 690 230 C700 284 686 345 650 395 C620 437 578 460 536 470 C534 431 543 397 562 360 Z" fill="rgba(255,255,255,.18)"/>
+          <path d="M420 492 C472 392 568 338 671 318 C649 424 578 501 475 540 C448 550 422 557 392 562 C393 541 401 518 420 492 Z" fill="rgba(255,255,255,.12)"/>
+          <rect x="118" y="338" rx="18" ry="18" width="210" height="120" fill="rgba(255,255,255,.12)"/>
+          <line x1="223" y1="338" x2="223" y2="458" stroke="rgba(255,255,255,.35)" stroke-width="4"/>
+          <line x1="150" y1="368" x2="296" y2="368" stroke="rgba(255,255,255,.23)" stroke-width="3"/>
+          <line x1="150" y1="398" x2="296" y2="398" stroke="rgba(255,255,255,.23)" stroke-width="3"/>
+        `;
+      } else if (kind === "family") {
+        symbol = `
+          <path d="M150 448 L256 358 L362 448 V548 H150 Z" fill="rgba(255,255,255,.15)"/>
+          <path d="M127 447 L256 330 L385 447" fill="none" stroke="rgba(255,255,255,.30)" stroke-width="10" stroke-linecap="round"/>
+          <circle cx="590" cy="250" r="50" fill="rgba(255,255,255,.18)"/>
+          <circle cx="545" cy="322" r="34" fill="rgba(255,255,255,.14)"/>
+          <circle cx="641" cy="322" r="34" fill="rgba(255,255,255,.14)"/>
+          <path d="M590 314 C620 280 666 281 685 318 C699 346 682 382 650 406 L590 455 L530 406 C497 382 481 347 496 318 C515 281 561 280 590 314 Z" fill="rgba(255,255,255,.12)"/>
+        `;
+      } else if (kind === "mission") {
+        symbol = `
+          <circle cx="610" cy="310" r="120" fill="rgba(255,255,255,.12)"/>
+          <ellipse cx="610" cy="310" rx="120" ry="44" fill="none" stroke="rgba(255,255,255,.30)" stroke-width="6"/>
+          <ellipse cx="610" cy="310" rx="60" ry="120" fill="none" stroke="rgba(255,255,255,.26)" stroke-width="6"/>
+          <line x1="490" y1="310" x2="730" y2="310" stroke="rgba(255,255,255,.26)" stroke-width="6"/>
+          <path d="M195 478 L310 340" stroke="rgba(255,255,255,.35)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M310 340 L335 358" stroke="rgba(255,255,255,.35)" stroke-width="12" stroke-linecap="round"/>
+          <path d="M282 366 L330 340" stroke="rgba(255,255,255,.35)" stroke-width="12" stroke-linecap="round"/>
+        `;
+      } else if (kind === "leadership") {
+        symbol = `
+          <path d="M214 422 L264 325 L314 422 Z" fill="rgba(255,255,255,.15)"/>
+          <path d="M314 422 L384 305 L454 422 Z" fill="rgba(255,255,255,.12)"/>
+          <path d="M454 422 L514 340 L574 422 Z" fill="rgba(255,255,255,.10)"/>
+          <rect x="210" y="428" width="370" height="18" rx="9" fill="rgba(255,255,255,.26)"/>
+          <circle cx="670" cy="260" r="60" fill="rgba(255,255,255,.16)"/>
+          <path d="M670 210 L686 246 L726 248 L695 273 L705 312 L670 290 L635 312 L645 273 L614 248 L654 246 Z" fill="rgba(255,255,255,.20)"/>
+        `;
+      } else if (kind === "youth") {
+        symbol = `
+          <circle cx="580" cy="285" r="110" fill="rgba(255,255,255,.12)"/>
+          <path d="M580 210 C603 247 641 263 681 271 C644 294 616 325 602 366 C584 326 552 296 500 274 C537 264 563 245 580 210 Z" fill="rgba(255,255,255,.20)"/>
+          <rect x="120" y="360" width="220" height="130" rx="26" fill="rgba(255,255,255,.10)"/>
+          <circle cx="200" cy="425" r="26" fill="rgba(255,255,255,.22)"/>
+          <circle cx="260" cy="425" r="26" fill="rgba(255,255,255,.16)"/>
         `;
       }
 
-      const texto = String(markdown || "");
-      const partes = texto.split(/(?=^#\s*Capítulo\s+\d+)/gim);
-      let html = "";
-
-      partes.forEach(function(parte, index) {
-        const conteudo = parte.trim();
-        if (!conteudo) return;
-
-        const ehCapitulo = /^#\s*Capítulo\s+\d+/i.test(conteudo);
-        const matchNumero = conteudo.match(/^#\s*Capítulo\s+(\d+)/i);
-        const numero = matchNumero ? matchNumero[1] : "";
-
-        if (ehCapitulo) {
-          html += `
-            <section class="pagina pagina-ebook">
-              <div class="capitulo-topo">
-                <span class="capitulo-numero">Capítulo ${escaparHtml(numero)}</span>
-                <div class="mini-ilustracao">
-                  <span></span><span></span><span></span>
-                </div>
-              </div>
-
-              <div class="conteudo-html">
-                ${markdownParaHtml(conteudo)}
-              </div>
-
-              <div class="rodape-doc">
-                Verbo IA • ${escaparHtml(dados.titulo)} • Capítulo ${escaparHtml(numero)}
-              </div>
-            </section>
-          `;
-        } else {
-          html += `
-            <section class="pagina pagina-ebook">
-              <div class="pagina-topo">
-                <div style="text-align:center;">
-                  <span class="selo-editorial">Abertura editorial do e-book</span>
-                </div>
-                <h1>${escaparHtml(dados.titulo)}</h1>
-                <div class="sub">
-                  ${escaparHtml(dados.tipo)} • ${escaparHtml(dados.tema)}<br>
-                  Gerado em ${formatarDataAtual()}
-                </div>
-              </div>
-
-              <div class="conteudo-html">
-                ${markdownParaHtml(conteudo)}
-              </div>
-
-              <div class="rodape-doc">
-                Verbo IA • ${escaparHtml(dados.editora)} • Abertura do e-book
-              </div>
-            </section>
-          `;
-        }
-      });
-
-      return html;
-    }
-
-    function montarDocumentoFormatado(markdown, dados) {
-      const classeModo = dados.modoVisual === "pb" ? "modo-pb" : "modo-colorido";
-
-      return `
-        <article class="documento ${classeModo}">
-          ${gerarCapaHTML(dados)}
-
-          ${dados.tipo === "E-book cristão" ? "" : `
-            <section class="pagina">
-              <div class="pagina-topo">
-                <div style="text-align:center;">
-                  <span class="selo-editorial">Documento editorial pronto para impressão</span>
-                </div>
-
-                <h1>${escaparHtml(dados.titulo)}</h1>
-
-                <div class="sub">
-                  ${escaparHtml(dados.tipo)} • ${escaparHtml(dados.tema)}<br>
-                  Gerado em ${formatarDataAtual()}
-                </div>
-
-                <div class="ficha">
-                  <div class="ficha-item">
-                    <span class="rotulo">Tipo</span>
-                    <span class="valor">${escaparHtml(dados.tipo)}</span>
-                  </div>
-                  <div class="ficha-item">
-                    <span class="rotulo">Base Bíblica</span>
-                    <span class="valor">${escaparHtml(dados.textoBase)}</span>
-                  </div>
-                  <div class="ficha-item">
-                    <span class="rotulo">Autor</span>
-                    <span class="valor">${escaparHtml(dados.autor)}</span>
-                  </div>
-                  <div class="ficha-item">
-                    <span class="rotulo">Público</span>
-                    <span class="valor">${escaparHtml(dados.publico)}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="conteudo-html">
-                ${markdownParaHtml(markdown)}
-              </div>
-
-              <div class="caixa-observacao">
-                <strong>Observação editorial:</strong> este documento foi formatado automaticamente pelo Verbo IA para leitura, impressão e PDF.
-              </div>
-
-              <div class="rodape-doc">
-                Verbo IA • ${escaparHtml(dados.editora)} • Material organizado automaticamente
-              </div>
-            </section>
-          `}
-
-          ${dados.tipo === "E-book cristão" ? dividirEbookEmPaginas(markdown, dados) : ""}
-        </article>
+      const svg = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="${c1}"/>
+              <stop offset="55%" stop-color="${c2}"/>
+              <stop offset="100%" stop-color="${c3}"/>
+            </linearGradient>
+            <radialGradient id="light" cx="70%" cy="30%" r="70%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.22)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </radialGradient>
+          </defs>
+          <rect width="900" height="560" rx="28" fill="url(#g)"/>
+          <rect width="900" height="560" rx="28" fill="url(#light)"/>
+          <circle cx="120" cy="100" r="90" fill="rgba(255,255,255,.06)"/>
+          <circle cx="810" cy="80" r="55" fill="rgba(255,255,255,.10)"/>
+          <circle cx="760" cy="460" r="34" fill="rgba(255,255,255,.08)"/>
+          ${symbol}
+          <rect x="58" y="54" width="345" height="62" rx="16" fill="rgba(255,255,255,.10)" />
+          <text x="80" y="92" fill="rgba(255,255,255,.95)" style="font-family:Arial, Helvetica, sans-serif;font-size:18px;font-weight:700;">VERBO IA</text>
+          <rect x="58" y="430" width="355" height="82" rx="18" fill="rgba(255,255,255,.10)" />
+          <text x="82" y="468" fill="rgba(255,255,255,.96)" style="font-family:Arial, Helvetica, sans-serif;font-size:24px;font-weight:800;">${escapeXmlText(title).slice(0, 28)}</text>
+          <text x="82" y="498" fill="rgba(255,255,255,.88)" style="font-family:Arial, Helvetica, sans-serif;font-size:16px;font-weight:600;">${escapeXmlText(subtitle).slice(0, 56)}</text>
+          <circle cx="770" cy="466" r="22" fill="${accent}" opacity=".9"/>
+          <circle cx="810" cy="466" r="12" fill="rgba(255,255,255,.92)"/>
+        </svg>
       `;
+      return svgDataUri(svg);
     }
 
-    function exibirTextoPuro(texto) {
-      const painel = document.getElementById("resultado");
-      painel.innerHTML = "<pre class='prompt-pre'>" + escaparHtml(texto) + "</pre>";
+    function escapeXmlText(str = "") {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&apos;");
     }
 
-    function renderizarResultado(texto, dados) {
-      const painel = document.getElementById("resultado");
-      ultimoDocumentoHTML = montarDocumentoFormatado(texto, dados);
-      painel.innerHTML = ultimoDocumentoHTML;
+    function safeArray(arr) {
+      return Array.isArray(arr) ? arr : [];
     }
 
-    async function gerarPorPartes(dados) {
-      materialMarkdown = "";
-      ultimoDados = dados;
+    function renderDocument(doc, meta = {}) {
+      const visual = meta.visual || "colorido";
+      const palette = paletteFromTheme((doc.documentTitle || "") + " " + (doc.theme || ""), visual);
+      const kind = inferThemeKind((doc.documentTitle || "") + " " + (doc.theme || "") + " " + (doc.documentTypeLabel || ""));
+      const coverArt = buildIllustrationSVG(doc.documentTitle || "", doc.cover?.subtitle || doc.theme || "", kind, palette);
+      const summaryItems = safeArray(doc.summary);
+      const chapters = safeArray(doc.chapters);
 
-      mostrarStatus("Gerando abertura e sumário...", "ok");
-      atualizarBarra(5);
-      exibirTextoPuro("Gerando abertura e sumário do material...");
+      const pages = [];
 
-      const abertura = await chamarServidor(criarPromptAbertura(dados));
-      materialMarkdown += abertura.texto + "\\n\\n";
-      renderizarResultado(materialMarkdown, dados);
+      if (doc.includeCover !== false) {
+        pages.push(`
+          <article class="print-page cover-page">
+            <div class="cover-wrap">
+              <div>
+                <div class="cover-brand">VERBO IA</div>
+                <div style="text-align:center;">
+                  <div class="cover-kicker">${escapeHtml(doc.documentTypeLabel || "Material cristão")}</div>
+                </div>
+              </div>
 
-      const total = dados.quantidade;
+              <div class="cover-main">
+                <div>
+                  <h1 class="cover-title">${escapeHtml(doc.documentTitle || "Material Gerado")}</h1>
+                  <p class="cover-subtitle">${escapeHtml(doc.cover?.subtitle || doc.theme || "")}</p>
 
-      for (let i = 1; i <= total; i++) {
-        const percentual = 8 + Math.round((i / total) * 90);
-        atualizarBarra(percentual);
-        mostrarStatus(`Gerando ${nomeParte(dados.tipo)} ${i} de ${total}...`, "ok");
+                  <div class="cover-meta">
+                    ${doc.textoBase ? `<div class="meta-line"><strong>Texto bíblico base:</strong> ${escapeHtml(doc.textoBase)}</div>` : ""}
+                    ${doc.author ? `<div class="meta-line"><strong>Autor / Comentarista:</strong> ${escapeHtml(doc.author)}</div>` : ""}
+                    ${doc.ministry ? `<div class="meta-line"><strong>Editora / Ministério:</strong> ${escapeHtml(doc.ministry)}</div>` : ""}
+                    ${doc.audience ? `<div class="meta-line"><strong>Público-alvo:</strong> ${escapeHtml(doc.audience)}</div>` : ""}
+                  </div>
 
-        const parte = await chamarServidor(criarPromptParte(dados, i));
-        materialMarkdown += "\\n\\n---\\n\\n" + parte.texto + "\\n\\n";
-        renderizarResultado(materialMarkdown, dados);
+                  <div class="cover-badge-row">
+                    <div class="cover-badge">${visual === "pb" ? "Modo preto e branco" : "Modo colorido"}</div>
+                    <div class="cover-badge">Pronto para PDF</div>
+                    <div class="cover-badge">Visual profissional</div>
+                  </div>
+                </div>
+
+                <div class="cover-art" style="background-image:${coverArt};"></div>
+              </div>
+
+              <div class="cover-bottom-note">
+                ${escapeHtml(doc.cover?.closingSeal || "Material diagramado automaticamente pelo VERBO IA.")}
+              </div>
+            </div>
+          </article>
+        `);
       }
 
-      atualizarBarra(100);
-      mostrarStatus("Material completo gerado com profundidade e formatação.", "ok");
+      pages.push(`
+        <article class="print-page summary-page">
+          <div class="page-inner">
+            <div class="section-tag">📘 Estrutura do material</div>
+            <h2 class="doc-title">${escapeHtml(doc.documentTitle || "Material Gerado")}</h2>
+            <p class="doc-subtitle">
+              ${escapeHtml(doc.presentation || "Conteúdo organizado, sequencial e pronto para leitura, estudo, ensino e impressão.")}
+            </p>
+
+            <div class="toc-list">
+              ${summaryItems.map((item, index) => `
+                <div class="toc-item">
+                  <div>
+                    <strong>${String(index + 1).padStart(2, "0")}.</strong>
+                    <span style="margin-left:8px;">${escapeHtml(item)}</span>
+                  </div>
+                  <span>Capítulo ${index + 1}</span>
+                </div>
+              `).join("")}
+            </div>
+
+            <div style="margin-top:28px; padding:20px; border-radius:16px; background:${palette.soft}; border:1px solid #eadcca;">
+              <strong style="display:block; margin-bottom:8px; color:${palette.section};">Sobre este material</strong>
+              <div style="line-height:1.8; color:#4d463f; font-size:15px;">
+                <div><strong>Tipo:</strong> ${escapeHtml(doc.documentTypeLabel || "")}</div>
+                <div><strong>Tema:</strong> ${escapeHtml(doc.theme || "")}</div>
+                <div><strong>Público:</strong> ${escapeHtml(doc.audience || "")}</div>
+                <div><strong>Linguagem:</strong> ${escapeHtml(doc.language || "")}</div>
+              </div>
+            </div>
+          </div>
+          <div class="page-footer">
+            <span>VERBO IA</span>
+            <span>Sumário</span>
+          </div>
+        </article>
+      `);
+
+      chapters.forEach((chapter, idx) => {
+        const bannerArt = buildIllustrationSVG(
+          chapter.title || `Capítulo ${idx + 1}`,
+          chapter.centralTruth || doc.theme || "",
+          inferThemeKind((chapter.title || "") + " " + (doc.theme || "")),
+          palette
+        );
+
+        pages.push(`
+          <article class="print-page">
+            <div class="page-inner">
+              <div class="chapter-cover" style="background-image:${bannerArt};"></div>
+
+              <div class="chapter-num">Capítulo ${chapter.number || idx + 1}</div>
+              <h2 class="chapter-title">${escapeHtml(chapter.title || `Capítulo ${idx + 1}`)}</h2>
+
+              ${chapter.openingText ? `
+                <p class="chapter-opening">${escapeHtml(chapter.openingText)}</p>
+              ` : ""}
+
+              ${chapter.centralTruth ? `
+                <div class="central-truth">
+                  <h4>Verdade central</h4>
+                  <p>${escapeHtml(chapter.centralTruth)}</p>
+                </div>
+              ` : ""}
+
+              ${safeArray(chapter.sections).map(sec => `
+                <section class="section-block">
+                  <h3>${escapeHtml(sec.heading || "Desenvolvimento")}</h3>
+                  <p>${escapeHtml(sec.content || "")}</p>
+
+                  ${safeArray(sec.scriptures).length ? `
+                    <div class="verse-list">
+                      ${safeArray(sec.scriptures).map(v => `<span class="verse-chip">${escapeHtml(v)}</span>`).join("")}
+                    </div>
+                  ` : ""}
+
+                  ${sec.visualCue ? `
+                    <div class="visual-box">
+                      <div class="visual-art" style="background-image:${buildIllustrationSVG(sec.heading || "", sec.visualCue || "", inferThemeKind(sec.visualCue || ""), palette)};"></div>
+                      <div class="visual-caption">${escapeHtml(sec.visualCue)}</div>
+                    </div>
+                  ` : ""}
+                </section>
+              `).join("")}
+
+              ${chapter.highlightQuote ? `
+                <div class="quote-card">
+                  <h4>Caixa de destaque</h4>
+                  <p>${escapeHtml(chapter.highlightQuote)}</p>
+                </div>
+              ` : ""}
+
+              ${chapter.reflectionExercise ? `
+                <div class="reflection-box">
+                  <h4>Exercício de reflexão</h4>
+                  <p>${escapeHtml(chapter.reflectionExercise)}</p>
+                </div>
+              ` : ""}
+
+              ${chapter.prayer ? `
+                <div class="prayer-box">
+                  <h4>Oração final</h4>
+                  <p>${escapeHtml(chapter.prayer)}</p>
+                </div>
+              ` : ""}
+
+              ${safeArray(chapter.questions).length ? `
+                <div class="questions-box">
+                  <h4>Perguntas para revisão</h4>
+                  <div class="questions-list">
+                    ${safeArray(chapter.questions).map(item => `
+                      <div class="qa-item">
+                        <div class="q">${escapeHtml(item.question || "")}</div>
+                        <div class="a">${escapeHtml(item.answer || "")}</div>
+                      </div>
+                    `).join("")}
+                  </div>
+                </div>
+              ` : ""}
+            </div>
+
+            <div class="page-footer">
+              <span>${escapeHtml(doc.documentTitle || "VERBO IA")}</span>
+              <span>Capítulo ${chapter.number || idx + 1}</span>
+            </div>
+          </article>
+        `);
+      });
+
+      pages.push(`
+        <article class="print-page back-page">
+          <div class="page-inner">
+            <div>
+              <div class="section-tag" style="background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.15);">Encerramento</div>
+              <h2>Conclusão</h2>
+              <div class="closing-box">
+                <p>${escapeHtml(doc.closingText || "Que este material sirva para edificação, crescimento espiritual, ensino bíblico e fortalecimento da fé.")}</p>
+              </div>
+            </div>
+
+            <div>
+              <div style="margin-bottom:10px; font-weight:800; font-size:20px;">Ficha do material</div>
+              <p>
+                <strong>Título:</strong> ${escapeHtml(doc.documentTitle || "")}\n
+                <strong>Tipo:</strong> ${escapeHtml(doc.documentTypeLabel || "")}\n
+                <strong>Autor:</strong> ${escapeHtml(doc.author || "")}\n
+                <strong>Ministério:</strong> ${escapeHtml(doc.ministry || "")}\n
+                <strong>Público-alvo:</strong> ${escapeHtml(doc.audience || "")}
+              </p>
+            </div>
+          </div>
+
+          <div class="page-footer" style="background:rgba(255,255,255,.08); color:#fff; border-top-color:rgba(255,255,255,.12);">
+            <span>VERBO IA</span>
+            <span>Fim do material</span>
+          </div>
+        </article>
+      `);
+
+      return `<div class="book-shell">${pages.join("")}</div>`;
     }
 
-    async function gerarUnico(dados) {
-      ultimoDados = dados;
-      mostrarStatus("Gerando material profundo com Verbo IA...", "ok");
-      atualizarBarra(15);
-      exibirTextoPuro("Gerando material profundo com Verbo IA...");
+    async function gerarMaterial() {
+      const data = getFormData();
 
-      const resposta = await chamarServidor(criarPromptUnico(dados));
-      materialMarkdown = resposta.texto;
-      renderizarResultado(materialMarkdown, dados);
-      atualizarBarra(100);
-      mostrarStatus("Material gerado com sucesso usando: " + resposta.modelo, "ok");
-    }
-
-    window.gerarMaterialComGemini = async function () {
-      const dados = dadosBase();
-      const botao = document.getElementById("btnGerar");
-
-      if (!dados.titulo && !dados.tema) {
-        alert("Preencha pelo menos o título ou o tema.");
+      if (!data.titulo) {
+        setStatus("Preencha o título do material.", "error");
         return;
       }
 
-      botao.disabled = true;
-      botao.innerText = "Gerando...";
-      atualizarBarra(0);
-      ultimoDocumentoHTML = "";
-      materialMarkdown = "";
-
-      try {
-        if (tipoUsaPartes(dados.tipo, dados.quantidade)) {
-          await gerarPorPartes(dados);
-        } else {
-          await gerarUnico(dados);
-        }
-      } catch (erro) {
-        exibirTextoPuro(
-          "Erro ao gerar material:\\n\\n" +
-          erro.message +
-          "\\n\\nVerifique:\\n" +
-          "1. Se a variável GEMINI_API_KEY está configurada na Vercel.\\n" +
-          "2. Se você fez novo deploy depois de alterar o código.\\n" +
-          "3. Se a chave do Gemini está ativa.\\n" +
-          "4. Se o material pedido é muito grande, tente gerar em menos partes por vez."
-        );
-        mostrarStatus("Erro ao gerar. Veja a mensagem no painel.", "erro");
-        atualizarBarra(0);
-      } finally {
-        botao.disabled = false;
-        botao.innerText = "Gerar Material com Verbo IA";
-      }
-    };
-
-    window.mostrarPrompt = function () {
-      const dados = dadosBase();
-      atualizarBarra(0);
-
-      if (tipoUsaPartes(dados.tipo, dados.quantidade)) {
-        exibirTextoPuro(
-          "Este material será gerado em modo expandido por partes.\\n\\n" +
-          "PROMPT DE ABERTURA:\\n\\n" +
-          criarPromptAbertura(dados) +
-          "\\n\\nPROMPT DA PRIMEIRA PARTE:\\n\\n" +
-          criarPromptParte(dados, 1)
-        );
-      } else {
-        exibirTextoPuro(criarPromptUnico(dados));
+      if (!data.tema) {
+        setStatus("Preencha o tema principal do material.", "error");
+        return;
       }
 
-      mostrarStatus("Prompt exibido.", "ok");
-    };
+      btnGerar.disabled = true;
+      btnGerar.textContent = "Gerando material...";
+      setStatus("Consultando o VERBO IA. Aguarde, isso pode levar um pouco mais em materiais grandes.", "info");
 
-    window.copiarResultado = async function () {
-      const texto = materialMarkdown || document.getElementById("resultado").innerText;
-
-      try {
-        await navigator.clipboard.writeText(texto);
-        mostrarStatus("Texto copiado com sucesso.", "ok");
-      } catch (erro) {
-        mostrarStatus("Não foi possível copiar automaticamente.", "erro");
-      }
-    };
-
-    window.limparTudo = function () {
-      ["titulo", "tema", "textoBase", "autor", "orientacoes"].forEach(function(id) {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-      });
-
-      document.getElementById("quantidade").value = "1";
-      document.getElementById("perguntas").value = "5";
-      document.getElementById("profundidade").value = "muito_expandido";
-      document.getElementById("gerarCapa").value = "sim";
-      document.getElementById("modoVisual").value = "colorido";
-      document.getElementById("editora").value = "CPID - Casa Publicadora da Igreja de Deus";
-
-      materialMarkdown = "";
-      ultimoDocumentoHTML = "";
-      ultimoDados = null;
-      atualizarBarra(0);
-
-      document.getElementById("resultado").innerHTML = `
-        <div class="placeholder">
-          O resultado aparecerá aqui.<br>
-          Preencha os campos e clique em <strong>“Gerar Material com Verbo IA”</strong>.
+      viewer.innerHTML = `
+        <div class="empty">
+          <div>
+            <h3 style="margin:0 0 8px;color:#5b3a24;">Gerando material...</h3>
+            <p style="margin:0; line-height:1.8;">
+              O VERBO IA está organizando o conteúdo, estruturando a capa, o sumário e os capítulos.
+            </p>
+          </div>
         </div>
       `;
 
-      mostrarStatus("Campos limpos.", "ok");
-    };
+      pillTipo.textContent = "Tipo: " + tipoBonito(data.tipo);
+      pillModelo.textContent = "Modelo: aguardando...";
+
+      try {
+        const response = await fetch('/api/gerar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.ok) {
+          throw new Error(result.error || "Não foi possível gerar o material.");
+        }
+
+        ultimoDocumento = result.document;
+        ultimoHtmlGerado = renderDocument(result.document, data);
+
+        viewer.innerHTML = ultimoHtmlGerado;
+        pillModelo.textContent = "Modelo: " + (result.modelUsed || "-");
+        setStatus("Material gerado com sucesso.", "ok");
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        console.error(err);
+        setStatus("Erro: " + err.message, "error");
+        viewer.innerHTML = `
+          <div class="empty">
+            <div>
+              <h3 style="margin:0 0 8px;color:#9f3f35;">Erro ao gerar material</h3>
+              <p style="margin:0; line-height:1.8;">
+                ${escapeHtml(err.message)}
+              </p>
+              <p class="legend">
+                Se estiver na Vercel, confira se a variável <strong>GEMINI_API_KEY</strong> está criada corretamente.
+              </p>
+            </div>
+          </div>
+        `;
+      } finally {
+        btnGerar.disabled = false;
+        btnGerar.textContent = "Gerar Material com VERBO IA";
+      }
+    }
+
+    btnGerar.addEventListener('click', gerarMaterial);
+
+    btnImprimir.addEventListener('click', () => {
+      if (!ultimoHtmlGerado) {
+        setStatus("Gere um material primeiro para imprimir ou salvar em PDF.", "error");
+        return;
+      }
+      window.print();
+    });
+
+    btnTopo.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   </script>
 </body>
 </html>
