@@ -2,6 +2,9 @@
   "functions": {
     "api/gerar.js": {
       "maxDuration": 60
+    },
+    "api/imagem.js": {
+      "maxDuration": 60
     }
   }
 }
