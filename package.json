@@ -1,10 +1,5 @@
 {
-  "name": "gerador-cpid-gemini",
+  "name": "verbo-ia",
   "version": "1.0.0",
-  "description": "Gerador CPID de materiais bíblicos com Gemini em modo seguro na Vercel",
-  "type": "module",
-  "scripts": {
-    "start": "vercel dev"
-  },
-  "dependencies": {}
+  "private": true
 }
