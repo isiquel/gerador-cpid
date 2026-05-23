@@ -148,6 +148,27 @@
       margin-bottom: 12px;
     }
 
+    .prompt-box {
+      background: #fff9f0;
+      border: 1px solid #ead8c4;
+      border-radius: 18px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .prompt-box h3 {
+      margin: 0 0 8px;
+      color: var(--marrom);
+      font-size: 18px;
+    }
+
+    .prompt-box p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
     button {
       border: none;
       border-radius: 13px;
@@ -183,6 +204,12 @@
     .btn-cinza {
       background: #eee;
       color: #333;
+    }
+
+    .btn-alerta {
+      background: #fff1d6;
+      color: #7a4f2f;
+      border: 1px solid #e4c58f;
     }
 
     .botoes {
@@ -234,6 +261,23 @@
       border-radius: 18px;
       padding: 22px;
       overflow: auto;
+    }
+
+    #resultado[contenteditable="true"] {
+      outline: 4px solid rgba(199,155,88,0.25);
+      background: #fffaf2;
+    }
+
+    .modo-edicao {
+      background: #fff8e8;
+      border: 1px solid #e4c58f;
+      color: #7a4f2f;
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      line-height: 1.5;
+      display: none;
     }
 
     .placeholder {
@@ -476,7 +520,8 @@
     @media print {
       header,
       .painel,
-      .card-head {
+      .card-head,
+      .modo-edicao {
         display: none !important;
       }
 
@@ -520,7 +565,19 @@
 
       <div class="card-body">
         <div class="aviso">
-          PDF melhorado: capa em página própria e conteúdo fluindo melhor, com menos espaços vazios.
+          Agora você pode gerar um prompt automático pelo tema e também editar o material antes de salvar em PDF.
+        </div>
+
+        <div class="prompt-box">
+          <h3>Gerar prompt automático</h3>
+          <p>Digite somente o tema. A IA preencherá título, subtítulo, tema principal, textos bíblicos, público-alvo e tom.</p>
+
+          <label for="promptTema">Crie um prompt sobre:</label>
+          <input id="promptTema" type="text" autocomplete="off" placeholder="Ex: arrebatamento da igreja, família restaurada, missões, oração..." />
+
+          <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">
+            Gerar prompt automático
+          </button>
         </div>
 
         <label for="materialType">Tipo de material</label>
@@ -617,6 +674,11 @@
         </div>
 
         <div class="botoes">
+          <button class="btn-alerta" id="btnEditar" type="button" onclick="ativarEdicao()">Editar material</button>
+          <button class="btn-secundario" id="btnFinalizarEdicao" type="button" onclick="finalizarEdicao()" disabled>Finalizar edição</button>
+        </div>
+
+        <div class="botoes">
           <button class="btn-secundario" type="button" onclick="preencherTeste()">Preencher teste</button>
           <button class="btn-secundario" type="button" onclick="copiarTexto()">Copiar texto</button>
         </div>
@@ -638,6 +700,10 @@
       </div>
 
       <div class="card-body">
+        <div class="modo-edicao" id="modoEdicao">
+          Modo edição ativado. Você pode clicar no texto do material, corrigir, apagar partes e ajustar antes de salvar em PDF.
+        </div>
+
         <div id="resultado">
           <div class="placeholder">
             <div>
@@ -652,6 +718,7 @@
 
   <script>
     let materialAtual = null;
+    let modoEdicaoAtivo = false;
 
     function el(id) {
       return document.getElementById(id);
@@ -770,6 +837,57 @@
       };
     }
 
+    async function gerarPromptAutomatico() {
+      const assunto = valor("promptTema");
+      const btn = el("btnPrompt");
+
+      if (!assunto) {
+        alert("Digite um tema. Exemplo: arrebatamento da igreja.");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = "Criando prompt...";
+      setStatus("A IA está criando um prompt profundo e preenchendo os campos...", "");
+
+      try {
+        const resposta = await fetch("/api/prompt", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            assunto,
+            materialType: tipoAtual()
+          })
+        });
+
+        const json = await resposta.json();
+
+        if (!resposta.ok || !json.ok) {
+          throw new Error(json.error || "Erro ao criar prompt automático.");
+        }
+
+        const d = json.promptData || {};
+
+        el("title").value = d.title || "";
+        el("subtitle").value = d.subtitle || "";
+        el("theme").value = d.theme || "";
+        el("biblicalBase").value = d.biblicalBase || "";
+        el("targetAudience").value = d.targetAudience || "";
+        el("tone").value = d.tone || "";
+
+        setStatus("Prompt automático criado e campos preenchidos. Agora é só conferir e clicar em Gerar material.", "ok");
+
+      } catch (error) {
+        console.error(error);
+        setStatus("Erro ao criar prompt automático: " + escapeHtml(error.message), "erro");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Gerar prompt automático";
+      }
+    }
+
     async function gerarMaterial() {
       const btn = el("btnGerar");
       const dados = dadosFormulario();
@@ -778,6 +896,8 @@
         alert("Preencha o título.");
         return;
       }
+
+      finalizarEdicao();
 
       btn.disabled = true;
       btn.innerText = "Gerando...";
@@ -812,7 +932,7 @@
         setBarra(90);
         renderizarMaterial(materialAtual);
         setBarra(100);
-        setStatus("Material gerado com sucesso.", "ok");
+        setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
 
       } catch (error) {
         console.error(error);
@@ -829,6 +949,36 @@
         btn.disabled = false;
         btn.innerText = "Gerar material";
       }
+    }
+
+    function ativarEdicao() {
+      const resultado = el("resultado");
+
+      if (!materialAtual || resultado.innerText.includes("Seu material aparecerá aqui")) {
+        alert("Gere um material antes de editar.");
+        return;
+      }
+
+      resultado.setAttribute("contenteditable", "true");
+      resultado.focus();
+
+      modoEdicaoAtivo = true;
+      el("modoEdicao").style.display = "block";
+      el("btnEditar").disabled = true;
+      el("btnFinalizarEdicao").disabled = false;
+
+      setStatus("Modo edição ativado. Clique no texto do material e edite diretamente antes de salvar o PDF.", "ok");
+    }
+
+    function finalizarEdicao() {
+      const resultado = el("resultado");
+
+      resultado.removeAttribute("contenteditable");
+      modoEdicaoAtivo = false;
+
+      el("modoEdicao").style.display = "none";
+      el("btnEditar").disabled = false;
+      el("btnFinalizarEdicao").disabled = true;
     }
 
     function renderizarMaterial(material) {
@@ -1171,6 +1321,10 @@
           color: #222;
         }
 
+        .modo-edicao {
+          display: none !important;
+        }
+
         .doc {
           display: block;
           width: 100%;
@@ -1392,6 +1546,8 @@
     }
 
     function salvarPDF() {
+      finalizarEdicao();
+
       const conteudo = el("resultado").innerHTML;
 
       if (!materialAtual || !conteudo.trim() || conteudo.includes("Seu material aparecerá aqui")) {
@@ -1430,11 +1586,12 @@
       `);
       janela.document.close();
 
-      setStatus("Abrindo uma página limpa para salvar em PDF. O conteúdo agora deve ocupar melhor as páginas.", "ok");
+      setStatus("Abrindo uma página limpa para salvar em PDF.", "ok");
     }
 
     function limparCamposFormulario() {
       el("materialType").value = "ebook";
+      el("promptTema").value = "";
       el("title").value = "";
       el("subtitle").value = "";
       el("theme").value = "";
@@ -1459,6 +1616,8 @@
     }
 
     function limparTudo() {
+      finalizarEdicao();
+
       materialAtual = null;
       limparCamposFormulario();
       setBarra(0);
