@@ -35,7 +35,7 @@ module.exports = async function handler(req, res) {
     if (!material) {
       return res.status(500).json({
         ok: false,
-        error: "A IA não retornou um JSON válido. Tente novamente."
+        error: "A IA respondeu, mas não entregou um JSON válido. Tente gerar novamente com o mesmo tema."
       });
     }
 
@@ -155,6 +155,8 @@ REGRAS OBRIGATÓRIAS:
 7. Não monte HTML.
 8. Use português do Brasil.
 9. O conteúdo precisa ser bíblico, profundo, pastoral, claro e aplicável.
+10. Não use aspas duplas dentro dos textos, a não ser que estejam escapadas corretamente para JSON.
+11. Evite caracteres que quebrem JSON.
 `.trim();
 }
 
@@ -436,7 +438,7 @@ function promptRevista(form) {
 Você é um comentarista de revista bíblica, pastor, teólogo e professor de Escola Bíblica Dominical.
 
 Crie uma REVISTA MENSAL DE ENSINO BÍBLICO em formato de EBD.
-A revista deve seguir linguagem bíblica, pastoral, didática, doutrinária, profunda e organizada.
+A revista deve ser profunda, mas precisa caber em uma resposta JSON válida.
 
 VERSÃO SOLICITADA:
 ${versaoTexto}
@@ -450,39 +452,28 @@ ${regrasJson()}
 REGRAS ESPECÍFICAS DA REVISTA:
 1. A revista é MENSAL, não trimestral.
 2. Gere exatamente 4 lições, uma para cada semana do mês.
-3. Cada lição deve ser completa, profunda e didática.
-4. Cada lição deve ter exatamente 3 tópicos principais.
-5. Cada tópico principal deve ter exatamente 3 subtópicos.
-6. Cada subtópico deve ser bem explicado, com profundidade bíblica, aplicação prática e referência bíblica relacionada.
-7. A revista do aluno também deve ser completa, explicativa e profunda. Ela não pode ser rasa, resumida ou fraca.
+3. Cada lição deve ter exatamente 3 tópicos principais.
+4. Cada tópico principal deve ter exatamente 3 subtópicos.
+5. Cada subtópico deve ter:
+   - título;
+   - referência bíblica relacionada;
+   - explicação bíblica;
+   - aplicação prática.
+6. A revista do aluno também deve ser completa, explicativa e profunda.
+7. A revista do aluno não pode ser rasa, fraca ou apenas resumida.
 8. A diferença da revista do aluno é que ela NÃO tem gabarito e NÃO tem orientação interna do professor.
-9. A revista do professor tem o mesmo conteúdo do aluno, mas acrescenta respostas, notas didáticas e sugestões de abordagem.
-10. A Leitura Bíblica em Classe nunca pode trazer somente a referência.
-11. A Leitura Bíblica em Classe deve trazer a referência e o texto bíblico completo correspondente, usando como padrão a King James Fiel 1611.
-12. Cada lição deve conter:
-    - Texto Áureo;
-    - Verdade Prática;
-    - Leitura Bíblica em Classe com referência e texto completo;
-    - Objetivos;
-    - Introdução;
-    - 3 tópicos principais;
-    - 3 subtópicos dentro de cada tópico;
-    - Aplicação para a vida;
-    - Conclusão;
-    - Revisando o conteúdo.
-13. Se a versão for PROFESSOR:
-    - inclua perguntas com respostas;
-    - inclua orientações didáticas para o professor;
-    - inclua sugestões de abordagem em sala;
-    - inclua observações pastorais.
-14. Se a versão for ALUNO:
-    - inclua perguntas sem respostas;
-    - inclua espaço para anotações;
-    - não inclua gabarito;
-    - não inclua orientações internas do professor.
-15. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons, igreja e escatologia, siga o pentecostalismo clássico.
-16. Evite conteúdo raso. Cada explicação deve ser expandida, bíblica, pastoral e aplicável.
-17. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+9. A revista do professor tem o mesmo conteúdo do aluno, mas acrescenta respostas, notas didáticas, observações pastorais e sugestões de abordagem.
+10. A Leitura Bíblica em Classe deve trazer referência e texto bíblico.
+11. Para evitar erro de tamanho, escolha leituras bíblicas em classe com no máximo 6 versículos por lição.
+12. A leitura bíblica deve vir no campo biblicalReadingFull.
+13. Use como padrão textual a King James Fiel 1611.
+14. Cada subtópico deve ter entre 80 e 140 palavras.
+15. A introdução de cada lição deve ter entre 120 e 180 palavras.
+16. A conclusão de cada lição deve ter entre 90 e 130 palavras.
+17. Evite textos longos demais em um único campo.
+18. Não escreva comentários fora do JSON.
+19. Antes de publicação oficial, o texto bíblico deve ser revisado conforme a edição autorizada da tradução usada.
+20. Siga uma linha bíblica conservadora e, em temas sobre Espírito Santo, dons, igreja e escatologia, siga o pentecostalismo clássico.
 
 FORMATO JSON:
 {
@@ -616,18 +607,24 @@ async function callGeminiText(apiKey, models, prompt) {
               }
             ],
             generationConfig: {
-              temperature: 0.72,
+              temperature: 0.65,
               topP: 0.9,
-              maxOutputTokens: 50000
+              maxOutputTokens: 30000
             }
           })
         }
       );
 
-      const data = await response.json();
+      const rawText = await response.text();
+      const data = safeJson(rawText);
 
       if (!response.ok) {
-        throw new Error(data?.error?.message || `Erro no modelo ${model}`);
+        const msg = data?.error?.message || rawText || `Erro no modelo ${model}`;
+        throw new Error(msg.slice(0, 800));
+      }
+
+      if (!data) {
+        throw new Error("O modelo respondeu em formato inválido. Tente novamente.");
       }
 
       return { modelUsed: model, data };
@@ -639,6 +636,14 @@ async function callGeminiText(apiKey, models, prompt) {
   }
 
   throw lastError || new Error("Nenhum modelo conseguiu gerar o texto.");
+}
+
+function safeJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    return null;
+  }
 }
 
 function extractText(data) {
