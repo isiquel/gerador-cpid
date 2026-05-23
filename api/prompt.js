@@ -1,9 +1,6 @@
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({
-      ok: false,
-      error: "Método não permitido. Use POST."
-    });
+    return res.status(405).json({ ok: false, error: "Método não permitido. Use POST." });
   }
 
   try {
@@ -17,18 +14,23 @@ module.exports = async function handler(req, res) {
     }
 
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-
     const assunto = String(body.assunto || "").trim();
-    const tipo = String(body.materialType || "sermao").trim();
+    const materialType = String(body.materialType || "sermao").trim();
+    const adminCode = String(body.adminCode || "").trim();
+
+    if (!codigoAdminValido(adminCode)) {
+      return res.status(403).json({
+        ok: false,
+        error: "O Gerador de Prompt Automático é reservado. Digite o código de acesso correto."
+      });
+    }
 
     if (!assunto) {
       return res.status(400).json({
         ok: false,
-        error: "Digite um tema para criar o prompt automático."
+        error: "Digite um assunto para gerar o prompt automático."
       });
     }
-
-    const prompt = montarPrompt({ assunto, tipo });
 
     const models = [
       process.env.GEMINI_TEXT_MODEL_1 || "gemini-3.5-flash",
@@ -38,21 +40,22 @@ module.exports = async function handler(req, res) {
       "gemini-2.0-flash"
     ].filter(Boolean);
 
-    const result = await chamarGemini(apiKey, models, prompt);
-    const text = extrairTexto(result.data);
-    const dados = parseJson(text);
+    const prompt = buildPromptAutomatico(assunto, materialType);
+    const result = await callGeminiText(apiKey, models, prompt);
+    const text = extractText(result.data);
+    const promptData = parseJson(text);
 
-    if (!dados) {
+    if (!promptData) {
       return res.status(500).json({
         ok: false,
-        error: "A IA não retornou um prompt válido. Tente novamente."
+        error: "A IA respondeu, mas não entregou um JSON válido para o prompt automático."
       });
     }
 
     return res.status(200).json({
       ok: true,
       modelUsed: result.modelUsed,
-      promptData: dados
+      promptData
     });
 
   } catch (error) {
@@ -60,55 +63,44 @@ module.exports = async function handler(req, res) {
 
     return res.status(500).json({
       ok: false,
-      error: error.message || "Erro interno ao criar prompt automático."
+      error: error.message || "Erro interno ao gerar prompt automático."
     });
   }
 };
 
-function montarPrompt({ assunto, tipo }) {
+function codigoAdminValido(codigoRecebido) {
+  const codigoCorreto = process.env.Isiquel_Admin || "00";
+  return String(codigoRecebido || "").trim() === String(codigoCorreto).trim();
+}
+
+function buildPromptAutomatico(assunto, materialType) {
   return `
 Você é um assistente pastoral, teológico, bíblico e editorial.
 
-Sua tarefa é criar um prompt profundo para preencher automaticamente uma ferramenta chamada VERBO IA.
+Crie um prompt automático para preencher os campos de um aplicativo chamado VERBO IA.
 
-TEMA PEDIDO PELO USUÁRIO:
+ASSUNTO INFORMADO PELO USUÁRIO:
 ${assunto}
 
-TIPO DE MATERIAL SELECIONADO:
-${tipo}
+TIPO DE MATERIAL:
+${materialType}
 
-REGRAS OBRIGATÓRIAS:
+REGRAS:
 1. Responda somente em JSON válido.
 2. Não use markdown.
 3. Não escreva nada fora do JSON.
-4. Crie um título forte, bíblico e chamativo.
-5. Crie um subtítulo pastoral e profundo.
-6. Crie um tema principal bem completo, expansivo, bíblico, teológico, pastoral e aplicável.
-7. Indique textos bíblicos coerentes com o tema.
-8. Indique público-alvo adequado.
-9. Indique tom do material.
-10. Se o tema envolver doutrina, siga a linha bíblica conservadora e, quando envolver dons, Espírito Santo, igreja e escatologia, siga o pentecostalismo clássico.
-11. Evite sensacionalismo, exageros, misticismo sem base bíblica, triunfalismo vazio e afirmações sem apoio nas Escrituras.
-12. O campo "theme" precisa ser grande, profundo e pronto para gerar um material forte.
-13. O conteúdo deve ser adequado ao tipo escolhido pelo usuário.
-
-SE FOR SERMÃO:
-O tema deve pedir introdução forte, contexto bíblico, explicação do texto, pontos principais, aplicações, conclusão, apelo e oração.
-
-SE FOR CURSO:
-O tema deve pedir aulas organizadas, objetivos, conteúdo expandido, base bíblica, aplicação, atividade e tarefa.
-
-SE FOR REVISTA:
-O tema deve pedir lições com texto áureo, verdade prática, leitura bíblica, objetivos, tópicos, aplicação, conclusão e perguntas com respostas.
-
-SE FOR DEVOCIONAL:
-O tema deve pedir reflexões curtas, profundas, práticas, com versículo, aplicação, pergunta e oração.
-
-SE FOR LIVRO:
-O tema deve pedir capítulos com linguagem literária, reflexão bíblica, profundidade pastoral e aplicação.
-
-SE FOR E-BOOK:
-O tema deve pedir capítulos objetivos, modernos, práticos, profundos, com perguntas e oração.
+4. Use português do Brasil.
+5. Crie um título forte, bíblico e pastoral.
+6. Crie subtítulo coerente.
+7. Crie tema principal bem explicado.
+8. Crie base bíblica com várias referências.
+9. Crie público-alvo adequado.
+10. Crie tom do material.
+11. Seja bíblico, pastoral, profundo e seguro.
+12. Para revista, pense em revista mensal de EBD.
+13. Para sermão, pense em pregação de púlpito.
+14. Para curso, pense em aulas organizadas.
+15. Para e-book e livro, pense em material editorial cristão.
 
 FORMATO JSON:
 {
@@ -122,7 +114,7 @@ FORMATO JSON:
 `.trim();
 }
 
-async function chamarGemini(apiKey, models, prompt) {
+async function callGeminiText(apiKey, models, prompt) {
   let lastError = null;
 
   for (const model of models) {
@@ -131,38 +123,31 @@ async function chamarGemini(apiKey, models, prompt) {
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  {
-                    text: prompt
-                  }
-                ]
-              }
-            ],
+            contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
-              temperature: 0.78,
-              topP: 0.9,
-              maxOutputTokens: 7000
+              temperature: 0.55,
+              topP: 0.88,
+              maxOutputTokens: 4000
             }
           })
         }
       );
 
-      const data = await response.json();
+      const rawText = await response.text();
+      const data = safeJson(rawText);
 
       if (!response.ok) {
-        throw new Error(data?.error?.message || `Erro no modelo ${model}`);
+        const msg = data?.error?.message || rawText || `Erro no modelo ${model}`;
+        throw new Error(msg.slice(0, 900));
       }
 
-      return {
-        modelUsed: model,
-        data
-      };
+      if (!data) {
+        throw new Error("O modelo respondeu em formato inválido.");
+      }
+
+      return { modelUsed: model, data };
 
     } catch (error) {
       lastError = error;
@@ -170,10 +155,18 @@ async function chamarGemini(apiKey, models, prompt) {
     }
   }
 
-  throw lastError || new Error("Nenhum modelo conseguiu criar o prompt automático.");
+  throw lastError || new Error("Nenhum modelo conseguiu gerar o prompt automático.");
 }
 
-function extrairTexto(data) {
+function safeJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch (_) {
+    return null;
+  }
+}
+
+function extractText(data) {
   const parts = data?.candidates?.[0]?.content?.parts || [];
   return parts.map((part) => part.text || "").join("\n").trim();
 }
