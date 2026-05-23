@@ -6,9 +6,6 @@
 
   <title>Verbo IA - Gerador de Materiais Bíblicos</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
-
   <style>
     :root {
       --marrom: #4b2e1e;
@@ -29,7 +26,7 @@
 
     @page {
       size: A4;
-      margin: 12mm;
+      margin: 10mm;
     }
 
     body {
@@ -152,7 +149,7 @@
       font-weight: bold;
       cursor: pointer;
       margin-top: 12px;
-      transition: transform 0.15s ease, opacity 0.15s ease, background 0.2s ease;
+      transition: 0.15s ease;
     }
 
     button:hover {
@@ -254,17 +251,19 @@
 
     .documento {
       width: 100%;
-      max-width: 960px;
+      max-width: 980px;
       margin: 0 auto;
     }
 
     .documento.modo-colorido {
-      --doc-primaria: #6f3f26;
+      --doc-primaria: #5b2f1c;
       --doc-secundaria: #c4974f;
       --doc-terciaria: #355c7d;
+      --doc-quarta: #7b3f61;
       --doc-caixa: #fff7eb;
+      --doc-caixa2: #eef6ff;
       --doc-borda: #e8d2ad;
-      --doc-titulo: #5b2f1c;
+      --doc-titulo: #4b2e1e;
       --doc-texto: #2b2b2b;
       --doc-meta: #6b5b4a;
       --doc-pagina-bg: #ffffff;
@@ -275,7 +274,9 @@
       --doc-primaria: #1f1f1f;
       --doc-secundaria: #666666;
       --doc-terciaria: #444444;
+      --doc-quarta: #333333;
       --doc-caixa: #f5f5f5;
+      --doc-caixa2: #f2f2f2;
       --doc-borda: #d7d7d7;
       --doc-titulo: #1d1d1d;
       --doc-texto: #222222;
@@ -286,13 +287,38 @@
 
     .pagina {
       position: relative;
-      background: var(--doc-pagina-bg);
+      background:
+        radial-gradient(circle at 96% 4%, rgba(196,151,79,0.10), transparent 18%),
+        radial-gradient(circle at 2% 98%, rgba(53,92,125,0.08), transparent 22%),
+        linear-gradient(180deg, #ffffff 0%, #fffdf8 100%);
       border: 1px solid var(--doc-borda);
       border-radius: 22px;
       box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-      padding: 42px;
-      margin-bottom: 24px;
+      padding: 46px;
+      margin-bottom: 26px;
       overflow: hidden;
+    }
+
+    .pagina::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 12px;
+      background: linear-gradient(90deg, var(--doc-primaria), var(--doc-secundaria), var(--doc-terciaria));
+    }
+
+    .pagina::after {
+      content: "";
+      position: absolute;
+      right: -70px;
+      bottom: -70px;
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: rgba(196, 151, 79, 0.08);
+      pointer-events: none;
     }
 
     .capa {
@@ -301,28 +327,47 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.35), transparent 35%),
-        linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)),
-        linear-gradient(135deg, var(--doc-primaria), var(--doc-secundaria));
       color: white;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(255,255,255,0.24), transparent 18%),
+        radial-gradient(circle at 90% 20%, rgba(255,255,255,0.18), transparent 15%),
+        radial-gradient(circle at 20% 90%, rgba(255,255,255,0.16), transparent 18%),
+        linear-gradient(135deg, var(--doc-primaria), var(--doc-secundaria) 55%, var(--doc-terciaria));
+    }
+
+    .capa::before {
+      height: 100%;
+      background:
+        linear-gradient(120deg, rgba(255,255,255,0.08), transparent 32%),
+        linear-gradient(300deg, rgba(0,0,0,0.14), transparent 36%);
+    }
+
+    .capa::after {
+      content: "";
+      position: absolute;
+      inset: 34px;
+      border: 2px solid rgba(255,255,255,0.22);
+      border-radius: 28px;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
     }
 
     .miolo-capa {
       position: relative;
       z-index: 3;
-      max-width: 720px;
-      padding: 42px 34px;
-      border-radius: 26px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.22);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+      max-width: 735px;
+      padding: 48px 38px;
+      border-radius: 28px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.28);
+      box-shadow: 0 14px 38px rgba(0,0,0,0.18);
     }
 
     .marca-capa {
       font-size: 18px;
       font-weight: bold;
-      letter-spacing: 1px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
       opacity: 0.95;
     }
@@ -331,20 +376,21 @@
       display: inline-block;
       margin-top: 18px;
       background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.30);
+      border: 1px solid rgba(255,255,255,0.32);
       border-radius: 999px;
-      padding: 8px 16px;
+      padding: 8px 18px;
       font-size: 14px;
       font-weight: bold;
       letter-spacing: 0.3px;
     }
 
     .titulo-capa {
-      font-size: 42px;
-      font-weight: 800;
-      line-height: 1.2;
-      margin: 22px 0 14px;
+      font-size: 43px;
+      font-weight: 900;
+      line-height: 1.16;
+      margin: 24px 0 16px;
       text-transform: uppercase;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.18);
     }
 
     .tema-capa {
@@ -352,6 +398,7 @@
       line-height: 1.5;
       opacity: 0.98;
       margin-bottom: 18px;
+      font-weight: 600;
     }
 
     .meta-capa {
@@ -367,8 +414,8 @@
       display: inline-block;
       padding: 12px 20px;
       border-radius: 16px;
-      background: rgba(255,255,255,0.16);
-      border: 1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
       font-size: 14px;
       font-weight: bold;
     }
@@ -384,10 +431,34 @@
       opacity: 0.72;
     }
 
+    .ornamento {
+      position: absolute;
+      z-index: 2;
+      opacity: 0.16;
+      color: white;
+      font-size: 130px;
+      font-weight: bold;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .ornamento.um {
+      top: 65px;
+      left: 55px;
+    }
+
+    .ornamento.dois {
+      bottom: 70px;
+      right: 70px;
+      transform: rotate(-12deg);
+    }
+
     .pagina-topo {
+      position: relative;
       border-bottom: 2px solid var(--doc-borda);
       padding-bottom: 18px;
       margin-bottom: 25px;
+      z-index: 2;
     }
 
     .pagina-topo h1 {
@@ -455,8 +526,10 @@
     }
 
     .conteudo-html {
+      position: relative;
+      z-index: 2;
       color: var(--doc-texto);
-      line-height: 1.78;
+      line-height: 1.82;
       font-size: 17px;
     }
 
@@ -479,17 +552,13 @@
     }
 
     .conteudo-html h2 {
-      font-size: 26px;
-      margin-top: 32px;
+      font-size: 25px;
+      margin-top: 30px;
       margin-bottom: 16px;
       border-left: 7px solid var(--doc-secundaria);
-      background: linear-gradient(90deg, rgba(196,151,79,0.10), transparent);
-      padding: 11px 14px;
-      border-radius: 12px;
-    }
-
-    .documento.modo-pb .conteudo-html h2 {
-      background: linear-gradient(90deg, rgba(0,0,0,0.05), transparent);
+      background: linear-gradient(90deg, rgba(196,151,79,0.16), rgba(255,255,255,0));
+      padding: 12px 15px;
+      border-radius: 13px;
     }
 
     .conteudo-html h3 {
@@ -515,16 +584,73 @@
       margin-bottom: 8px;
     }
 
-    .conteudo-html blockquote {
-      margin: 18px 0;
-      padding: 16px 18px;
-      border-left: 6px solid var(--doc-secundaria);
-      background: var(--doc-caixa);
-      border-radius: 12px;
+    .conteudo-html blockquote,
+    .destaque-e-book {
+      margin: 20px 0;
+      padding: 18px 20px;
+      border-left: 7px solid var(--doc-secundaria);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(196,151,79,0.13), transparent 30%),
+        var(--doc-caixa);
+      border-radius: 16px;
       color: var(--doc-texto);
+      font-weight: 600;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    }
+
+    .pagina-ebook {
+      background:
+        radial-gradient(circle at 92% 8%, rgba(196,151,79,0.15), transparent 15%),
+        radial-gradient(circle at 5% 95%, rgba(53,92,125,0.10), transparent 18%),
+        linear-gradient(180deg, #ffffff 0%, #fffaf0 100%);
+    }
+
+    .pagina-ebook .capitulo-topo {
+      text-align: center;
+      padding: 18px 12px 24px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--doc-borda);
+    }
+
+    .capitulo-numero {
+      display: inline-block;
+      background: var(--doc-selo);
+      color: white;
+      padding: 9px 18px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .mini-ilustracao {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 14px 0 2px;
+    }
+
+    .mini-ilustracao span {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--doc-secundaria);
+      opacity: 0.8;
+    }
+
+    .mini-ilustracao span:nth-child(2) {
+      background: var(--doc-terciaria);
+    }
+
+    .mini-ilustracao span:nth-child(3) {
+      background: var(--doc-quarta);
     }
 
     .caixa-observacao {
+      position: relative;
+      z-index: 2;
       margin-top: 24px;
       background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.95));
       border: 1px solid var(--doc-borda);
@@ -537,6 +663,8 @@
     }
 
     .rodape-doc {
+      position: relative;
+      z-index: 2;
       margin-top: 26px;
       padding-top: 16px;
       border-top: 1px solid var(--doc-borda);
@@ -551,6 +679,17 @@
       color: #6b5a4d;
       padding: 20px;
       font-size: 14px;
+    }
+
+    pre.prompt-pre {
+      white-space: pre-wrap;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      background: #fff;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid #eee;
+      color: #222;
     }
 
     @media (max-width: 1080px) {
@@ -576,7 +715,7 @@
       }
 
       .pagina {
-        padding: 24px 20px 30px 20px;
+        padding: 28px 20px 32px 20px;
       }
 
       #resultado {
@@ -623,41 +762,30 @@
 
       .pagina {
         box-shadow: none;
-        border: none;
-        border-radius: 0;
         margin: 0 0 10mm 0;
-        padding: 0;
-        background: white !important;
-      }
-
-      .capa {
-        min-height: auto;
-        padding: 0;
-        page-break-after: always;
-        background: white !important;
-        color: black !important;
-      }
-
-      .miolo-capa {
-        background: white !important;
-        border: 2px solid #000;
-        box-shadow: none;
-        color: black !important;
-      }
-
-      .decor-balao {
-        opacity: 0.15;
+        border-radius: 0;
+        page-break-inside: avoid;
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
       }
 
+      .capa {
+        page-break-after: always;
+        min-height: 265mm;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .decor-balao,
       .conteudo-html,
       .conteudo-html p,
       .conteudo-html li,
       .conteudo-html h1,
       .conteudo-html h2,
       .conteudo-html h3,
-      .conteudo-html h4 {
+      .conteudo-html h4,
+      .pagina,
+      .capa {
         print-color-adjust: exact;
         -webkit-print-color-adjust: exact;
       }
@@ -676,7 +804,7 @@
       <h2>Configurar Material</h2>
 
       <div class="aviso">
-        Modo avançado ativado: gere materiais com capa automática, e-book colorido, layout editorial e pronto para impressão ou PDF.
+        Modo e-book melhorado: agora o conteúdo inteiro é diagramado em páginas coloridas, não somente a capa.
       </div>
 
       <label for="tipo">Tipo de material</label>
@@ -775,7 +903,7 @@
       <input id="editora" type="text" value="CPID - Casa Publicadora da Igreja de Deus" />
 
       <label for="orientacoes">Orientações adicionais</label>
-      <textarea id="orientacoes" placeholder="Ex: quero um e-book colorido, decorativo, com linguagem profunda, pronto para PDF, para enviar aos irmãos ou vender."></textarea>
+      <textarea id="orientacoes" placeholder="Ex: quero um e-book colorido, decorativo, com linguagem profunda, pronto para PDF, com capítulos bem desenvolvidos."></textarea>
 
       <button class="btn-principal" id="btnGerar" type="button" onclick="window.gerarMaterialComGemini()">
         Gerar Material com Verbo IA
@@ -820,13 +948,13 @@
     let ultimoDados = null;
 
     window.onload = function () {
-      mostrarStatus("Verbo IA carregado em modo avançado.", "ok");
+      mostrarStatus("Verbo IA carregado em modo e-book melhorado.", "ok");
     };
 
     window.onerror = function (mensagem, arquivo, linha, coluna) {
       const painel = document.getElementById("resultado");
-      painel.innerHTML = "<pre style='white-space:pre-wrap;color:#b3261e;'>Erro no JavaScript:\\n\\n" +
-        String(mensagem) + "\\n\\nLinha: " + linha + "\\nColuna: " + coluna + "</pre>";
+      painel.innerHTML = "<pre class='prompt-pre' style='color:#b3261e;'>Erro no JavaScript:\\n\\n" +
+        escaparHtml(String(mensagem)) + "\\n\\nLinha: " + linha + "\\nColuna: " + coluna + "</pre>";
       mostrarStatus("Erro no código. Veja o painel de resultado.", "erro");
       return false;
     };
@@ -932,7 +1060,7 @@ NÍVEL DE PROFUNDIDADE:
 NÍVEL DE PROFUNDIDADE:
 - Conteúdo MUITO EXPANDIDO, profundo e completo.
 - Desenvolva cada parte com riqueza de detalhes.
-- Não entregue capítulos ou aulas com poucas linhas.
+- Não entregue capítulos, aulas ou lições com poucas linhas.
 - Cada unidade deve parecer material real de livro, e-book, apostila, curso ou revista.
 - É melhor demorar mais e entregar melhor do que responder raso.
 - Traga base bíblica, explicação teológica, aplicação pastoral, exemplos práticos e conclusão.
@@ -984,6 +1112,7 @@ Regras específicas:
 - Não escreva poucas linhas.
 - Não gere outros capítulos agora.
 - Escreva como material pronto para PDF, venda, envio ou distribuição.
+- Crie frases de impacto, aplicações práticas e conteúdo edificante.
 `;
       }
 
@@ -1105,6 +1234,7 @@ REGRAS ESPECIAIS PARA E-BOOK:
 - Inclua uma sugestão de subtítulo.
 - Inclua uma página "Como usar este e-book".
 - Inclua um sumário atrativo, com títulos fortes para todos os capítulos.
+- Use linguagem elegante, pastoral, espiritual e clara.
 `;
       }
 
@@ -1333,13 +1463,97 @@ Agora gere o material completo e profundo.
         .replace(/'/g, "&#039;");
     }
 
+    function markdownParaHtml(markdown) {
+      const linhas = String(markdown || "").split(/\r?\n/);
+      let html = "";
+      let emLista = false;
+
+      function fecharLista() {
+        if (emLista) {
+          html += "</ul>";
+          emLista = false;
+        }
+      }
+
+      for (let linha of linhas) {
+        let t = linha.trim();
+
+        if (!t) {
+          fecharLista();
+          continue;
+        }
+
+        if (t === "---") {
+          fecharLista();
+          html += "<div class='destaque-e-book'>✦ Nova seção do material</div>";
+          continue;
+        }
+
+        if (t.startsWith("# ")) {
+          fecharLista();
+          html += "<h1>" + formatarInline(t.replace(/^# /, "")) + "</h1>";
+          continue;
+        }
+
+        if (t.startsWith("## ")) {
+          fecharLista();
+          html += "<h2>" + formatarInline(t.replace(/^## /, "")) + "</h2>";
+          continue;
+        }
+
+        if (t.startsWith("### ")) {
+          fecharLista();
+          html += "<h3>" + formatarInline(t.replace(/^### /, "")) + "</h3>";
+          continue;
+        }
+
+        if (t.startsWith("#### ")) {
+          fecharLista();
+          html += "<h4>" + formatarInline(t.replace(/^#### /, "")) + "</h4>";
+          continue;
+        }
+
+        if (t.startsWith(">")) {
+          fecharLista();
+          html += "<blockquote>" + formatarInline(t.replace(/^>\s?/, "")) + "</blockquote>";
+          continue;
+        }
+
+        if (/^[-*]\s+/.test(t)) {
+          if (!emLista) {
+            html += "<ul>";
+            emLista = true;
+          }
+          html += "<li>" + formatarInline(t.replace(/^[-*]\s+/, "")) + "</li>";
+          continue;
+        }
+
+        fecharLista();
+        html += "<p>" + formatarInline(t) + "</p>";
+      }
+
+      fecharLista();
+      return html;
+    }
+
+    function formatarInline(texto) {
+      let s = escaparHtml(texto);
+
+      s = s.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      s = s.replace(/\*(.*?)\*/g, "<em>$1</em>");
+      s = s.replace(/`(.*?)`/g, "<code>$1</code>");
+
+      return s;
+    }
+
     function gerarBaloesDecorativos(qtd, modoVisual) {
       const coresColoridas = [
         "rgba(255,255,255,0.18)",
         "rgba(255,240,200,0.18)",
         "rgba(196,151,79,0.20)",
         "rgba(255,255,255,0.12)",
-        "rgba(122,74,48,0.16)"
+        "rgba(53,92,125,0.15)",
+        "rgba(123,63,97,0.16)"
       ];
 
       const coresPb = [
@@ -1367,7 +1581,10 @@ Agora gere o material completo e profundo.
 
       return `
         <section class="pagina capa">
-          ${gerarBaloesDecorativos(30, dados.modoVisual)}
+          ${gerarBaloesDecorativos(34, dados.modoVisual)}
+          <div class="ornamento um">✦</div>
+          <div class="ornamento dois">✧</div>
+
           <div class="miolo-capa">
             <div class="marca-capa">Verbo IA</div>
             <div class="tipo-capa">${escaparHtml(dados.tipo)}</div>
@@ -1382,66 +1599,19 @@ Agora gere o material completo e profundo.
             </div>
 
             <div class="faixa-capa">
-              ${dados.tipo === "E-book cristão" ? "E-book pronto para PDF" : "Material gerado automaticamente"} • ${dados.modoVisual === "pb" ? "Modo preto e branco" : "Modo colorido"}
+              ${dados.tipo === "E-book cristão" ? "E-book cristão pronto para PDF" : "Material gerado automaticamente"} • ${dados.modoVisual === "pb" ? "Modo preto e branco" : "Modo colorido"}
             </div>
           </div>
         </section>
       `;
     }
 
-    function montarDocumentoFormatado(markdown, dados) {
-      let htmlConvertido = "";
-      if (typeof marked !== "undefined") {
-        htmlConvertido = marked.parse(markdown || "");
-      } else {
-        htmlConvertido = "<pre>" + escaparHtml(markdown || "") + "</pre>";
-      }
-
-      const htmlSeguro = (typeof DOMPurify !== "undefined")
-        ? DOMPurify.sanitize(htmlConvertido)
-        : htmlConvertido;
-
-      const classeModo = dados.modoVisual === "pb" ? "modo-pb" : "modo-colorido";
-
-      return `
-        <article class="documento ${classeModo}">
-          ${gerarCapaHTML(dados)}
-
+    function dividirEbookEmPaginas(markdown, dados) {
+      if (dados.tipo !== "E-book cristão") {
+        return `
           <section class="pagina">
-            <div class="pagina-topo">
-              <div style="text-align:center;">
-                <span class="selo-editorial">${dados.tipo === "E-book cristão" ? "E-book cristão diagramado" : "Documento editorial pronto para impressão"}</span>
-              </div>
-
-              <h1>${escaparHtml(dados.titulo)}</h1>
-
-              <div class="sub">
-                ${escaparHtml(dados.tipo)} • ${escaparHtml(dados.tema)}<br>
-                Gerado em ${formatarDataAtual()}
-              </div>
-
-              <div class="ficha">
-                <div class="ficha-item">
-                  <span class="rotulo">Tipo</span>
-                  <span class="valor">${escaparHtml(dados.tipo)}</span>
-                </div>
-                <div class="ficha-item">
-                  <span class="rotulo">Base Bíblica</span>
-                  <span class="valor">${escaparHtml(dados.textoBase)}</span>
-                </div>
-                <div class="ficha-item">
-                  <span class="rotulo">Autor</span>
-                  <span class="valor">${escaparHtml(dados.autor)}</span>
-                </div>
-                <div class="ficha-item">
-                  <span class="rotulo">Público</span>
-                  <span class="valor">${escaparHtml(dados.publico)}</span>
-                </div>
-              </div>
-            </div>
-
             <div class="conteudo-html">
-              ${htmlSeguro}
+              ${markdownParaHtml(markdown)}
             </div>
 
             <div class="caixa-observacao">
@@ -1452,14 +1622,132 @@ Agora gere o material completo e profundo.
               Verbo IA • ${escaparHtml(dados.editora)} • Material organizado automaticamente
             </div>
           </section>
+        `;
+      }
+
+      const texto = String(markdown || "");
+      const partes = texto.split(/(?=^#\s*Capítulo\s+\d+)/gim);
+      let html = "";
+
+      partes.forEach(function(parte, index) {
+        const conteudo = parte.trim();
+        if (!conteudo) return;
+
+        const ehCapitulo = /^#\s*Capítulo\s+\d+/i.test(conteudo);
+        const matchNumero = conteudo.match(/^#\s*Capítulo\s+(\d+)/i);
+        const numero = matchNumero ? matchNumero[1] : "";
+
+        if (ehCapitulo) {
+          html += `
+            <section class="pagina pagina-ebook">
+              <div class="capitulo-topo">
+                <span class="capitulo-numero">Capítulo ${escaparHtml(numero)}</span>
+                <div class="mini-ilustracao">
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="conteudo-html">
+                ${markdownParaHtml(conteudo)}
+              </div>
+
+              <div class="rodape-doc">
+                Verbo IA • ${escaparHtml(dados.titulo)} • Capítulo ${escaparHtml(numero)}
+              </div>
+            </section>
+          `;
+        } else {
+          html += `
+            <section class="pagina pagina-ebook">
+              <div class="pagina-topo">
+                <div style="text-align:center;">
+                  <span class="selo-editorial">Abertura editorial do e-book</span>
+                </div>
+                <h1>${escaparHtml(dados.titulo)}</h1>
+                <div class="sub">
+                  ${escaparHtml(dados.tipo)} • ${escaparHtml(dados.tema)}<br>
+                  Gerado em ${formatarDataAtual()}
+                </div>
+              </div>
+
+              <div class="conteudo-html">
+                ${markdownParaHtml(conteudo)}
+              </div>
+
+              <div class="rodape-doc">
+                Verbo IA • ${escaparHtml(dados.editora)} • Abertura do e-book
+              </div>
+            </section>
+          `;
+        }
+      });
+
+      return html;
+    }
+
+    function montarDocumentoFormatado(markdown, dados) {
+      const classeModo = dados.modoVisual === "pb" ? "modo-pb" : "modo-colorido";
+
+      return `
+        <article class="documento ${classeModo}">
+          ${gerarCapaHTML(dados)}
+
+          ${dados.tipo === "E-book cristão" ? "" : `
+            <section class="pagina">
+              <div class="pagina-topo">
+                <div style="text-align:center;">
+                  <span class="selo-editorial">Documento editorial pronto para impressão</span>
+                </div>
+
+                <h1>${escaparHtml(dados.titulo)}</h1>
+
+                <div class="sub">
+                  ${escaparHtml(dados.tipo)} • ${escaparHtml(dados.tema)}<br>
+                  Gerado em ${formatarDataAtual()}
+                </div>
+
+                <div class="ficha">
+                  <div class="ficha-item">
+                    <span class="rotulo">Tipo</span>
+                    <span class="valor">${escaparHtml(dados.tipo)}</span>
+                  </div>
+                  <div class="ficha-item">
+                    <span class="rotulo">Base Bíblica</span>
+                    <span class="valor">${escaparHtml(dados.textoBase)}</span>
+                  </div>
+                  <div class="ficha-item">
+                    <span class="rotulo">Autor</span>
+                    <span class="valor">${escaparHtml(dados.autor)}</span>
+                  </div>
+                  <div class="ficha-item">
+                    <span class="rotulo">Público</span>
+                    <span class="valor">${escaparHtml(dados.publico)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="conteudo-html">
+                ${markdownParaHtml(markdown)}
+              </div>
+
+              <div class="caixa-observacao">
+                <strong>Observação editorial:</strong> este documento foi formatado automaticamente pelo Verbo IA para leitura, impressão e PDF.
+              </div>
+
+              <div class="rodape-doc">
+                Verbo IA • ${escaparHtml(dados.editora)} • Material organizado automaticamente
+              </div>
+            </section>
+          `}
+
+          ${dados.tipo === "E-book cristão" ? dividirEbookEmPaginas(markdown, dados) : ""}
         </article>
       `;
     }
 
     function exibirTextoPuro(texto) {
       const painel = document.getElementById("resultado");
-      painel.innerHTML = "<pre style='white-space:pre-wrap; font-family:Arial, Helvetica, sans-serif; line-height:1.7;'>" +
-        escaparHtml(texto) + "</pre>";
+      painel.innerHTML = "<pre class='prompt-pre'>" + escaparHtml(texto) + "</pre>";
     }
 
     function renderizarResultado(texto, dados) {
