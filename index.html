@@ -1645,21 +1645,57 @@
       if (!Array.isArray(arr) || arr.length === 0) return "";
 
       return arr.map((item, index) => {
-        const numero = item[numeroCampo] || index + 1;
+        const numero = item[numeroCampo] || item.number || item.lesson || item.day || index + 1;
         const titulo = item.title || `${tituloGeral} ${numero}`;
 
         let html = `<div class="bloco"><h3>${escapeHtml(numero)}. ${escapeHtml(titulo)}</h3>`;
 
         Object.keys(item).forEach(key => {
-          if (["title", numeroCampo].includes(key)) return;
+          if (["title", numeroCampo, "number", "lesson", "day"].includes(key)) return;
+
           const value = item[key];
+          const nomeBonito = rotulo(key);
 
           if (Array.isArray(value)) {
-            html += `<h3>${escapeHtml(rotulo(key))}</h3><ul class="lista">${value.map(v => `<li>${escapeHtml(typeof v === "string" ? v : JSON.stringify(v))}</li>`).join("")}</ul>`;
-          } else if (typeof value === "object" && value !== null) {
-            html += `<h3>${escapeHtml(rotulo(key))}</h3>${divTexto(JSON.stringify(value, null, 2))}`;
-          } else if (value) {
-            html += `<h3>${escapeHtml(rotulo(key))}</h3>${divTexto(value)}`;
+            const listaLimpa = value.filter(Boolean);
+
+            if (listaLimpa.length > 0) {
+              html += `
+                <h3>${escapeHtml(nomeBonito)}</h3>
+                <ul class="lista">
+                  ${listaLimpa.map(v => {
+                    if (typeof v === "string") {
+                      return `<li>${escapeHtml(v)}</li>`;
+                    }
+
+                    if (typeof v === "object" && v !== null) {
+                      const textoObjeto = Object.values(v).filter(Boolean).join(" — ");
+                      return `<li>${escapeHtml(textoObjeto)}</li>`;
+                    }
+
+                    return "";
+                  }).join("")}
+                </ul>
+              `;
+            }
+
+            return;
+          }
+
+          if (typeof value === "object" && value !== null) {
+            const textoObjeto = Object.entries(value)
+              .map(([k, v]) => `${rotulo(k)}: ${v}`)
+              .join("\n");
+
+            if (textoObjeto.trim()) {
+              html += `<h3>${escapeHtml(nomeBonito)}</h3>${divTexto(textoObjeto)}`;
+            }
+
+            return;
+          }
+
+          if (value) {
+            html += `<h3>${escapeHtml(nomeBonito)}</h3>${divTexto(value)}`;
           }
         });
 
@@ -1672,7 +1708,7 @@
       const labels = {
         chapterQuestion: "Pergunta do capítulo",
         centralThesis: "Tese central do capítulo",
-        openingNarrative: "Abertura",
+        openingNarrative: "Abertura narrativa",
         biblicalBase: "Base bíblica",
         supportReferences: "Referências de apoio",
         crossReferences: "Referências cruzadas",
@@ -1685,28 +1721,39 @@
         chapterSummary: "Resumo do capítulo",
         reflectiveClosing: "Fechamento reflexivo",
         transitionToNextChapter: "Transição para o próximo capítulo",
+
         development: "Desenvolvimento",
-        chapterClosing: "Fechamento",
+        chapterClosing: "Fechamento do capítulo",
         opening: "Abertura",
         centralIdea: "Ideia central",
         sections: "Seções",
-        highlightQuote: "Destaque",
+        highlightQuote: "Frase de destaque",
         reflectionQuestions: "Perguntas de reflexão",
         practice: "Prática",
         prayer: "Oração",
+
         verse: "Versículo",
         reflection: "Reflexão",
         practicalApplication: "Aplicação prática",
         meditationQuestion: "Pergunta para meditação",
+
         explanation: "Explicação",
         theologicalAnalysis: "Análise teológica",
         classActivity: "Atividade em classe",
         homework: "Tarefa",
         summary: "Resumo",
-        biblicalTexts: "Textos bíblicos"
+        biblicalTexts: "Textos bíblicos",
+
+        objective: "Objetivo",
+        introduction: "Introdução",
+        content: "Conteúdo",
+        conclusion: "Conclusão",
+        finalWord: "Palavra final"
       };
 
-      return labels[key] || key;
+      return labels[key] || key
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, letra => letra.toUpperCase());
     }
 
     function renderRevista(m) {
