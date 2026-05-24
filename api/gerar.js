@@ -102,6 +102,8 @@ function normalizeForm(body) {
     quantidade = 4;
   } else if (tipo === "devocional") {
     quantidade = Math.max(1, Math.min(quantidade, 30));
+  } else if (tipo === "livro") {
+    quantidade = Math.max(1, Math.min(quantidade, 10));
   } else {
     quantidade = Math.max(1, Math.min(quantidade, 12));
   }
@@ -456,19 +458,104 @@ FORMATO JSON:
 
 function promptLivro(form) {
   return `
-Você é um escritor cristão, pastor e autor de livros de formação espiritual.
+Você é um escritor cristão experiente, pastor, teólogo, expositor bíblico e autor de livros de formação espiritual.
 
-Crie um LIVRO CRISTÃO com tom literário, maduro e capítulos densos.
+Crie um LIVRO CRISTÃO verdadeiro, com leitura prazerosa, profundidade bíblica, argumento bem construído e unidade interna.
+O livro não pode parecer um resumo, comentário curto, apostila simples, devocional ou esboço.
+O livro precisa ter começo, meio e fim.
 
 ${baseDados(form, "Livro cristão")}
 ${regrasJson()}
 
-REGRAS:
-1. Livro não é e-book.
-2. Use linguagem literária, pastoral e bíblica.
-3. Cada capítulo deve ter várias referências bíblicas de apoio.
-4. Cada capítulo deve ter referências cruzadas relacionadas.
-5. Não exagere em citações externas.
+IDENTIDADE DO LIVRO:
+1. Este material deve parecer um LIVRO CRISTÃO de verdade.
+2. Cada capítulo deve trabalhar uma ideia central, desenvolver essa ideia e concluir essa ideia.
+3. O capítulo não pode começar em um assunto, mudar para outro sem ligação e terminar em outro assunto aleatório.
+4. Cada capítulo precisa ter unidade: uma tese, um caminho de desenvolvimento e uma conclusão coerente.
+5. O livro inteiro também precisa ter progressão: cada capítulo deve continuar ou aprofundar o anterior.
+6. A leitura deve ser prazerosa, fluida, pastoral, reflexiva e profunda.
+7. Não escreva apenas comentários curtos. Desenvolva argumentos.
+8. Não faça frases genéricas como se fossem apenas devocional raso.
+9. Não use linguagem robótica.
+10. Não repita a mesma ideia com palavras diferentes apenas para preencher espaço.
+
+ESTRUTURA ARGUMENTATIVA OBRIGATÓRIA EM CADA CAPÍTULO:
+Cada capítulo deve seguir este movimento interno:
+1. Abrir com uma introdução envolvente, pastoral ou narrativa, preparando o leitor para a ideia central.
+2. Apresentar a tese do capítulo com clareza.
+3. Explicar por que essa ideia importa.
+4. Mostrar o problema humano ou espiritual relacionado ao tema.
+5. Expor o texto bíblico com fidelidade.
+6. Desenvolver argumentos bíblicos e teológicos.
+7. Usar exemplos bíblicos conectados ao argumento.
+8. Aplicar a ideia à vida cristã real.
+9. Concluir retomando a tese inicial.
+10. Fazer uma transição natural para o próximo capítulo.
+
+REGRAS DE PROFUNDIDADE:
+1. Cada capítulo precisa ter substância, não apenas comentários.
+2. Cada capítulo deve ter raciocínio progressivo.
+3. O argumento deve caminhar em ordem lógica.
+4. Use expressões de ligação entre ideias, como:
+   - À luz disso;
+   - Por essa razão;
+   - O texto nos conduz a perceber;
+   - Essa verdade se aprofunda quando observamos;
+   - A Escritura não trata isso de forma isolada;
+   - Portanto, a conclusão pastoral é clara.
+5. Evite parágrafos soltos sem ligação entre si.
+6. Não comece cada seção do zero. Uma seção deve nascer da anterior.
+7. O leitor precisa terminar o capítulo entendendo o que aprendeu.
+8. O capítulo deve ensinar, confrontar, consolar e formar espiritualmente.
+
+REGRAS BÍBLICAS:
+1. Cada capítulo deve ter uma base bíblica principal.
+2. Cada capítulo deve ter referências bíblicas de apoio.
+3. Cada capítulo deve ter referências cruzadas.
+4. As referências cruzadas devem reforçar o argumento, não apenas aparecer como lista.
+5. Sempre que possível, conecte Antigo e Novo Testamento.
+6. Explique o sentido bíblico antes de aplicar.
+7. Não use textos bíblicos fora de contexto.
+8. O livro deve seguir linha bíblica conservadora.
+9. Em temas sobre Espírito Santo, dons, santificação, igreja, missões e escatologia, siga o pentecostalismo clássico.
+
+REGRAS DE ESTILO:
+1. Escreva como livro, não como aula resumida.
+2. O texto deve ter beleza, ritmo, profundidade e clareza.
+3. Use linguagem pastoral, mas com maturidade teológica.
+4. Escreva de forma que seja prazeroso ler.
+5. Evite excesso de tópicos secos.
+6. O conteúdo deve parecer uma conversa séria com o leitor, conduzindo-o à compreensão.
+7. Cada capítulo deve ter começo, desenvolvimento e fechamento.
+8. Não entregue respostas rasas.
+9. Não faça um comentário e encerre.
+10. Desenvolva a ideia até que ela fique clara, bíblica e aplicável.
+
+REGRAS SOBRE TAMANHO:
+1. O livro deve ser mais desenvolvido que e-book, devocional ou estudo.
+2. Cada campo textual do capítulo deve ser substancial.
+3. openingNarrative deve ter de 130 a 200 palavras.
+4. centralThesis deve ter de 60 a 100 palavras.
+5. ideaDevelopment deve ter de 180 a 280 palavras.
+6. biblicalExposition deve ter de 180 a 280 palavras.
+7. argumentDevelopment deve ter de 220 a 340 palavras.
+8. theologicalReflection deve ter de 160 a 240 palavras.
+9. biblicalExamples deve ter de 140 a 220 palavras.
+10. pastoralApplication deve ter de 160 a 240 palavras.
+11. reflectiveClosing deve ter de 120 a 180 palavras.
+12. transitionToNextChapter deve ter de 50 a 90 palavras.
+13. Não escreva textos curtos demais.
+14. Não escreva apenas uma frase em campos que pedem desenvolvimento.
+
+REGRAS DE CONTINUIDADE ENTRE CAPÍTULOS:
+1. O capítulo 1 deve abrir a ideia principal do livro.
+2. Os capítulos seguintes devem aprofundar a ideia de forma progressiva.
+3. O último capítulo deve concluir o caminho do livro.
+4. Cada capítulo deve ter relação clara com o tema geral.
+5. A sequência dos capítulos deve parecer planejada.
+6. Não crie capítulos desconectados.
+7. O livro deve ter uma linha de pensamento contínua.
+8. Cada capítulo deve responder uma pergunta importante dentro do tema geral.
 
 FORMATO JSON:
 {
@@ -482,17 +569,26 @@ FORMATO JSON:
   "preface": "",
   "presentation": "",
   "generalIntroduction": "",
+  "bookCentralThesis": "",
+  "readingPath": "",
   "chapters": [
     {
       "number": 1,
       "title": "",
+      "chapterQuestion": "",
+      "centralThesis": "",
       "openingNarrative": "",
       "biblicalBase": ["", "", "", ""],
       "crossReferences": ["", "", "", ""],
-      "development": "",
+      "ideaDevelopment": "",
+      "biblicalExposition": "",
+      "argumentDevelopment": "",
       "theologicalReflection": "",
+      "biblicalExamples": "",
       "pastoralApplication": "",
-      "chapterClosing": ""
+      "chapterSummary": "",
+      "reflectiveClosing": "",
+      "transitionToNextChapter": ""
     }
   ],
   "finalConclusion": "",
@@ -502,6 +598,14 @@ FORMATO JSON:
 }
 
 Crie exatamente ${form.quantity} capítulos.
+
+IMPORTANTE:
+O livro precisa trabalhar uma ideia de modo contínuo.
+Cada capítulo precisa começar uma ideia, desenvolver essa ideia e concluir essa ideia.
+Não escreva capítulos aleatórios.
+Não faça comentário curto.
+Não faça apenas uma explicação rasa.
+Construa argumentos bíblicos fortes, com clareza, beleza e profundidade.
 `.trim();
 }
 
@@ -520,6 +624,9 @@ REGRAS:
 3. Inclua referências bíblicas de apoio em cada capítulo.
 4. Inclua referências cruzadas em cada capítulo.
 5. Não faça parecer revista de EBD.
+6. Mesmo sendo e-book, cada capítulo deve ter começo, desenvolvimento e conclusão.
+7. Não faça comentários rasos.
+8. Desenvolva uma ideia por capítulo de modo claro e progressivo.
 
 FORMATO JSON:
 {
@@ -618,6 +725,8 @@ REGRAS:
 2. Inclua referências bíblicas de apoio em cada parte.
 3. Inclua referências cruzadas em cada parte.
 4. Quando necessário, explique termos doutrinários com clareza.
+5. Cada parte precisa trabalhar uma ideia com começo, desenvolvimento e conclusão.
+6. Não entregue comentário curto.
 
 FORMATO JSON:
 {
@@ -664,6 +773,7 @@ REGRAS:
 3. Inclua referências bíblicas de apoio em cada aula.
 4. Inclua referências cruzadas em cada aula.
 5. Mantenha linguagem clara para ensino em igreja local.
+6. Cada aula precisa ter progressão didática: começo, desenvolvimento e conclusão.
 
 FORMATO JSON:
 {
@@ -710,9 +820,9 @@ async function callGeminiText(apiKey, models, prompt) {
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
             generationConfig: {
-              temperature: 0.58,
-              topP: 0.88,
-              maxOutputTokens: 17000
+              temperature: 0.62,
+              topP: 0.9,
+              maxOutputTokens: 18000
             }
           })
         }
