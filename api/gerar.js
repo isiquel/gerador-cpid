@@ -177,6 +177,8 @@ REGRAS OBRIGATÓRIAS:
 11. Não invente citações literais de autores.
 12. Não invente número de página, editora ou frase exata de livro.
 13. Quando citar autores, cite apenas como referência de aprofundamento, sem aspas diretas.
+14. As referências bíblicas devem ser coerentes com o assunto tratado.
+15. Não coloque referências aleatórias. Toda referência precisa apoiar a ideia ensinada.
 `.trim();
 }
 
@@ -203,6 +205,7 @@ REGRAS:
 5. O conteúdo deve seguir linha bíblica conservadora.
 6. Em temas sobre Espírito Santo, dons espirituais, igreja, santificação, escatologia e missão, siga o pentecostalismo clássico.
 7. A apresentação deve ser boa, mas objetiva, com no máximo 220 palavras.
+8. Planeje lições que permitam muitas referências bíblicas e referências cruzadas.
 
 FORMATO JSON:
 {
@@ -239,11 +242,11 @@ function promptRevistaLicao(form, compacto) {
 REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
 1. O conteúdo principal da lição deve continuar profundo.
 2. As respostas das perguntas devem ser objetivas, com no máximo 35 palavras cada.
-3. Orientações para o professor: máximo 90 palavras.
-4. Sugestão de abordagem em classe: máximo 90 palavras.
-5. Observação pastoral: máximo 80 palavras.
+3. Orientações para o professor: máximo 100 palavras.
+4. Sugestão de abordagem em classe: máximo 100 palavras.
+5. Observação pastoral: máximo 90 palavras.
 6. Não repita o conteúdo dos tópicos nas orientações do professor.
-7. Acrescente apoio doutrinário seguro dentro de teacherNotes ou pastoralObservation.
+7. Acrescente apoio doutrinário seguro dentro de teacherNotes, pastoralObservation ou doctrinalSupport.
 8. O apoio doutrinário pode mencionar, de forma geral e sem citação direta:
    - teologia sistemática pentecostal;
    - comentários bíblicos conservadores;
@@ -254,6 +257,7 @@ REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
    - eclesiologia bíblica.
 9. Autores possíveis para aprofundamento, conforme o tema: Stanley Horton, Myer Pearlman, Antônio Gilberto, Eurico Bergstén, Donald Stamps, Wayne Grudem, Louis Berkhof, Millard Erickson, Norman Geisler, Hernandes Dias Lopes, John Stott, F. F. Bruce, Gordon Fee.
 10. Não cite todos os autores em toda lição. Use no máximo 2 ou 3 nomes quando fizer sentido.
+11. O professor precisa ter mais referências bíblicas de apoio para conduzir a aula com segurança.
 `
     : `
 REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
@@ -261,24 +265,25 @@ REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
 2. Não inclua orientação interna do professor.
 3. As perguntas devem vir sem respostas.
 4. A versão do aluno deve continuar bem explicada, bíblica e profunda.
+5. Mesmo na versão do aluno, inclua referências bíblicas e referências cruzadas para fortalecer o estudo.
 `;
 
   const limites = compacto
     ? `
 MODO COMPACTO DE SEGURANÇA:
 1. Introdução: 80 a 120 palavras.
-2. Cada tópico principal: 40 a 70 palavras.
-3. Cada subtópico: 55 a 85 palavras.
+2. Cada tópico principal: 45 a 75 palavras.
+3. Cada subtópico: 60 a 90 palavras.
 4. Conclusão: 70 a 100 palavras.
 5. Leitura bíblica em classe: no máximo 4 versículos.
-6. Mesmo no modo compacto, inclua referências bíblicas de apoio.
+6. Mesmo no modo compacto, inclua referências bíblicas, referências de apoio e referências cruzadas.
 `
     : `
 LIMITES DE TAMANHO:
-1. Introdução: 90 a 140 palavras.
-2. Cada tópico principal: 50 a 80 palavras.
-3. Cada subtópico: 65 a 100 palavras.
-4. Conclusão: 75 a 110 palavras.
+1. Introdução: 95 a 145 palavras.
+2. Cada tópico principal: 55 a 85 palavras.
+3. Cada subtópico: 75 a 110 palavras.
+4. Conclusão: 80 a 120 palavras.
 5. Leitura bíblica em classe: no máximo 5 versículos.
 6. Não escreva textos longos demais em um único campo.
 `;
@@ -306,16 +311,26 @@ REGRAS DA LIÇÃO:
 4. Deve conter exatamente 3 tópicos principais.
 5. Cada tópico principal deve conter exatamente 3 subtópicos.
 6. Cada tópico principal deve ter uma abertura explicativa.
-7. Cada subtópico deve conter título, referência bíblica principal, explicação bíblica, aplicação prática e referências bíblicas de apoio.
-8. Em cada subtópico, inclua de 2 a 4 referências bíblicas de apoio, somente as referências, sem transcrever o texto completo.
-9. Use no conteúdo frases como: Referências de apoio: João 3.16; Romanos 5.1; Efésios 2.8-9.
+7. Cada tópico principal deve ter um campo topicReferences com 4 a 6 referências bíblicas relacionadas ao assunto.
+8. Cada subtópico deve conter:
+   - título;
+   - referência bíblica principal;
+   - explicação bíblica;
+   - aplicação prática;
+   - supportReferences com 3 a 5 referências bíblicas de apoio;
+   - crossReferences com 3 a 5 referências cruzadas relacionadas.
+9. Use no conteúdo frases como:
+   Referências de apoio: João 3.16; Romanos 5.1; Efésios 2.8-9.
+   Referências cruzadas: Isaías 53.5; Hebreus 9.22; 1 Pedro 1.18-19.
 10. Não encha a lição de versículos soltos sem explicar.
-11. A revista do aluno também deve ser completa, explicativa e profunda.
-12. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
-13. Use como padrão textual a King James Fiel 1611.
-14. Siga linha bíblica conservadora.
-15. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
-16. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
+11. As referências cruzadas devem conectar Antigo e Novo Testamento quando possível.
+12. A revista do aluno também deve ser completa, explicativa e profunda.
+13. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
+14. Use como padrão textual a King James Fiel 1611.
+15. Siga linha bíblica conservadora.
+16. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
+17. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
+18. Priorize fidelidade bíblica, clareza, ortodoxia e aplicação pastoral.
 
 ${limites}
 
@@ -339,29 +354,32 @@ FORMATO JSON:
   "topics": [
     {
       "title": "",
+      "topicReferences": ["", "", "", ""],
       "content": "",
       "subtopics": [
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" }
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" }
       ]
     },
     {
       "title": "",
+      "topicReferences": ["", "", "", ""],
       "content": "",
       "subtopics": [
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" }
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" }
       ]
     },
     {
       "title": "",
+      "topicReferences": ["", "", "", ""],
       "content": "",
       "subtopics": [
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", ""], "content": "" }
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
+        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" }
       ]
     }
   ],
@@ -397,8 +415,10 @@ ${regrasJson()}
 REGRAS:
 1. O sermão deve ser bíblico, profundo e pregável.
 2. Cada ponto deve ter base bíblica clara.
-3. Inclua referências bíblicas de apoio em cada ponto.
-4. Não crie um texto com cara de e-book.
+3. Cada ponto deve conter referências bíblicas de apoio.
+4. Cada ponto deve conter referências cruzadas conectando o tema com outros textos bíblicos.
+5. Não crie um texto com cara de e-book.
+6. Use linguagem de púlpito, pastoral e aplicável.
 
 FORMATO JSON:
 {
@@ -419,6 +439,8 @@ FORMATO JSON:
   "points": [
     {
       "title": "",
+      "references": ["", "", "", ""],
+      "crossReferences": ["", "", "", ""],
       "explanation": "",
       "pastoralApplication": "",
       "illustration": ""
@@ -441,6 +463,13 @@ Crie um LIVRO CRISTÃO com tom literário, maduro e capítulos densos.
 ${baseDados(form, "Livro cristão")}
 ${regrasJson()}
 
+REGRAS:
+1. Livro não é e-book.
+2. Use linguagem literária, pastoral e bíblica.
+3. Cada capítulo deve ter várias referências bíblicas de apoio.
+4. Cada capítulo deve ter referências cruzadas relacionadas.
+5. Não exagere em citações externas.
+
 FORMATO JSON:
 {
   "type": "livro",
@@ -458,7 +487,8 @@ FORMATO JSON:
       "number": 1,
       "title": "",
       "openingNarrative": "",
-      "biblicalBase": ["", ""],
+      "biblicalBase": ["", "", "", ""],
+      "crossReferences": ["", "", "", ""],
       "development": "",
       "theologicalReflection": "",
       "pastoralApplication": "",
@@ -484,6 +514,13 @@ Crie um E-BOOK CRISTÃO moderno, prático, profundo e organizado.
 ${baseDados(form, "E-book cristão")}
 ${regrasJson()}
 
+REGRAS:
+1. E-book deve ser moderno, claro e prático.
+2. Cada capítulo deve ter base bíblica.
+3. Inclua referências bíblicas de apoio em cada capítulo.
+4. Inclua referências cruzadas em cada capítulo.
+5. Não faça parecer revista de EBD.
+
 FORMATO JSON:
 {
   "type": "ebook",
@@ -499,7 +536,8 @@ FORMATO JSON:
       "number": 1,
       "title": "",
       "heroCaption": "",
-      "biblicalBase": ["", ""],
+      "biblicalBase": ["", "", "", ""],
+      "crossReferences": ["", "", "", ""],
       "opening": "",
       "centralIdea": "",
       "sections": [
@@ -525,10 +563,16 @@ function promptDevocional(form) {
   return `
 Você é um escritor devocional cristão e pastor.
 
-Crie um DEVOCIONAL CRISTÃO curto, bíblico, reflexivo e aplicável.
+Crie um DEVOCIONAL CRISTÃO bíblico, reflexivo e aplicável.
 
 ${baseDados(form, "Devocional cristão")}
 ${regrasJson()}
+
+REGRAS:
+1. Devocional deve ser claro e direto.
+2. Cada dia deve ter versículo, reflexão, aplicação e oração.
+3. Inclua referências bíblicas de apoio e referências cruzadas curtas quando possível.
+4. Não faça parecer revista ou sermão.
 
 FORMATO JSON:
 {
@@ -545,6 +589,8 @@ FORMATO JSON:
       "day": 1,
       "title": "",
       "verse": "",
+      "supportReferences": ["", "", ""],
+      "crossReferences": ["", "", ""],
       "reflection": "",
       "practicalApplication": "",
       "meditationQuestion": "",
@@ -567,12 +613,20 @@ Crie um ESTUDO BÍBLICO/TEOLÓGICO didático, analítico e bíblico.
 ${baseDados(form, "Estudo bíblico/teológico")}
 ${regrasJson()}
 
+REGRAS:
+1. O estudo deve ser bíblico, analítico e pastoral.
+2. Inclua referências bíblicas de apoio em cada parte.
+3. Inclua referências cruzadas em cada parte.
+4. Quando necessário, explique termos doutrinários com clareza.
+
 FORMATO JSON:
 {
   "type": "estudo",
   "title": "",
   "theme": "",
   "biblicalText": "",
+  "supportReferences": ["", "", "", ""],
+  "crossReferences": ["", "", "", ""],
   "objective": "",
   "introduction": "",
   "biblicalContext": "",
@@ -580,6 +634,8 @@ FORMATO JSON:
     {
       "number": 1,
       "title": "",
+      "references": ["", "", "", ""],
+      "crossReferences": ["", "", "", ""],
       "explanation": "",
       "theologicalAnalysis": "",
       "practicalApplication": ""
@@ -602,6 +658,13 @@ Crie um CURSO CRISTÃO em formato de aulas.
 ${baseDados(form, "Curso cristão")}
 ${regrasJson()}
 
+REGRAS:
+1. O curso deve ser didático.
+2. Cada aula deve ter objetivo, introdução, conteúdo, atividade e resumo.
+3. Inclua referências bíblicas de apoio em cada aula.
+4. Inclua referências cruzadas em cada aula.
+5. Mantenha linguagem clara para ensino em igreja local.
+
 FORMATO JSON:
 {
   "type": "curso",
@@ -618,7 +681,8 @@ FORMATO JSON:
       "title": "",
       "objective": "",
       "introduction": "",
-      "biblicalTexts": ["", ""],
+      "biblicalTexts": ["", "", "", ""],
+      "crossReferences": ["", "", "", ""],
       "content": "",
       "classActivity": "",
       "homework": "",
@@ -648,7 +712,7 @@ async function callGeminiText(apiKey, models, prompt) {
             generationConfig: {
               temperature: 0.58,
               topP: 0.88,
-              maxOutputTokens: 16000
+              maxOutputTokens: 17000
             }
           })
         }
