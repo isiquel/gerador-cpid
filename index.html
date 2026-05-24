@@ -358,6 +358,52 @@
       white-space: pre-line;
     }
 
+    .texto-livro {
+      font-size: 21px;
+      line-height: 1.95;
+      color: #26221d;
+      white-space: pre-line;
+      text-align: left;
+      margin-top: 18px;
+    }
+
+    .capitulo-livro {
+      margin-top: 28px;
+      padding-top: 26px;
+      border-top: 1px solid #e6d8c7;
+    }
+
+    .capitulo-livro:first-child {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .capitulo-livro h2 {
+      color: var(--marrom);
+      font-size: 32px;
+      line-height: 1.25;
+      margin: 0 0 10px;
+    }
+
+    .pergunta-livro {
+      font-size: 18px;
+      line-height: 1.6;
+      color: #7b5a39;
+      font-weight: bold;
+      margin-bottom: 18px;
+      border-left: 5px solid var(--dourado);
+      padding: 12px 14px;
+      background: #fff8e8;
+      border-radius: 12px;
+    }
+
+    .subtitulo-livro {
+      color: var(--marrom);
+      font-size: 24px;
+      margin: 30px 0 10px;
+      line-height: 1.35;
+    }
+
     .bloco {
       margin-top: 24px;
       padding: 26px;
@@ -522,9 +568,10 @@
     }
 
     .gerando-pdf .texto,
+    .gerando-pdf .texto-livro,
     .gerando-pdf p {
       font-size: 15.5px !important;
-      line-height: 1.55 !important;
+      line-height: 1.6 !important;
     }
 
     .gerando-pdf .bloco,
@@ -533,6 +580,26 @@
       margin-top: 10px !important;
       break-inside: avoid;
       page-break-inside: avoid;
+    }
+
+    .gerando-pdf .capitulo-livro {
+      page-break-before: auto;
+      break-before: auto;
+      padding-top: 18px !important;
+      margin-top: 18px !important;
+    }
+
+    .gerando-pdf .capitulo-livro h2 {
+      font-size: 22px !important;
+    }
+
+    .gerando-pdf .subtitulo-livro {
+      font-size: 18px !important;
+      margin-top: 18px !important;
+    }
+
+    .gerando-pdf .pergunta-livro {
+      font-size: 14px !important;
     }
 
     .gerando-pdf .bloco h3,
@@ -715,6 +782,23 @@
         line-height: 1.65;
       }
 
+      .texto-livro {
+        font-size: 18px;
+        line-height: 1.75;
+      }
+
+      .capitulo-livro h2 {
+        font-size: 25px;
+      }
+
+      .subtitulo-livro {
+        font-size: 20px;
+      }
+
+      .pergunta-livro {
+        font-size: 16px;
+      }
+
       .bloco,
       .topico-revista {
         margin-top: 13px;
@@ -885,12 +969,35 @@
       }
 
       .texto,
+      .texto-livro,
       p {
         font-size: 14.5px;
         line-height: 1.5;
         color: #222;
         white-space: pre-line;
         margin: 0 0 6px;
+      }
+
+      .capitulo-livro {
+        margin-top: 14px;
+        padding-top: 14px;
+        page-break-inside: auto;
+        break-inside: auto;
+      }
+
+      .capitulo-livro h2 {
+        font-size: 21px;
+        line-height: 1.2;
+      }
+
+      .subtitulo-livro {
+        font-size: 16px;
+        margin-top: 12px;
+      }
+
+      .pergunta-livro {
+        font-size: 12.8px;
+        padding: 8px;
       }
 
       .bloco,
@@ -1450,7 +1557,7 @@
         });
 
         livro.chapters.push(capitulo);
-        previousChapterSummary = capitulo.chapterSummary || capitulo.reflectiveClosing || capitulo.centralThesis || "";
+        previousChapterSummary = capitulo.chapterSummary || capitulo.chapterConclusion || capitulo.thesisPresentation || "";
 
         materialAtual = livro;
         renderizarMaterial(materialAtual);
@@ -1506,6 +1613,10 @@
       return `<div class="texto">${escapeHtml(texto || "")}</div>`;
     }
 
+    function divLivro(texto) {
+      return `<div class="texto-livro">${escapeHtml(texto || "")}</div>`;
+    }
+
     function bloco(titulo, texto) {
       if (!texto) return "";
       return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
@@ -1543,7 +1654,79 @@
 
       if (type === "revista") return renderRevista(m);
       if (type === "sermao") return renderSermao(m);
+      if (type === "livro") return renderLivro(m);
       return renderMaterialGeral(m, type);
+    }
+
+    function renderLivro(m) {
+      const chapters = Array.isArray(m.chapters) ? m.chapters : [];
+
+      let conteudo = "";
+
+      conteudo += bloco("Apresentação", m.presentation || "");
+      conteudo += bloco("Prefácio", m.preface || "");
+      conteudo += bloco("Introdução", m.generalIntroduction || "");
+
+      if (m.bookCentralThesis) {
+        conteudo += `
+          <div class="bloco">
+            <h3>Ideia central do livro</h3>
+            ${divTexto(m.bookCentralThesis)}
+          </div>
+        `;
+      }
+
+      if (chapters.length === 0 && Array.isArray(m.chapterPlan)) {
+        conteudo += blocoLista("Plano de capítulos", m.chapterPlan.map(c => `${c.number}. ${c.title} — ${c.centralIdea}`));
+      }
+
+      conteudo += chapters.map((capitulo, index) => renderCapituloLivro(capitulo, index)).join("");
+
+      conteudo += bloco("Conclusão final", m.finalConclusion || "");
+      conteudo += bloco("Palavra ao leitor", m.wordToReader || "");
+      conteudo += bloco("Sobre o autor", m.authorBio || "");
+      conteudo += bloco("Texto de contracapa", m.backCoverText || "");
+
+      el("resultado").innerHTML = `
+        <article class="doc">
+          ${capaMaterial(m, "LIVRO CRISTÃO")}
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
+              <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
+              ${conteudo}
+            </div>
+          </section>
+        </article>
+      `;
+    }
+
+    function renderCapituloLivro(capitulo, index) {
+      const numero = capitulo.number || index + 1;
+      const blocos = Array.isArray(capitulo.developmentBlocks) ? capitulo.developmentBlocks : [];
+
+      let html = `
+        <section class="capitulo-livro">
+          <h2>Capítulo ${escapeHtml(numero)} — ${escapeHtml(capitulo.title || "")}</h2>
+      `;
+
+      if (capitulo.chapterQuestion) {
+        html += `<div class="pergunta-livro">${escapeHtml(capitulo.chapterQuestion)}</div>`;
+      }
+
+      html += divLivro(capitulo.opening || "");
+      html += divLivro(capitulo.thesisPresentation || "");
+
+      html += blocos.map((bloco) => `
+        <h3 class="subtitulo-livro">${escapeHtml(bloco.heading || "")}</h3>
+        ${divLivro(bloco.content || "")}
+      `).join("");
+
+      html += divLivro(capitulo.chapterConclusion || "");
+      html += divLivro(capitulo.transitionToNextChapter || "");
+
+      html += `</section>`;
+      return html;
     }
 
     function renderSermao(m) {
@@ -1587,7 +1770,6 @@
     function renderMaterialGeral(m, type) {
       const tituloTipo = {
         ebook: "E-BOOK CRISTÃO",
-        livro: "LIVRO CRISTÃO",
         devocional: "DEVOCIONAL",
         estudo: "ESTUDO BÍBLICO",
         curso: "CURSO CRISTÃO"
@@ -1598,8 +1780,6 @@
       conteudo += bloco("Apresentação", m.presentation || m.summaryIntro || "");
       conteudo += bloco("Prefácio", m.preface || "");
       conteudo += bloco("Introdução geral", m.generalIntroduction || "");
-      conteudo += bloco("Tese central do livro", m.bookCentralThesis || "");
-      conteudo += bloco("Caminho de leitura", m.readingPath || "");
       conteudo += bloco("Descrição do curso", m.courseDescription || "");
       conteudo += bloco("Objetivo geral", m.generalObjective || "");
       conteudo += bloco("Objetivo", m.objective || "");
@@ -1613,10 +1793,6 @@
       conteudo += renderArray("Aulas", m.lessons, "lesson");
       conteudo += renderArray("Dias devocionais", m.days, "day");
       conteudo += renderArray("Partes", m.parts, "number");
-
-      if (m.chapters && m.chapters.length === 0 && Array.isArray(m.chapterPlan)) {
-        conteudo += blocoLista("Plano de capítulos", m.chapterPlan.map(c => `${c.number}. ${c.title} — ${c.centralIdea}`));
-      }
 
       conteudo += bloco("Conclusão final", m.finalConclusion || "");
       conteudo += bloco("Conclusão", m.conclusion || "");
@@ -1721,32 +1897,29 @@
         chapterSummary: "Resumo do capítulo",
         reflectiveClosing: "Fechamento reflexivo",
         transitionToNextChapter: "Transição para o próximo capítulo",
-
         development: "Desenvolvimento",
         chapterClosing: "Fechamento do capítulo",
         opening: "Abertura",
         centralIdea: "Ideia central",
         sections: "Seções",
+        heading: "Tópico",
+        content: "Conteúdo",
         highlightQuote: "Frase de destaque",
         reflectionQuestions: "Perguntas de reflexão",
         practice: "Prática",
         prayer: "Oração",
-
         verse: "Versículo",
         reflection: "Reflexão",
         practicalApplication: "Aplicação prática",
         meditationQuestion: "Pergunta para meditação",
-
         explanation: "Explicação",
         theologicalAnalysis: "Análise teológica",
         classActivity: "Atividade em classe",
         homework: "Tarefa",
         summary: "Resumo",
         biblicalTexts: "Textos bíblicos",
-
         objective: "Objetivo",
         introduction: "Introdução",
-        content: "Conteúdo",
         conclusion: "Conclusão",
         finalWord: "Palavra final"
       };
