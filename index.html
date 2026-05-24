@@ -847,64 +847,10 @@
       .capa {
         width: 100%;
         min-height: 273mm;
-        color: white;
-        background:
-          radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 35%),
-          linear-gradient(135deg, #4a2d1a, #7a4f2f 45%, #c79b58);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
         page-break-after: always;
         break-after: page;
         margin: -12mm -10mm 0 -10mm;
         padding: 12mm 10mm;
-      }
-
-      .capa::before {
-        content: "";
-        position: absolute;
-        inset: 28px;
-        border: 2px solid rgba(255,255,255,0.35);
-        border-radius: 28px;
-      }
-
-      .capa-box {
-        width: 80%;
-        padding: 42px 34px;
-        border-radius: 28px;
-        background: rgba(255,255,255,0.14);
-        border: 1px solid rgba(255,255,255,0.30);
-        position: relative;
-        z-index: 2;
-      }
-
-      .capa h1 {
-        margin: 0 0 16px;
-        font-size: 38px;
-        line-height: 1.12;
-        text-transform: uppercase;
-      }
-
-      .capa h2 {
-        margin: 0;
-        font-size: 18px;
-        line-height: 1.45;
-        font-weight: 500;
-      }
-
-      .selo {
-        display: inline-block;
-        padding: 9px 16px;
-        border-radius: 999px;
-        border: 1px solid rgba(255,255,255,0.35);
-        background: rgba(255,255,255,0.14);
-        font-size: 12px;
-        margin-bottom: 20px;
-        font-weight: bold;
-        letter-spacing: 1px;
       }
 
       .pagina-apresentacao-revista {
@@ -1000,23 +946,6 @@
         font-size: 14.5px;
         line-height: 1.5;
         margin: 4px 0;
-      }
-
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-        margin: 6px 0 8px;
-      }
-
-      .chip {
-        border: 1px solid #ddd;
-        background: #fff;
-        color: #333;
-        font-weight: bold;
-        border-radius: 999px;
-        padding: 3px 7px;
-        font-size: 11px;
       }
     }
   </style>
@@ -1456,6 +1385,8 @@
       try {
         if (dados.materialType === "revista") {
           await gerarRevistaPorPartes(dados);
+        } else if (dados.materialType === "livro") {
+          await gerarLivroPorPartes(dados);
         } else {
           setStatus("Gerando conteúdo no formato correto...", "");
           const material = await chamarApiGerar(dados);
@@ -1480,6 +1411,53 @@
         btn.disabled = false;
         btn.innerText = "Gerar material";
       }
+    }
+
+    async function gerarLivroPorPartes(dados) {
+      setStatus("Organizando o plano geral do livro...", "");
+      setBarra(5);
+
+      const meta = await chamarApiGerar({
+        ...dados,
+        livroPart: "meta"
+      });
+
+      const totalCapitulos = Number(dados.quantity || 1);
+      const livro = {
+        ...meta,
+        type: "livro",
+        chapters: []
+      };
+
+      materialAtual = livro;
+      renderizarMaterial(materialAtual);
+
+      const chapterPlan = meta.chapterPlan || [];
+      let previousChapterSummary = "";
+
+      for (let i = 1; i <= totalCapitulos; i++) {
+        setStatus(`Gerando capítulo ${i} de ${totalCapitulos}...`, "");
+        setBarra(8 + Math.round((i - 1) / totalCapitulos * 82));
+
+        const capitulo = await chamarApiGerar({
+          ...dados,
+          livroPart: "chapter",
+          chapterNumber: i,
+          chapterPlan,
+          bookCentralThesis: meta.bookCentralThesis || "",
+          readingPath: meta.readingPath || "",
+          previousChapterSummary
+        });
+
+        livro.chapters.push(capitulo);
+        previousChapterSummary = capitulo.chapterSummary || capitulo.reflectiveClosing || capitulo.centralThesis || "";
+
+        materialAtual = livro;
+        renderizarMaterial(materialAtual);
+      }
+
+      setBarra(100);
+      setStatus("Livro gerado com sucesso, capítulo por capítulo. Você pode editar antes de salvar em PDF.", "ok");
     }
 
     async function gerarRevistaPorPartes(dados) {
@@ -1529,7 +1507,13 @@
     }
 
     function bloco(titulo, texto) {
+      if (!texto) return "";
       return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
+    }
+
+    function blocoLista(titulo, arr) {
+      if (!Array.isArray(arr) || !arr.filter(Boolean).length) return "";
+      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3><ul class="lista">${arr.filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
     }
 
     function renderListaReferencias(titulo, lista) {
@@ -1611,15 +1595,16 @@
 
       let conteudo = "";
 
-      if (m.presentation) conteudo += bloco("Apresentação", m.presentation);
-      if (m.summaryIntro) conteudo += bloco("Apresentação", m.summaryIntro);
-      if (m.preface) conteudo += bloco("Prefácio", m.preface);
-      if (m.generalIntroduction) conteudo += bloco("Introdução geral", m.generalIntroduction);
-      if (m.courseDescription) conteudo += bloco("Descrição do curso", m.courseDescription);
-      if (m.generalObjective) conteudo += bloco("Objetivo geral", m.generalObjective);
-      if (m.objective) conteudo += bloco("Objetivo", m.objective);
-      if (m.introduction) conteudo += bloco("Introdução", m.introduction);
-      if (m.biblicalContext) conteudo += bloco("Contexto bíblico", m.biblicalContext);
+      conteudo += bloco("Apresentação", m.presentation || m.summaryIntro || "");
+      conteudo += bloco("Prefácio", m.preface || "");
+      conteudo += bloco("Introdução geral", m.generalIntroduction || "");
+      conteudo += bloco("Tese central do livro", m.bookCentralThesis || "");
+      conteudo += bloco("Caminho de leitura", m.readingPath || "");
+      conteudo += bloco("Descrição do curso", m.courseDescription || "");
+      conteudo += bloco("Objetivo geral", m.generalObjective || "");
+      conteudo += bloco("Objetivo", m.objective || "");
+      conteudo += bloco("Introdução", m.introduction || "");
+      conteudo += bloco("Contexto bíblico", m.biblicalContext || "");
 
       if (m.supportReferences) conteudo += blocoLista("Referências de apoio", m.supportReferences);
       if (m.crossReferences) conteudo += blocoLista("Referências cruzadas", m.crossReferences);
@@ -1629,14 +1614,18 @@
       conteudo += renderArray("Dias devocionais", m.days, "day");
       conteudo += renderArray("Partes", m.parts, "number");
 
-      if (m.finalConclusion) conteudo += bloco("Conclusão final", m.finalConclusion);
-      if (m.conclusion) conteudo += bloco("Conclusão", m.conclusion);
-      if (m.closing) conteudo += bloco("Encerramento", m.closing);
-      if (m.finalWord) conteudo += bloco("Palavra final", m.finalWord);
-      if (m.finalEvaluation) conteudo += bloco("Avaliação final", m.finalEvaluation);
-      if (m.wordToReader) conteudo += bloco("Palavra ao leitor", m.wordToReader);
-      if (m.authorBio) conteudo += bloco("Sobre o autor", m.authorBio);
-      if (m.backCoverText) conteudo += bloco("Texto de contracapa", m.backCoverText);
+      if (m.chapters && m.chapters.length === 0 && Array.isArray(m.chapterPlan)) {
+        conteudo += blocoLista("Plano de capítulos", m.chapterPlan.map(c => `${c.number}. ${c.title} — ${c.centralIdea}`));
+      }
+
+      conteudo += bloco("Conclusão final", m.finalConclusion || "");
+      conteudo += bloco("Conclusão", m.conclusion || "");
+      conteudo += bloco("Encerramento", m.closing || "");
+      conteudo += bloco("Palavra final", m.finalWord || "");
+      conteudo += bloco("Avaliação final", m.finalEvaluation || "");
+      conteudo += bloco("Palavra ao leitor", m.wordToReader || "");
+      conteudo += bloco("Sobre o autor", m.authorBio || "");
+      conteudo += bloco("Texto de contracapa", m.backCoverText || "");
 
       el("resultado").innerHTML = `
         <article class="doc">
@@ -1650,11 +1639,6 @@
           </section>
         </article>
       `;
-    }
-
-    function blocoLista(titulo, arr) {
-      if (!Array.isArray(arr) || !arr.filter(Boolean).length) return "";
-      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3><ul class="lista">${arr.filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
     }
 
     function renderArray(tituloGeral, arr, numeroCampo) {
@@ -1686,13 +1670,22 @@
 
     function rotulo(key) {
       const labels = {
+        chapterQuestion: "Pergunta do capítulo",
+        centralThesis: "Tese central do capítulo",
         openingNarrative: "Abertura",
         biblicalBase: "Base bíblica",
         supportReferences: "Referências de apoio",
         crossReferences: "Referências cruzadas",
-        development: "Desenvolvimento",
+        ideaDevelopment: "Desenvolvimento da ideia",
+        biblicalExposition: "Exposição bíblica",
+        argumentDevelopment: "Desenvolvimento do argumento",
         theologicalReflection: "Reflexão teológica",
+        biblicalExamples: "Exemplos bíblicos",
         pastoralApplication: "Aplicação pastoral",
+        chapterSummary: "Resumo do capítulo",
+        reflectiveClosing: "Fechamento reflexivo",
+        transitionToNextChapter: "Transição para o próximo capítulo",
+        development: "Desenvolvimento",
         chapterClosing: "Fechamento",
         opening: "Abertura",
         centralIdea: "Ideia central",
@@ -1994,11 +1987,11 @@
     }
 
     function preencherTeste() {
-      el("materialType").value = "sermao";
-      el("title").value = "O Deus que Restaura";
-      el("subtitle").value = "Uma palavra de esperança para quem precisa recomeçar";
-      el("theme").value = "A restauração de Deus na vida espiritual, familiar e emocional do cristão.";
-      el("biblicalBase").value = "Joel 2.25; Salmos 23; Romanos 8.28; 1 Pedro 5.10";
+      el("materialType").value = "livro";
+      el("title").value = "Quando Eu Me Encontro com Deus";
+      el("subtitle").value = "Uma jornada bíblica sobre transformação, quebrantamento e intimidade com o Senhor";
+      el("theme").value = "O encontro verdadeiro com Deus transforma a visão, o coração, a identidade e o propósito do cristão.";
+      el("biblicalBase").value = "Isaías 6.1-8; Lucas 5.1-11; Êxodo 3.1-12; Atos 9.1-18";
       el("quantity").value = "3";
       el("targetAudience").value = "Igreja em geral";
       el("author").value = "Pr. Isiquel Rodrigues";
@@ -2006,10 +1999,10 @@
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "preto e branco";
       el("coverMode").value = "sem-capa";
-      el("tone").value = "bíblico, pastoral, profundo e encorajador";
+      el("tone").value = "bíblico, pastoral, profundo, reflexivo e prazeroso de ler";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste preenchido. Clique em Gerar material.", "ok");
+      setStatus("Teste preenchido para Livro Cristão. Clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
