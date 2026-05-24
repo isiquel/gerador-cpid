@@ -112,7 +112,7 @@ function normalizeForm(body) {
   } else if (tipo === "devocional") {
     quantidade = Math.max(1, Math.min(quantidade, 30));
   } else if (tipo === "livro") {
-    quantidade = Math.max(1, Math.min(quantidade, 10));
+    quantidade = Math.max(1, Math.min(quantidade, 20));
   } else {
     quantidade = Math.max(1, Math.min(quantidade, 12));
   }
@@ -201,6 +201,8 @@ REGRAS OBRIGATÓRIAS:
 14. As referências bíblicas devem ser coerentes com o assunto tratado.
 15. Não coloque referências aleatórias. Toda referência precisa apoiar a ideia ensinada.
 16. Não entregue conteúdo raso, genérico ou sem desenvolvimento.
+17. Não escreva como se estivesse preenchendo formulário.
+18. Não use linguagem robótica.
 `.trim();
 }
 
@@ -220,6 +222,20 @@ Criar um plano de livro com unidade, progressão e linha de pensamento.
 O livro precisa ter começo, meio e fim.
 Cada capítulo precisa nascer do anterior e preparar o próximo.
 Não crie capítulos aleatórios.
+Não crie uma sequência de estudos independentes.
+Não faça parecer revista, apostila, curso ou sermão.
+
+COMO UM LIVRO DEVE FUNCIONAR:
+1. O livro precisa ter uma tese central.
+2. Cada capítulo deve trabalhar uma parte da tese do autor.
+3. Cada capítulo deve avançar o argumento geral.
+4. O capítulo 1 deve abrir o problema, a necessidade ou a visão central do livro.
+5. Os capítulos do meio devem desenvolver camadas do argumento.
+6. O último capítulo deve concluir a jornada do leitor.
+7. A progressão deve ser clara: o leitor precisa perceber que está caminhando.
+8. O livro deve ensinar e formar o leitor sem parecer roteiro de aula.
+9. O livro precisa ser agradável de ler, com linguagem fluida e madura.
+10. As referências bíblicas devem aparecer naturalmente dentro dos argumentos dos capítulos, não como listas isoladas.
 
 REGRAS DO PLANO:
 1. Crie uma tese central forte para o livro inteiro.
@@ -257,8 +273,7 @@ FORMATO JSON:
       "connectionWithPrevious": "",
       "preparesNext": "",
       "mainBiblicalBase": "",
-      "supportReferences": ["", "", "", ""],
-      "crossReferences": ["", "", "", ""]
+      "argumentRoleInBook": ""
     }
   ],
   "finalConclusion": "",
@@ -280,30 +295,20 @@ function promptLivroCapitulo(form, compacto) {
   const limite = compacto
     ? `
 MODO COMPACTO DE SEGURANÇA:
-1. openingNarrative: 90 a 130 palavras.
-2. centralThesis: 50 a 80 palavras.
-3. ideaDevelopment: 120 a 180 palavras.
-4. biblicalExposition: 120 a 180 palavras.
-5. argumentDevelopment: 140 a 220 palavras.
-6. theologicalReflection: 100 a 160 palavras.
-7. biblicalExamples: 100 a 150 palavras.
-8. pastoralApplication: 100 a 160 palavras.
-9. reflectiveClosing: 80 a 120 palavras.
-10. transitionToNextChapter: 40 a 70 palavras.
+1. opening: 120 a 180 palavras.
+2. thesisPresentation: 90 a 140 palavras.
+3. developmentBlocks: cada bloco com 180 a 260 palavras.
+4. chapterConclusion: 100 a 160 palavras.
+5. transitionToNextChapter: 40 a 80 palavras.
 `
     : `
 REGRAS DE TAMANHO:
-1. openingNarrative: 130 a 200 palavras.
-2. centralThesis: 60 a 100 palavras.
-3. ideaDevelopment: 180 a 280 palavras.
-4. biblicalExposition: 180 a 280 palavras.
-5. argumentDevelopment: 220 a 340 palavras.
-6. theologicalReflection: 160 a 240 palavras.
-7. biblicalExamples: 140 a 220 palavras.
-8. pastoralApplication: 160 a 240 palavras.
-9. chapterSummary: 70 a 110 palavras.
-10. reflectiveClosing: 120 a 180 palavras.
-11. transitionToNextChapter: 50 a 90 palavras.
+1. opening: 180 a 280 palavras.
+2. thesisPresentation: 120 a 190 palavras.
+3. Cada bloco de developmentBlocks deve ter de 260 a 420 palavras.
+4. O capítulo deve conter 4 blocos de desenvolvimento.
+5. chapterConclusion: 160 a 240 palavras.
+6. transitionToNextChapter: 60 a 100 palavras.
 `;
 
   return `
@@ -331,56 +336,72 @@ ${chapterPlanText}
 CAPÍTULO QUE DEVE SER ESCRITO AGORA:
 ${capituloPlanejado}
 
+MUITO IMPORTANTE SOBRE O FORMATO:
+1. Este capítulo precisa parecer capítulo de LIVRO, não apostila.
+2. Não escreva com cara de estudo bíblico em tópicos.
+3. Não crie seções chamadas "Base bíblica", "Referências cruzadas", "Aplicação pastoral", "Resumo do capítulo" ou "Fechamento reflexivo".
+4. Não coloque listas de referências bíblicas separadas.
+5. As referências bíblicas devem aparecer naturalmente dentro dos parágrafos.
+6. As referências cruzadas devem estar no meio do argumento, por exemplo:
+   - Essa tensão já aparece em Gênesis 3, quando a voz da serpente tenta deslocar a confiança humana da Palavra de Deus, e reaparece em Lucas 4, quando Cristo vence a tentação respondendo com as Escrituras.
+7. Não coloque "Aplicação pastoral" como título.
+8. A aplicação deve estar misturada ao desenvolvimento do argumento, como parte natural da escrita.
+9. O capítulo deve ter leitura fluida, como um livro publicado.
+10. Escreva como autor conduzindo o leitor, não como professor preenchendo campos.
+
 IDENTIDADE DO CAPÍTULO:
-1. Este capítulo precisa parecer parte de um livro real.
-2. Não pode parecer comentário curto, apostila, estudo seco, devocional ou resumo.
-3. O capítulo precisa trabalhar uma única ideia central.
-4. O capítulo precisa começar essa ideia, desenvolver essa ideia e concluir essa ideia.
-5. Não mude de assunto sem ligação.
-6. Não escreva parágrafos soltos.
-7. O leitor precisa sentir que está sendo conduzido por um caminho.
-8. O capítulo precisa ter começo, meio e fim.
-9. Cada seção deve nascer da anterior.
-10. A conclusão precisa retomar a tese inicial do capítulo.
+1. O capítulo precisa trabalhar uma única ideia central.
+2. O capítulo precisa começar essa ideia, desenvolver essa ideia e concluir essa ideia.
+3. Não mude de assunto sem ligação.
+4. Não escreva parágrafos soltos.
+5. O leitor precisa sentir que está sendo conduzido por um caminho.
+6. O capítulo precisa ter começo, meio e fim.
+7. Cada seção deve nascer da anterior.
+8. A conclusão precisa retomar a tese inicial do capítulo.
+9. Este capítulo deve cumprir seu papel dentro do argumento maior do livro.
+10. Se o livro tiver muitos capítulos, este capítulo deve desenvolver apenas a parte que lhe cabe, sem tentar resolver tudo de uma vez.
 
-MOVIMENTO ARGUMENTATIVO OBRIGATÓRIO:
-1. Comece com uma abertura envolvente, pastoral ou narrativa.
-2. Apresente a tese do capítulo.
-3. Mostre por que essa tese importa.
-4. Mostre o problema humano ou espiritual relacionado.
-5. Exponha o texto bíblico principal.
-6. Desenvolva o argumento bíblico.
-7. Traga referências cruzadas bem conectadas.
-8. Use exemplos bíblicos que fortaleçam o argumento.
-9. Aplique a verdade ao leitor.
-10. Conclua retomando a ideia inicial.
-11. Faça transição natural para o próximo capítulo.
+COMO DESENVOLVER O ARGUMENTO:
+1. Comece com uma abertura envolvente, pastoral, literária ou reflexiva.
+2. Apresente a tese do capítulo com clareza.
+3. Desenvolva a ideia em blocos de pensamento progressivos.
+4. Cada bloco precisa aprofundar um aspecto da mesma ideia.
+5. Use textos bíblicos dentro da explicação, não como lista isolada.
+6. Use referências cruzadas naturalmente dentro do raciocínio.
+7. Faça conexões entre Antigo e Novo Testamento quando isso fortalecer o argumento.
+8. Mostre o problema humano ou espiritual relacionado à tese.
+9. Mostre como a Escritura responde a esse problema.
+10. Conduza o leitor até uma conclusão clara.
 
-REGRAS DE ARGUMENTO:
-1. Não faça apenas comentário.
-2. Desenvolva uma linha de raciocínio.
-3. Use conectores entre as ideias:
+REGRAS DE ESTILO:
+1. Escreva como livro, não como sermão.
+2. Escreva como livro, não como revista.
+3. Escreva como livro, não como estudo bíblico em tópicos.
+4. Evite títulos técnicos demais.
+5. Evite linguagem seca.
+6. Use transições naturais entre os parágrafos.
+7. Use expressões de ligação entre ideias:
    - À luz disso;
    - Por essa razão;
    - O texto nos conduz a perceber;
    - Essa verdade se aprofunda quando observamos;
    - A Escritura não trata isso de forma isolada;
-   - Portanto, a conclusão pastoral é clara.
-4. Não use frases genéricas demais.
-5. Não repita a mesma ideia apenas com outras palavras.
-6. Traga ensino real, aprendizado real e aplicação real.
-7. O texto deve ser prazeroso de ler, mas com peso bíblico.
-8. Use linguagem pastoral, madura e fluida.
+   - Portanto, o caminho do leitor passa por essa compreensão.
+8. O texto deve ser prazeroso de ler, mas com peso bíblico.
+9. Use linguagem pastoral, madura e fluida.
+10. Não repita a mesma ideia apenas com outras palavras.
 
 REGRAS BÍBLICAS:
-1. Use uma base bíblica principal.
-2. Use referências de apoio.
-3. Use referências cruzadas.
-4. Explique as referências, não apenas liste.
-5. Conecte Antigo e Novo Testamento quando possível.
-6. Não use versículos fora de contexto.
-7. Siga linha bíblica conservadora.
-8. Em temas sobre Espírito Santo, dons, santificação, igreja, missões e escatologia, siga o pentecostalismo clássico.
+1. Use a Bíblia como fundamento do argumento.
+2. Não coloque referência bíblica apenas enfeitando o texto.
+3. Explique o sentido bíblico dentro do desenvolvimento.
+4. As referências cruzadas devem estar integradas ao texto.
+5. Não use versículos fora de contexto.
+6. Siga linha bíblica conservadora.
+7. Em temas sobre Espírito Santo, dons, santificação, igreja, missões e escatologia, siga o pentecostalismo clássico.
+8. Ao citar textos bíblicos, use referências no próprio parágrafo, como: em João 15, em Romanos 8, em Isaías 6, em Lucas 5.
+9. Não crie uma seção separada apenas para referências.
+10. Não escreva versículos longos por extenso; cite e explique.
 
 ${limite}
 
@@ -389,20 +410,39 @@ FORMATO JSON:
   "number": ${form.chapterNumber},
   "title": "",
   "chapterQuestion": "",
-  "centralThesis": "",
-  "openingNarrative": "",
-  "biblicalBase": ["", "", "", ""],
-  "crossReferences": ["", "", "", ""],
-  "ideaDevelopment": "",
-  "biblicalExposition": "",
-  "argumentDevelopment": "",
-  "theologicalReflection": "",
-  "biblicalExamples": "",
-  "pastoralApplication": "",
-  "chapterSummary": "",
-  "reflectiveClosing": "",
-  "transitionToNextChapter": ""
+  "opening": "",
+  "thesisPresentation": "",
+  "developmentBlocks": [
+    {
+      "heading": "",
+      "content": ""
+    },
+    {
+      "heading": "",
+      "content": ""
+    },
+    {
+      "heading": "",
+      "content": ""
+    },
+    {
+      "heading": "",
+      "content": ""
+    }
+  ],
+  "chapterConclusion": "",
+  "transitionToNextChapter": "",
+  "chapterSummary": ""
 }
+
+ATENÇÃO FINAL:
+O capítulo não deve exibir listas de referências.
+As referências bíblicas e referências cruzadas devem aparecer dentro dos parágrafos.
+Não use o título "Aplicação pastoral".
+Não use o título "Base bíblica".
+Não use o título "Referências cruzadas".
+Não use o título "Resumo do capítulo" dentro do texto do capítulo.
+O campo chapterSummary é apenas resumo interno para ajudar a gerar o próximo capítulo; escreva curto e objetivo.
 `.trim();
 }
 
