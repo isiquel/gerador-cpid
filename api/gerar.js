@@ -43,6 +43,13 @@ module.exports = async function handler(req, res) {
       material = parseJson(compactText);
     }
 
+    if (!material && form.materialType === "livro" && form.livroPart === "chapter") {
+      const compactPrompt = promptLivroCapitulo(form, true);
+      const compactResult = await callGeminiText(apiKey, models, compactPrompt);
+      const compactText = extractText(compactResult.data);
+      material = parseJson(compactText);
+    }
+
     if (!material) {
       return res.status(500).json({
         ok: false,
@@ -86,7 +93,9 @@ function isMaterialReservado(tipo) {
 function normalizeForm(body) {
   const tipo = String(body.materialType || "sermao").trim();
   const revistaPart = String(body.revistaPart || "").trim();
+  const livroPart = String(body.livroPart || "").trim();
   const lessonNumber = Number(body.lessonNumber || 1);
+  const chapterNumber = Number(body.chapterNumber || 1);
 
   let quantidade = Number(body.quantity || 3);
   let sermonPoints = Number(body.sermonPoints || 3);
@@ -113,8 +122,14 @@ function normalizeForm(body) {
     appName: "VERBO IA",
     materialType: tipo,
     revistaPart,
+    livroPart,
     lessonNumber,
+    chapterNumber,
     lessonTitles: body.lessonTitles || [],
+    chapterPlan: body.chapterPlan || [],
+    previousChapterSummary: String(body.previousChapterSummary || "").trim(),
+    bookCentralThesis: String(body.bookCentralThesis || "").trim(),
+    readingPath: String(body.readingPath || "").trim(),
     revistaVersion: String(body.revistaVersion || "professor").trim(),
     bibleVersion: String(body.bibleVersion || "King James Fiel 1611").trim(),
     sermonPoints,
@@ -135,8 +150,12 @@ function normalizeForm(body) {
 function buildPrompt(form) {
   if (form.materialType === "revista" && form.revistaPart === "meta") return promptRevistaMeta(form);
   if (form.materialType === "revista" && form.revistaPart === "lesson") return promptRevistaLicao(form, false);
+
+  if (form.materialType === "livro" && form.livroPart === "meta") return promptLivroMeta(form);
+  if (form.materialType === "livro" && form.livroPart === "chapter") return promptLivroCapitulo(form, false);
+
   if (form.materialType === "sermao") return promptSermao(form);
-  if (form.materialType === "livro") return promptLivro(form);
+  if (form.materialType === "livro") return promptLivroMeta(form);
   if (form.materialType === "devocional") return promptDevocional(form);
   if (form.materialType === "estudo") return promptEstudo(form);
   if (form.materialType === "curso") return promptCurso(form);
@@ -181,6 +200,209 @@ REGRAS OBRIGATÓRIAS:
 13. Quando citar autores, cite apenas como referência de aprofundamento, sem aspas diretas.
 14. As referências bíblicas devem ser coerentes com o assunto tratado.
 15. Não coloque referências aleatórias. Toda referência precisa apoiar a ideia ensinada.
+16. Não entregue conteúdo raso, genérico ou sem desenvolvimento.
+`.trim();
+}
+
+function promptLivroMeta(form) {
+  return `
+Você é um escritor cristão experiente, pastor, teólogo, expositor bíblico e autor de livros de formação espiritual.
+
+Crie apenas o PLANO GERAL de um LIVRO CRISTÃO.
+Não escreva os capítulos completos agora.
+O livro será gerado depois capítulo por capítulo.
+
+${baseDados(form, "Livro cristão - planejamento")}
+${regrasJson()}
+
+OBJETIVO:
+Criar um plano de livro com unidade, progressão e linha de pensamento.
+O livro precisa ter começo, meio e fim.
+Cada capítulo precisa nascer do anterior e preparar o próximo.
+Não crie capítulos aleatórios.
+
+REGRAS DO PLANO:
+1. Crie uma tese central forte para o livro inteiro.
+2. Crie um caminho de leitura progressivo.
+3. Planeje exatamente ${form.quantity} capítulos.
+4. Cada capítulo deve responder uma pergunta importante dentro do tema geral.
+5. Cada capítulo deve ter uma ideia central clara.
+6. Cada capítulo deve ter relação com o capítulo anterior.
+7. O último capítulo deve concluir a caminhada do livro.
+8. O plano deve permitir desenvolvimento profundo, bíblico e prazeroso.
+9. Não faça títulos soltos.
+10. Não crie assuntos desconectados.
+
+FORMATO JSON:
+{
+  "type": "livro",
+  "title": "",
+  "subtitle": "",
+  "theme": "",
+  "targetAudience": "",
+  "author": "",
+  "ministry": "",
+  "preface": "",
+  "presentation": "",
+  "generalIntroduction": "",
+  "bookCentralThesis": "",
+  "readingPath": "",
+  "chapterPlan": [
+    {
+      "number": 1,
+      "title": "",
+      "chapterQuestion": "",
+      "centralIdea": "",
+      "purpose": "",
+      "connectionWithPrevious": "",
+      "preparesNext": "",
+      "mainBiblicalBase": "",
+      "supportReferences": ["", "", "", ""],
+      "crossReferences": ["", "", "", ""]
+    }
+  ],
+  "finalConclusion": "",
+  "wordToReader": "",
+  "authorBio": "",
+  "backCoverText": ""
+}
+`.trim();
+}
+
+function promptLivroCapitulo(form, compacto) {
+  const chapterPlanText = JSON.stringify(form.chapterPlan || [], null, 2);
+  const capituloAtual = Array.isArray(form.chapterPlan)
+    ? form.chapterPlan.find((c) => Number(c.number) === Number(form.chapterNumber))
+    : null;
+
+  const capituloPlanejado = capituloAtual ? JSON.stringify(capituloAtual, null, 2) : "Crie conforme o tema geral.";
+
+  const limite = compacto
+    ? `
+MODO COMPACTO DE SEGURANÇA:
+1. openingNarrative: 90 a 130 palavras.
+2. centralThesis: 50 a 80 palavras.
+3. ideaDevelopment: 120 a 180 palavras.
+4. biblicalExposition: 120 a 180 palavras.
+5. argumentDevelopment: 140 a 220 palavras.
+6. theologicalReflection: 100 a 160 palavras.
+7. biblicalExamples: 100 a 150 palavras.
+8. pastoralApplication: 100 a 160 palavras.
+9. reflectiveClosing: 80 a 120 palavras.
+10. transitionToNextChapter: 40 a 70 palavras.
+`
+    : `
+REGRAS DE TAMANHO:
+1. openingNarrative: 130 a 200 palavras.
+2. centralThesis: 60 a 100 palavras.
+3. ideaDevelopment: 180 a 280 palavras.
+4. biblicalExposition: 180 a 280 palavras.
+5. argumentDevelopment: 220 a 340 palavras.
+6. theologicalReflection: 160 a 240 palavras.
+7. biblicalExamples: 140 a 220 palavras.
+8. pastoralApplication: 160 a 240 palavras.
+9. chapterSummary: 70 a 110 palavras.
+10. reflectiveClosing: 120 a 180 palavras.
+11. transitionToNextChapter: 50 a 90 palavras.
+`;
+
+  return `
+Você é um escritor cristão experiente, pastor, teólogo, expositor bíblico e autor de livros de formação espiritual.
+
+Crie SOMENTE O CAPÍTULO ${form.chapterNumber} do livro.
+Não crie os outros capítulos.
+Este livro está sendo gerado por partes para ficar mais profundo e organizado.
+
+${baseDados(form, "Livro cristão - capítulo individual")}
+${regrasJson()}
+
+TESE CENTRAL DO LIVRO:
+${form.bookCentralThesis || "Siga a tese central do tema informado."}
+
+CAMINHO DE LEITURA DO LIVRO:
+${form.readingPath || "Construa uma progressão lógica e espiritual."}
+
+RESUMO DO CAPÍTULO ANTERIOR:
+${form.previousChapterSummary || "Este é o primeiro capítulo ou não há resumo anterior."}
+
+PLANO GERAL DOS CAPÍTULOS:
+${chapterPlanText}
+
+CAPÍTULO QUE DEVE SER ESCRITO AGORA:
+${capituloPlanejado}
+
+IDENTIDADE DO CAPÍTULO:
+1. Este capítulo precisa parecer parte de um livro real.
+2. Não pode parecer comentário curto, apostila, estudo seco, devocional ou resumo.
+3. O capítulo precisa trabalhar uma única ideia central.
+4. O capítulo precisa começar essa ideia, desenvolver essa ideia e concluir essa ideia.
+5. Não mude de assunto sem ligação.
+6. Não escreva parágrafos soltos.
+7. O leitor precisa sentir que está sendo conduzido por um caminho.
+8. O capítulo precisa ter começo, meio e fim.
+9. Cada seção deve nascer da anterior.
+10. A conclusão precisa retomar a tese inicial do capítulo.
+
+MOVIMENTO ARGUMENTATIVO OBRIGATÓRIO:
+1. Comece com uma abertura envolvente, pastoral ou narrativa.
+2. Apresente a tese do capítulo.
+3. Mostre por que essa tese importa.
+4. Mostre o problema humano ou espiritual relacionado.
+5. Exponha o texto bíblico principal.
+6. Desenvolva o argumento bíblico.
+7. Traga referências cruzadas bem conectadas.
+8. Use exemplos bíblicos que fortaleçam o argumento.
+9. Aplique a verdade ao leitor.
+10. Conclua retomando a ideia inicial.
+11. Faça transição natural para o próximo capítulo.
+
+REGRAS DE ARGUMENTO:
+1. Não faça apenas comentário.
+2. Desenvolva uma linha de raciocínio.
+3. Use conectores entre as ideias:
+   - À luz disso;
+   - Por essa razão;
+   - O texto nos conduz a perceber;
+   - Essa verdade se aprofunda quando observamos;
+   - A Escritura não trata isso de forma isolada;
+   - Portanto, a conclusão pastoral é clara.
+4. Não use frases genéricas demais.
+5. Não repita a mesma ideia apenas com outras palavras.
+6. Traga ensino real, aprendizado real e aplicação real.
+7. O texto deve ser prazeroso de ler, mas com peso bíblico.
+8. Use linguagem pastoral, madura e fluida.
+
+REGRAS BÍBLICAS:
+1. Use uma base bíblica principal.
+2. Use referências de apoio.
+3. Use referências cruzadas.
+4. Explique as referências, não apenas liste.
+5. Conecte Antigo e Novo Testamento quando possível.
+6. Não use versículos fora de contexto.
+7. Siga linha bíblica conservadora.
+8. Em temas sobre Espírito Santo, dons, santificação, igreja, missões e escatologia, siga o pentecostalismo clássico.
+
+${limite}
+
+FORMATO JSON:
+{
+  "number": ${form.chapterNumber},
+  "title": "",
+  "chapterQuestion": "",
+  "centralThesis": "",
+  "openingNarrative": "",
+  "biblicalBase": ["", "", "", ""],
+  "crossReferences": ["", "", "", ""],
+  "ideaDevelopment": "",
+  "biblicalExposition": "",
+  "argumentDevelopment": "",
+  "theologicalReflection": "",
+  "biblicalExamples": "",
+  "pastoralApplication": "",
+  "chapterSummary": "",
+  "reflectiveClosing": "",
+  "transitionToNextChapter": ""
+}
 `.trim();
 }
 
@@ -249,17 +471,7 @@ REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
 5. Observação pastoral: máximo 90 palavras.
 6. Não repita o conteúdo dos tópicos nas orientações do professor.
 7. Acrescente apoio doutrinário seguro dentro de teacherNotes, pastoralObservation ou doctrinalSupport.
-8. O apoio doutrinário pode mencionar, de forma geral e sem citação direta:
-   - teologia sistemática pentecostal;
-   - comentários bíblicos conservadores;
-   - hermenêutica bíblica;
-   - doutrina da salvação;
-   - doutrina do Espírito Santo;
-   - escatologia pentecostal clássica;
-   - eclesiologia bíblica.
-9. Autores possíveis para aprofundamento, conforme o tema: Stanley Horton, Myer Pearlman, Antônio Gilberto, Eurico Bergstén, Donald Stamps, Wayne Grudem, Louis Berkhof, Millard Erickson, Norman Geisler, Hernandes Dias Lopes, John Stott, F. F. Bruce, Gordon Fee.
-10. Não cite todos os autores em toda lição. Use no máximo 2 ou 3 nomes quando fizer sentido.
-11. O professor precisa ter mais referências bíblicas de apoio para conduzir a aula com segurança.
+8. O professor precisa ter mais referências bíblicas de apoio para conduzir a aula com segurança.
 `
     : `
 REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
@@ -278,7 +490,6 @@ MODO COMPACTO DE SEGURANÇA:
 3. Cada subtópico: 60 a 90 palavras.
 4. Conclusão: 70 a 100 palavras.
 5. Leitura bíblica em classe: no máximo 4 versículos.
-6. Mesmo no modo compacto, inclua referências bíblicas, referências de apoio e referências cruzadas.
 `
     : `
 LIMITES DE TAMANHO:
@@ -287,7 +498,6 @@ LIMITES DE TAMANHO:
 3. Cada subtópico: 75 a 110 palavras.
 4. Conclusão: 80 a 120 palavras.
 5. Leitura bíblica em classe: no máximo 5 versículos.
-6. Não escreva textos longos demais em um único campo.
 `;
 
   return `
@@ -321,18 +531,14 @@ REGRAS DA LIÇÃO:
    - aplicação prática;
    - supportReferences com 3 a 5 referências bíblicas de apoio;
    - crossReferences com 3 a 5 referências cruzadas relacionadas.
-9. Use no conteúdo frases como:
-   Referências de apoio: João 3.16; Romanos 5.1; Efésios 2.8-9.
-   Referências cruzadas: Isaías 53.5; Hebreus 9.22; 1 Pedro 1.18-19.
-10. Não encha a lição de versículos soltos sem explicar.
-11. As referências cruzadas devem conectar Antigo e Novo Testamento quando possível.
-12. A revista do aluno também deve ser completa, explicativa e profunda.
-13. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
-14. Use como padrão textual a King James Fiel 1611.
-15. Siga linha bíblica conservadora.
-16. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
-17. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
-18. Priorize fidelidade bíblica, clareza, ortodoxia e aplicação pastoral.
+9. Não encha a lição de versículos soltos sem explicar.
+10. As referências cruzadas devem conectar Antigo e Novo Testamento quando possível.
+11. A revista do aluno também deve ser completa, explicativa e profunda.
+12. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
+13. Use como padrão textual a King James Fiel 1611.
+14. Siga linha bíblica conservadora.
+15. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
+16. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
 
 ${limites}
 
@@ -453,159 +659,6 @@ FORMATO JSON:
   "appeal": "",
   "finalPrayer": ""
 }
-`.trim();
-}
-
-function promptLivro(form) {
-  return `
-Você é um escritor cristão experiente, pastor, teólogo, expositor bíblico e autor de livros de formação espiritual.
-
-Crie um LIVRO CRISTÃO verdadeiro, com leitura prazerosa, profundidade bíblica, argumento bem construído e unidade interna.
-O livro não pode parecer um resumo, comentário curto, apostila simples, devocional ou esboço.
-O livro precisa ter começo, meio e fim.
-
-${baseDados(form, "Livro cristão")}
-${regrasJson()}
-
-IDENTIDADE DO LIVRO:
-1. Este material deve parecer um LIVRO CRISTÃO de verdade.
-2. Cada capítulo deve trabalhar uma ideia central, desenvolver essa ideia e concluir essa ideia.
-3. O capítulo não pode começar em um assunto, mudar para outro sem ligação e terminar em outro assunto aleatório.
-4. Cada capítulo precisa ter unidade: uma tese, um caminho de desenvolvimento e uma conclusão coerente.
-5. O livro inteiro também precisa ter progressão: cada capítulo deve continuar ou aprofundar o anterior.
-6. A leitura deve ser prazerosa, fluida, pastoral, reflexiva e profunda.
-7. Não escreva apenas comentários curtos. Desenvolva argumentos.
-8. Não faça frases genéricas como se fossem apenas devocional raso.
-9. Não use linguagem robótica.
-10. Não repita a mesma ideia com palavras diferentes apenas para preencher espaço.
-
-ESTRUTURA ARGUMENTATIVA OBRIGATÓRIA EM CADA CAPÍTULO:
-Cada capítulo deve seguir este movimento interno:
-1. Abrir com uma introdução envolvente, pastoral ou narrativa, preparando o leitor para a ideia central.
-2. Apresentar a tese do capítulo com clareza.
-3. Explicar por que essa ideia importa.
-4. Mostrar o problema humano ou espiritual relacionado ao tema.
-5. Expor o texto bíblico com fidelidade.
-6. Desenvolver argumentos bíblicos e teológicos.
-7. Usar exemplos bíblicos conectados ao argumento.
-8. Aplicar a ideia à vida cristã real.
-9. Concluir retomando a tese inicial.
-10. Fazer uma transição natural para o próximo capítulo.
-
-REGRAS DE PROFUNDIDADE:
-1. Cada capítulo precisa ter substância, não apenas comentários.
-2. Cada capítulo deve ter raciocínio progressivo.
-3. O argumento deve caminhar em ordem lógica.
-4. Use expressões de ligação entre ideias, como:
-   - À luz disso;
-   - Por essa razão;
-   - O texto nos conduz a perceber;
-   - Essa verdade se aprofunda quando observamos;
-   - A Escritura não trata isso de forma isolada;
-   - Portanto, a conclusão pastoral é clara.
-5. Evite parágrafos soltos sem ligação entre si.
-6. Não comece cada seção do zero. Uma seção deve nascer da anterior.
-7. O leitor precisa terminar o capítulo entendendo o que aprendeu.
-8. O capítulo deve ensinar, confrontar, consolar e formar espiritualmente.
-
-REGRAS BÍBLICAS:
-1. Cada capítulo deve ter uma base bíblica principal.
-2. Cada capítulo deve ter referências bíblicas de apoio.
-3. Cada capítulo deve ter referências cruzadas.
-4. As referências cruzadas devem reforçar o argumento, não apenas aparecer como lista.
-5. Sempre que possível, conecte Antigo e Novo Testamento.
-6. Explique o sentido bíblico antes de aplicar.
-7. Não use textos bíblicos fora de contexto.
-8. O livro deve seguir linha bíblica conservadora.
-9. Em temas sobre Espírito Santo, dons, santificação, igreja, missões e escatologia, siga o pentecostalismo clássico.
-
-REGRAS DE ESTILO:
-1. Escreva como livro, não como aula resumida.
-2. O texto deve ter beleza, ritmo, profundidade e clareza.
-3. Use linguagem pastoral, mas com maturidade teológica.
-4. Escreva de forma que seja prazeroso ler.
-5. Evite excesso de tópicos secos.
-6. O conteúdo deve parecer uma conversa séria com o leitor, conduzindo-o à compreensão.
-7. Cada capítulo deve ter começo, desenvolvimento e fechamento.
-8. Não entregue respostas rasas.
-9. Não faça um comentário e encerre.
-10. Desenvolva a ideia até que ela fique clara, bíblica e aplicável.
-
-REGRAS SOBRE TAMANHO:
-1. O livro deve ser mais desenvolvido que e-book, devocional ou estudo.
-2. Cada campo textual do capítulo deve ser substancial.
-3. openingNarrative deve ter de 130 a 200 palavras.
-4. centralThesis deve ter de 60 a 100 palavras.
-5. ideaDevelopment deve ter de 180 a 280 palavras.
-6. biblicalExposition deve ter de 180 a 280 palavras.
-7. argumentDevelopment deve ter de 220 a 340 palavras.
-8. theologicalReflection deve ter de 160 a 240 palavras.
-9. biblicalExamples deve ter de 140 a 220 palavras.
-10. pastoralApplication deve ter de 160 a 240 palavras.
-11. reflectiveClosing deve ter de 120 a 180 palavras.
-12. transitionToNextChapter deve ter de 50 a 90 palavras.
-13. Não escreva textos curtos demais.
-14. Não escreva apenas uma frase em campos que pedem desenvolvimento.
-
-REGRAS DE CONTINUIDADE ENTRE CAPÍTULOS:
-1. O capítulo 1 deve abrir a ideia principal do livro.
-2. Os capítulos seguintes devem aprofundar a ideia de forma progressiva.
-3. O último capítulo deve concluir o caminho do livro.
-4. Cada capítulo deve ter relação clara com o tema geral.
-5. A sequência dos capítulos deve parecer planejada.
-6. Não crie capítulos desconectados.
-7. O livro deve ter uma linha de pensamento contínua.
-8. Cada capítulo deve responder uma pergunta importante dentro do tema geral.
-
-FORMATO JSON:
-{
-  "type": "livro",
-  "title": "",
-  "subtitle": "",
-  "theme": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "preface": "",
-  "presentation": "",
-  "generalIntroduction": "",
-  "bookCentralThesis": "",
-  "readingPath": "",
-  "chapters": [
-    {
-      "number": 1,
-      "title": "",
-      "chapterQuestion": "",
-      "centralThesis": "",
-      "openingNarrative": "",
-      "biblicalBase": ["", "", "", ""],
-      "crossReferences": ["", "", "", ""],
-      "ideaDevelopment": "",
-      "biblicalExposition": "",
-      "argumentDevelopment": "",
-      "theologicalReflection": "",
-      "biblicalExamples": "",
-      "pastoralApplication": "",
-      "chapterSummary": "",
-      "reflectiveClosing": "",
-      "transitionToNextChapter": ""
-    }
-  ],
-  "finalConclusion": "",
-  "wordToReader": "",
-  "authorBio": "",
-  "backCoverText": ""
-}
-
-Crie exatamente ${form.quantity} capítulos.
-
-IMPORTANTE:
-O livro precisa trabalhar uma ideia de modo contínuo.
-Cada capítulo precisa começar uma ideia, desenvolver essa ideia e concluir essa ideia.
-Não escreva capítulos aleatórios.
-Não faça comentário curto.
-Não faça apenas uma explicação rasa.
-Construa argumentos bíblicos fortes, com clareza, beleza e profundidade.
 `.trim();
 }
 
