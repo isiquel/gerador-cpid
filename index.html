@@ -795,7 +795,6 @@
       line-height:1.7;
     }
 
-    /* Imagem real de capa gerada pela IA, sem perder a capa antiga */
     .capa.com-imagem-ia{
       background-size:cover!important;
       background-position:center!important;
@@ -1473,6 +1472,7 @@
 
     function setStatus(msg, classe = ""){
       const s = el("status");
+      if(!s) return;
       s.className = "status " + classe;
       s.innerHTML = msg;
     }
@@ -1568,36 +1568,49 @@
     function atualizarOpcoesPorTipo(){
       const tipo = tipoAtual();
 
-      el("campoRevistaVersao").classList.toggle("campo-oculto", tipo !== "revista");
-      el("campoTraducaoBiblica").classList.toggle("campo-oculto", tipo !== "revista");
-      el("campoTopicos").classList.toggle("campo-oculto", tipo !== "sermao");
-      el("campoQuantidade").classList.toggle("campo-oculto", tipo === "sermao" || tipo === "devocional" || tipo === "estudo");
+      if(el("campoRevistaVersao")){
+        el("campoRevistaVersao").classList.toggle("campo-oculto", tipo !== "revista");
+      }
+
+      if(el("campoTraducaoBiblica")){
+        el("campoTraducaoBiblica").classList.toggle("campo-oculto", tipo !== "revista");
+      }
+
+      if(el("campoTopicos")){
+        el("campoTopicos").classList.toggle("campo-oculto", tipo !== "sermao");
+      }
+
+      if(el("campoQuantidade")){
+        el("campoQuantidade").classList.toggle("campo-oculto", tipo === "sermao" || tipo === "devocional" || tipo === "estudo");
+      }
 
       const labelQuantidade = el("labelQuantidade");
 
+      if(!labelQuantidade) return;
+
       if(tipo === "revista"){
         labelQuantidade.textContent = "Lições mensais";
-        el("quantity").value = "4";
-        el("quantity").min = "4";
-        el("quantity").max = "4";
-        el("coverMode").value = "com-capa";
-        if(!valor("bibleVersion")) el("bibleVersion").value = "King James Fiel 1611";
+        if(el("quantity")) el("quantity").value = "4";
+        if(el("quantity")) el("quantity").min = "4";
+        if(el("quantity")) el("quantity").max = "4";
+        if(el("coverMode")) el("coverMode").value = "com-capa";
+        if(el("bibleVersion") && !valor("bibleVersion")) el("bibleVersion").value = "King James Fiel 1611";
       }else if(tipo === "livro"){
         labelQuantidade.textContent = "Capítulos";
-        el("quantity").min = "1";
-        el("quantity").max = "20";
-        if(!valor("quantity")) el("quantity").value = "10";
-        el("coverMode").value = "com-capa";
+        if(el("quantity")) el("quantity").min = "1";
+        if(el("quantity")) el("quantity").max = "20";
+        if(el("quantity") && !valor("quantity")) el("quantity").value = "10";
+        if(el("coverMode")) el("coverMode").value = "com-capa";
       }else if(tipo === "ebook"){
         labelQuantidade.textContent = "Capítulos";
-        el("quantity").min = "1";
-        el("quantity").max = "12";
-        if(!valor("quantity")) el("quantity").value = "6";
+        if(el("quantity")) el("quantity").min = "1";
+        if(el("quantity")) el("quantity").max = "12";
+        if(el("quantity") && !valor("quantity")) el("quantity").value = "6";
       }else if(tipo === "curso"){
         labelQuantidade.textContent = "Aulas";
-        el("quantity").min = "1";
-        el("quantity").max = "20";
-        if(!valor("quantity")) el("quantity").value = "8";
+        if(el("quantity")) el("quantity").min = "1";
+        if(el("quantity")) el("quantity").max = "20";
+        if(el("quantity") && !valor("quantity")) el("quantity").value = "8";
       }else{
         labelQuantidade.textContent = "Quantidade";
       }
@@ -1693,58 +1706,135 @@
 
     async function gerarPromptAutomatico(){
       const btn = el("btnPrompt");
-      const tema = valor("promptTema");
+
+      const temaDigitado = valor("promptTema");
+      const temaPrincipal = valor("theme");
+      const tituloAtual = valor("title");
+      const tema = temaDigitado || temaPrincipal || tituloAtual;
 
       if(!tema){
-        setStatus("Digite o tema para gerar o prompt.", "erro");
+        setStatus("Digite um tema no campo 'Crie um prompt sobre' ou no campo Tema principal.", "erro");
         return;
       }
 
-      btn.disabled = true;
-      setStatus("Gerando prompt automático...");
+      if(!valor("adminCode")){
+        setStatus("Digite o código de acesso para usar o prompt automático.", "erro");
+        return;
+      }
+
+      if(btn){
+        btn.disabled = true;
+        btn.innerText = "Gerando prompt...";
+      }
+
+      setStatus("Gerando prompt automático profundo...");
       setProgresso(20);
 
       try{
+        const tipo = tipoAtual();
+
         const data = await postJSON("/api/prompt", {
           adminCode: valor("adminCode"),
           codigoAcesso: valor("adminCode"),
-          materialType: tipoAtual(),
-          tipoMaterial: tipoAtual(),
+
+          materialType: tipo,
+          tipoMaterial: tipo,
+
           theme: tema,
           tema: tema,
           temaPrincipal: tema,
+
           title: valor("title"),
-          titulo: valor("title")
+          titulo: valor("title"),
+
+          subtitle: valor("subtitle"),
+          subtitulo: valor("subtitle"),
+
+          biblicalBase: valor("biblicalBase"),
+          textoBase: valor("biblicalBase"),
+
+          targetAudience: valor("targetAudience"),
+          publicoAlvo: valor("targetAudience"),
+
+          depthLevel: valor("depthLevel"),
+          profundidade: valor("depthLevel"),
+
+          tone: valor("tone"),
+          tomMaterial: valor("tone"),
+
+          revistaVersion: valor("revistaVersion"),
+          versaoRevista: valor("revistaVersion"),
+
+          bibleVersion: valor("bibleVersion"),
+          traducao: valor("bibleVersion"),
+
+          quantity: valor("quantity"),
+          sermonPoints: valor("sermonPoints")
         });
 
-        setProgresso(100);
-        setStatus("Prompt gerado com sucesso. O campo Tema principal foi preenchido automaticamente.", "ok");
+        const prompt =
+          data?.prompt ||
+          data?.text ||
+          data?.html ||
+          data?.content ||
+          data?.output ||
+          data?.result ||
+          data?.material?.prompt ||
+          data?.material?.text ||
+          data?.material?.content ||
+          "";
 
-        const prompt = data.prompt || data.text || data.html || "";
+        if(!prompt || !String(prompt).trim()){
+          throw new Error("A API respondeu, mas não retornou o texto do prompt. Verifique o arquivo api/prompt.js.");
+        }
 
-        el("theme").value = prompt;
+        const promptFinal = String(prompt).trim();
 
-        if(!valor("title")){
+        if(el("theme")){
+          el("theme").value = promptFinal;
+        }
+
+        if(el("title") && !valor("title")){
           el("title").value = tema;
         }
 
-        el("resultado").innerHTML = `
-          <article class="doc">
-            <section class="pagina">
-              <div class="pagina-interna">
-                <h1 class="titulo-grande">Prompt automático</h1>
-                <div class="subtitulo">${escapeHtml(tema)}</div>
-                <div class="bloco">
-                  ${divTexto(prompt)}
+        if(el("tone") && !valor("tone")){
+          el("tone").value = "bíblico, profundo, pastoral, didático, reverente e edificante";
+        }
+
+        setProgresso(100);
+        setStatus("Prompt automático gerado com sucesso. O campo Tema principal foi preenchido.", "ok");
+
+        if(el("resultado")){
+          el("resultado").innerHTML = `
+            <article class="doc">
+              <section class="pagina">
+                <div class="pagina-interna">
+                  <h1 class="titulo-grande">Prompt automático</h1>
+                  <div class="subtitulo">${escapeHtml(tema)}</div>
+
+                  <div class="bloco box-gold">
+                    <h3>Prompt gerado</h3>
+                    ${divTexto(promptFinal)}
+                  </div>
+
+                  <div class="bloco">
+                    <h3>Próximo passo</h3>
+                    <div class="texto">Agora clique em Gerar material para produzir o conteúdo completo com base neste prompt.</div>
+                  </div>
                 </div>
-              </div>
-            </section>
-          </article>
-        `;
+              </section>
+            </article>
+          `;
+        }
       }catch(erro){
-        setStatus(escapeHtml(limparErroApi(erro.message || "Erro ao gerar prompt.")), "erro");
+        console.error("Erro no prompt automático:", erro);
+        setStatus(escapeHtml(limparErroApi(erro.message || "Erro ao gerar prompt automático.")), "erro");
       }finally{
-        btn.disabled = false;
+        if(btn){
+          btn.disabled = false;
+          btn.innerText = "Gerar prompt automático";
+        }
       }
     }
 
@@ -1757,7 +1847,8 @@
         return;
       }
 
-      btn.disabled = true;
+      if(btn) btn.disabled = true;
+
       setProgresso(5);
       setEtapas("Estrutura");
       setStatus("Iniciando geração...");
@@ -1775,7 +1866,7 @@
       }catch(erro){
         setStatus(escapeHtml(limparErroApi(erro.message || "Erro ao gerar material.")), "erro");
       }finally{
-        btn.disabled = false;
+        if(btn) btn.disabled = false;
       }
     }
 
@@ -2573,10 +2664,23 @@
       }
 
       editando = true;
-      el("resultado").setAttribute("contenteditable", "true");
-      el("modoEdicao").style.display = "block";
-      el("btnEditar").disabled = true;
-      el("btnFinalizarEdicao").disabled = false;
+
+      if(el("resultado")){
+        el("resultado").setAttribute("contenteditable", "true");
+      }
+
+      if(el("modoEdicao")){
+        el("modoEdicao").style.display = "block";
+      }
+
+      if(el("btnEditar")){
+        el("btnEditar").disabled = true;
+      }
+
+      if(el("btnFinalizarEdicao")){
+        el("btnFinalizarEdicao").disabled = false;
+      }
+
       setStatus("Modo edição ativado. Faça as correções diretamente no material.", "ok");
     }
 
@@ -2678,7 +2782,7 @@
         setStatus("PDF baixado com sucesso.", "ok");
       }catch(erro){
         document.body.classList.remove("gerando-pdf");
-        el("printArea").style.display = "none";
+        if(el("printArea")) el("printArea").style.display = "none";
         setStatus(escapeHtml(erro.message || "Erro ao salvar PDF."), "erro");
       }
     }
@@ -2687,23 +2791,98 @@
       ultimoMaterial = null;
       editando = false;
 
-      el("resultado").innerHTML = `
-        <div class="placeholder">
-          <div>
-            <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
-            <p style="margin:0;">Escolha o tipo de material e clique em <strong>Gerar material</strong>.</p>
-          </div>
-        </div>
-      `;
+      const idsParaLimpar = [
+        "promptTema",
+        "title",
+        "subtitle",
+        "theme",
+        "biblicalBase",
+        "quantity",
+        "targetAudience",
+        "author",
+        "ministry",
+        "tone",
+        "adminCode",
+        "bibleVersion"
+      ];
 
-      el("resultado").setAttribute("contenteditable", "false");
-      el("modoEdicao").style.display = "none";
-      el("btnEditar").disabled = false;
-      el("btnFinalizarEdicao").disabled = true;
+      idsParaLimpar.forEach((id) => {
+        const campo = el(id);
+        if(campo){
+          campo.value = "";
+        }
+      });
+
+      if(el("materialType")){
+        el("materialType").value = "sermao";
+      }
+
+      if(el("revistaVersion")){
+        el("revistaVersion").value = "professor";
+      }
+
+      if(el("sermonPoints")){
+        el("sermonPoints").value = "3";
+      }
+
+      if(el("depthLevel")){
+        el("depthLevel").value = "profundo";
+      }
+
+      if(el("visualStyle")){
+        el("visualStyle").value = "preto e branco";
+      }
+
+      if(el("coverMode")){
+        el("coverMode").value = "sem-capa";
+      }
+
+      atualizarOpcoesPorTipo();
+
+      if(el("resultado")){
+        el("resultado").innerHTML = `
+          <div class="placeholder">
+            <div>
+              <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
+              <p style="margin:0;">Escolha o tipo de material e clique em <strong>Gerar material</strong>.</p>
+            </div>
+          </div>
+        `;
+
+        el("resultado").setAttribute("contenteditable", "false");
+      }
+
+      if(el("modoEdicao")){
+        el("modoEdicao").style.display = "none";
+      }
+
+      if(el("btnEditar")){
+        el("btnEditar").disabled = false;
+      }
+
+      if(el("btnFinalizarEdicao")){
+        el("btnFinalizarEdicao").disabled = true;
+      }
+
+      if(el("btnGerar")){
+        el("btnGerar").disabled = false;
+      }
+
+      if(el("btnPrompt")){
+        el("btnPrompt").disabled = false;
+        el("btnPrompt").innerText = "Gerar prompt automático";
+      }
+
+      if(el("printArea")){
+        el("printArea").innerHTML = "";
+        el("printArea").style.display = "none";
+      }
+
+      document.body.classList.remove("gerando-pdf");
 
       setProgresso(0);
       setEtapas(null);
-      setStatus("Campos mantidos. Resultado limpo.", "ok");
+      setStatus("Tudo foi limpo. Você pode começar um novo material.", "ok");
     }
 
     async function copiarTexto(){
@@ -2723,15 +2902,17 @@
     }
 
     function preencherTeste(){
-      el("materialType").value = "revista";
+      if(el("materialType")) el("materialType").value = "revista";
       atualizarOpcoesPorTipo();
 
-      el("adminCode").value = valor("adminCode") || "00";
-      el("revistaVersion").value = "professor";
-      el("bibleVersion").value = "King James Fiel 1611";
-      el("title").value = "O Livro que Carregamos";
-      el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual";
-      el("theme").value = `Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
+      if(el("adminCode")) el("adminCode").value = valor("adminCode") || "00";
+      if(el("revistaVersion")) el("revistaVersion").value = "professor";
+      if(el("bibleVersion")) el("bibleVersion").value = "King James Fiel 1611";
+      if(el("title")) el("title").value = "O Livro que Carregamos";
+      if(el("subtitle")) el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual";
+
+      if(el("theme")){
+        el("theme").value = `Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
 
 A revista deve ensinar sobre a Bíblia como Palavra de Deus, sua origem divina, sua inspiração, sua autoridade, sua formação, sua preservação e a responsabilidade espiritual da Igreja diante das Escrituras.
 
@@ -2741,15 +2922,17 @@ Lição 1 — A Bíblia: A Palavra de Deus Escrita aos Homens.
 Lição 2 — A Inspiração das Escrituras.
 Lição 3 — O Cânon Sagrado e a Formação da Bíblia.
 Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.`;
-      el("biblicalBase").value = "2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12";
-      el("quantity").value = "4";
-      el("targetAudience").value = "Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos";
-      el("author").value = "Pr. Isiquel Rodrigues";
-      el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
-      el("depthLevel").value = "muito profundo";
-      el("visualStyle").value = "colorido";
-      el("coverMode").value = "com-capa";
-      el("tone").value = "Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante";
+      }
+
+      if(el("biblicalBase")) el("biblicalBase").value = "2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12";
+      if(el("quantity")) el("quantity").value = "4";
+      if(el("targetAudience")) el("targetAudience").value = "Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos";
+      if(el("author")) el("author").value = "Pr. Isiquel Rodrigues";
+      if(el("ministry")) el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
+      if(el("depthLevel")) el("depthLevel").value = "muito profundo";
+      if(el("visualStyle")) el("visualStyle").value = "colorido";
+      if(el("coverMode")) el("coverMode").value = "com-capa";
+      if(el("tone")) el("tone").value = "Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante";
 
       setStatus("Teste preenchido. Clique em Gerar material.", "ok");
     }
