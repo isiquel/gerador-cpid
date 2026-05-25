@@ -6,11 +6,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const geminiApiKey = process.env.GEMINI_API_KEY || "";
+    const openaiApiKey = process.env.OPENAI_API_KEY || "";
 
-    if (!apiKey) {
+    if (!geminiApiKey && !openaiApiKey) {
       return res.status(500).json({
-        error: "A chave GEMINI_API_KEY não está configurada no Vercel."
+        error: "Nenhuma chave de IA foi configurada. Configure GEMINI_API_KEY ou OPENAI_API_KEY na Vercel."
       });
     }
 
@@ -30,57 +31,57 @@ export default async function handler(req, res) {
 
     const prompt = buildPrompt(form);
 
-    let respostaTexto = "";
-    let ultimoErro = null;
+    let resultado = await gerarComFallback({
+      form,
+      prompt,
+      geminiApiKey,
+      openaiApiKey
+    });
 
-    const modelos = [
-      process.env.GEMINI_TEXT_MODEL_1 || "gemini-2.5-flash-lite",
-      process.env.GEMINI_TEXT_MODEL_2 || "gemini-2.5-flash",
-      process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.0-flash"
-    ];
-
-    for (const modelo of modelos) {
-      try {
-        respostaTexto = await callGeminiText(apiKey, modelo, prompt);
-        if (respostaTexto) break;
-      } catch (erro) {
-        ultimoErro = erro;
-      }
-    }
-
-    if (!respostaTexto) {
-      return res.status(500).json({
-        error: ultimoErro?.message || "A IA não retornou conteúdo."
-      });
-    }
-
-    let material = parseJson(respostaTexto);
-
-    if (!material && form.materialType === "revista" && form.revistaPart === "lesson") {
+    if (!resultado.material && form.materialType === "revista" && form.revistaPart === "lesson") {
       const promptCompacto = promptRevistaLicao(form, true);
-      const textoCompacto = await callGeminiText(apiKey, modelos[0], promptCompacto);
-      material = parseJson(textoCompacto);
-    }
 
-    if (!material && form.materialType === "livro" && form.livroPart === "chapter") {
-      const promptCompacto = promptLivroCapitulo(form, true);
-      const textoCompacto = await callGeminiText(apiKey, modelos[0], promptCompacto);
-      material = parseJson(textoCompacto);
-    }
-
-    if (!material) {
-      return res.status(500).json({
-        error: "A API devolveu uma resposta inválida. Aguarde alguns segundos e tente novamente."
+      resultado = await gerarComFallback({
+        form,
+        prompt: promptCompacto,
+        geminiApiKey,
+        openaiApiKey
       });
     }
 
-    return res.status(200).json({ material });
+    if (!resultado.material && form.materialType === "livro" && form.livroPart === "chapter") {
+      const promptCompacto = promptLivroCapitulo(form, true);
+
+      resultado = await gerarComFallback({
+        form,
+        prompt: promptCompacto,
+        geminiApiKey,
+        openaiApiKey
+      });
+    }
+
+    if (!resultado.material) {
+      return res.status(500).json({
+        error:
+          resultado.error ||
+          "A IA não conseguiu gerar um JSON válido. Tente novamente em alguns instantes."
+      });
+    }
+
+    return res.status(200).json({
+      material: resultado.material,
+      provider: resultado.provider
+    });
   } catch (erro) {
     return res.status(500).json({
       error: erro?.message || "Erro interno ao gerar material."
     });
   }
 }
+
+/* =========================================================
+   NORMALIZAÇÃO DOS DADOS
+========================================================= */
 
 function normalizeForm(body) {
   const materialType = String(
@@ -91,7 +92,11 @@ function normalizeForm(body) {
   ).trim().toLowerCase();
 
   let sermonPoints = Number(body.sermonPoints || 3);
-  if (!Number.isFinite(sermonPoints)) sermonPoints = 3;
+
+  if (!Number.isFinite(sermonPoints)) {
+    sermonPoints = 3;
+  }
+
   sermonPoints = Math.max(3, Math.min(5, sermonPoints));
 
   let quantity = Number(
@@ -102,12 +107,25 @@ function normalizeForm(body) {
     4
   );
 
-  if (!Number.isFinite(quantity)) quantity = 4;
+  if (!Number.isFinite(quantity)) {
+    quantity = 4;
+  }
 
-  if (materialType === "revista") quantity = 4;
-  if (materialType === "livro") quantity = Math.max(1, Math.min(20, quantity));
-  if (materialType === "ebook") quantity = Math.max(1, Math.min(12, quantity));
-  if (materialType === "curso") quantity = Math.max(1, Math.min(20, quantity));
+  if (materialType === "revista") {
+    quantity = 4;
+  }
+
+  if (materialType === "livro") {
+    quantity = Math.max(1, Math.min(20, quantity));
+  }
+
+  if (materialType === "ebook") {
+    quantity = Math.max(1, Math.min(12, quantity));
+  }
+
+  if (materialType === "curso") {
+    quantity = Math.max(1, Math.min(20, quantity));
+  }
 
   return {
     adminCode: String(body.adminCode || body.codigoAcesso || "").trim(),
@@ -156,6 +174,81 @@ function normalizeForm(body) {
     instrucoesExtras: String(body.instrucoesExtras || "").trim()
   };
 }
+
+/* =========================================================
+   FALLBACK GEMINI + OPENAI
+========================================================= */
+
+async function gerarComFallback({ form, prompt, geminiApiKey, openaiApiKey }) {
+  const erros = [];
+
+  if (geminiApiKey) {
+    const geminiModels = limparLista([
+      process.env.GEMINI_TEXT_MODEL_1 || "gemini-2.5-flash-lite",
+      process.env.GEMINI_TEXT_MODEL_2 || "gemini-2.5-flash",
+      process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.0-flash"
+    ]);
+
+    for (const model of geminiModels) {
+      try {
+        const texto = await callGeminiText(geminiApiKey, model, prompt);
+        const material = parseJson(texto);
+
+        if (material) {
+          return {
+            material,
+            provider: `gemini:${model}`
+          };
+        }
+
+        erros.push(`Gemini ${model}: retornou texto, mas não retornou JSON válido.`);
+      } catch (erro) {
+        erros.push(`Gemini ${model}: ${erro?.message || "erro desconhecido"}`);
+      }
+    }
+  }
+
+  if (openaiApiKey) {
+    const openaiModels = limparLista([
+      process.env.OPENAI_TEXT_MODEL_1 || "gpt-5.5",
+      process.env.OPENAI_TEXT_MODEL_2 || "gpt-4.1-mini",
+      process.env.OPENAI_TEXT_MODEL_3 || "gpt-4.1",
+      process.env.OPENAI_TEXT_MODEL_4 || "gpt-4.1-nano"
+    ]);
+
+    for (const model of openaiModels) {
+      try {
+        const texto = await callOpenAIText(openaiApiKey, model, prompt);
+        const material = parseJson(texto);
+
+        if (material) {
+          return {
+            material,
+            provider: `openai:${model}`
+          };
+        }
+
+        erros.push(`OpenAI ${model}: retornou texto, mas não retornou JSON válido.`);
+      } catch (erro) {
+        erros.push(`OpenAI ${model}: ${erro?.message || "erro desconhecido"}`);
+      }
+    }
+  }
+
+  return {
+    material: null,
+    provider: null,
+    error: erros.join(" | ")
+  };
+}
+
+function limparLista(lista) {
+  return [...new Set(lista.filter(Boolean).map((x) => String(x).trim()).filter(Boolean))];
+}
+
+/* =========================================================
+   PROMPTS
+========================================================= */
 
 function buildPrompt(form) {
   if (form.materialType === "revista" && form.revistaPart === "meta") {
@@ -226,8 +319,13 @@ Regras gerais:
 - Use materiais reais e conhecidos quando indicar aprofundamento.
 - Não use símbolo do Gemini.
 - Não mencione inteligência artificial.
+- Não diga que o conteúdo foi gerado por IA.
 `;
 }
+
+/* =========================================================
+   REVISTA EBD
+========================================================= */
 
 function promptRevistaMeta(form) {
   return `
@@ -396,6 +494,11 @@ Use sugestões como:
 
 Não use indicações vagas como “diversos autores”.
 Não invente nomes de livros.
+
+${compacto ? `
+MODO COMPACTO:
+A resposta anterior pode ter ficado grande demais. Mantenha a lição completa, mas seja mais objetivo em cada campo. Não remova nenhum campo do JSON.
+` : ""}
 
 ${form.instrucoesExtras ? `Instruções extras:\n${form.instrucoesExtras}` : ""}
 
@@ -607,6 +710,10 @@ Retorne JSON válido neste formato:
 `;
 }
 
+/* =========================================================
+   LIVRO
+========================================================= */
+
 function promptLivroMeta(form) {
   return `
 ${promptBase(form)}
@@ -672,6 +779,11 @@ Não coloque referências bíblicas em bloco solto.
 As referências bíblicas devem aparecer integradas no argumento, nos parágrafos e nas citações.
 O capítulo deve desenvolver uma ideia como um autor escrevendo um livro.
 
+${compacto ? `
+MODO COMPACTO:
+Seja mais objetivo, mas mantenha o capítulo com formato de livro e com todos os campos do JSON.
+` : ""}
+
 Retorne JSON válido:
 
 {
@@ -693,6 +805,10 @@ Retorne JSON válido:
 }
 `;
 }
+
+/* =========================================================
+   OUTROS MATERIAIS
+========================================================= */
 
 function promptSermao(form) {
   return `
@@ -830,8 +946,13 @@ Retorne JSON válido:
 `;
 }
 
+/* =========================================================
+   GEMINI
+========================================================= */
+
 async function callGeminiText(apiKey, model, prompt) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+  const url =
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   const resposta = await fetch(url, {
     method: "POST",
@@ -854,20 +975,184 @@ async function callGeminiText(apiKey, model, prompt) {
     })
   });
 
-  const data = await resposta.json();
+  const data = await resposta.json().catch(() => null);
 
   if (!resposta.ok) {
-    throw new Error(data?.error?.message || `Erro no modelo ${model}.`);
+    throw new Error(data?.error?.message || `Erro no modelo Gemini ${model}.`);
   }
 
-  const texto = data?.candidates?.[0]?.content?.parts?.map(p => p.text || "").join("\n").trim();
+  const texto = data?.candidates?.[0]?.content?.parts
+    ?.map((p) => p.text || "")
+    .join("\n")
+    .trim();
 
   if (!texto) {
-    throw new Error(`O modelo ${model} não retornou texto.`);
+    throw new Error(`O modelo Gemini ${model} não retornou texto.`);
   }
 
   return texto;
 }
+
+/* =========================================================
+   OPENAI / CHATGPT
+========================================================= */
+
+async function callOpenAIText(apiKey, model, prompt) {
+  const primeiraTentativa = await tentarOpenAIChat({
+    apiKey,
+    model,
+    prompt,
+    usarMaxCompletionTokens: true,
+    usarTemperatura: true
+  });
+
+  if (primeiraTentativa.ok) {
+    return primeiraTentativa.texto;
+  }
+
+  const mensagem = primeiraTentativa.erro || "";
+
+  const precisaTentarSemTemperatura =
+    mensagem.toLowerCase().includes("temperature") ||
+    mensagem.toLowerCase().includes("top_p") ||
+    mensagem.toLowerCase().includes("unsupported");
+
+  if (precisaTentarSemTemperatura) {
+    const segundaTentativa = await tentarOpenAIChat({
+      apiKey,
+      model,
+      prompt,
+      usarMaxCompletionTokens: true,
+      usarTemperatura: false
+    });
+
+    if (segundaTentativa.ok) {
+      return segundaTentativa.texto;
+    }
+
+    const terceiraTentativa = await tentarOpenAIChat({
+      apiKey,
+      model,
+      prompt,
+      usarMaxCompletionTokens: false,
+      usarTemperatura: false
+    });
+
+    if (terceiraTentativa.ok) {
+      return terceiraTentativa.texto;
+    }
+
+    throw new Error(terceiraTentativa.erro || segundaTentativa.erro || primeiraTentativa.erro);
+  }
+
+  const tentarMaxTokensAntigo =
+    mensagem.toLowerCase().includes("max_completion_tokens") ||
+    mensagem.toLowerCase().includes("max_tokens");
+
+  if (tentarMaxTokensAntigo) {
+    const segundaTentativa = await tentarOpenAIChat({
+      apiKey,
+      model,
+      prompt,
+      usarMaxCompletionTokens: false,
+      usarTemperatura: true
+    });
+
+    if (segundaTentativa.ok) {
+      return segundaTentativa.texto;
+    }
+
+    throw new Error(segundaTentativa.erro || primeiraTentativa.erro);
+  }
+
+  throw new Error(primeiraTentativa.erro || `Erro no modelo OpenAI ${model}.`);
+}
+
+async function tentarOpenAIChat({
+  apiKey,
+  model,
+  prompt,
+  usarMaxCompletionTokens,
+  usarTemperatura
+}) {
+  const url = "https://api.openai.com/v1/chat/completions";
+
+  const body = {
+    model,
+    messages: [
+      {
+        role: "system",
+        content:
+          "Você é um assistente de escrita cristã, bíblica e editorial. Responda sempre em JSON válido, sem markdown e sem texto fora do JSON."
+      },
+      {
+        role: "user",
+        content: prompt
+      }
+    ],
+    response_format: {
+      type: "json_object"
+    }
+  };
+
+  if (usarTemperatura) {
+    body.temperature = 0.62;
+    body.top_p = 0.9;
+  }
+
+  if (usarMaxCompletionTokens) {
+    body.max_completion_tokens = 16000;
+  } else {
+    body.max_tokens = 16000;
+  }
+
+  try {
+    const resposta = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await resposta.json().catch(() => null);
+
+    if (!resposta.ok) {
+      return {
+        ok: false,
+        texto: "",
+        erro: data?.error?.message || `Erro no modelo OpenAI ${model}.`
+      };
+    }
+
+    const texto = data?.choices?.[0]?.message?.content?.trim();
+
+    if (!texto) {
+      return {
+        ok: false,
+        texto: "",
+        erro: `O modelo OpenAI ${model} não retornou texto.`
+      };
+    }
+
+    return {
+      ok: true,
+      texto,
+      erro: ""
+    };
+  } catch (erro) {
+    return {
+      ok: false,
+      texto: "",
+      erro: erro?.message || `Erro ao chamar OpenAI ${model}.`
+    };
+  }
+}
+
+/* =========================================================
+   PARSER JSON
+========================================================= */
 
 function parseJson(texto) {
   if (!texto) return null;
