@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>VERBO IA - Gerador de Materiais Cristãos</title>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
@@ -331,8 +332,7 @@
     .doc{
       max-width:980px;
       margin:0 auto;
-      display:grid;
-      gap:22px;
+      display:block;
     }
 
     .pagina{
@@ -341,6 +341,7 @@
       border:1px solid #e6d8c7;
       box-shadow:var(--sombra);
       overflow:visible;
+      margin-bottom:22px;
     }
 
     .pagina-interna{padding:42px 48px}
@@ -400,8 +401,20 @@
       font-size:16px;
       color:#7b5a39;
       font-weight:bold;
-      margin-bottom:8px;
+      margin-bottom:10px;
       line-height:1.55;
+    }
+
+    .referencia-topico{
+      display:inline-block;
+      background:#fff4d8;
+      border:1px solid #e6c27b;
+      color:#6b461f;
+      padding:8px 12px;
+      border-radius:999px;
+      font-size:15px;
+      font-weight:bold;
+      margin:0 0 14px;
     }
 
     .lista{
@@ -428,7 +441,7 @@
     }
 
     .capa{
-      min-height:900px;
+      min-height:1040px;
       color:#fff;
       display:flex;
       align-items:center;
@@ -437,16 +450,17 @@
       position:relative;
       overflow:hidden;
       background:
-        radial-gradient(circle at 50% 24%, rgba(255,226,146,.75), transparent 18%),
-        radial-gradient(circle at 50% 38%, rgba(255,221,138,.38), transparent 35%),
+        radial-gradient(circle at 50% 20%, rgba(255,226,146,.78), transparent 17%),
+        radial-gradient(circle at 50% 40%, rgba(255,221,138,.34), transparent 36%),
         linear-gradient(145deg,#160d07 0%,#2b170c 32%,#6b431f 68%,#b48339 100%);
+      border-radius:22px;
     }
 
     .capa::before{
       content:"";
       position:absolute;
       inset:28px;
-      border:1px solid rgba(243,213,138,.55);
+      border:1px solid rgba(243,213,138,.62);
       border-radius:28px;
       box-shadow:
         inset 0 0 0 1px rgba(255,255,255,.09),
@@ -465,12 +479,37 @@
       z-index:0;
     }
 
+    .tema-bibliologia{
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,226,146,.82), transparent 16%),
+        radial-gradient(circle at 50% 38%, rgba(255,221,138,.36), transparent 37%),
+        linear-gradient(145deg,#140d08 0%,#29170c 34%,#6c421f 70%,#b68438 100%);
+    }
+
+    .tema-familia{
+      background:
+        radial-gradient(circle at 50% 24%, rgba(255,238,190,.72), transparent 20%),
+        linear-gradient(145deg,#2b160f 0%,#704023 48%,#c49b62 100%);
+    }
+
+    .tema-missoes{
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255,225,150,.65), transparent 20%),
+        linear-gradient(145deg,#111827 0%,#4b321f 45%,#b8873b 100%);
+    }
+
+    .tema-oracao{
+      background:
+        radial-gradient(circle at 50% 22%, rgba(255,248,213,.72), transparent 20%),
+        linear-gradient(145deg,#1d130d 0%,#55331d 52%,#a77b45 100%);
+    }
+
     .capa-decoracao{
       position:absolute;
       width:78%;
       max-width:760px;
       height:230px;
-      top:255px;
+      top:260px;
       left:50%;
       transform:translateX(-50%);
       z-index:2;
@@ -528,7 +567,7 @@
 
     .capa-box{
       width:min(790px,88%);
-      min-height:760px;
+      min-height:900px;
       padding:46px 42px;
       border-radius:30px;
       border:1px solid rgba(243,213,138,.50);
@@ -589,7 +628,7 @@
 
     .capa-miolo{
       width:100%;
-      padding-top:250px;
+      padding-top:300px;
       padding-bottom:20px;
     }
 
@@ -622,18 +661,6 @@
       position:relative;
     }
 
-    .ornamento::before{
-      content:"✦";
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform:translate(-50%,-50%);
-      color:var(--dourado2);
-      background:#3b230f;
-      padding:0 10px;
-      font-size:13px;
-    }
-
     .capa-rodape{
       width:100%;
       color:#f7e6bd;
@@ -645,72 +672,199 @@
 
     .capa-rodape p{margin:6px 0}
 
+    .print-area{
+      display:none;
+    }
+
     .gerando-pdf #resultado{
       background:#fff!important;
       border:none!important;
       padding:0!important;
+      overflow:visible!important;
     }
 
     .gerando-pdf .doc{
       max-width:100%!important;
       width:100%!important;
-      gap:0!important;
+      display:block!important;
     }
 
     .gerando-pdf .pagina{
       box-shadow:none!important;
       border-radius:0!important;
       border:none!important;
-      page-break-after:auto;
-      break-after:auto;
+      margin:0!important;
+      break-after:page;
+      page-break-after:always;
+      break-inside:auto;
+      page-break-inside:auto;
     }
 
-    .gerando-pdf .pagina-interna{padding:18px 20px!important}
-    .gerando-pdf .titulo-grande{font-size:27px!important}
-    .gerando-pdf .subtitulo{font-size:17px!important}
+    .gerando-pdf .pagina:last-child{
+      break-after:auto;
+      page-break-after:auto;
+    }
+
+    .gerando-pdf .pagina-interna{
+      padding:16mm 14mm!important;
+    }
+
+    .gerando-pdf .titulo-grande{font-size:25px!important}
+    .gerando-pdf .subtitulo{font-size:15px!important}
 
     .gerando-pdf .texto,
     .gerando-pdf p{
-      font-size:15.5px!important;
-      line-height:1.55!important;
+      font-size:13.5px!important;
+      line-height:1.5!important;
     }
 
     .gerando-pdf .bloco,
     .gerando-pdf .topico-revista{
-      padding:12px 14px!important;
-      margin-top:10px!important;
+      padding:10px 12px!important;
+      margin-top:9px!important;
       break-inside:avoid;
       page-break-inside:avoid;
     }
 
     .gerando-pdf .bloco h3,
     .gerando-pdf .topico-revista h3{
-      font-size:18px!important;
+      font-size:16.5px!important;
     }
 
     .gerando-pdf .subtopico-revista{
-      padding:10px 12px!important;
-      margin-top:10px!important;
+      padding:9px 11px!important;
+      margin-top:8px!important;
       break-inside:avoid;
       page-break-inside:avoid;
     }
 
-    .gerando-pdf .subtopico-revista h4{font-size:16.5px!important}
-    .gerando-pdf .referencia{font-size:13.5px!important}
+    .gerando-pdf .subtopico-revista h4{font-size:15.5px!important}
+    .gerando-pdf .referencia{font-size:12.5px!important}
 
     .gerando-pdf .lista{
-      font-size:15px!important;
-      line-height:1.55!important;
+      font-size:13.5px!important;
+      line-height:1.45!important;
     }
 
     .gerando-pdf .capa{
-      min-height:1080px!important;
-      page-break-after:always;
+      width:100%!important;
+      min-height:277mm!important;
+      height:277mm!important;
+      border-radius:0!important;
       break-after:page;
+      page-break-after:always;
     }
 
     .gerando-pdf .capa-box{
-      min-height:980px!important;
+      min-height:245mm!important;
+    }
+
+    @media print{
+      @page{
+        size:A4 portrait;
+        margin:0;
+      }
+
+      html,body{
+        margin:0!important;
+        padding:0!important;
+        background:#fff!important;
+      }
+
+      body > header,
+      body > main{
+        display:none!important;
+      }
+
+      .print-area{
+        display:block!important;
+        width:100%!important;
+        background:#fff!important;
+      }
+
+      .print-area .doc{
+        width:100%!important;
+        max-width:100%!important;
+        display:block!important;
+      }
+
+      .print-area .pagina{
+        width:210mm!important;
+        min-height:297mm!important;
+        margin:0!important;
+        padding:0!important;
+        border:none!important;
+        box-shadow:none!important;
+        border-radius:0!important;
+        background:#fff!important;
+        overflow:hidden!important;
+        break-after:page!important;
+        page-break-after:always!important;
+      }
+
+      .print-area .pagina:last-child{
+        break-after:auto!important;
+        page-break-after:auto!important;
+      }
+
+      .print-area .pagina-interna{
+        padding:16mm 14mm!important;
+      }
+
+      .print-area .capa{
+        min-height:297mm!important;
+        height:297mm!important;
+        color:#fff!important;
+        -webkit-print-color-adjust:exact!important;
+        print-color-adjust:exact!important;
+      }
+
+      .print-area .capa-box{
+        min-height:260mm!important;
+      }
+
+      .print-area .titulo-grande{
+        font-size:25px!important;
+      }
+
+      .print-area .subtitulo{
+        font-size:15px!important;
+      }
+
+      .print-area .texto,
+      .print-area p{
+        font-size:13.5px!important;
+        line-height:1.5!important;
+      }
+
+      .print-area .bloco,
+      .print-area .topico-revista{
+        padding:10px 12px!important;
+        margin-top:9px!important;
+        break-inside:avoid!important;
+        page-break-inside:avoid!important;
+      }
+
+      .print-area .bloco h3,
+      .print-area .topico-revista h3{
+        font-size:16.5px!important;
+      }
+
+      .print-area .subtopico-revista{
+        padding:9px 11px!important;
+        margin-top:8px!important;
+        break-inside:avoid!important;
+        page-break-inside:avoid!important;
+      }
+
+      .print-area .subtopico-revista h4{
+        font-size:15.5px!important;
+      }
+
+      .print-area .lista{
+        font-size:13.5px!important;
+        line-height:1.45!important;
+      }
     }
 
     @media(max-width:800px){
@@ -809,10 +963,13 @@
       .doc{
         width:100%;
         max-width:100%;
-        gap:12px;
       }
 
-      .pagina{border-radius:16px}
+      .pagina{
+        border-radius:16px;
+        margin-bottom:12px;
+      }
+
       .pagina-interna{padding:20px 15px}
 
       .titulo-grande{
@@ -1086,7 +1243,9 @@
       </div>
     </section>
   </main>
-    <script>
+
+  <div id="printArea" class="print-area"></div>
+  <script>
     let ultimoMaterial = null;
     let editando = false;
 
@@ -1405,7 +1564,7 @@
           revistaPart:"lesson",
           lessonNumber:i,
           lessonTitles:titulos,
-          instrucoesExtras:"Cada subtópico precisa trazer conteúdo desenvolvido, explicação bíblica profunda, aplicação e pelo menos um parágrafo completo. Não retorne apenas títulos de subtópicos."
+          instrucoesExtras:"Cada tópico e cada subtópico precisam ter referências bíblicas coerentes. Cada subtópico precisa trazer conteúdo desenvolvido, explicação bíblica profunda, aplicação e pelo menos um parágrafo completo. No campo recommendedDeepening, use livros, Bíblias de estudo e obras teológicas reais, como Bíblia de Estudo Pentecostal, Bíblia de Estudo Genebra, Teologia Sistemática Pentecostal, Teologia Sistemática de Norman Geisler, Introdução Bíblica de Geisler e Nix, Comentário Bíblico Beacon, Comentário Bíblico Moody e Dicionário Bíblico Wycliffe."
         });
 
         const lesson = lessonResp.material || lessonResp;
@@ -1502,10 +1661,24 @@
       return renderMaterialGeral(m);
     }
 
+    function classeTemaCapa(m){
+      const texto = `${m.title || ""} ${m.subtitle || ""} ${m.theme || ""}`.toLowerCase();
+
+      if(texto.includes("miss")) return "tema-missoes";
+      if(texto.includes("família") || texto.includes("familia") || texto.includes("lar")) return "tema-familia";
+      if(texto.includes("oração") || texto.includes("oracao") || texto.includes("intercess")) return "tema-oracao";
+      if(texto.includes("bíblia") || texto.includes("biblia") || texto.includes("bibliologia") || texto.includes("escritura")) return "tema-bibliologia";
+
+      const opcoes = ["tema-bibliologia", "tema-familia", "tema-missoes", "tema-oracao"];
+      const base = (m.title || "verbo").length + (m.subtitle || "").length;
+      return opcoes[base % opcoes.length];
+    }
+
     function capaMaterial(m, selo){
       if(valor("coverMode") !== "com-capa") return "";
 
       const isRevista = (m.type || tipoAtual()) === "revista";
+      const temaClasse = classeTemaCapa(m);
 
       if(isRevista){
         const versao = (m.revistaVersion || valor("revistaVersion")) === "aluno"
@@ -1513,7 +1686,7 @@
           : "REVISTA DO PROFESSOR";
 
         return `
-          <section class="pagina capa">
+          <section class="pagina capa ${temaClasse}">
             <div class="luz-capa"></div>
 
             <div class="capa-decoracao">
@@ -1547,7 +1720,7 @@
       }
 
       return `
-        <section class="pagina capa">
+        <section class="pagina capa ${temaClasse}">
           <div class="luz-capa"></div>
 
           <div class="capa-decoracao">
@@ -1620,7 +1793,7 @@
         const review = Array.isArray(l.reviewQuestions) ? l.reviewQuestions : [];
 
         html += `
-          <section class="pagina">
+          <section class="pagina licao-pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">Lição ${escapeHtml(lessonNumber)} — ${escapeHtml(l.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(l.subtitle || "")}</div>
@@ -1649,21 +1822,24 @@
               ${topics.map((t, tIndex) => {
                 const topicoTexto = pegarPrimeiroTexto(t, ["text","texto","content","conteudo","explanation","explicacao","development","desenvolvimento","commentary","comentario","body"]);
                 const subtops = Array.isArray(t.subtopics) ? t.subtopics : [];
+                const refTopico = t.reference || t.referencia || t.biblicalReference || t.biblicalBase || "";
 
                 return `
                   <div class="topico-revista">
                     <h3>${romano(tIndex + 1)}. ${escapeHtml(t.title || `Tópico ${tIndex + 1}`)}</h3>
 
+                    ${refTopico ? `<div class="referencia-topico">${escapeHtml(refTopico)}</div>` : ""}
+
                     ${topicoTexto ? divTexto(topicoTexto) : ""}
 
                     ${subtops.map((s, sIndex) => {
                       const conteudoSubtopico = textoSubtopico(s);
+                      const refSub = s.reference || s.referencia || s.biblicalReference || s.biblicalBase || "";
 
                       return `
                         <div class="subtopico-revista">
                           <h4>${tIndex + 1}.${sIndex + 1} ${escapeHtml(s.title || s.titulo || "")}</h4>
-                          ${s.reference ? `<div class="referencia">${escapeHtml(s.reference)}</div>` : ""}
-                          ${s.referencia ? `<div class="referencia">${escapeHtml(s.referencia)}</div>` : ""}
+                          ${refSub ? `<div class="referencia">${escapeHtml(refSub)}</div>` : ""}
                           ${conteudoSubtopico ? divTexto(conteudoSubtopico) : `<div class="texto">Conteúdo não retornado pela IA para este subtópico. Edite este campo ou gere novamente a lição.</div>`}
                         </div>
                       `;
@@ -1684,7 +1860,7 @@
                   <div class="bloco">
                     <h3>Para aprofundamento</h3>
                     <ul class="lista">
-                      ${l.recommendedDeepening.map(x => `<li>${escapeHtml(x)}</li>`).join("")}
+                      ${l.recommendedDeepening.map(x => `<li>${escapeHtml(typeof x === "object" ? Object.values(x).join(" — ") : x)}</li>`).join("")}
                     </ul>
                   </div>
                 ` : ""}
@@ -1768,7 +1944,7 @@
         const numero = cap.number || index + 1;
 
         html += `
-          <section class="pagina">
+          <section class="pagina licao-pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">Capítulo ${escapeHtml(numero)} — ${escapeHtml(cap.title || "")}</h1>
 
@@ -1860,9 +2036,10 @@
 
             const numero = item[numeroCampo] || item.number || i + 1;
             const tituloItem = item.title || item.titulo || `${titulo.slice(0,-1)} ${numero}`;
+            const ref = item.reference || item.referencia || item.biblicalReference || item.biblicalBase || "";
 
             const corpo = Object.entries(item)
-              .filter(([key]) => !["title","titulo",numeroCampo,"number","lesson","day"].includes(key))
+              .filter(([key]) => !["title","titulo",numeroCampo,"number","lesson","day","reference","referencia","biblicalReference","biblicalBase"].includes(key))
               .map(([key, value]) => {
                 if(!value) return "";
 
@@ -1897,6 +2074,7 @@
             return `
               <div class="topico-revista">
                 <h3>${escapeHtml(numero)}. ${escapeHtml(tituloItem)}</h3>
+                ${ref ? `<div class="referencia-topico">${escapeHtml(ref)}</div>` : ""}
                 ${corpo}
               </div>
             `;
@@ -2033,18 +2211,40 @@
       }
     }
 
+    function prepararAreaImpressao(){
+      const areaResultado = el("resultado");
+      const printArea = el("printArea");
+
+      if(!areaResultado || !printArea) return null;
+
+      const doc = areaResultado.querySelector(".doc");
+
+      if(!doc){
+        return null;
+      }
+
+      printArea.innerHTML = doc.outerHTML;
+      return printArea;
+    }
+
     async function salvarPDF(){
       finalizarEdicao(false);
 
-      const area = el("resultado");
+      const areaResultado = el("resultado");
 
-      if(!area || !area.innerText.trim() || area.querySelector(".placeholder")){
+      if(!areaResultado || !areaResultado.innerText.trim() || areaResultado.querySelector(".placeholder")){
         setStatus("Gere um material antes de salvar em PDF.", "erro");
         return;
       }
 
-      setStatus("Preparando PDF...");
-      document.body.classList.add("gerando-pdf");
+      const printArea = prepararAreaImpressao();
+
+      if(!printArea){
+        setStatus("Não encontrei o material formatado para salvar. Gere novamente o material.", "erro");
+        return;
+      }
+
+      setStatus("Preparando PDF somente com o material, sem a tela do aplicativo...");
 
       const titulo = valor("title") || "material-verbo-ia";
 
@@ -2055,8 +2255,10 @@
         .replace(/^-+|-+$/g,"")
         .toLowerCase() + ".pdf";
 
+      document.body.classList.add("gerando-pdf");
+
       const opt = {
-        margin:[8,8,8,8],
+        margin:[0,0,0,0],
         filename:nomeArquivo,
         image:{
           type:"jpeg",
@@ -2074,18 +2276,27 @@
           orientation:"portrait"
         },
         pagebreak:{
-          mode:["avoid-all","css","legacy"]
+          mode:["css", "legacy"],
+          before:[".licao-pagina"]
         }
       };
 
       try{
-        await html2pdf().set(opt).from(area).save();
-        setStatus("PDF salvo com sucesso.", "ok");
+        printArea.style.display = "block";
+        await html2pdf().set(opt).from(printArea).save();
+        setStatus("PDF salvo com sucesso. Agora ele salva somente a revista/material, sem a tela do aplicativo.", "ok");
       }catch(erro){
-        setStatus("Não foi possível salvar automaticamente. Use a opção imprimir/salvar em PDF do navegador.", "erro");
-        window.print();
+        setStatus("O salvamento automático falhou. Abrindo impressão somente do material.", "erro");
+
+        try{
+          printArea.style.display = "block";
+          window.print();
+        }catch(e){
+          setStatus("Não foi possível salvar automaticamente. Tente novamente pelo navegador.", "erro");
+        }
       }finally{
         document.body.classList.remove("gerando-pdf");
+        printArea.style.display = "";
       }
     }
 
@@ -2148,6 +2359,10 @@
           </div>
         </div>
       `;
+
+      if(el("printArea")){
+        el("printArea").innerHTML = "";
+      }
     }
 
     function prepararTelaInicial(){
@@ -2163,7 +2378,7 @@
       if(tipo === "revista"){
         el("title").value = "O Livro que Carregamos";
         el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação e responsabilidade espiritual";
-        el("theme").value = "A importância da Bíblia como Palavra de Deus, sua origem, formação e o dever cristão em conhecê-la e obedecê-la. Gere uma revista completa de EBD sobre Bibliologia. Cada tópico e cada subtópico devem ter conteúdo desenvolvido, explicação bíblica profunda, aplicação e texto completo. Não gere apenas títulos.";
+        el("theme").value = "A importância da Bíblia como Palavra de Deus, sua origem, formação e o dever cristão em conhecê-la e obedecê-la. Gere uma revista completa de EBD sobre Bibliologia. Cada tópico e cada subtópico devem ter conteúdo desenvolvido, explicação bíblica profunda, aplicação e texto completo. Cada tópico e subtópico precisam ter referências bíblicas coerentes.";
         el("biblicalBase").value = "2 Timóteo 3.16-17; Salmos 119.105; 2 Pedro 1.20-21; Isaías 40.8; Mateus 24.35";
         el("targetAudience").value = "Alunos da Escola Bíblica Dominical";
         el("author").value = "Pr. Isiquel Rodrigues";
@@ -2208,3 +2423,4 @@
   </script>
 </body>
 </html>
+  
