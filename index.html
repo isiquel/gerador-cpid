@@ -11,8 +11,8 @@
   <style>
     :root {
       --bg: #020617;
-      --panel: rgba(15, 23, 42, .92);
-      --panel2: rgba(30, 41, 59, .88);
+      --panel: rgba(15, 23, 42, .94);
+      --panel2: rgba(30, 41, 59, .90);
       --text: #f8fafc;
       --muted: #cbd5e1;
       --gold: #d6a84f;
@@ -104,8 +104,17 @@
       font-size: 21px;
     }
 
-    .form-section {
-      margin-top: 16px;
+    .section-title {
+      margin-top: 18px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(214,168,79,.10);
+      border: 1px solid rgba(214,168,79,.20);
+      color: var(--gold2);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      text-transform: uppercase;
     }
 
     label {
@@ -146,6 +155,10 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
+    }
+
+    .field-group.hidden {
+      display: none;
     }
 
     .btn-area {
@@ -624,44 +637,6 @@
         min-height: 650px;
       }
     }
-
-    @media print {
-      body {
-        background: #fff;
-      }
-
-      .topbar,
-      .panel,
-      .preview-title {
-        display: none !important;
-      }
-
-      .app {
-        padding: 0;
-        max-width: none;
-      }
-
-      .layout {
-        display: block;
-      }
-
-      .preview-panel {
-        padding: 0;
-        border: 0;
-        box-shadow: none;
-      }
-
-      .document-shell {
-        overflow: visible;
-        max-height: none;
-        border: 0;
-      }
-
-      #printArea {
-        transform: none;
-        margin: 0;
-      }
-    }
   </style>
 </head>
 
@@ -683,17 +658,21 @@
       <section class="panel" id="formulario">
         <h2>Gerar material</h2>
 
-        <div class="form-section">
-          <label>Tipo de material</label>
-          <select id="materialType">
-            <option value="sermao">Sermão</option>
-            <option value="devocional">Devocional</option>
-            <option value="estudo">Estudo bíblico / teológico</option>
-            <option value="ebook">E-book</option>
-            <option value="livro">Livro</option>
-            <option value="curso">Curso</option>
-            <option value="revista" selected>Revista de ensino bíblico</option>
-          </select>
+        <div class="section-title">Tipo de material</div>
+
+        <label>Tipo de material</label>
+        <select id="materialType" onchange="atualizarCamposPorTipo()">
+          <option value="sermao">Sermão</option>
+          <option value="devocional">Devocional</option>
+          <option value="estudo">Estudo bíblico / teológico</option>
+          <option value="ebook">E-book</option>
+          <option value="livro">Livro</option>
+          <option value="curso">Curso</option>
+          <option value="revista" selected>Revista de ensino bíblico</option>
+        </select>
+
+        <div id="grupoRevista" class="field-group">
+          <div class="section-title">Configurações da revista</div>
 
           <div class="row">
             <div>
@@ -710,102 +689,102 @@
             </div>
           </div>
 
-          <label>Título</label>
-          <input id="title" value="O Livro que Carregamos" />
+          <label>Lições mensais</label>
+          <input id="quantity" type="number" min="1" max="20" value="4" />
+        </div>
 
-          <label>Subtítulo</label>
-          <input id="subtitle" value="Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual" />
+        <div id="grupoSermao" class="field-group hidden">
+          <div class="section-title">Configurações do sermão</div>
 
-          <label>Tema principal / instruções</label>
-          <textarea id="theme">Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
+          <label>Pontos do sermão</label>
+          <select id="sermonPoints">
+            <option value="3">3 tópicos</option>
+            <option value="4" selected>4 tópicos</option>
+            <option value="5">5 tópicos</option>
+          </select>
+        </div>
+
+        <div class="section-title">Dados do conteúdo</div>
+
+        <label>Título</label>
+        <input id="title" value="O Livro que Carregamos" />
+
+        <label>Subtítulo</label>
+        <input id="subtitle" value="Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual" />
+
+        <label>Tema principal / instruções</label>
+        <textarea id="theme">Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
 
 A revista deve ensinar sobre a Bíblia como Palavra de Deus, sua origem divina, sua inspiração, sua autoridade, sua formação, sua preservação e a responsabilidade espiritual da Igreja diante das Escrituras.
 
 A revista deve ter conteúdo profundo, bíblico, doutrinário, pastoral, didático, reverente e fiel ao pentecostalismo clássico.
-
-A capa deve ser gerada com imagem profissional, contendo elementos bíblicos nobres: Bíblia aberta antiga, pergaminhos, rolos das Escrituras, manuscritos bíblicos, luz dourada suave e atmosfera reverente. Não usar folhinhas soltas, bloquinhos, papeizinhos retangulares ou cartões.
 
 Lição 1 — A Bíblia: A Palavra de Deus Escrita aos Homens.
 Lição 2 — A Inspiração das Escrituras.
 Lição 3 — O Cânon Sagrado e a Formação da Bíblia.
 Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textarea>
 
-          <label>Texto bíblico base</label>
-          <input id="biblicalBase" value="2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12" />
+        <label>Texto bíblico base</label>
+        <input id="biblicalBase" value="2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12" />
 
-          <div class="row">
-            <div>
-              <label>Lições / capítulos</label>
-              <input id="quantity" type="number" min="1" max="20" value="4" />
-            </div>
+        <label>Público-alvo</label>
+        <input id="targetAudience" value="Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos" />
 
-            <div>
-              <label>Pontos do sermão</label>
-              <select id="sermonPoints">
-                <option value="3">3 tópicos</option>
-                <option value="4" selected>4 tópicos</option>
-                <option value="5">5 tópicos</option>
-              </select>
-            </div>
+        <label>Autor / comentarista</label>
+        <input id="author" value="Pr. Isiquel Rodrigues" />
+
+        <label>Editora / ministério</label>
+        <input id="ministry" value="CPID - Casa Publicadora da Igreja de Deus" />
+
+        <div class="section-title">Estilo e segurança</div>
+
+        <div class="row">
+          <div>
+            <label>Profundidade</label>
+            <select id="depthLevel">
+              <option>Simples</option>
+              <option>Intermediário</option>
+              <option selected>Muito profundo</option>
+            </select>
           </div>
 
-          <label>Público-alvo</label>
-          <input id="targetAudience" value="Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos" />
+          <div>
+            <label>Estilo visual</label>
+            <select id="visualStyle">
+              <option>Minimalista</option>
+              <option selected>Colorido</option>
+              <option>Editorial clássico</option>
+              <option>Luxo teológico</option>
+            </select>
+          </div>
+        </div>
 
-          <label>Autor / comentarista</label>
-          <input id="author" value="Pr. Isiquel Rodrigues" />
+        <label>Capa</label>
+        <select id="coverMode">
+          <option value="com-capa" selected>Com capa</option>
+          <option value="sem-capa">Sem capa</option>
+        </select>
 
-          <label>Editora / ministério</label>
-          <input id="ministry" value="CPID - Casa Publicadora da Igreja de Deus" />
+        <label>Tom do material</label>
+        <input id="tone" value="Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante" />
 
-          <div class="row">
-            <div>
-              <label>Profundidade</label>
-              <select id="depthLevel">
-                <option>Simples</option>
-                <option>Intermediário</option>
-                <option selected>Muito profundo</option>
-              </select>
-            </div>
+        <label>Código de acesso</label>
+        <input id="adminCode" placeholder="Código para recursos reservados" />
 
-            <div>
-              <label>Estilo visual</label>
-              <select id="visualStyle">
-                <option>Minimalista</option>
-                <option selected>Colorido</option>
-                <option>Editorial clássico</option>
-                <option>Luxo teológico</option>
-              </select>
-            </div>
+        <div class="btn-area">
+          <button class="btn-primary" id="generateBtn" onclick="gerarMaterial()">Gerar material</button>
+
+          <div class="btn-row">
+            <button class="btn-edit" id="editBtn" onclick="alternarEdicao()">Editar prévia</button>
+            <button class="btn-secondary" onclick="baixarPDF()">Baixar PDF</button>
           </div>
 
-          <label>Capa</label>
-          <select id="coverMode">
-            <option value="com-capa" selected>Com capa</option>
-            <option value="sem-capa">Sem capa</option>
-          </select>
+          <button class="btn-danger" onclick="limparResultado()">Limpar</button>
+        </div>
 
-          <label>Tom do material</label>
-          <input id="tone" value="Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante" />
-
-          <label>Código de acesso</label>
-          <input id="adminCode" placeholder="Código para recursos reservados" />
-
-          <div class="btn-area">
-            <button class="btn-primary" id="generateBtn" onclick="gerarMaterial()">Gerar material</button>
-
-            <div class="btn-row">
-              <button class="btn-edit" id="editBtn" onclick="alternarEdicao()">Editar prévia</button>
-              <button class="btn-secondary" onclick="baixarPDF()">Baixar PDF</button>
-            </div>
-
-            <button class="btn-danger" onclick="limparResultado()">Limpar</button>
-          </div>
-
-          <div id="statusBox" class="status-box">
-            <p id="statusText" class="status-main"></p>
-            <ul id="progressLog" class="progress-list"></ul>
-          </div>
+        <div id="statusBox" class="status-box">
+          <p id="statusText" class="status-main"></p>
+          <ul id="progressLog" class="progress-list"></ul>
         </div>
       </section>
 
@@ -833,6 +812,11 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
     let materialAtual = null;
     let modoEdicao = false;
 
+    document.addEventListener("DOMContentLoaded", () => {
+      atualizarCamposPorTipo();
+      limparResultado(false);
+    });
+
     function rolarParaPrevia() {
       document.getElementById("previa").scrollIntoView({ behavior: "smooth" });
     }
@@ -841,25 +825,54 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       document.getElementById("formulario").scrollIntoView({ behavior: "smooth" });
     }
 
+    function atualizarCamposPorTipo() {
+      const tipo = document.getElementById("materialType").value;
+
+      const grupoRevista = document.getElementById("grupoRevista");
+      const grupoSermao = document.getElementById("grupoSermao");
+      const quantity = document.getElementById("quantity");
+
+      grupoRevista.classList.add("hidden");
+      grupoSermao.classList.add("hidden");
+
+      if (tipo === "revista") {
+        grupoRevista.classList.remove("hidden");
+        quantity.value = 4;
+      }
+
+      if (tipo === "sermao") {
+        grupoSermao.classList.remove("hidden");
+      }
+
+      if (["ebook", "livro", "curso"].includes(tipo)) {
+        grupoRevista.classList.remove("hidden");
+        document.querySelector("#grupoRevista .section-title").textContent = "Quantidade";
+        document.querySelector("label[for='quantity']");
+      } else {
+        const tituloGrupo = document.querySelector("#grupoRevista .section-title");
+        if (tituloGrupo) tituloGrupo.textContent = "Configurações da revista";
+      }
+    }
+
     function getDados() {
       return {
         materialType: document.getElementById("materialType").value,
         revistaVersion: document.getElementById("revistaVersion").value,
         bibleVersion: document.getElementById("bibleVersion").value,
-        title: document.getElementById("title").value,
-        subtitle: document.getElementById("subtitle").value,
-        theme: document.getElementById("theme").value,
-        biblicalBase: document.getElementById("biblicalBase").value,
+        title: document.getElementById("title").value.trim(),
+        subtitle: document.getElementById("subtitle").value.trim(),
+        theme: document.getElementById("theme").value.trim(),
+        biblicalBase: document.getElementById("biblicalBase").value.trim(),
         quantity: Number(document.getElementById("quantity").value || 4),
         sermonPoints: Number(document.getElementById("sermonPoints").value || 4),
-        targetAudience: document.getElementById("targetAudience").value,
-        author: document.getElementById("author").value,
-        ministry: document.getElementById("ministry").value,
+        targetAudience: document.getElementById("targetAudience").value.trim(),
+        author: document.getElementById("author").value.trim(),
+        ministry: document.getElementById("ministry").value.trim(),
         depthLevel: document.getElementById("depthLevel").value,
         visualStyle: document.getElementById("visualStyle").value,
         coverMode: document.getElementById("coverMode").value,
-        tone: document.getElementById("tone").value,
-        adminCode: document.getElementById("adminCode").value
+        tone: document.getElementById("tone").value.trim(),
+        adminCode: document.getElementById("adminCode").value.trim()
       };
     }
 
@@ -872,7 +885,9 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
 
       if (tipo === "erro") {
         box.classList.add("status-error");
-      } else if (tipo === "ok") {
+      }
+
+      if (tipo === "ok") {
         box.classList.add("status-ok");
       }
     }
@@ -884,12 +899,14 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
     function addProgresso(texto, tipo = "") {
       const ul = document.getElementById("progressLog");
       const li = document.createElement("li");
+
       li.textContent = texto;
 
       if (tipo === "ok") li.classList.add("done");
       if (tipo === "erro") li.classList.add("error");
 
       ul.appendChild(li);
+      li.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
 
     function setLoading(loading) {
@@ -908,14 +925,16 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       try {
         if (dados.materialType === "revista") {
           materialAtual = await gerarRevistaPorPartes(dados);
-          renderMaterial(materialAtual);
-          setStatus("Revista gerada com sucesso.", "ok");
-          addProgresso("Revista finalizada e pronta para revisão.", "ok");
+          renderRevista(materialAtual);
+          setStatus("Revista finalizada e pronta para revisão.", "ok");
+          addProgresso("Revista finalizada com sucesso.", "ok");
           rolarParaPrevia();
           return;
         }
 
         addProgresso("Gerando material...");
+        renderCarregando("Gerando material...");
+
         const resposta = await chamarGerar(dados);
 
         materialAtual = resposta.material;
@@ -970,8 +989,29 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
     }
 
     async function gerarRevistaPorPartes(dados) {
-      setStatus("Gerando revista por etapas...");
-      addProgresso("1/9 - Gerando estrutura da revista...");
+      let revistaParcial = {
+        type: "revista",
+        title: dados.title,
+        subtitle: dados.subtitle,
+        author: dados.author,
+        ministry: dados.ministry,
+        revistaVersion: dados.revistaVersion,
+        presentationToTeacher: "",
+        magazineOverview: "",
+        generalTeacherGuidance: "",
+        lessonTitles: [],
+        lessons: [],
+        cover: criarCapaPadrao(dados),
+        backCover: criarContracapaPadrao(dados),
+        coverImageUrl: "",
+        backCoverImageUrl: ""
+      };
+
+      renderRevista(revistaParcial);
+      rolarParaPrevia();
+
+      setStatus("Gerando estrutura geral da revista...");
+      addProgresso("1/9 - Gerando estrutura geral da revista...");
 
       const metaResp = await chamarGerar({
         ...dados,
@@ -980,16 +1020,33 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
 
       const meta = metaResp.material || {};
 
-      addProgresso("1/9 - Estrutura da revista gerada.", "ok");
-
       const lessonTitles = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
         ? meta.lessonTitles
         : [
-            "Lição 1 - A Bíblia: A Palavra de Deus Escrita aos Homens",
-            "Lição 2 - A Inspiração das Escrituras",
-            "Lição 3 - O Cânon Sagrado e a Formação da Bíblia",
-            "Lição 4 - A Preservação da Bíblia e a Responsabilidade da Igreja"
-          ];
+          "Lição 1 - A Bíblia: A Palavra de Deus Escrita aos Homens",
+          "Lição 2 - A Inspiração das Escrituras",
+          "Lição 3 - O Cânon Sagrado e a Formação da Bíblia",
+          "Lição 4 - A Preservação da Bíblia e a Responsabilidade da Igreja"
+        ];
+
+      revistaParcial = {
+        ...revistaParcial,
+        title: meta.title || dados.title,
+        subtitle: meta.subtitle || dados.subtitle,
+        author: meta.author || dados.author,
+        ministry: meta.ministry || dados.ministry,
+        revistaVersion: meta.revistaVersion || dados.revistaVersion,
+        presentationToTeacher: meta.presentationToTeacher || "",
+        magazineOverview: meta.magazineOverview || "",
+        generalTeacherGuidance: meta.generalTeacherGuidance || "",
+        monthSummary: meta.monthSummary || "",
+        quarterSummary: meta.quarterSummary || "",
+        lessonTitles
+      };
+
+      materialAtual = revistaParcial;
+      renderRevista(revistaParcial);
+      addProgresso("1/9 - Estrutura geral da revista gerada.", "ok");
 
       const lessons = [];
 
@@ -1002,68 +1059,27 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
           revistaPart: "lesson",
           lessonNumber: i,
           lessonTitles,
-          presentationToTeacher: meta.presentationToTeacher || "",
-          magazineOverview: meta.magazineOverview || "",
-          generalTeacherGuidance: meta.generalTeacherGuidance || "",
+          presentationToTeacher: revistaParcial.presentationToTeacher || "",
+          magazineOverview: revistaParcial.magazineOverview || "",
+          generalTeacherGuidance: revistaParcial.generalTeacherGuidance || "",
           instrucoesExtras: `Esta é a lição ${i} da revista. Mantenha ligação com as demais lições, sem repetir conteúdo desnecessário.`
         });
 
         lessons.push(lessonResp.material);
+
+        revistaParcial.lessons = lessons;
+        materialAtual = revistaParcial;
+        renderRevista(revistaParcial);
+
         addProgresso(`${i + 1}/9 - Lição ${i} gerada.`, "ok");
       }
 
+      let coverData = criarCapaPadrao(dados);
+      let backCoverData = criarContracapaPadrao(dados);
       let coverImageUrl = "";
       let backCoverImageUrl = "";
 
-      if (dados.coverMode !== "sem-capa") {
-        setStatus("Gerando imagem profissional da capa...");
-        addProgresso("6/9 - Gerando imagem profissional da capa...");
-
-        try {
-          const capaResp = await chamarCapa({
-            ...dados,
-            tipoImagem: "front",
-            lessonTitles,
-            title: meta.title || dados.title,
-            subtitle: meta.subtitle || dados.subtitle,
-            theme: dados.theme
-          });
-
-          coverImageUrl = capaResp.imageDataUrl || "";
-          addProgresso("6/9 - Imagem da capa gerada com sucesso.", "ok");
-        } catch (erro) {
-          console.error("Erro ao gerar capa:", erro);
-          addProgresso("6/9 - A imagem da capa falhou. A capa reserva será usada. Motivo: " + (erro.message || "erro desconhecido"), "erro");
-        }
-
-        setStatus("Gerando imagem profissional da contracapa...");
-        addProgresso("7/9 - Gerando imagem profissional da contracapa...");
-
-        try {
-          const contracapaResp = await chamarCapa({
-            ...dados,
-            tipoImagem: "back",
-            lessonTitles,
-            title: meta.title || dados.title,
-            subtitle: meta.subtitle || dados.subtitle,
-            theme: dados.theme
-          });
-
-          backCoverImageUrl = contracapaResp.imageDataUrl || "";
-          addProgresso("7/9 - Imagem da contracapa gerada com sucesso.", "ok");
-        } catch (erro) {
-          console.error("Erro ao gerar contracapa:", erro);
-          addProgresso("7/9 - A imagem da contracapa falhou. A contracapa reserva será usada. Motivo: " + (erro.message || "erro desconhecido"), "erro");
-        }
-      } else {
-        addProgresso("6/9 - Capa desativada pelo usuário.", "ok");
-        addProgresso("7/9 - Contracapa desativada pelo usuário.", "ok");
-      }
-
-      let coverData = null;
-      let backCoverData = null;
-
-      addProgresso("8/9 - Gerando textos editoriais da capa...");
+      addProgresso("6/9 - Gerando textos editoriais da capa...");
 
       try {
         const coverResp = await chamarGerar({
@@ -1072,14 +1088,17 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
           lessonTitles
         });
 
-        coverData = coverResp.material;
-        addProgresso("8/9 - Textos da capa gerados.", "ok");
+        coverData = coverResp.material || coverData;
+        revistaParcial.cover = coverData;
+        materialAtual = revistaParcial;
+        renderRevista(revistaParcial);
+
+        addProgresso("6/9 - Textos da capa gerados.", "ok");
       } catch (erro) {
-        coverData = criarCapaPadrao(dados);
-        addProgresso("8/9 - Texto da capa gerado pelo modo reserva.", "ok");
+        addProgresso("6/9 - Texto da capa em modo reserva: " + (erro.message || "erro desconhecido"), "erro");
       }
 
-      addProgresso("9/9 - Gerando textos editoriais da contracapa...");
+      addProgresso("7/9 - Gerando textos editoriais da contracapa...");
 
       try {
         const backResp = await chamarGerar({
@@ -1088,32 +1107,74 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
           lessonTitles
         });
 
-        backCoverData = backResp.material;
-        addProgresso("9/9 - Textos da contracapa gerados.", "ok");
+        backCoverData = backResp.material || backCoverData;
+        revistaParcial.backCover = backCoverData;
+        materialAtual = revistaParcial;
+        renderRevista(revistaParcial);
+
+        addProgresso("7/9 - Textos da contracapa gerados.", "ok");
       } catch (erro) {
-        backCoverData = criarContracapaPadrao(dados);
-        addProgresso("9/9 - Texto da contracapa gerado pelo modo reserva.", "ok");
+        addProgresso("7/9 - Texto da contracapa em modo reserva: " + (erro.message || "erro desconhecido"), "erro");
       }
 
-      return {
-        type: "revista",
-        title: meta.title || dados.title,
-        subtitle: meta.subtitle || dados.subtitle,
-        author: meta.author || dados.author,
-        ministry: meta.ministry || dados.ministry,
-        revistaVersion: meta.revistaVersion || dados.revistaVersion,
-        presentationToTeacher: meta.presentationToTeacher || "",
-        magazineOverview: meta.magazineOverview || "",
-        generalTeacherGuidance: meta.generalTeacherGuidance || "",
-        monthSummary: meta.monthSummary || "",
-        quarterSummary: meta.quarterSummary || "",
-        lessonTitles,
-        lessons,
-        cover: coverData,
-        backCover: backCoverData,
-        coverImageUrl,
-        backCoverImageUrl
-      };
+      if (dados.coverMode !== "sem-capa") {
+        addProgresso("8/9 - Gerando imagem profissional da capa...");
+
+        try {
+          const capaResp = await chamarCapa({
+            ...dados,
+            tipoImagem: "front",
+            lessonTitles,
+            title: revistaParcial.title,
+            subtitle: revistaParcial.subtitle,
+            theme: dados.theme
+          });
+
+          coverImageUrl = capaResp.imageDataUrl || "";
+          revistaParcial.coverImageUrl = coverImageUrl;
+          materialAtual = revistaParcial;
+          renderRevista(revistaParcial);
+
+          addProgresso("8/9 - Imagem da capa gerada.", "ok");
+        } catch (erro) {
+          addProgresso("8/9 - Imagem da capa não foi gerada. A capa visual reserva será usada. Motivo: " + (erro.message || "erro desconhecido"), "erro");
+        }
+
+        addProgresso("9/9 - Gerando imagem profissional da contracapa...");
+
+        try {
+          const contracapaResp = await chamarCapa({
+            ...dados,
+            tipoImagem: "back",
+            lessonTitles,
+            title: revistaParcial.title,
+            subtitle: revistaParcial.subtitle,
+            theme: dados.theme
+          });
+
+          backCoverImageUrl = contracapaResp.imageDataUrl || "";
+          revistaParcial.backCoverImageUrl = backCoverImageUrl;
+          materialAtual = revistaParcial;
+          renderRevista(revistaParcial);
+
+          addProgresso("9/9 - Imagem da contracapa gerada.", "ok");
+        } catch (erro) {
+          addProgresso("9/9 - Imagem da contracapa não foi gerada. A contracapa visual reserva será usada. Motivo: " + (erro.message || "erro desconhecido"), "erro");
+        }
+      } else {
+        addProgresso("8/9 - Capa por imagem desativada.", "ok");
+        addProgresso("9/9 - Contracapa por imagem desativada.", "ok");
+      }
+
+      return revistaParcial;
+    }
+
+    function renderCarregando(texto) {
+      document.getElementById("printArea").innerHTML = `
+        <div class="empty">
+          ${escapeHtml(texto || "Gerando...")}
+        </div>
+      `;
     }
 
     function criarCapaPadrao(dados) {
@@ -1162,6 +1223,7 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       }
 
       modoEdicao = !modoEdicao;
+
       area.contentEditable = modoEdicao ? "true" : "false";
       area.classList.toggle("editing", modoEdicao);
 
@@ -1172,8 +1234,8 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
 
       setStatus(
         modoEdicao
-          ? "Modo edição ativado. Agora você pode clicar no texto da prévia e alterar."
-          : "Modo edição concluído. As alterações visuais foram mantidas na prévia.",
+          ? "Modo edição ativado. Clique no texto da prévia para alterar."
+          : "Modo edição concluído. Suas alterações foram mantidas na prévia.",
         "ok"
       );
     }
@@ -1186,9 +1248,7 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         return;
       }
 
-      let html = "";
-
-      html += `
+      let html = `
         <section class="page content-page">
           <span class="badge">${escapeHtml(m.type || "Material cristão")}</span>
           <h1>${escapeHtml(m.title || "")}</h1>
@@ -1291,8 +1351,12 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       area.contentEditable = "false";
       area.classList.remove("editing");
       modoEdicao = false;
-
       area.innerHTML = html;
+
+      const botoes = document.querySelectorAll("#editBtn, .preview-actions .btn-edit");
+      botoes.forEach((btn) => {
+        btn.textContent = "Editar prévia";
+      });
     }
 
     function capaRevista(m) {
@@ -1505,7 +1569,7 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         document.body.appendChild(clone);
 
         await esperarImagens(clone);
-        await new Promise((resolve) => setTimeout(resolve, 600));
+        await new Promise((resolve) => setTimeout(resolve, 700));
 
         const titulo = (materialAtual.title || "material-cpid")
           .toLowerCase()
@@ -1557,7 +1621,7 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       }
     }
 
-    function limparResultado() {
+    function limparResultado(mostrarStatus = true) {
       materialAtual = null;
       modoEdicao = false;
 
@@ -1571,8 +1635,16 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         </div>
       `;
 
+      const botoes = document.querySelectorAll("#editBtn, .preview-actions .btn-edit");
+      botoes.forEach((btn) => {
+        btn.textContent = "Editar prévia";
+      });
+
       limparProgresso();
-      setStatus("Prévia limpa.");
+
+      if (mostrarStatus) {
+        setStatus("Prévia limpa.", "ok");
+      }
     }
   </script>
 </body>
