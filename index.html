@@ -491,8 +491,9 @@
       min-height: 850px;
       color: white;
       background:
-        radial-gradient(circle at top left, rgba(255,255,255,0.22), transparent 35%),
-        linear-gradient(135deg, #4a2d1a, #7a4f2f 45%, #c79b58);
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,0.20), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(255,255,255,0.14), transparent 30%),
+        linear-gradient(135deg, #2b1a12, #5b3a24 45%, #9a6a37);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -507,16 +508,31 @@
       inset: 32px;
       border: 2px solid rgba(255,255,255,0.35);
       border-radius: 28px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .capa::after {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
+      top: 90px;
+      right: -130px;
+      z-index: 1;
     }
 
     .capa-box {
       width: min(760px, 90%);
       padding: 42px 34px;
       border-radius: 28px;
-      background: rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.12);
       border: 1px solid rgba(255,255,255,0.30);
       position: relative;
-      z-index: 2;
+      z-index: 3;
+      backdrop-filter: blur(2px);
     }
 
     .capa h1 {
@@ -543,6 +559,188 @@
       margin-bottom: 20px;
       font-weight: bold;
       letter-spacing: 1px;
+    }
+
+    .capa-profissional {
+      min-height: 980px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(255,255,255,0.20), transparent 18%),
+        linear-gradient(145deg, #1b120c, #3e2618 42%, #7a4f2f 72%, #b58a4d);
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 42px;
+    }
+
+    .capa-profissional::before {
+      content: "";
+      position: absolute;
+      inset: 28px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 32px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .capa-profissional::after {
+      content: "";
+      position: absolute;
+      width: 680px;
+      height: 680px;
+      right: -220px;
+      top: -160px;
+      background: radial-gradient(circle, rgba(255,255,255,0.22), rgba(199,155,88,0.10), transparent 68%);
+      z-index: 1;
+    }
+
+    .capa-conteudo {
+      width: 100%;
+      max-width: 760px;
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+    }
+
+    .capa-topo {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .capa-etiqueta {
+      padding: 9px 13px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .capa-imagem-simbolica {
+      margin: 54px auto 34px;
+      width: 360px;
+      max-width: 85%;
+      height: 250px;
+      position: relative;
+    }
+
+    .biblia-capa {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 116px;
+      background: linear-gradient(180deg, #fff8e8, #e1c99c);
+      border-radius: 12px 12px 26px 26px;
+      box-shadow: 0 28px 48px rgba(0,0,0,0.28);
+    }
+
+    .biblia-capa::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 2px;
+      height: 116px;
+      background: rgba(91,58,36,0.35);
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
+    }
+
+    .biblia-capa::after {
+      content: "";
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      top: 24px;
+      height: 2px;
+      background:
+        linear-gradient(90deg, rgba(91,58,36,0.25), transparent 35%, transparent 65%, rgba(91,58,36,0.25));
+      box-shadow:
+        0 18px 0 rgba(91,58,36,0.16),
+        0 36px 0 rgba(91,58,36,0.14),
+        0 54px 0 rgba(91,58,36,0.12);
+    }
+
+    .luz-capa {
+      position: absolute;
+      left: 50%;
+      bottom: 90px;
+      transform: translateX(-50%);
+      width: 260px;
+      height: 230px;
+      background: radial-gradient(ellipse at center, rgba(255,245,200,0.70), rgba(255,245,200,0.18) 38%, transparent 70%);
+      filter: blur(2px);
+    }
+
+    .pergaminho-capa {
+      position: absolute;
+      width: 120px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #e8d1a6, #b98a4b);
+      opacity: 0.55;
+      transform: rotate(-16deg);
+      left: 8px;
+      bottom: 58px;
+      box-shadow: 0 14px 24px rgba(0,0,0,0.18);
+    }
+
+    .pergaminho-capa.dois {
+      left: auto;
+      right: 8px;
+      transform: rotate(15deg);
+      opacity: 0.50;
+    }
+
+    .titulo-capa-profissional {
+      margin: 0;
+      font-size: 52px;
+      line-height: 1.05;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 4px 18px rgba(0,0,0,0.25);
+    }
+
+    .subtitulo-capa-profissional {
+      margin: 18px auto 0;
+      max-width: 660px;
+      font-size: 23px;
+      line-height: 1.45;
+      color: rgba(255,255,255,0.92);
+    }
+
+    .frase-capa {
+      margin: 28px auto 0;
+      max-width: 640px;
+      padding: 14px 18px;
+      border-top: 1px solid rgba(255,255,255,0.28);
+      border-bottom: 1px solid rgba(255,255,255,0.28);
+      font-size: 18px;
+      line-height: 1.45;
+      color: #fff8e8;
+      font-style: italic;
+    }
+
+    .rodape-capa {
+      margin-top: 42px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(255,255,255,0.88);
+    }
+
+    .capa-nota-professor {
+      background: #fff8e8;
+      border-left: 6px solid var(--dourado);
     }
 
     .gerando-pdf #resultado {
@@ -637,7 +835,8 @@
       line-height: 1.55 !important;
     }
 
-    .gerando-pdf .capa {
+    .gerando-pdf .capa,
+    .gerando-pdf .capa-profissional {
       min-height: 1050px !important;
       page-break-after: always;
       break-after: page;
@@ -863,6 +1062,59 @@
       .capa h2 {
         font-size: 16px;
       }
+
+      .capa-profissional {
+        min-height: 720px;
+        padding: 26px 18px;
+      }
+
+      .capa-profissional::before {
+        inset: 16px;
+        border-radius: 22px;
+      }
+
+      .capa-topo {
+        flex-direction: column;
+        justify-content: center;
+        font-size: 11px;
+      }
+
+      .capa-imagem-simbolica {
+        margin: 34px auto 24px;
+        width: 280px;
+        height: 210px;
+      }
+
+      .biblia-capa {
+        width: 240px;
+        height: 96px;
+      }
+
+      .luz-capa {
+        width: 220px;
+        height: 200px;
+      }
+
+      .pergaminho-capa {
+        width: 90px;
+        height: 58px;
+      }
+
+      .titulo-capa-profissional {
+        font-size: 31px;
+      }
+
+      .subtitulo-capa-profissional {
+        font-size: 17px;
+      }
+
+      .frase-capa {
+        font-size: 15px;
+      }
+
+      .rodape-capa {
+        font-size: 13px;
+      }
     }
 
     @media print {
@@ -938,7 +1190,8 @@
         margin: 0;
       }
 
-      .capa {
+      .capa,
+      .capa-profissional {
         width: 100%;
         min-height: 273mm;
         page-break-after: always;
@@ -1063,6 +1316,14 @@
         font-size: 14.5px;
         line-height: 1.5;
         margin: 4px 0;
+      }
+
+      .titulo-capa-profissional {
+        font-size: 44px;
+      }
+
+      .subtitulo-capa-profissional {
+        font-size: 20px;
       }
     }
   </style>
@@ -1194,8 +1455,8 @@
         <div id="campoCapa">
           <label for="coverMode">Capa</label>
           <select id="coverMode" autocomplete="off">
-            <option value="com-capa">Com capa</option>
-            <option value="sem-capa" selected>Sem capa</option>
+            <option value="com-capa" selected>Com capa</option>
+            <option value="sem-capa">Sem capa</option>
           </select>
         </div>
 
@@ -1578,8 +1839,20 @@
     }
 
     async function gerarRevistaPorPartes(dados) {
+      let cover = null;
+
+      if (dados.coverMode === "com-capa") {
+        setStatus("Criando conceito profissional da capa da revista...", "");
+        setBarra(4);
+
+        cover = await chamarApiGerar({
+          ...dados,
+          revistaPart: "cover"
+        });
+      }
+
       setStatus("Organizando a revista mensal...", "");
-      setBarra(8);
+      setBarra(10);
 
       const meta = await chamarApiGerar({
         ...dados,
@@ -1591,6 +1864,7 @@
         type: "revista",
         revistaVersion: dados.revistaVersion,
         bibleVersion: dados.bibleVersion,
+        cover,
         lessons: []
       };
 
@@ -1601,7 +1875,7 @@
 
       for (let i = 1; i <= 4; i++) {
         setStatus(`Gerando lição ${i} de 4...`, "");
-        setBarra(10 + i * 20);
+        setBarra(15 + i * 20);
 
         const lesson = await chamarApiGerar({
           ...dados,
@@ -1616,7 +1890,7 @@
       }
 
       setBarra(100);
-      setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
+      setStatus("Revista mensal gerada com capa profissional e 4 lições. Você pode editar antes de salvar em PDF.", "ok");
     }
 
     function divTexto(texto) {
@@ -1664,6 +1938,48 @@
             <h2>${escapeHtml(m.subtitle || "")}</h2>
             <p style="margin-top:28px;font-size:16px;">${escapeHtml(m.ministry || valor("ministry"))}</p>
             <p style="font-size:15px;">${escapeHtml(m.author || valor("author"))}</p>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCapaRevista(m) {
+      if (valor("coverMode") !== "com-capa") return "";
+
+      const cover = m.cover || {};
+      const titulo = cover.title || m.title || "";
+      const subtitulo = cover.subtitle || m.subtitle || "";
+      const etiqueta = cover.editionLabel || (m.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR");
+      const mensal = cover.monthlyLabel || "Revista mensal de Escola Bíblica Dominical";
+      const frase = cover.coverPhrase || cover.visualConcept || "Conhecer a Palavra é carregar luz com responsabilidade.";
+      const ministerio = cover.ministry || m.ministry || valor("ministry");
+      const autor = cover.author || m.author || valor("author");
+
+      return `
+        <section class="pagina capa-profissional">
+          <div class="capa-conteudo">
+            <div class="capa-topo">
+              <span class="capa-etiqueta">${escapeHtml(etiqueta)}</span>
+              <span class="capa-etiqueta">${escapeHtml(mensal)}</span>
+            </div>
+
+            <div>
+              <div class="capa-imagem-simbolica" aria-hidden="true">
+                <div class="luz-capa"></div>
+                <div class="pergaminho-capa"></div>
+                <div class="pergaminho-capa dois"></div>
+                <div class="biblia-capa"></div>
+              </div>
+
+              <h1 class="titulo-capa-profissional">${escapeHtml(titulo)}</h1>
+              <div class="subtitulo-capa-profissional">${escapeHtml(subtitulo)}</div>
+              <div class="frase-capa">${escapeHtml(frase)}</div>
+            </div>
+
+            <div class="rodape-capa">
+              <strong>${escapeHtml(ministerio)}</strong><br>
+              ${escapeHtml(autor)}
+            </div>
           </div>
         </section>
       `;
@@ -1941,7 +2257,9 @@
         objective: "Objetivo",
         introduction: "Introdução",
         conclusion: "Conclusão",
-        finalWord: "Palavra final"
+        finalWord: "Palavra final",
+        teacherSubsidies: "Subsídios para o professor",
+        bibliographicReferences: "Referências bibliográficas"
       };
 
       return labels[key] || key
@@ -1956,7 +2274,7 @@
 
       el("resultado").innerHTML = `
         <article class="doc revista-doc">
-          ${capaMaterial(m, isAluno ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR")}
+          ${renderCapaRevista(m)}
 
           <section class="pagina pagina-apresentacao-revista">
             <div class="pagina-interna">
@@ -1971,6 +2289,13 @@
               </div>
 
               <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
+
+              ${m.cover && m.cover.teacherNoteAboutCover ? `
+                <div class="bloco capa-nota-professor">
+                  <h3>Conceito da capa</h3>
+                  ${divTexto(m.cover.teacherNoteAboutCover)}
+                </div>
+              ` : ""}
 
               ${lessons.length < 4 ? `
                 <div class="bloco">
@@ -2008,8 +2333,10 @@
                 <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
 
                 ${!isAluno ? `
+                  ${renderSubsidiosProfessor(l.teacherSubsidies || [])}
                   ${blocoClasse("Apoio doutrinário", l.doctrinalSupport, "bloco-final-professor")}
                   ${blocoListaClasse("Para aprofundamento", l.recommendedDeepening || [], "bloco-final-professor")}
+                  ${blocoListaClasse("Referências para estudo do professor", l.bibliographicReferences || [], "bloco-final-professor")}
                 ` : `
                   <div class="bloco">
                     <h3>Espaço para anotações</h3>
@@ -2040,6 +2367,17 @@
           ` : ""}
         </article>
       `;
+    }
+
+    function renderSubsidiosProfessor(subsidios) {
+      if (!Array.isArray(subsidios) || subsidios.length === 0) return "";
+
+      return subsidios.filter(s => s && (s.title || s.content)).map(s => `
+        <div class="bloco bloco-final-professor">
+          <h3>${escapeHtml(s.title || "Subsídio para o professor")}</h3>
+          ${divTexto(s.content || "")}
+        </div>
+      `).join("");
     }
 
     function renderTopicosRevista(l) {
@@ -2140,7 +2478,7 @@
           pagebreak: {
             mode: ["css", "legacy"],
             before: [".licao-revista", ".pagina-final-revista"],
-            after: [".pagina-apresentacao-revista", ".capa"],
+            after: [".pagina-apresentacao-revista", ".capa", ".capa-profissional"],
             avoid: [".bloco", ".subtopico-revista", ".revisao-revista"]
           }
         };
@@ -2232,21 +2570,21 @@
     function preencherTeste() {
       el("materialType").value = "revista";
       el("revistaVersion").value = "professor";
-      el("title").value = "A Família no Propósito de Deus";
-      el("subtitle").value = "Lições bíblicas para fortalecer o lar cristão";
-      el("theme").value = "A vontade de Deus para a família cristã, seus desafios, responsabilidades espirituais e restauração.";
-      el("biblicalBase").value = "Josué 24.15; Efésios 5.22-33; Salmos 127.1; Deuteronômio 6.4-9";
+      el("title").value = "O Livro que Carregamos";
+      el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação e responsabilidade espiritual";
+      el("theme").value = "A necessidade que o cristão tem de conhecer a Bíblia que carrega, compreendendo sua origem, inspiração, formação, transmissão, materiais antigos, manuscritos, capítulos, versículos, traduções e a responsabilidade espiritual de obedecer à Palavra de Deus.";
+      el("biblicalBase").value = "2 Timóteo 3.14-17; 2 Pedro 1.20-21; Salmos 119.105; Josué 1.8; Neemias 8.1-8; Lucas 24.44; João 5.39; Hebreus 4.12";
       el("quantity").value = "4";
       el("targetAudience").value = "Classe de jovens e adultos";
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "preto e branco";
-      el("coverMode").value = "sem-capa";
-      el("tone").value = "bíblico, pastoral, profundo, didático e aplicável";
+      el("coverMode").value = "com-capa";
+      el("tone").value = "bíblico, pastoral, profundo, didático, histórico, conservador e aplicável";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste preenchido para Revista do Professor. Clique em Gerar material.", "ok");
+      setStatus("Teste preenchido para Revista do Professor com capa. Clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
