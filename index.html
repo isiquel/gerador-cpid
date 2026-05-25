@@ -2,1755 +2,842 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title>VERBO IA - Gerador de Materiais Cristãos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>VERBO IA - Gerador CPID</title>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    :root{
-      --marrom:#5b3a24;
-      --marrom2:#7a4f2f;
-      --marrom3:#2b170c;
-      --dourado:#c79b58;
-      --dourado2:#f3d58a;
-      --bege:#f8f2ea;
-      --bege2:#eee2d4;
-      --texto:#222;
-      --muted:#666;
-      --verde:#237a45;
-      --vermelho:#a12d2d;
-      --azul:#244b77;
-      --vinho:#7b2634;
-      --sombra:0 12px 32px rgba(0,0,0,.08);
+    :root {
+      --bg: #0f172a;
+      --card: #111827;
+      --card2: #1f2937;
+      --text: #f9fafb;
+      --muted: #cbd5e1;
+      --gold: #d6a84f;
+      --gold2: #f5d27a;
+      --line: rgba(255,255,255,.12);
+      --white: #ffffff;
+      --ink: #1f2937;
+      --paper: #fffaf0;
+      --danger: #ef4444;
+      --success: #22c55e;
     }
 
-    *{
-      box-sizing:border-box;
+    * {
+      box-sizing: border-box;
     }
 
-    html,
-    body{
-      margin:0;
-      padding:0;
-      width:100%;
-      min-height:100%;
-      font-family:Arial, Helvetica, sans-serif;
-      background:linear-gradient(180deg,var(--bege),var(--bege2));
-      color:var(--texto);
-      overflow-x:hidden;
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 60%);
+      color: var(--text);
     }
 
-    header{
-      background:linear-gradient(135deg,var(--marrom),var(--marrom2));
-      color:#fff;
-      padding:24px 16px;
-      text-align:center;
-      border-bottom:5px solid var(--dourado);
-      box-shadow:var(--sombra);
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
     }
 
-    header h1{
-      margin:0;
-      font-size:36px;
-      letter-spacing:1px;
+    .header {
+      text-align: center;
+      padding: 28px 16px;
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(214,168,79,.18), rgba(15,23,42,.75));
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.25);
+      margin-bottom: 22px;
     }
 
-    header p{
-      margin:8px 0 0;
-      opacity:.95;
-      font-size:16px;
+    .brand {
+      font-size: 40px;
+      letter-spacing: 3px;
+      font-weight: 900;
+      color: var(--gold2);
+      margin: 0;
     }
 
-    .container{
-      max-width:1500px;
-      margin:24px auto;
-      padding:0 16px 28px;
-      display:grid;
-      grid-template-columns:430px 1fr;
-      gap:22px;
-      align-items:start;
+    .tagline {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 15px;
     }
 
-    .card{
-      background:#fff;
-      border:1px solid #eee0d0;
-      border-radius:22px;
-      box-shadow:var(--sombra);
-      overflow:hidden;
+    .grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 22px;
+      align-items: start;
     }
 
-    .card-head{
-      padding:20px 22px;
-      background:linear-gradient(180deg,#fffdf9,#fbf5ec);
-      border-bottom:1px solid #e6d8c7;
+    .panel {
+      background: rgba(17,24,39,.88);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.25);
     }
 
-    .card-head h2{
-      margin:0;
-      color:var(--marrom);
-      font-size:24px;
+    .panel h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      color: var(--gold2);
     }
 
-    .card-head p{
-      margin:9px 0 0;
-      color:var(--muted);
-      font-size:16px;
-      line-height:1.55;
-    }
-
-    .card-body{
-      padding:20px;
-    }
-
-    label{
-      display:block;
-      margin:15px 0 7px;
-      font-weight:bold;
-      color:var(--marrom);
-      font-size:16px;
-      line-height:1.3;
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 14px 0 6px;
+      font-weight: 700;
     }
 
     input,
     select,
-    textarea{
-      width:100%;
-      padding:15px;
-      border:1px solid #dbc9b5;
-      border-radius:14px;
-      outline:none;
-      background:#fff;
-      color:var(--texto);
-      font-size:17px;
-      line-height:1.45;
+    textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 12px 13px;
+      font-size: 14px;
+      outline: none;
     }
 
-    textarea{
-      min-height:125px;
-      resize:vertical;
-      line-height:1.6;
+    textarea {
+      min-height: 135px;
+      resize: vertical;
+      line-height: 1.45;
     }
 
     input:focus,
     select:focus,
-    textarea:focus{
-      border-color:var(--dourado);
-      box-shadow:0 0 0 4px rgba(199,155,88,.16);
+    textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(214,168,79,.12);
     }
 
-    .linha{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
 
-    .campo-oculto{
-      display:none!important;
+    .btns {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
     }
 
-    .aviso,
-    .aviso-reservado{
-      padding:14px;
-      border-radius:13px;
-      font-size:15px;
-      line-height:1.6;
-      margin-bottom:12px;
+    button {
+      border: 0;
+      border-radius: 16px;
+      padding: 13px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      font-size: 15px;
     }
 
-    .aviso{
-      background:#eef8f0;
-      border-left:5px solid var(--verde);
-      color:#225a35;
+    .btn-primary {
+      background: linear-gradient(135deg, #d6a84f, #f5d27a);
+      color: #111827;
     }
 
-    .aviso-reservado{
-      background:#fff8e8;
-      border-left:5px solid var(--dourado);
-      color:#7a4f2f;
+    .btn-secondary {
+      background: rgba(255,255,255,.1);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.12);
     }
 
-    .prompt-box{
-      background:#fff9f0;
-      border:1px solid #ead8c4;
-      border-radius:18px;
-      padding:16px;
-      margin-bottom:14px;
+    .btn-danger {
+      background: rgba(239,68,68,.14);
+      color: #fecaca;
+      border: 1px solid rgba(239,68,68,.35);
     }
 
-    .prompt-box h3{
-      margin:0 0 8px;
-      color:var(--marrom);
-      font-size:21px;
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
-    .prompt-box p{
-      margin:0 0 10px;
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.6;
+    .status {
+      margin-top: 14px;
+      padding: 12px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      display: none;
     }
 
-    button{
-      border:none;
-      border-radius:14px;
-      padding:15px 16px;
-      font-weight:bold;
-      cursor:pointer;
-      font-size:16px;
-      min-height:52px;
-      line-height:1.25;
+    .status.show {
+      display: block;
     }
 
-    button:disabled{
-      opacity:.65;
-      cursor:not-allowed;
+    .preview-wrap {
+      background: rgba(17,24,39,.88);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.25);
+      overflow: hidden;
     }
 
-    .btn-principal{
-      width:100%;
-      margin-top:16px;
-      background:linear-gradient(135deg,var(--marrom),var(--marrom2));
-      color:#fff;
-      font-size:17px;
-      min-height:56px;
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
     }
 
-    .btn-secundario{
-      background:#f4eadf;
-      color:var(--marrom);
-      border:1px solid #e4d2bd;
+    .preview-head h2 {
+      margin: 0;
+      color: var(--gold2);
+      font-size: 20px;
     }
 
-    .btn-verde{
-      background:var(--verde);
-      color:#fff;
+    .document {
+      background: #f8fafc;
+      color: #111827;
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 500px;
     }
 
-    .btn-cinza{
-      background:#eee;
-      color:#333;
+    .empty {
+      min-height: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #64748b;
+      padding: 30px;
+      background: #f8fafc;
     }
 
-    .btn-alerta{
-      background:#fff1d6;
-      color:#7a4f2f;
-      border:1px solid #e4c58f;
+    #printArea {
+      background: #fff;
+      color: #111827;
+      width: 100%;
     }
 
-    .botoes{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:10px;
+    .page {
+      width: 100%;
+      min-height: 1120px;
+      padding: 58px;
+      background: #fff;
+      color: #111827;
+      page-break-after: always;
+      position: relative;
     }
 
-    .status{
-      margin-top:14px;
-      padding:13px 14px;
-      border-radius:13px;
-      background:#f8f2e9;
-      border:1px solid #ead8c4;
-      color:var(--muted);
-      font-size:15px;
-      line-height:1.6;
-      min-height:44px;
+    .page:last-child {
+      page-break-after: auto;
     }
 
-    .ok{
-      color:var(--verde);
+    .content-page {
+      background: #fff;
     }
 
-    .erro{
-      color:var(--vermelho);
+    .content-page h1 {
+      color: #111827;
+      font-size: 34px;
+      margin: 0 0 16px;
+      line-height: 1.15;
     }
 
-    .progresso{
-      margin-top:12px;
-      height:12px;
-      background:#eee2d5;
-      border-radius:999px;
-      overflow:hidden;
+    .content-page h2 {
+      color: #7c4a03;
+      font-size: 25px;
+      margin: 30px 0 10px;
+      border-bottom: 2px solid #f0d38a;
+      padding-bottom: 7px;
     }
 
-    .barra{
-      height:100%;
-      width:0%;
-      background:linear-gradient(90deg,var(--marrom),var(--dourado));
-      transition:width .25s ease;
+    .content-page h3 {
+      color: #92400e;
+      font-size: 20px;
+      margin: 24px 0 8px;
     }
 
-    .etapas{
-      margin-top:12px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:7px;
+    .content-page h4 {
+      color: #1f2937;
+      font-size: 17px;
+      margin: 18px 0 6px;
     }
 
-    .etapa{
-      font-size:12px;
-      padding:7px 10px;
-      border-radius:999px;
-      border:1px solid #e6d8c7;
-      background:#fffdf9;
-      color:#7b5a39;
-      font-weight:bold;
+    .content-page p {
+      font-size: 15.5px;
+      line-height: 1.72;
+      margin: 0 0 12px;
+      text-align: justify;
     }
 
-    .etapa.ativa{
-      background:#fff2cc;
-      border-color:#d7aa55;
-      color:#5b3a24;
+    .badge {
+      display: inline-block;
+      padding: 7px 11px;
+      border-radius: 999px;
+      background: #fff3c4;
+      color: #7c4a03;
+      font-weight: 900;
+      font-size: 12px;
+      margin-bottom: 14px;
     }
 
-    .etapa.feita{
-      background:#edf8ef;
-      border-color:#9ac8a6;
-      color:#237a45;
+    .box {
+      border: 1px solid #edd28a;
+      background: #fffbeb;
+      border-radius: 14px;
+      padding: 16px;
+      margin: 18px 0;
     }
 
-    #resultado{
-      min-height:760px;
-      background:#f7efe5;
-      border:1px solid #eadbc9;
-      border-radius:18px;
-      padding:22px;
-      overflow:auto;
+    .box h3 {
+      margin-top: 0;
     }
 
-    #resultado[contenteditable="true"]{
-      outline:4px solid rgba(199,155,88,.25);
-      background:#fffaf2;
+    .quote {
+      border-left: 5px solid #d6a84f;
+      padding: 14px 16px;
+      background: #fef3c7;
+      border-radius: 12px;
+      margin: 18px 0;
+      font-style: italic;
+      font-weight: 700;
+      color: #78350f;
     }
 
-    .modo-edicao{
-      background:#fff8e8;
-      border:1px solid #e4c58f;
-      color:#7a4f2f;
-      padding:12px 14px;
-      border-radius:12px;
-      margin-bottom:14px;
-      font-size:15px;
-      line-height:1.6;
-      display:none;
+    .objectives {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      padding: 16px;
+      border-radius: 14px;
+      margin: 18px 0;
     }
 
-    .placeholder{
-      min-height:520px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      color:var(--muted);
-      background:#fffdf9;
-      border:1px dashed #d8c4ad;
-      border-radius:18px;
-      padding:30px;
-      line-height:1.7;
-      font-size:17px;
+    .objectives ul {
+      margin: 8px 0 0;
+      padding-left: 22px;
     }
 
-    .doc{
-      max-width:980px;
-      margin:0 auto;
-      display:block;
+    .objectives li {
+      margin: 7px 0;
+      line-height: 1.5;
     }
 
-    .pagina{
-      background:#fff;
-      border-radius:22px;
-      border:1px solid #e6d8c7;
-      box-shadow:var(--sombra);
-      overflow:visible;
-      margin-bottom:22px;
+    .review {
+      background: #f1f5f9;
+      border-radius: 14px;
+      padding: 16px;
+      margin: 18px 0;
     }
 
-    .pagina-interna{
-      padding:42px 48px;
+    .review p {
+      text-align: left;
     }
 
-    .titulo-grande{
-      margin:0 0 14px;
-      color:var(--marrom);
-      font-size:38px;
-      line-height:1.18;
+    .small-muted {
+      color: #64748b;
+      font-size: 13px;
+      text-align: center;
     }
 
-    .subtitulo{
-      color:var(--muted);
-      font-size:21px;
-      line-height:1.5;
-      margin-bottom:22px;
+    .cover-page {
+      padding: 0;
+      background: #111827;
+      overflow: hidden;
+      position: relative;
     }
 
-    .texto{
-      font-size:20px;
-      line-height:1.85;
-      color:#302b26;
-      white-space:pre-line;
+    .cover-art {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      filter: saturate(1.05) contrast(1.03);
     }
 
-    .bloco,
-    .topico-revista{
-      margin-top:24px;
-      padding:26px;
-      border:1px solid #e6d8c7;
-      border-radius:18px;
-      background:#fffdf9;
-    }
-
-    .bloco h3,
-    .topico-revista h3{
-      margin:0 0 12px;
-      color:var(--marrom);
-      font-size:25px;
-    }
-
-    .topico-revista h3{
-      font-size:26px;
-    }
-
-    .subtopico-revista{
-      margin-top:18px;
-      padding:18px;
-      border-left:5px solid var(--dourado);
-      background:#fff;
-      border-radius:12px;
-    }
-
-    .subtopico-revista h4{
-      margin:0 0 8px;
-      color:#3a2a1c;
-      font-size:21px;
-    }
-
-    .referencia{
-      font-size:16px;
-      color:#7b5a39;
-      font-weight:bold;
-      margin-bottom:10px;
-      line-height:1.55;
-    }
-
-    .referencia-topico{
-      display:inline-block;
-      background:#fff4d8;
-      border:1px solid #e6c27b;
-      color:#6b461f;
-      padding:8px 12px;
-      border-radius:999px;
-      font-size:15px;
-      font-weight:bold;
-      margin:0 0 14px;
-    }
-
-    .lista{
-      padding-left:24px;
-      font-size:19px;
-      line-height:1.8;
-    }
-
-    .chips{
-      display:flex;
-      flex-wrap:wrap;
-      gap:9px;
-      margin:16px 0 20px;
-    }
-
-    .chip{
-      border:1px solid #e6d8c7;
-      background:#fffdf9;
-      color:#7b5a39;
-      font-weight:bold;
-      border-radius:999px;
-      padding:8px 13px;
-      font-size:14px;
-    }
-
-    .box-blue{
-      background:#eef4fb!important;
-      border:1px solid #c8d9ed!important;
-      border-left:8px solid var(--azul)!important;
-    }
-
-    .box-blue h3{
-      color:var(--azul)!important;
-    }
-
-    .box-gold{
-      background:#fff8e8!important;
-      border:1px solid #e8cf92!important;
-      border-left:8px solid var(--dourado)!important;
-    }
-
-    .box-wine{
-      background:#fff5f6!important;
-      border:1px solid #e0c2c8!important;
-      border-left:8px solid var(--vinho)!important;
-    }
-
-    .box-wine h3{
-      color:var(--vinho)!important;
-    }
-
-    .capa{
-      min-height:1040px;
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      position:relative;
-      overflow:hidden;
-      border-radius:22px;
-      padding:0;
-      border:none;
+    .cover-fallback-art {
+      position: absolute;
+      inset: 0;
       background:
-        radial-gradient(circle at 50% 18%, rgba(255,226,146,.82), transparent 17%),
-        radial-gradient(circle at 50% 38%, rgba(255,221,138,.36), transparent 37%),
-        linear-gradient(145deg,#140d08 0%,#29170c 34%,#6c421f 70%,#b68438 100%);
+        radial-gradient(circle at center, rgba(245,210,122,.34), transparent 30%),
+        linear-gradient(135deg, #2a1607 0%, #4b270a 40%, #111827 100%);
     }
 
-    .capa::before{
-      content:"";
-      position:absolute;
-      inset:28px;
-      border:1px solid rgba(243,213,138,.62);
-      border-radius:28px;
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.09),
-        inset 0 0 70px rgba(0,0,0,.45);
-      z-index:1;
+    .cover-fallback-art::before {
+      content: "📖";
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      font-size: 170px;
+      opacity: .32;
     }
 
-    .capa::after{
-      content:"";
-      position:absolute;
-      inset:0;
+    .cover-overlay {
+      position: absolute;
+      inset: 0;
       background:
-        linear-gradient(90deg,rgba(0,0,0,.48),transparent 20%,transparent 80%,rgba(0,0,0,.48)),
-        radial-gradient(circle at 20% 15%,rgba(255,255,255,.08),transparent 18%),
-        radial-gradient(circle at 80% 75%,rgba(255,255,255,.08),transparent 22%);
-      z-index:0;
+        linear-gradient(to bottom, rgba(0,0,0,.72) 0%, rgba(0,0,0,.22) 38%, rgba(0,0,0,.32) 65%, rgba(0,0,0,.82) 100%);
     }
 
-    .tema-bibliologia{
-      background:
-        radial-gradient(circle at 50% 18%, rgba(255,226,146,.82), transparent 16%),
-        radial-gradient(circle at 50% 38%, rgba(255,221,138,.36), transparent 37%),
-        linear-gradient(145deg,#140d08 0%,#29170c 34%,#6c421f 70%,#b68438 100%);
+    .cover-content {
+      position: relative;
+      z-index: 2;
+      min-height: 1120px;
+      padding: 46px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #fff;
+      text-align: center;
     }
 
-    .tema-familia{
-      background:
-        radial-gradient(circle at 50% 24%, rgba(255,238,190,.72), transparent 20%),
-        linear-gradient(145deg,#2b160f 0%,#704023 48%,#c49b62 100%);
+    .cover-top {
+      padding-top: 10px;
     }
 
-    .tema-missoes{
-      background:
-        radial-gradient(circle at 50% 22%, rgba(255,225,150,.65), transparent 20%),
-        linear-gradient(145deg,#111827 0%,#4b321f 45%,#b8873b 100%);
+    .cover-label {
+      display: inline-block;
+      padding: 9px 18px;
+      border: 1px solid rgba(245,210,122,.8);
+      background: rgba(0,0,0,.38);
+      color: #ffe8a3;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      font-weight: 900;
+      text-transform: uppercase;
     }
 
-    .tema-oracao{
-      background:
-        radial-gradient(circle at 50% 22%, rgba(255,248,213,.72), transparent 20%),
-        linear-gradient(145deg,#1d130d 0%,#55331d 52%,#a77b45 100%);
+    .cover-version {
+      margin-top: 14px;
+      color: #fff3c4;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
-    .capa-ilustracao{
-      position:absolute;
-      width:78%;
-      max-width:760px;
-      height:260px;
-      top:240px;
-      left:50%;
-      transform:translateX(-50%);
-      z-index:2;
-      opacity:.98;
-      pointer-events:none;
+    .cover-title-area {
+      background: rgba(0,0,0,.48);
+      border: 1px solid rgba(245,210,122,.45);
+      border-radius: 26px;
+      padding: 28px;
+      box-shadow: 0 25px 70px rgba(0,0,0,.35);
+      backdrop-filter: blur(3px);
     }
 
-    .livro-aberto{
-      position:absolute;
-      left:50%;
-      top:72px;
-      width:540px;
-      height:150px;
-      transform:translateX(-50%) perspective(700px) rotateX(7deg);
-      filter:drop-shadow(0 32px 32px rgba(0,0,0,.58));
+    .cover-title {
+      margin: 0;
+      color: #fff7d6;
+      font-size: 54px;
+      line-height: 1.02;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      text-shadow: 0 4px 22px rgba(0,0,0,.65);
     }
 
-    .livro-aberto::before,
-    .livro-aberto::after{
-      content:"";
-      position:absolute;
-      top:20px;
-      width:250px;
-      height:110px;
-      background:
-        repeating-linear-gradient(180deg,rgba(91,58,36,.17) 0,rgba(91,58,36,.17) 1px,transparent 1px,transparent 10px),
-        linear-gradient(180deg,#fff7db,#d8b977);
-      border:1px solid rgba(255,244,190,.9);
-      box-shadow:inset 0 0 22px rgba(91,58,36,.25);
+    .cover-subtitle {
+      margin: 18px auto 0;
+      max-width: 720px;
+      color: #ffffff;
+      font-size: 22px;
+      line-height: 1.3;
+      font-weight: 700;
+      text-shadow: 0 3px 16px rgba(0,0,0,.75);
     }
 
-    .livro-aberto::before{
-      left:18px;
-      border-radius:8px 18px 18px 8px;
-      transform:skewY(-3deg);
+    .cover-footer {
+      padding-bottom: 8px;
+      color: #fff3c4;
+      font-weight: 900;
+      font-size: 17px;
+      line-height: 1.45;
+      text-shadow: 0 3px 14px rgba(0,0,0,.8);
     }
 
-    .livro-aberto::after{
-      right:18px;
-      border-radius:18px 8px 8px 18px;
-      transform:skewY(3deg);
+    .back-cover-page {
+      padding: 0;
+      background: #111827;
+      overflow: hidden;
+      position: relative;
     }
 
-    .pergaminho{
-      position:absolute;
-      left:12%;
-      bottom:22px;
-      width:170px;
-      height:72px;
-      border-radius:18px;
-      background:linear-gradient(180deg,#e9c98a,#b8873b);
-      opacity:.75;
-      transform:rotate(-8deg);
-      box-shadow:0 18px 28px rgba(0,0,0,.32);
+    .back-content {
+      position: relative;
+      z-index: 2;
+      min-height: 1120px;
+      padding: 64px 54px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      text-align: center;
     }
 
-    .manuscrito{
-      position:absolute;
-      right:10%;
-      bottom:18px;
-      width:190px;
-      height:82px;
-      border-radius:12px;
-      background:
-        repeating-linear-gradient(180deg,rgba(75,45,20,.25) 0,rgba(75,45,20,.25) 1px,transparent 1px,transparent 12px),
-        linear-gradient(180deg,#f7e2af,#c79b58);
-      opacity:.78;
-      transform:rotate(7deg);
-      box-shadow:0 18px 28px rgba(0,0,0,.32);
+    .back-box {
+      background: rgba(0,0,0,.52);
+      border: 1px solid rgba(245,210,122,.45);
+      border-radius: 26px;
+      padding: 30px;
+      backdrop-filter: blur(3px);
     }
 
-    .luz-capa{
-      position:absolute;
-      left:50%;
-      top:0;
-      width:470px;
-      height:390px;
-      transform:translateX(-50%);
-      background:radial-gradient(circle,rgba(255,226,146,.86),rgba(255,226,146,.20) 38%,transparent 70%);
-      filter:blur(8px);
-      opacity:.82;
+    .back-phrase {
+      color: #fff7d6;
+      font-size: 28px;
+      line-height: 1.25;
+      font-weight: 900;
+      margin: 0 0 18px;
     }
 
-    .capa-box{
-      width:min(790px,88%);
-      min-height:900px;
-      padding:46px 42px;
-      border-radius:30px;
-      border:1px solid rgba(243,213,138,.50);
-      position:relative;
-      z-index:3;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:space-between;
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.10)),
-        rgba(0,0,0,.10);
-      box-shadow:0 30px 80px rgba(0,0,0,.32);
+    .back-text {
+      color: #ffffff;
+      font-size: 17px;
+      line-height: 1.55;
+      margin: 0 0 20px;
+      text-align: center;
     }
 
-    .capa-topo{
-      width:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:12px;
+    .back-ministry {
+      color: #fff3c4;
+      font-weight: 900;
+      font-size: 16px;
+      line-height: 1.5;
     }
 
-    .selo{
-      display:inline-block;
-      padding:9px 16px;
-      border-radius:999px;
-      border:1px solid rgba(243,213,138,.65);
-      background:rgba(0,0,0,.22);
-      color:#fff6db;
-      font-size:13px;
-      margin-bottom:0;
-      font-weight:bold;
-      letter-spacing:1.5px;
-      text-transform:uppercase;
-      box-shadow:0 8px 24px rgba(0,0,0,.22);
-    }
-
-    .selo-revista-centro{
-      display:block;
-      margin:0 auto;
-      width:max-content;
-      max-width:92%;
-      text-align:center;
-      font-size:14px;
-      padding:12px 28px;
-    }
-
-    .selo-revista-tipo{
-      display:block;
-      margin:0 auto;
-      width:max-content;
-      max-width:80%;
-      text-align:center;
-      font-size:12px;
-      padding:10px 24px;
-    }
-
-    .capa-miolo{
-      width:100%;
-      padding-top:315px;
-      padding-bottom:20px;
-    }
-
-    .capa h1{
-      margin:0 auto 18px;
-      font-size:58px;
-      max-width:760px;
-      line-height:1.06;
-      letter-spacing:1px;
-      text-transform:uppercase;
-      color:#fff7de;
-      text-shadow:0 8px 24px rgba(0,0,0,.55);
-    }
-
-    .capa h2{
-      margin:0 auto;
-      font-size:24px;
-      max-width:690px;
-      line-height:1.45;
-      font-weight:600;
-      color:#f8e4b6;
-      text-shadow:0 5px 16px rgba(0,0,0,.5);
-    }
-
-    .ornamento{
-      width:190px;
-      height:1px;
-      background:linear-gradient(90deg,transparent,var(--dourado2),transparent);
-      margin:25px auto 0;
-      position:relative;
-    }
-
-    .capa-rodape{
-      width:100%;
-      color:#f7e6bd;
-      font-size:16px;
-      line-height:1.5;
-      text-shadow:0 4px 14px rgba(0,0,0,.55);
-      padding-top:14px;
-    }
-
-    .capa-rodape p{
-      margin:6px 0;
-    }
-
-    .contracapa{
-      min-height:1040px;
-      color:#fff;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(255,226,146,.34), transparent 20%),
-        linear-gradient(145deg,#120c08,#3a2212 55%,#9b7138);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      border-radius:22px;
-      position:relative;
-      overflow:hidden;
-      padding:70px;
-      border:none;
-    }
-
-    .contracapa::before{
-      content:"";
-      position:absolute;
-      inset:28px;
-      border:1px solid rgba(243,213,138,.55);
-      border-radius:28px;
-    }
-
-    .contracapa h1{
-      color:#fff7de;
-      font-size:38px;
-      margin-bottom:18px;
-    }
-
-    .contracapa p{
-      color:#f8e4b6;
-      font-size:20px;
-      max-width:650px;
-      line-height:1.7;
-    }
-
-    .print-area{
-      display:none;
-    }
-
-    .gerando-pdf #resultado{
-      background:#fff!important;
-      border:none!important;
-      padding:0!important;
-      overflow:visible!important;
-    }
-
-    .gerando-pdf .doc{
-      max-width:100%!important;
-      width:100%!important;
-      display:block!important;
-    }
-
-    .gerando-pdf .pagina{
-      box-shadow:none!important;
-      border-radius:0!important;
-      border:none!important;
-      margin:0!important;
-      break-after:page;
-      page-break-after:always;
-      break-inside:auto;
-      page-break-inside:auto;
-    }
-
-    .gerando-pdf .pagina:last-child{
-      break-after:auto;
-      page-break-after:auto;
-    }
-
-    .gerando-pdf .pagina-interna{
-      padding:16mm 14mm!important;
-    }
-
-    .gerando-pdf .titulo-grande{
-      font-size:25px!important;
-    }
-
-    .gerando-pdf .subtitulo{
-      font-size:15px!important;
-    }
-
-    .gerando-pdf .texto,
-    .gerando-pdf p{
-      font-size:13.5px!important;
-      line-height:1.5!important;
-    }
-
-    .gerando-pdf .bloco,
-    .gerando-pdf .topico-revista{
-      padding:10px 12px!important;
-      margin-top:9px!important;
-      break-inside:avoid;
-      page-break-inside:avoid;
-    }
-
-    .gerando-pdf .bloco h3,
-    .gerando-pdf .topico-revista h3{
-      font-size:16.5px!important;
-    }
-
-    .gerando-pdf .subtopico-revista{
-      padding:9px 11px!important;
-      margin-top:8px!important;
-      break-inside:avoid;
-      page-break-inside:avoid;
-    }
-
-    .gerando-pdf .subtopico-revista h4{
-      font-size:15.5px!important;
-    }
-
-    .gerando-pdf .referencia{
-      font-size:12.5px!important;
-    }
-
-    .gerando-pdf .lista{
-      font-size:13.5px!important;
-      line-height:1.45!important;
-    }
-
-    .gerando-pdf .capa,
-    .gerando-pdf .contracapa{
-      width:100%!important;
-      min-height:277mm!important;
-      height:277mm!important;
-      border-radius:0!important;
-      break-after:page;
-      page-break-after:always;
-    }
-
-    .gerando-pdf .capa-box{
-      min-height:245mm!important;
-    }
-
-    @media print{
-      @page{
-        size:A4 portrait;
-        margin:0;
+    @media (max-width: 980px) {
+      .grid {
+        grid-template-columns: 1fr;
       }
 
-      html,
-      body{
-        margin:0!important;
-        padding:0!important;
-        background:#fff!important;
+      .app {
+        padding: 14px;
       }
 
-      body > header,
-      body > main{
-        display:none!important;
+      .brand {
+        font-size: 32px;
       }
 
-      .print-area{
-        display:block!important;
-        width:100%!important;
-        background:#fff!important;
+      .row {
+        grid-template-columns: 1fr;
       }
 
-      .print-area .doc{
-        width:100%!important;
-        max-width:100%!important;
-        display:block!important;
-      }
-
-      .print-area .pagina{
-        width:210mm!important;
-        min-height:297mm!important;
-        margin:0!important;
-        padding:0!important;
-        border:none!important;
-        box-shadow:none!important;
-        border-radius:0!important;
-        background:#fff!important;
-        overflow:hidden!important;
-        break-after:page!important;
-        page-break-after:always!important;
-      }
-
-      .print-area .pagina:last-child{
-        break-after:auto!important;
-        page-break-after:auto!important;
-      }
-
-      .print-area .pagina-interna{
-        padding:16mm 14mm!important;
-      }
-
-      .print-area .capa,
-      .print-area .contracapa{
-        min-height:297mm!important;
-        height:297mm!important;
-        color:#fff!important;
-        -webkit-print-color-adjust:exact!important;
-        print-color-adjust:exact!important;
-      }
-
-      .print-area .capa-box{
-        min-height:260mm!important;
-      }
-
-      .print-area .titulo-grande{
-        font-size:25px!important;
-      }
-
-      .print-area .subtitulo{
-        font-size:15px!important;
-      }
-
-      .print-area .texto,
-      .print-area p{
-        font-size:13.5px!important;
-        line-height:1.5!important;
-      }
-
-      .print-area .bloco,
-      .print-area .topico-revista{
-        padding:10px 12px!important;
-        margin-top:9px!important;
-        break-inside:avoid!important;
-        page-break-inside:avoid!important;
-      }
-
-      .print-area .bloco h3,
-      .print-area .topico-revista h3{
-        font-size:16.5px!important;
-      }
-
-      .print-area .subtopico-revista{
-        padding:9px 11px!important;
-        margin-top:8px!important;
-        break-inside:avoid!important;
-        page-break-inside:avoid!important;
-      }
-
-      .print-area .subtopico-revista h4{
-        font-size:15.5px!important;
-      }
-
-      .print-area .lista{
-        font-size:13.5px!important;
-        line-height:1.45!important;
+      .page,
+      .cover-content,
+      .back-content {
+        min-height: auto;
       }
     }
 
-    @media(max-width:800px){
-      header{
-        padding:18px 12px;
-        border-bottom-width:4px;
+    @media print {
+      body {
+        background: #fff;
       }
 
-      header h1{
-        font-size:31px;
+      .app > .header,
+      .app > .grid > .panel,
+      .preview-head {
+        display: none !important;
       }
 
-      header p{
-        font-size:16px;
-        line-height:1.4;
+      .app {
+        padding: 0;
+        max-width: none;
       }
 
-      .container{
-        width:100%;
-        margin:0;
-        padding:10px;
-        display:block;
+      .grid {
+        display: block;
       }
 
-      .card{
-        border-radius:18px;
-        margin-bottom:12px;
-        box-shadow:0 6px 18px rgba(0,0,0,.07);
+      .preview-wrap {
+        padding: 0;
+        border: 0;
+        box-shadow: none;
       }
 
-      .card-head{
-        padding:16px 15px;
+      .document {
+        border-radius: 0;
       }
 
-      .card-head h2{
-        font-size:23px;
-      }
-
-      .card-head p{
-        font-size:16px;
-        line-height:1.55;
-      }
-
-      .card-body{
-        padding:14px;
-      }
-
-      .aviso,
-      .aviso-reservado,
-      .prompt-box,
-      .status{
-        font-size:16px;
-        border-radius:13px;
-        line-height:1.6;
-      }
-
-      label{
-        font-size:17px;
-        margin-top:16px;
-        margin-bottom:8px;
-      }
-
-      input,
-      select,
-      textarea{
-        font-size:18px;
-        padding:16px;
-        border-radius:13px;
-        line-height:1.5;
-      }
-
-      textarea{
-        min-height:115px;
-      }
-
-      .linha,
-      .botoes{
-        grid-template-columns:1fr;
-        gap:9px;
-      }
-
-      button{
-        width:100%;
-        min-height:56px;
-        font-size:18px;
-        border-radius:14px;
-      }
-
-      .btn-principal{
-        font-size:19px;
-        min-height:60px;
-      }
-
-      #resultado{
-        min-height:420px;
-        padding:10px;
-        border-radius:16px;
-      }
-
-      .doc{
-        width:100%;
-        max-width:100%;
-      }
-
-      .pagina{
-        border-radius:16px;
-        margin-bottom:12px;
-      }
-
-      .pagina-interna{
-        padding:20px 15px;
-      }
-
-      .titulo-grande{
-        font-size:28px;
-        line-height:1.18;
-      }
-
-      .subtitulo{
-        font-size:17px;
-        margin-bottom:12px;
-      }
-
-      .texto{
-        font-size:18px;
-        line-height:1.65;
-      }
-
-      .bloco,
-      .topico-revista{
-        margin-top:13px;
-        padding:15px;
-        border-radius:14px;
-      }
-
-      .bloco h3,
-      .topico-revista h3{
-        font-size:20px;
-      }
-
-      .subtopico-revista{
-        padding:13px;
-        border-radius:12px;
-      }
-
-      .subtopico-revista h4{
-        font-size:18px;
-      }
-
-      .lista{
-        font-size:17px;
-        line-height:1.6;
-      }
-
-      .capa,
-      .contracapa{
-        min-height:760px;
-      }
-
-      .capa::before{
-        inset:16px;
-      }
-
-      .capa-box{
-        width:92%;
-        min-height:650px;
-        padding:28px 18px;
-      }
-
-      .capa-ilustracao{
-        top:205px;
-        width:92%;
-        height:170px;
-      }
-
-      .livro-aberto{
-        width:320px;
-        height:110px;
-        top:55px;
-      }
-
-      .livro-aberto::before,
-      .livro-aberto::after{
-        width:145px;
-        height:78px;
-      }
-
-      .pergaminho,
-      .manuscrito{
-        display:none;
-      }
-
-      .capa-miolo{
-        padding-top:190px;
-        padding-bottom:10px;
-      }
-
-      .capa h1{
-        font-size:34px;
-      }
-
-      .capa h2{
-        font-size:17px;
-      }
-
-      .selo-revista-centro{
-        font-size:10px;
-        padding:9px 14px;
-      }
-
-      .selo-revista-tipo{
-        font-size:10px;
-        padding:8px 13px;
+      .page {
+        page-break-after: always;
       }
     }
   </style>
 </head>
-
 <body>
-  <header>
-    <h1>VERBO IA</h1>
-    <p>Gerador inteligente de materiais cristãos.</p>
-  </header>
+  <div class="app">
+    <header class="header">
+      <h1 class="brand">VERBO IA</h1>
+      <p class="tagline">Gerador de materiais cristãos — CPID</p>
+    </header>
 
-  <main class="container">
-    <section class="card painel">
-      <div class="card-head">
-        <h2>Configurar material</h2>
-        <p>Algumas ferramentas são públicas. Outras são reservadas ao administrador.</p>
-      </div>
+    <main class="grid">
+      <section class="panel">
+        <h2>Gerar material</h2>
 
-      <div class="card-body">
-        <div class="aviso">Liberado para todos: Sermão, Devocional e Estudo Bíblico.</div>
-        <div class="aviso-reservado">Reservado com código: Prompt automático, E-book, Livro, Curso e Revista.</div>
-
-        <label for="adminCode">Código de acesso</label>
-        <input id="adminCode" type="password" autocomplete="off" placeholder="Digite o código para liberar recursos reservados" oninput="atualizarOpcoesPorTipo()" />
-
-        <div class="prompt-box">
-          <h3>Gerar prompt automático</h3>
-          <p>Recurso reservado. Digite o código de acesso para usar.</p>
-
-          <label for="promptTema">Crie um prompt sobre:</label>
-          <input id="promptTema" type="text" autocomplete="off" placeholder="Ex: arrebatamento, família, missões, oração..." />
-
-          <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">
-            Gerar prompt automático
-          </button>
-        </div>
-
-        <label for="materialType">Tipo de material</label>
-        <select id="materialType" onchange="atualizarOpcoesPorTipo()" autocomplete="off">
-          <option value="sermao" selected>Sermão</option>
+        <label>Tipo de material</label>
+        <select id="materialType">
+          <option value="sermao">Sermão</option>
           <option value="devocional">Devocional</option>
-          <option value="estudo">Estudo bíblico/teológico</option>
-          <option value="ebook">E-book cristão - reservado</option>
-          <option value="livro">Livro cristão - reservado</option>
-          <option value="curso">Curso cristão - reservado</option>
-          <option value="revista">Revista de ensino bíblico - reservado</option>
+          <option value="estudo">Estudo bíblico / teológico</option>
+          <option value="ebook">E-book</option>
+          <option value="livro">Livro</option>
+          <option value="curso">Curso</option>
+          <option value="revista" selected>Revista de ensino bíblico</option>
         </select>
 
-        <div id="campoRevistaVersao" class="campo-oculto">
-          <label for="revistaVersion">Versão da revista</label>
-          <select id="revistaVersion" autocomplete="off">
-            <option value="professor" selected>Revista do professor</option>
-            <option value="aluno">Revista do aluno</option>
-          </select>
-        </div>
-
-        <div id="campoTraducaoBiblica" class="campo-oculto">
-          <label for="bibleVersion">Tradução bíblica padrão</label>
-          <input id="bibleVersion" type="text" autocomplete="off" placeholder="Ex: King James Fiel 1611" />
-        </div>
-
-        <label for="title">Título</label>
-        <input id="title" type="text" autocomplete="off" placeholder="Digite o título do material" />
-
-        <label for="subtitle">Subtítulo</label>
-        <input id="subtitle" type="text" autocomplete="off" placeholder="Digite o subtítulo" />
-
-        <label for="theme">Tema principal</label>
-        <textarea id="theme" autocomplete="off" placeholder="Digite aqui o tema principal ou cole o prompt completo"></textarea>
-
-        <label for="biblicalBase">Texto bíblico base</label>
-        <input id="biblicalBase" type="text" autocomplete="off" placeholder="Ex: João 3.16; Romanos 8.28" />
-
-        <div class="linha">
-          <div id="campoQuantidade">
-            <label for="quantity" id="labelQuantidade">Quantidade</label>
-            <input id="quantity" type="number" min="1" max="30" autocomplete="off" placeholder="Ex: 4" />
+        <div class="row">
+          <div>
+            <label>Versão da revista</label>
+            <select id="revistaVersion">
+              <option value="professor" selected>Revista do professor</option>
+              <option value="aluno">Revista do aluno</option>
+            </select>
           </div>
 
-          <div id="campoTopicos">
-            <label for="sermonPoints">Tópicos do sermão</label>
-            <select id="sermonPoints" autocomplete="off">
-              <option value="3" selected>3 tópicos</option>
-              <option value="4">4 tópicos</option>
+          <div>
+            <label>Tradução bíblica padrão</label>
+            <input id="bibleVersion" value="King James Fiel 1611" />
+          </div>
+        </div>
+
+        <label>Título</label>
+        <input id="title" value="O Livro que Carregamos" />
+
+        <label>Subtítulo</label>
+        <input id="subtitle" value="Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual" />
+
+        <label>Tema principal / instruções</label>
+        <textarea id="theme">Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
+
+A revista deve ensinar sobre a Bíblia como Palavra de Deus, sua origem divina, sua inspiração, sua autoridade, sua formação, sua preservação e a responsabilidade espiritual da Igreja diante das Escrituras.
+
+A revista deve ter conteúdo profundo, bíblico, doutrinário, pastoral, didático, reverente e fiel ao pentecostalismo clássico.
+
+A capa deve ser gerada com imagem profissional, contendo elementos bíblicos nobres: Bíblia aberta antiga, pergaminhos, rolos das Escrituras, manuscritos bíblicos, luz dourada suave e atmosfera reverente. Não usar folhinhas soltas, bloquinhos, papeizinhos retangulares ou cartões.
+
+Lição 1 — A Bíblia: A Palavra de Deus Escrita aos Homens.
+Lição 2 — A Inspiração das Escrituras.
+Lição 3 — O Cânon Sagrado e a Formação da Bíblia.
+Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textarea>
+
+        <label>Texto bíblico base</label>
+        <input id="biblicalBase" value="2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12" />
+
+        <div class="row">
+          <div>
+            <label>Lições / capítulos</label>
+            <input id="quantity" type="number" min="1" max="20" value="4" />
+          </div>
+
+          <div>
+            <label>Pontos do sermão</label>
+            <select id="sermonPoints">
+              <option value="3">3 tópicos</option>
+              <option value="4" selected>4 tópicos</option>
               <option value="5">5 tópicos</option>
             </select>
           </div>
         </div>
 
-        <label for="targetAudience">Público-alvo</label>
-        <input id="targetAudience" type="text" autocomplete="off" placeholder="Ex: Igreja em geral, jovens, professores..." />
+        <label>Público-alvo</label>
+        <input id="targetAudience" value="Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos" />
 
-        <div class="linha">
-          <div>
-            <label for="author">Autor / comentarista</label>
-            <input id="author" type="text" autocomplete="off" placeholder="Digite o nome do autor" />
-          </div>
+        <label>Autor / comentarista</label>
+        <input id="author" value="Pr. Isiquel Rodrigues" />
 
-          <div>
-            <label for="ministry">Editora / ministério</label>
-            <input id="ministry" type="text" autocomplete="off" placeholder="Digite o ministério ou editora" />
-          </div>
-        </div>
+        <label>Editora / ministério</label>
+        <input id="ministry" value="CPID - Casa Publicadora da Igreja de Deus" />
 
-        <div class="linha">
+        <div class="row">
           <div>
-            <label for="depthLevel">Profundidade</label>
-            <select id="depthLevel" autocomplete="off">
-              <option value="profundo" selected>Profundo</option>
-              <option value="muito profundo">Muito profundo</option>
-              <option value="pastoral e profundo">Pastoral e profundo</option>
+            <label>Profundidade</label>
+            <select id="depthLevel">
+              <option>Simples</option>
+              <option>Intermediário</option>
+              <option selected>Muito profundo</option>
             </select>
           </div>
 
-          <div id="campoVisual">
-            <label for="visualStyle">Estilo visual</label>
-            <select id="visualStyle" autocomplete="off">
-              <option value="colorido">Colorido</option>
-              <option value="preto e branco" selected>Preto e branco</option>
+          <div>
+            <label>Estilo visual</label>
+            <select id="visualStyle">
+              <option>Minimalista</option>
+              <option selected>Colorido</option>
+              <option>Editorial clássico</option>
+              <option>Luxo teológico</option>
             </select>
           </div>
         </div>
 
-        <div id="campoCapa">
-          <label for="coverMode">Capa</label>
-          <select id="coverMode" autocomplete="off">
-            <option value="sem-capa" selected>Sem capa</option>
-            <option value="com-capa">Com capa</option>
-          </select>
+        <label>Capa</label>
+        <select id="coverMode">
+          <option value="com-capa" selected>Com capa</option>
+          <option value="sem-capa">Sem capa</option>
+        </select>
+
+        <label>Tom do material</label>
+        <input id="tone" value="Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante" />
+
+        <label>Código de acesso</label>
+        <input id="adminCode" placeholder="Código para recursos reservados" />
+
+        <div class="btns">
+          <button class="btn-primary" id="generateBtn" onclick="gerarMaterial()">Gerar material</button>
+          <button class="btn-secondary" onclick="baixarPDF()">Baixar PDF</button>
+          <button class="btn-danger" onclick="limparResultado()">Limpar</button>
         </div>
 
-        <label for="tone">Tom do material</label>
-        <input id="tone" type="text" autocomplete="off" placeholder="Ex: bíblico, pastoral, profundo e didático" />
+        <div id="status" class="status"></div>
+      </section>
 
-        <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">Gerar material</button>
-
-        <div class="botoes">
-          <button class="btn-verde" type="button" onclick="salvarPDF()">Salvar em PDF</button>
-          <button class="btn-cinza" type="button" onclick="limparTudo()">Limpar tudo</button>
+      <section class="preview-wrap">
+        <div class="preview-head">
+          <h2>Prévia</h2>
         </div>
 
-        <div class="botoes">
-          <button class="btn-alerta" id="btnEditar" type="button" onclick="ativarEdicao()">Editar material</button>
-          <button class="btn-secundario" id="btnFinalizarEdicao" type="button" onclick="finalizarEdicao()" disabled>Finalizar edição</button>
-        </div>
-
-        <div class="botoes">
-          <button class="btn-secundario" type="button" onclick="preencherTeste()">Preencher teste</button>
-          <button class="btn-secundario" type="button" onclick="copiarTexto()">Copiar texto</button>
-        </div>
-
-        <div class="progresso">
-          <div class="barra" id="barra"></div>
-        </div>
-
-        <div class="etapas" id="etapasGeracao"></div>
-
-        <div class="status" id="status">Aguardando geração.</div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="card-head">
-        <h2>Material gerado</h2>
-        <p>O resultado aparecerá com o formato correto do material escolhido.</p>
-      </div>
-
-      <div class="card-body">
-        <div class="modo-edicao" id="modoEdicao">
-          Modo edição ativado. Você pode corrigir o material antes de salvar em PDF.
-        </div>
-
-        <div id="resultado">
-          <div class="placeholder">
-            <div>
-              <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
-              <p style="margin:0;">Escolha o tipo de material e clique em <strong>Gerar material</strong>.</p>
+        <div class="document">
+          <div id="printArea">
+            <div class="empty">
+              O material gerado aparecerá aqui.
             </div>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
+      </section>
+    </main>
+  </div>
 
-  <div id="printArea" class="print-area"></div>
-    <script>
-    let ultimoMaterial = null;
-    let editando = false;
+  <script>
+    let materialAtual = null;
 
-    const el = (id) => document.getElementById(id);
-    const valor = (id) => (el(id)?.value || "").trim();
-
-    function tipoAtual(){
-      return valor("materialType") || "sermao";
-    }
-
-    function setStatus(msg, classe = ""){
-      const s = el("status");
-      s.className = "status " + classe;
-      s.innerHTML = msg;
-    }
-
-    function setProgresso(n){
-      const barra = el("barra");
-      if(barra){
-        barra.style.width = Math.max(0, Math.min(100, n)) + "%";
-      }
-    }
-
-    function setEtapas(etapaAtual, concluidas = []){
-      const box = el("etapasGeracao");
-      if(!box) return;
-
-      if(!etapaAtual){
-        box.innerHTML = "";
-        return;
-      }
-
-      const etapas = tipoAtual() === "revista"
-        ? ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional", "Contracapa"]
-        : ["Estrutura", "Conteúdo", "Finalização"];
-
-      box.innerHTML = etapas.map(nome => {
-        const classe = concluidas.includes(nome) ? "feita" : (nome === etapaAtual ? "ativa" : "");
-        return `<span class="etapa ${classe}">${escapeHtml(nome)}</span>`;
-      }).join("");
-    }
-
-    function escapeHtml(texto){
-      if(texto === null || texto === undefined) return "";
-
-      return String(texto)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    function divTexto(texto){
-      if(!texto) return `<p class="texto"></p>`;
-      return `<div class="texto">${escapeHtml(texto)}</div>`;
-    }
-
-    function pegarPrimeiroTexto(obj, chaves){
-      if(!obj || typeof obj !== "object") return "";
-
-      for(const chave of chaves){
-        if(obj[chave] && typeof obj[chave] === "string" && obj[chave].trim()){
-          return obj[chave].trim();
-        }
-      }
-
-      for(const chave of chaves){
-        if(Array.isArray(obj[chave]) && obj[chave].length){
-          return obj[chave].map(item => {
-            if(typeof item === "string") return item;
-            if(item && typeof item === "object") return Object.values(item).join(" — ");
-            return "";
-          }).filter(Boolean).join("\n");
-        }
-      }
-
-      return "";
-    }
-
-    function textoSubtopico(s){
-      return pegarPrimeiroTexto(s, [
-        "text",
-        "texto",
-        "content",
-        "conteudo",
-        "explanation",
-        "explicacao",
-        "development",
-        "desenvolvimento",
-        "commentary",
-        "comentario",
-        "body",
-        "paragraph",
-        "paragrafo",
-        "teaching",
-        "ensino",
-        "lesson",
-        "material",
-        "description",
-        "descricao"
-      ]);
-    }
-
-    function atualizarOpcoesPorTipo(){
-      const tipo = tipoAtual();
-
-      el("campoRevistaVersao").classList.toggle("campo-oculto", tipo !== "revista");
-      el("campoTraducaoBiblica").classList.toggle("campo-oculto", tipo !== "revista");
-      el("campoTopicos").classList.toggle("campo-oculto", tipo !== "sermao");
-      el("campoQuantidade").classList.toggle("campo-oculto", tipo === "sermao" || tipo === "devocional" || tipo === "estudo");
-
-      const labelQuantidade = el("labelQuantidade");
-
-      if(tipo === "revista"){
-        labelQuantidade.textContent = "Lições mensais";
-        if(!valor("quantity")) el("quantity").value = "4";
-        el("quantity").min = "4";
-        el("quantity").max = "4";
-        el("coverMode").value = "com-capa";
-      }else if(tipo === "livro"){
-        labelQuantidade.textContent = "Capítulos";
-        el("quantity").min = "1";
-        el("quantity").max = "20";
-        el("coverMode").value = "com-capa";
-      }else if(tipo === "ebook"){
-        labelQuantidade.textContent = "Capítulos";
-        el("quantity").min = "1";
-        el("quantity").max = "12";
-      }else if(tipo === "curso"){
-        labelQuantidade.textContent = "Aulas";
-        el("quantity").min = "1";
-        el("quantity").max = "20";
-      }else{
-        labelQuantidade.textContent = "Quantidade";
-      }
-    }
-
-    function dadosFormulario(){
-      const tipo = tipoAtual();
-      let quantity = Number(valor("quantity") || 0);
-
-      if(tipo === "revista") quantity = 4;
-      if(tipo === "livro") quantity = Math.max(1, Math.min(20, quantity || 10));
-      if(tipo === "ebook") quantity = Math.max(1, Math.min(12, quantity || 6));
-      if(tipo === "curso") quantity = Math.max(1, Math.min(20, quantity || 8));
-
+    function getDados() {
       return {
-        adminCode: valor("adminCode"),
-        codigoAcesso: valor("adminCode"),
-
-        materialType: tipo,
-        tipoMaterial: tipo,
-
-        revistaVersion: valor("revistaVersion"),
-        versaoRevista: valor("revistaVersion"),
-
-        bibleVersion: valor("bibleVersion"),
-        traducao: valor("bibleVersion"),
-
-        sermonPoints: Number(valor("sermonPoints") || 3),
-
-        title: valor("title"),
-        titulo: valor("title"),
-
-        subtitle: valor("subtitle"),
-        subtitulo: valor("subtitle"),
-
-        theme: valor("theme"),
-        tema: valor("theme"),
-        temaPrincipal: valor("theme"),
-
-        biblicalBase: valor("biblicalBase"),
-        textoBase: valor("biblicalBase"),
-        textoBiblicoBase: valor("biblicalBase"),
-
-        quantity,
-        quantidadeLicoes: tipo === "revista" ? 4 : quantity,
-
-        targetAudience: valor("targetAudience"),
-        publicoAlvo: valor("targetAudience"),
-
-        author: valor("author"),
-        autor: valor("author"),
-        comentarista: valor("author"),
-
-        ministry: valor("ministry"),
-        editora: valor("ministry"),
-        ministerio: valor("ministry"),
-
-        depthLevel: valor("depthLevel"),
-        profundidade: valor("depthLevel"),
-
-        visualStyle: valor("visualStyle"),
-        estiloVisual: valor("visualStyle"),
-
-        coverMode: valor("coverMode"),
-        capa: valor("coverMode"),
-
-        tone: valor("tone"),
-        tomMaterial: valor("tone")
+        materialType: document.getElementById("materialType").value,
+        revistaVersion: document.getElementById("revistaVersion").value,
+        bibleVersion: document.getElementById("bibleVersion").value,
+        title: document.getElementById("title").value,
+        subtitle: document.getElementById("subtitle").value,
+        theme: document.getElementById("theme").value,
+        biblicalBase: document.getElementById("biblicalBase").value,
+        quantity: Number(document.getElementById("quantity").value || 4),
+        sermonPoints: Number(document.getElementById("sermonPoints").value || 4),
+        targetAudience: document.getElementById("targetAudience").value,
+        author: document.getElementById("author").value,
+        ministry: document.getElementById("ministry").value,
+        depthLevel: document.getElementById("depthLevel").value,
+        visualStyle: document.getElementById("visualStyle").value,
+        coverMode: document.getElementById("coverMode").value,
+        tone: document.getElementById("tone").value,
+        adminCode: document.getElementById("adminCode").value
       };
     }
 
-    async function postJSON(url, body){
-      const resposta = await fetch(url, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify(body)
+    function setStatus(texto, tipo = "") {
+      const el = document.getElementById("status");
+      el.className = "status show";
+      el.textContent = texto;
+
+      if (tipo === "erro") {
+        el.style.borderColor = "rgba(239,68,68,.45)";
+        el.style.color = "#fecaca";
+      } else if (tipo === "ok") {
+        el.style.borderColor = "rgba(34,197,94,.45)";
+        el.style.color = "#bbf7d0";
+      } else {
+        el.style.borderColor = "rgba(255,255,255,.1)";
+        el.style.color = "#cbd5e1";
+      }
+    }
+
+    function setLoading(loading) {
+      const btn = document.getElementById("generateBtn");
+      btn.disabled = loading;
+      btn.textContent = loading ? "Gerando..." : "Gerar material";
+    }
+
+    async function gerarMaterial() {
+      const dados = getDados();
+
+      setLoading(true);
+      setStatus("Iniciando geração do material...");
+
+      try {
+        if (dados.materialType === "revista") {
+          materialAtual = await gerarRevistaPorPartes(dados);
+          renderMaterial(materialAtual);
+          setStatus("Revista gerada com capa e contracapa por imagem.", "ok");
+          return;
+        }
+
+        const resposta = await chamarGerar(dados);
+        materialAtual = resposta.material;
+        renderMaterial(materialAtual);
+        setStatus("Material gerado com sucesso.", "ok");
+      } catch (erro) {
+        setStatus(erro.message || "Erro ao gerar material.", "erro");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    async function chamarGerar(payload) {
+      const resposta = await fetch("/api/gerar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
-      let data = null;
+      const data = await resposta.json().catch(() => null);
 
-      try{
-        data = await resposta.json();
-      }catch(e){
-        data = null;
-      }
-
-      if(!resposta.ok){
-        throw new Error(data?.error || data?.message || "Erro ao gerar material.");
+      if (!resposta.ok) {
+        throw new Error(data?.error || "Erro na geração do material.");
       }
 
       return data;
     }
 
-    async function gerarPromptAutomatico(){
-      const btn = el("btnPrompt");
-      const tema = valor("promptTema");
-
-      if(!tema){
-        setStatus("Digite o tema para gerar o prompt.", "erro");
-        return;
-      }
-
-      btn.disabled = true;
-      setStatus("Gerando prompt automático...");
-      setProgresso(20);
-
-      try{
-        const data = await postJSON("/api/prompt", {
-          adminCode: valor("adminCode"),
-          codigoAcesso: valor("adminCode"),
-          theme: tema,
-          tema: tema,
-          temaPrincipal: tema
-        });
-
-        setProgresso(100);
-        setStatus("Prompt gerado com sucesso.", "ok");
-
-        const prompt = data.prompt || data.text || data.html || "";
-
-        el("resultado").innerHTML = `
-          <article class="doc">
-            <section class="pagina">
-              <div class="pagina-interna">
-                <h1 class="titulo-grande">Prompt automático</h1>
-                <div class="subtitulo">${escapeHtml(tema)}</div>
-                <div class="bloco">
-                  ${divTexto(prompt)}
-                </div>
-              </div>
-            </section>
-          </article>
-        `;
-      }catch(erro){
-        setStatus(escapeHtml(erro.message || "Erro ao gerar prompt."), "erro");
-      }finally{
-        btn.disabled = false;
-      }
-    }
-
-    async function gerarMaterial(){
-      const btn = el("btnGerar");
-      const dados = dadosFormulario();
-
-      if(!dados.title || !dados.theme){
-        setStatus("Preencha pelo menos o título e o tema principal.", "erro");
-        return;
-      }
-
-      btn.disabled = true;
-      setProgresso(5);
-      setEtapas("Estrutura");
-      setStatus("Iniciando geração...");
-
-      try{
-        finalizarEdicao(false);
-
-        if(dados.materialType === "revista"){
-          await gerarRevistaPorPartes(dados);
-        }else if(dados.materialType === "livro"){
-          await gerarLivroPorPartes(dados);
-        }else{
-          await gerarMaterialDireto(dados);
-        }
-      }catch(erro){
-        setStatus(escapeHtml(erro.message || "Erro ao gerar material."), "erro");
-      }finally{
-        btn.disabled = false;
-      }
-    }
-
-    async function gerarMaterialDireto(dados){
-      setStatus("Gerando material...");
-      setProgresso(45);
-      setEtapas("Conteúdo", ["Estrutura"]);
-
-      const data = await postJSON("/api/gerar", dados);
-      ultimoMaterial = data.material || data;
-
-      renderizarMaterial(ultimoMaterial);
-
-      setProgresso(100);
-      setEtapas("Finalização", ["Estrutura", "Conteúdo", "Finalização"]);
-      setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
-    }
-
-    async function gerarRevistaPorPartes(dados){
-      setStatus("Criando estrutura inicial da revista, apresentação ao professor e panorama geral...");
-      setEtapas("Revista");
-      setProgresso(7);
-
-      const metaResp = await postJSON("/api/gerar", {
-        ...dados,
-        revistaPart:"meta"
+    async function chamarCapa(payload) {
+      const resposta = await fetch("/api/capa", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
-      const meta = metaResp.material || metaResp;
+      const data = await resposta.json().catch(() => null);
 
-      const revista = {
-        ...meta,
-        type:"revista",
-        title:meta.title || dados.title,
-        subtitle:meta.subtitle || dados.subtitle,
-        author:meta.author || dados.author,
-        ministry:meta.ministry || dados.ministry,
-        revistaVersion:dados.revistaVersion,
-        presentationToTeacher:meta.presentationToTeacher || "",
-        magazineOverview:meta.magazineOverview || "",
-        generalTeacherGuidance:meta.generalTeacherGuidance || "",
-        lessons:[],
-        cover:null,
-        backCover:null
-      };
+      if (!resposta.ok) {
+        throw new Error(data?.error || "Erro ao gerar imagem da capa.");
+      }
 
-      ultimoMaterial = revista;
-      renderizarMaterial(revista);
+      return data;
+    }
 
-      const titulos = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
+    async function gerarRevistaPorPartes(dados) {
+      setStatus("1/7 - Gerando estrutura da revista...");
+
+      const metaResp = await chamarGerar({
+        ...dados,
+        revistaPart: "meta"
+      });
+
+      const meta = metaResp.material || {};
+      const lessonTitles = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
         ? meta.lessonTitles
         : [
           "Lição 1 - A Bíblia: A Palavra de Deus Escrita aos Homens",
@@ -1759,1008 +846,458 @@
           "Lição 4 - A Preservação da Bíblia e a Responsabilidade da Igreja"
         ];
 
-      const concluidas = ["Revista"];
+      const lessons = [];
 
-      for(let i = 1; i <= 4; i++){
-        const etapaAtual = `Lição ${i}`;
+      for (let i = 1; i <= 4; i++) {
+        setStatus(`${i + 1}/7 - Gerando Lição ${i}...`);
 
-        setStatus(`Gerando ${etapaAtual} de 4 com conteúdo completo, referências bíblicas, auxílios e perguntas...`);
-        setEtapas(etapaAtual, concluidas);
-        setProgresso(10 + Math.round((i - 1) * 62 / 4));
-
-        const lessonResp = await postJSON("/api/gerar", {
+        const lessonResp = await chamarGerar({
           ...dados,
-          revistaPart:"lesson",
-          lessonNumber:i,
-          lessonTitles:titulos,
-          presentationToTeacher:revista.presentationToTeacher,
-          magazineOverview:revista.magazineOverview,
-          generalTeacherGuidance:revista.generalTeacherGuidance,
-          instrucoesExtras:"Gere somente esta lição. Não gere a revista inteira. Cada tópico e subtópico precisa ter referência bíblica coerente. Inclua Palavra ao professor, Panorama da lição, Auxílio bibliológico, materiais reais para aprofundamento e Revisando o conteúdo."
+          revistaPart: "lesson",
+          lessonNumber: i,
+          lessonTitles,
+          presentationToTeacher: meta.presentationToTeacher || "",
+          magazineOverview: meta.magazineOverview || "",
+          generalTeacherGuidance: meta.generalTeacherGuidance || "",
+          instrucoesExtras: `Esta é a lição ${i} da revista. Mantenha ligação com as demais lições, sem repetir conteúdo desnecessário.`
         });
 
-        const lesson = lessonResp.material || lessonResp;
-
-        revista.lessons.push(lesson);
-        ultimoMaterial = revista;
-
-        renderizarMaterial(revista);
-
-        concluidas.push(etapaAtual);
-        setProgresso(10 + Math.round(i * 62 / 4));
+        lessons.push(lessonResp.material);
       }
 
-      setStatus("Gerando capa profissional da revista...");
-      setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4"]);
-      setProgresso(78);
+      let coverData = null;
+      let backCoverData = null;
+      let coverImageUrl = "";
+      let backCoverImageUrl = "";
 
-      try{
-        const coverResp = await postJSON("/api/gerar", {
+      if (dados.coverMode !== "sem-capa") {
+        setStatus("6/7 - Gerando imagem profissional da capa...");
+
+        try {
+          const capaResp = await chamarCapa({
+            ...dados,
+            tipoImagem: "front",
+            lessonTitles,
+            visualTheme: meta.visualTheme || "",
+            title: meta.title || dados.title,
+            subtitle: meta.subtitle || dados.subtitle
+          });
+
+          coverImageUrl = capaResp.imageDataUrl || "";
+        } catch (erro) {
+          console.warn("Falha ao gerar capa por imagem:", erro);
+          coverImageUrl = "";
+        }
+
+        setStatus("7/7 - Gerando imagem profissional da contracapa...");
+
+        try {
+          const contracapaResp = await chamarCapa({
+            ...dados,
+            tipoImagem: "back",
+            lessonTitles,
+            visualTheme: meta.visualTheme || "",
+            title: meta.title || dados.title,
+            subtitle: meta.subtitle || dados.subtitle
+          });
+
+          backCoverImageUrl = contracapaResp.imageDataUrl || "";
+        } catch (erro) {
+          console.warn("Falha ao gerar contracapa por imagem:", erro);
+          backCoverImageUrl = "";
+        }
+      }
+
+      try {
+        const coverResp = await chamarGerar({
           ...dados,
-          revistaPart:"cover",
-          lessonTitles:titulos,
-          presentationToTeacher:revista.presentationToTeacher,
-          magazineOverview:revista.magazineOverview,
-          generalTeacherGuidance:revista.generalTeacherGuidance
+          revistaPart: "cover",
+          lessonTitles
         });
 
-        revista.cover = coverResp.material || coverResp;
-      }catch(e){
-        revista.cover = criarCapaPadrao(dados);
+        coverData = coverResp.material;
+      } catch (erro) {
+        coverData = criarCapaPadrao(dados);
       }
 
-      ultimoMaterial = revista;
-      renderizarMaterial(revista);
-
-      setStatus("Gerando contracapa da revista...");
-      setEtapas("Contracapa", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]);
-      setProgresso(91);
-
-      try{
-        const backCoverResp = await postJSON("/api/gerar", {
+      try {
+        const backResp = await chamarGerar({
           ...dados,
-          revistaPart:"backcover",
-          lessonTitles:titulos,
-          presentationToTeacher:revista.presentationToTeacher,
-          magazineOverview:revista.magazineOverview,
-          generalTeacherGuidance:revista.generalTeacherGuidance
+          revistaPart: "backcover",
+          lessonTitles
         });
 
-        revista.backCover = backCoverResp.material || backCoverResp;
-      }catch(e){
-        revista.backCover = criarContracapaPadrao(dados);
+        backCoverData = backResp.material;
+      } catch (erro) {
+        backCoverData = criarContracapaPadrao(dados);
       }
 
-      ultimoMaterial = revista;
-      renderizarMaterial(revista);
-
-      setProgresso(100);
-      setEtapas("Contracapa", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional", "Contracapa"]);
-      setStatus("Revista gerada por partes com sucesso, com apresentação ao professor, quatro lições, capa e contracapa.", "ok");
-    }
-
-    async function gerarLivroPorPartes(dados){
-      setStatus("Criando plano geral do livro...");
-      setEtapas("Estrutura");
-      setProgresso(7);
-
-      const metaResp = await postJSON("/api/gerar", {
-        ...dados,
-        livroPart:"meta"
-      });
-
-      const meta = metaResp.material || metaResp;
-
-      const livro = {
-        ...meta,
-        type:"livro",
-        title:meta.title || dados.title,
-        subtitle:meta.subtitle || dados.subtitle,
-        author:meta.author || dados.author,
-        ministry:meta.ministry || dados.ministry,
-        chapters:[]
-      };
-
-      ultimoMaterial = livro;
-      renderizarMaterial(livro);
-
-      const totalCapitulos = Number(dados.quantity || meta.chapterPlan?.length || 10);
-      const chapterPlan = Array.isArray(meta.chapterPlan) ? meta.chapterPlan : [];
-      let previousChapterSummary = "";
-
-      for(let i = 1; i <= totalCapitulos; i++){
-        setStatus(`Gerando capítulo ${i} de ${totalCapitulos}...`);
-        setEtapas("Conteúdo", ["Estrutura"]);
-        setProgresso(10 + Math.round((i - 1) * 80 / totalCapitulos));
-
-        const chapterResp = await postJSON("/api/gerar", {
-          ...dados,
-          livroPart:"chapter",
-          chapterNumber:i,
-          chapterPlan,
-          bookCentralThesis:meta.bookCentralThesis || "",
-          readingPath:meta.readingPath || "",
-          previousChapterSummary
-        });
-
-        const chapter = chapterResp.material || chapterResp;
-
-        livro.chapters.push(chapter);
-        previousChapterSummary = chapter.chapterSummary || chapter.summary || "";
-        ultimoMaterial = livro;
-
-        renderizarMaterial(livro);
-        setProgresso(10 + Math.round(i * 80 / totalCapitulos));
-      }
-
-      setProgresso(100);
-      setEtapas("Finalização", ["Estrutura", "Conteúdo", "Finalização"]);
-      setStatus("Livro gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
-    }
-
-    function criarCapaPadrao(dados){
       return {
-        type:"revistaCover",
-        title:dados.title,
-        subtitle:dados.subtitle,
-        topLabel:"Revista Mensal de Escola Bíblica Dominical",
-        versionLabel:dados.revistaVersion === "aluno" ? "Revista do Aluno" : "Revista do Professor",
-        author:dados.author,
-        ministry:dados.ministry,
-        visualTheme:"Bibliologia, Bíblia aberta, manuscritos, pergaminhos, luz dourada e reverência diante das Escrituras.",
-        illustrationType:"bibliologia",
-        frontIllustrationDescription:"Bíblia aberta iluminada por luz dourada, pergaminhos antigos e manuscritos ao fundo, transmitindo autoridade da Palavra de Deus.",
-        mainColor:"#140d08",
-        secondaryColor:"#6c421f",
-        accentColor:"#f3d58a",
-        atmosphere:"reverente, editorial, bíblica e profunda",
-        coverPhrase:"A Palavra de Deus revelada, inspirada e preservada."
+        type: "revista",
+        title: meta.title || dados.title,
+        subtitle: meta.subtitle || dados.subtitle,
+        author: meta.author || dados.author,
+        ministry: meta.ministry || dados.ministry,
+        revistaVersion: meta.revistaVersion || dados.revistaVersion,
+        presentationToTeacher: meta.presentationToTeacher || "",
+        magazineOverview: meta.magazineOverview || "",
+        generalTeacherGuidance: meta.generalTeacherGuidance || "",
+        monthSummary: meta.monthSummary || "",
+        quarterSummary: meta.quarterSummary || "",
+        lessonTitles,
+        lessons,
+        cover: coverData,
+        backCover: backCoverData,
+        coverImageUrl,
+        backCoverImageUrl
       };
     }
 
-    function criarContracapaPadrao(dados){
+    function criarCapaPadrao(dados) {
       return {
-        type:"revistaBackCover",
-        title:dados.title,
-        subtitle:dados.subtitle,
-        ministry:dados.ministry,
-        author:dados.author,
-        backCoverPhrase:"A Palavra permanece para sempre.",
-        backCoverText:"Uma revista preparada para fortalecer a fé, edificar a igreja e conduzir professores e alunos a uma relação mais profunda com as Escrituras.",
-        visualTheme:"Fundo editorial com luz suave, Bíblia e textura de pergaminho.",
-        mainColor:"#120c08",
-        secondaryColor:"#3a2212",
-        accentColor:"#f3d58a"
+        title: dados.title,
+        subtitle: dados.subtitle,
+        topLabel: "Revista Mensal de Escola Bíblica Dominical",
+        versionLabel: dados.revistaVersion === "aluno" ? "Revista do Aluno" : "Revista do Professor",
+        author: dados.author,
+        ministry: dados.ministry,
+        coverPhrase: "Conhecendo e vivendo a Palavra de Deus"
       };
     }
 
-    function renderizarMaterial(m){
-      const tipo = (m.type || tipoAtual()).toLowerCase();
-
-      if(tipo === "revista") return renderRevista(m);
-      if(tipo === "livro") return renderLivro(m);
-
-      return renderMaterialGeral(m);
+    function criarContracapaPadrao(dados) {
+      return {
+        title: dados.title,
+        subtitle: dados.subtitle,
+        ministry: dados.ministry,
+        author: dados.author,
+        backCoverPhrase: "A Palavra de Deus permanece para sempre.",
+        backCoverText: "Uma revista preparada para fortalecer o ensino bíblico, edificar a Igreja e conduzir o professor a uma exposição fiel das Escrituras."
+      };
     }
 
-    function classeTemaCapa(m){
-      const texto = `${m.title || ""} ${m.subtitle || ""} ${m.theme || ""} ${m.visualTheme || ""}`.toLowerCase();
-
-      if(texto.includes("miss")) return "tema-missoes";
-      if(texto.includes("família") || texto.includes("familia") || texto.includes("lar")) return "tema-familia";
-      if(texto.includes("oração") || texto.includes("oracao") || texto.includes("intercess")) return "tema-oracao";
-      if(texto.includes("bíblia") || texto.includes("biblia") || texto.includes("bibliologia") || texto.includes("escritura")) return "tema-bibliologia";
-
-      const opcoes = ["tema-bibliologia", "tema-familia", "tema-missoes", "tema-oracao"];
-      const base = (m.title || "verbo").length + (m.subtitle || "").length;
-      return opcoes[base % opcoes.length];
+    function escapeHtml(texto) {
+      return String(texto || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
-    function capaMaterial(m, selo){
-      if(valor("coverMode") !== "com-capa") return "";
+    function p(texto) {
+      if (!texto) return "";
+      return `<p>${escapeHtml(texto)}</p>`;
+    }
 
-      const isRevista = (m.type || tipoAtual()) === "revista";
-      const cover = m.cover || m;
-      const temaClasse = classeTemaCapa({...m, ...cover});
+    function renderMaterial(m) {
+      if (!m) return;
 
-      const titulo = cover.title || m.title || "";
-      const subtitulo = cover.subtitle || m.subtitle || "";
-      const autor = cover.author || m.author || valor("author");
-      const ministry = cover.ministry || m.ministry || valor("ministry");
-      const frase = cover.coverPhrase || "";
+      if (m.type === "revista") {
+        renderRevista(m);
+        return;
+      }
 
-      if(isRevista){
-        const versao = cover.versionLabel || ((m.revistaVersion || valor("revistaVersion")) === "aluno"
-          ? "REVISTA DO ALUNO"
-          : "REVISTA DO PROFESSOR");
+      let html = "";
 
-        const topLabel = cover.topLabel || "REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL";
-
-        return `
-          <section class="pagina capa ${temaClasse}">
-            <div class="luz-capa"></div>
-
-            <div class="capa-ilustracao">
-              <div class="livro-aberto"></div>
-              <div class="pergaminho"></div>
-              <div class="manuscrito"></div>
-            </div>
-
-            <div class="capa-box">
-              <div class="capa-topo">
-                <div class="selo selo-revista-centro">
-                  ${escapeHtml(topLabel)}
-                </div>
-
-                <div class="selo selo-revista-tipo">
-                  ${escapeHtml(versao)}
-                </div>
-              </div>
-
-              <div class="capa-miolo">
-                <h1>${escapeHtml(titulo)}</h1>
-                <h2>${escapeHtml(subtitulo)}</h2>
-                ${frase ? `<div class="subtitulo" style="color:#f3d58a;margin-top:18px;font-size:18px;">${escapeHtml(frase)}</div>` : ""}
-                <div class="ornamento"></div>
-              </div>
-
-              <div class="capa-rodape">
-                <p>${escapeHtml(ministry)}</p>
-                <p>${escapeHtml(autor)}</p>
-              </div>
-            </div>
-          </section>
+      if (m.title) {
+        html += `
+          <section class="page content-page">
+            <span class="badge">${escapeHtml(m.type || "Material cristão")}</span>
+            <h1>${escapeHtml(m.title)}</h1>
+            ${m.subtitle ? `<h3>${escapeHtml(m.subtitle)}</h3>` : ""}
+            ${m.biblicalBase ? `<div class="quote">${escapeHtml(m.biblicalBase)}</div>` : ""}
+            ${p(m.introduction)}
         `;
       }
 
-      return `
-        <section class="pagina capa ${temaClasse}">
-          <div class="luz-capa"></div>
-
-          <div class="capa-ilustracao">
-            <div class="livro-aberto"></div>
-            <div class="pergaminho"></div>
-            <div class="manuscrito"></div>
-          </div>
-
-          <div class="capa-box">
-            <div class="capa-topo">
-              <div class="selo">${escapeHtml(selo || "VERBO IA")}</div>
-            </div>
-
-            <div class="capa-miolo">
-              <h1>${escapeHtml(titulo)}</h1>
-              <h2>${escapeHtml(subtitulo)}</h2>
-              <div class="ornamento"></div>
-            </div>
-
-            <div class="capa-rodape">
-              <p>${escapeHtml(ministry)}</p>
-              <p>${escapeHtml(autor)}</p>
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function contracapaMaterial(m){
-      if(valor("coverMode") !== "com-capa") return "";
-
-      const back = m.backCover || {};
-      const titulo = back.title || m.title || "";
-      const subtitulo = back.subtitle || m.subtitle || "";
-      const ministry = back.ministry || m.ministry || valor("ministry") || "";
-      const autor = back.author || m.author || valor("author") || "";
-      const frase = back.backCoverPhrase || "A Palavra permanece para sempre.";
-      const texto = back.backCoverText || "Material preparado para edificação, ensino e fortalecimento da fé cristã.";
-
-      return `
-        <section class="pagina contracapa">
-          <div>
-            <h1>${escapeHtml(titulo)}</h1>
-            <p>${escapeHtml(subtitulo)}</p>
-            <div style="width:190px;height:1px;background:linear-gradient(90deg,transparent,#f3d58a,transparent);margin:28px auto;"></div>
-            <p><strong>${escapeHtml(frase)}</strong></p>
-            <p>${escapeHtml(texto)}</p>
-            <div style="height:28px;"></div>
-            <p>${escapeHtml(ministry)}</p>
-            <p>${escapeHtml(autor)}</p>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderRevista(m){
-      const isAluno = (m.revistaVersion || valor("revistaVersion")) === "aluno";
-      const lessons = Array.isArray(m.lessons) ? m.lessons : [];
-
-      let html = `
-        <article class="doc">
-          ${capaMaterial(m, "REVISTA MENSAL")}
-
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="chips">
-                <span class="chip">${isAluno ? "Revista do aluno" : "Revista do professor"}</span>
-                <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
-                <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
-                <span class="chip">${escapeHtml(valor("bibleVersion") || "King James Fiel 1611")}</span>
-              </div>
-
-              ${m.presentationToTeacher ? `<div class="bloco box-gold"><h3>Apresentação ao professor</h3>${divTexto(m.presentationToTeacher)}</div>` : ""}
-              ${m.magazineOverview ? `<div class="bloco box-blue"><h3>Panorama geral da revista</h3>${divTexto(m.magazineOverview)}</div>` : ""}
-              ${m.generalTeacherGuidance ? `<div class="bloco"><h3>Orientações gerais para o professor</h3>${divTexto(m.generalTeacherGuidance)}</div>` : ""}
-              ${m.monthSummary ? `<div class="bloco"><h3>Sinopse do mês</h3>${divTexto(m.monthSummary)}</div>` : ""}
-              ${m.quarterSummary ? `<div class="bloco"><h3>Sinopse do trimestre</h3>${divTexto(m.quarterSummary)}</div>` : ""}
-            </div>
-          </section>
-      `;
-
-      if(!lessons.length){
-        html += `
-          <section class="pagina">
-            <div class="pagina-interna">
-              <div class="bloco">
-                <h3>Gerando lições...</h3>
-                <p class="texto">A estrutura da revista já foi criada. As lições aparecerão aqui conforme forem geradas.</p>
-              </div>
-            </div>
-          </section>
-        `;
+      if (Array.isArray(m.topics)) {
+        m.topics.forEach((t) => {
+          html += `
+            <h2>${escapeHtml(t.number ? t.number + ". " : "")}${escapeHtml(t.title)}</h2>
+            ${t.reference ? `<div class="badge">${escapeHtml(t.reference)}</div>` : ""}
+            ${p(t.text)}
+          `;
+        });
       }
 
-      lessons.forEach((l, index) => {
-        const lessonNumber = l.number || l.lesson || index + 1;
-        const topics = Array.isArray(l.topics) ? l.topics : [];
-        const review = Array.isArray(l.reviewQuestions) ? l.reviewQuestions : [];
-
-        html += `
-          <section class="pagina licao-pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">Lição ${escapeHtml(lessonNumber)} — ${escapeHtml(l.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(l.subtitle || "")}</div>
-
-              <div class="chips">
-                ${l.goldenText ? `<span class="chip">Texto áureo</span>` : ""}
-                ${l.practicalTruth ? `<span class="chip">Verdade prática</span>` : ""}
-                ${l.bibleReading ? `<span class="chip">Leitura bíblica</span>` : ""}
-              </div>
-
-              ${l.goldenText ? `<div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>` : ""}
-              ${l.practicalTruth ? `<div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>` : ""}
-              ${l.bibleReading ? `<div class="bloco"><h3>Leitura bíblica em classe</h3>${divTexto(l.bibleReading)}</div>` : ""}
-
-              ${Array.isArray(l.objectives) && l.objectives.length ? `
-                <div class="bloco">
-                  <h3>Objetivos da lição</h3>
-                  <ul class="lista">
-                    ${l.objectives.map(x => `<li>${escapeHtml(x)}</li>`).join("")}
-                  </ul>
-                </div>
-              ` : ""}
-
-              ${l.teacherWord ? `<div class="bloco box-gold"><h3>Palavra ao professor</h3>${divTexto(l.teacherWord)}</div>` : ""}
-              ${l.lessonOverview ? `<div class="bloco box-blue"><h3>Panorama da lição</h3>${divTexto(l.lessonOverview)}</div>` : ""}
-              ${l.introduction ? `<div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>` : ""}
-
-              ${topics.map((t, tIndex) => {
-                const topicoTexto = pegarPrimeiroTexto(t, ["text","texto","content","conteudo","explanation","explicacao","development","desenvolvimento","commentary","comentario","body"]);
-                const subtops = Array.isArray(t.subtopics) ? t.subtopics : [];
-                const refTopico = t.reference || t.referencia || t.biblicalReference || t.biblicalBase || "";
-
-                return `
-                  <div class="topico-revista">
-                    <h3>${romano(tIndex + 1)}. ${escapeHtml(t.title || `Tópico ${tIndex + 1}`)}</h3>
-
-                    ${refTopico ? `<div class="referencia-topico">${escapeHtml(refTopico)}</div>` : ""}
-
-                    ${topicoTexto ? divTexto(topicoTexto) : ""}
-
-                    ${subtops.map((s, sIndex) => {
-                      const conteudoSubtopico = textoSubtopico(s);
-                      const refSub = s.reference || s.referencia || s.biblicalReference || s.biblicalBase || "";
-
-                      return `
-                        <div class="subtopico-revista">
-                          <h4>${tIndex + 1}.${sIndex + 1} ${escapeHtml(s.title || s.titulo || "")}</h4>
-                          ${refSub ? `<div class="referencia">${escapeHtml(refSub)}</div>` : ""}
-                          ${conteudoSubtopico ? divTexto(conteudoSubtopico) : `<div class="texto">Conteúdo não retornado pela IA para este subtópico. Edite este campo ou gere novamente a lição.</div>`}
-                        </div>
-                      `;
-                    }).join("")}
-                  </div>
-                `;
-              }).join("")}
-
-              ${l.lifeApplication ? `<div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>` : ""}
-              ${l.conclusion ? `<div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>` : ""}
-
-              ${!isAluno ? `
-                ${(l.bibliologicalAid || l.doctrinalAid || l.auxilioBibliologico) ? `<div class="bloco box-blue"><h3>Auxílio bibliológico</h3>${divTexto(l.bibliologicalAid || l.doctrinalAid || l.auxilioBibliologico)}</div>` : ""}
-                ${l.historicalSupport ? `<div class="bloco"><h3>Subsídio histórico</h3>${divTexto(l.historicalSupport)}</div>` : ""}
-                ${(l.interpretationCare || l.classApproach) ? `<div class="bloco box-gold"><h3>Atenção, professor: cuidado na interpretação</h3>${divTexto(l.interpretationCare || l.classApproach)}</div>` : ""}
-                ${l.doctrinalSupport ? `<div class="bloco"><h3>Apoio doutrinário</h3>${divTexto(l.doctrinalSupport)}</div>` : ""}
-
-                ${Array.isArray(l.recommendedDeepening) && l.recommendedDeepening.length ? `
-                  <div class="bloco">
-                    <h3>Para aprofundamento</h3>
-                    <ul class="lista">
-                      ${l.recommendedDeepening.map(x => `<li>${escapeHtml(typeof x === "object" ? Object.values(x).join(" — ") : x)}</li>`).join("")}
-                    </ul>
-                  </div>
-                ` : ""}
-
-                ${l.teacherNotes ? `<div class="bloco"><h3>Orientações para o professor</h3>${divTexto(l.teacherNotes)}</div>` : ""}
-              ` : `
-                <div class="bloco">
-                  <h3>Espaço para anotações</h3>
-                  <p>__________________________________________________________________</p>
-                  <p>__________________________________________________________________</p>
-                  <p>__________________________________________________________________</p>
-                  <p>__________________________________________________________________</p>
-                </div>
-              `}
-
-              ${review.length ? `
-                <div class="bloco box-wine">
-                  <h3>Revisando o conteúdo</h3>
-                  <ol class="lista">
-                    ${review.map(q => `
-                      <li>
-                        <strong>${escapeHtml(q.question || q.pergunta || "")}</strong>
-                        ${!isAluno ? `<br><em>Resposta: ${escapeHtml(q.answer || q.resposta || "")}</em>` : ""}
-                      </li>
-                    `).join("")}
-                  </ol>
-                </div>
-              ` : ""}
-            </div>
-          </section>
-        `;
-      });
-
-      if(m.backCover){
-        html += contracapaMaterial(m);
+      if (Array.isArray(m.chapters)) {
+        m.chapters.forEach((c) => {
+          html += `
+            <h2>Capítulo ${escapeHtml(c.number)} - ${escapeHtml(c.title)}</h2>
+            ${p(c.text)}
+          `;
+        });
       }
 
-      html += `</article>`;
-      el("resultado").innerHTML = html;
-    }
-
-    function renderLivro(m){
-      const chapters = Array.isArray(m.chapters) ? m.chapters : [];
-      const chapterPlan = Array.isArray(m.chapterPlan) ? m.chapterPlan : [];
-
-      let html = `
-        <article class="doc">
-          ${capaMaterial(m, "LIVRO CRISTÃO")}
-
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              <div class="chips">
-                <span class="chip">Livro cristão</span>
-                <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
-                <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
-              </div>
-
-              ${m.presentation ? `<div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>` : ""}
-              ${m.preface ? `<div class="bloco"><h3>Prefácio</h3>${divTexto(m.preface)}</div>` : ""}
-              ${m.generalIntroduction ? `<div class="bloco"><h3>Introdução geral</h3>${divTexto(m.generalIntroduction)}</div>` : ""}
-              ${m.bookCentralThesis ? `<div class="bloco"><h3>Tese central do livro</h3>${divTexto(m.bookCentralThesis)}</div>` : ""}
-              ${m.readingPath ? `<div class="bloco"><h3>Caminho de leitura</h3>${divTexto(m.readingPath)}</div>` : ""}
-
-              ${!chapters.length && chapterPlan.length ? `
-                <div class="bloco">
-                  <h3>Plano de capítulos</h3>
-                  <ol class="lista">
-                    ${chapterPlan.map(c => `
-                      <li>
-                        <strong>${escapeHtml(c.title || "")}</strong>
-                        ${c.centralIdea ? `<br>${escapeHtml(c.centralIdea)}` : ""}
-                      </li>
-                    `).join("")}
-                  </ol>
-                </div>
-              ` : ""}
-            </div>
-          </section>
-      `;
-
-      chapters.forEach((cap, index) => {
-        const numero = cap.number || index + 1;
-
-        html += `
-          <section class="pagina licao-pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">Capítulo ${escapeHtml(numero)} — ${escapeHtml(cap.title || "")}</h1>
-
-              ${cap.chapterQuestion ? `<div class="subtitulo">${escapeHtml(cap.chapterQuestion)}</div>` : ""}
-              ${cap.centralThesis ? `<div class="bloco"><h3>Tese do capítulo</h3>${divTexto(cap.centralThesis)}</div>` : ""}
-              ${cap.openingNarrative ? `<div class="bloco"><h3>Abertura</h3>${divTexto(cap.openingNarrative)}</div>` : ""}
-              ${cap.ideaDevelopment ? `<div class="bloco"><h3>Desenvolvimento da ideia</h3>${divTexto(cap.ideaDevelopment)}</div>` : ""}
-              ${cap.biblicalExposition ? `<div class="bloco"><h3>Exposição bíblica e argumentação</h3>${divTexto(cap.biblicalExposition)}</div>` : ""}
-              ${cap.argumentDevelopment ? `<div class="bloco"><h3>Desenvolvimento do argumento</h3>${divTexto(cap.argumentDevelopment)}</div>` : ""}
-              ${cap.theologicalReflection ? `<div class="bloco"><h3>Reflexão teológica</h3>${divTexto(cap.theologicalReflection)}</div>` : ""}
-              ${cap.biblicalExamples ? `<div class="bloco"><h3>Exemplos bíblicos no desenvolvimento</h3>${divTexto(cap.biblicalExamples)}</div>` : ""}
-              ${cap.pastoralApplication ? `<div class="bloco"><h3>Desdobramento para a vida cristã</h3>${divTexto(cap.pastoralApplication)}</div>` : ""}
-              ${cap.chapterSummary ? `<div class="bloco"><h3>Fechamento do capítulo</h3>${divTexto(cap.chapterSummary)}</div>` : ""}
-              ${cap.reflectiveClosing ? `<div class="bloco"><h3>Conclusão reflexiva</h3>${divTexto(cap.reflectiveClosing)}</div>` : ""}
-              ${cap.transitionToNextChapter ? `<div class="bloco"><h3>Transição para o próximo capítulo</h3>${divTexto(cap.transitionToNextChapter)}</div>` : ""}
-            </div>
-          </section>
-        `;
-      });
+      if (Array.isArray(m.lessons)) {
+        m.lessons.forEach((a) => {
+          html += `
+            <h2>Aula ${escapeHtml(a.number)} - ${escapeHtml(a.title)}</h2>
+            ${p(a.objective)}
+            ${p(a.content)}
+            ${a.activity ? `<div class="box"><h3>Atividade</h3>${p(a.activity)}</div>` : ""}
+          `;
+        });
+      }
 
       html += `
-          <section class="pagina">
-            <div class="pagina-interna">
-              ${m.finalConclusion ? `<div class="bloco"><h3>Conclusão final</h3>${divTexto(m.finalConclusion)}</div>` : ""}
-              ${m.wordToReader ? `<div class="bloco"><h3>Palavra ao leitor</h3>${divTexto(m.wordToReader)}</div>` : ""}
-              ${m.authorBio ? `<div class="bloco"><h3>Sobre o autor</h3>${divTexto(m.authorBio)}</div>` : ""}
-              ${m.backCoverText ? `<div class="bloco"><h3>Texto de contracapa</h3>${divTexto(m.backCoverText)}</div>` : ""}
-            </div>
-          </section>
-
-          ${contracapaMaterial(m)}
-        </article>
+          ${m.application ? `<h2>Aplicação</h2>${p(m.application)}` : ""}
+          ${m.conclusion ? `<h2>Conclusão</h2>${p(m.conclusion)}` : ""}
+          ${m.prayer ? `<h2>Oração</h2>${p(m.prayer)}` : ""}
+        </section>
       `;
 
-      el("resultado").innerHTML = html;
+      document.getElementById("printArea").innerHTML = html;
     }
 
-    function renderMaterialGeral(m){
-      let selo = "MATERIAL CRISTÃO";
+    function renderRevista(m) {
+      let html = "";
 
-      if((m.type || tipoAtual()) === "sermao") selo = "SERMÃO";
-      if((m.type || tipoAtual()) === "devocional") selo = "DEVOCIONAL";
-      if((m.type || tipoAtual()) === "estudo") selo = "ESTUDO BÍBLICO";
-      if((m.type || tipoAtual()) === "ebook") selo = "E-BOOK CRISTÃO";
-      if((m.type || tipoAtual()) === "curso") selo = "CURSO CRISTÃO";
+      html += capaRevista(m);
 
-      let conteudo = "";
+      html += `
+        <section class="page content-page">
+          <span class="badge">Apresentação ao professor</span>
+          <h1>${escapeHtml(m.title)}</h1>
+          ${m.subtitle ? `<h3>${escapeHtml(m.subtitle)}</h3>` : ""}
+          <div class="quote">${escapeHtml(m.ministry || "")}<br>${escapeHtml(m.author || "")}</div>
 
-      conteudo += m.introduction ? `<div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction)}</div>` : "";
-      conteudo += m.biblicalBase ? `<div class="bloco"><h3>Base bíblica</h3>${renderValor(m.biblicalBase)}</div>` : "";
-      conteudo += renderArray("Tópicos", m.topics || m.points, "number");
-      conteudo += renderArray("Capítulos", m.chapters, "number");
-      conteudo += renderArray("Aulas", m.lessons || m.classes, "number");
-      conteudo += m.application ? `<div class="bloco"><h3>Aplicação</h3>${divTexto(m.application)}</div>` : "";
-      conteudo += m.conclusion ? `<div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion)}</div>` : "";
-      conteudo += m.prayer ? `<div class="bloco"><h3>Oração</h3>${divTexto(m.prayer)}</div>` : "";
+          <h2>Apresentação ao professor</h2>
+          ${p(m.presentationToTeacher)}
 
-      el("resultado").innerHTML = `
-        <article class="doc">
-          ${capaMaterial(m, selo)}
+          <h2>Panorama geral da revista</h2>
+          ${p(m.magazineOverview)}
 
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
+          <h2>Orientações gerais para o professor</h2>
+          ${p(m.generalTeacherGuidance)}
 
-              <div class="chips">
-                <span class="chip">${escapeHtml(selo)}</span>
-                <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
-                <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
-              </div>
+          ${m.monthSummary ? `<h2>Resumo do mês</h2>${p(m.monthSummary)}` : ""}
+          ${m.quarterSummary ? `<h2>Resumo do trimestre</h2>${p(m.quarterSummary)}` : ""}
 
-              ${conteudo || `<div class="bloco">${renderValor(m)}</div>`}
-            </div>
-          </section>
-
-          ${contracapaMaterial(m)}
-        </article>
+          <div class="box">
+            <h3>Lições desta revista</h3>
+            <ul>
+              ${(m.lessonTitles || []).map((t) => `<li>${escapeHtml(t)}</li>`).join("")}
+            </ul>
+          </div>
+        </section>
       `;
+
+      if (Array.isArray(m.lessons)) {
+        m.lessons.forEach((lesson) => {
+          html += renderLicao(lesson);
+        });
+      }
+
+      html += contracapaRevista(m);
+
+      document.getElementById("printArea").innerHTML = html;
     }
 
-    function renderArray(titulo, lista, numeroCampo){
-      if(!Array.isArray(lista) || !lista.length) return "";
+    function capaRevista(m) {
+      const c = m.cover || {};
+      const bg = m.coverImageUrl
+        ? `<div class="cover-art" style="background-image:url('${m.coverImageUrl}')"></div>`
+        : `<div class="cover-fallback-art"></div>`;
+
+      const versionLabel =
+        c.versionLabel ||
+        (m.revistaVersion === "aluno" ? "Revista do Aluno" : "Revista do Professor");
 
       return `
-        <div class="bloco">
-          <h3>${escapeHtml(titulo)}</h3>
+        <section class="page cover-page">
+          ${bg}
+          <div class="cover-overlay"></div>
 
-          ${lista.map((item, i) => {
-            if(typeof item === "string"){
-              return `<p class="texto">${escapeHtml(item)}</p>`;
-            }
+          <div class="cover-content">
+            <div class="cover-top">
+              <div class="cover-label">${escapeHtml(c.topLabel || "Revista Mensal de Escola Bíblica Dominical")}</div>
+              <div class="cover-version">${escapeHtml(versionLabel)}</div>
+            </div>
 
-            const numero = item[numeroCampo] || item.number || i + 1;
-            const tituloItem = item.title || item.titulo || `${titulo.slice(0,-1)} ${numero}`;
-            const ref = item.reference || item.referencia || item.biblicalReference || item.biblicalBase || "";
+            <div class="cover-title-area">
+              <h1 class="cover-title">${escapeHtml(c.title || m.title || "")}</h1>
+              <div class="cover-subtitle">${escapeHtml(c.subtitle || m.subtitle || "")}</div>
+            </div>
 
-            const corpo = Object.entries(item)
-              .filter(([key]) => !["title","titulo",numeroCampo,"number","lesson","day","reference","referencia","biblicalReference","biblicalBase"].includes(key))
-              .map(([key, value]) => {
-                if(!value) return "";
-
-                if(Array.isArray(value)){
-                  return `
-                    <div class="subtopico-revista">
-                      <h4>${escapeHtml(rotulo(key))}</h4>
-                      <ul class="lista">
-                        ${value.map(v => `<li>${escapeHtml(typeof v === "object" ? Object.values(v).join(" — ") : v)}</li>`).join("")}
-                      </ul>
-                    </div>
-                  `;
-                }
-
-                if(typeof value === "object"){
-                  return `
-                    <div class="subtopico-revista">
-                      <h4>${escapeHtml(rotulo(key))}</h4>
-                      ${divTexto(Object.entries(value).map(([k, v]) => `${rotulo(k)}: ${v}`).join("\n"))}
-                    </div>
-                  `;
-                }
-
-                return `
-                  <div class="subtopico-revista">
-                    <h4>${escapeHtml(rotulo(key))}</h4>
-                    ${divTexto(value)}
-                  </div>
-                `;
-              }).join("");
-
-            return `
-              <div class="topico-revista">
-                <h3>${escapeHtml(numero)}. ${escapeHtml(tituloItem)}</h3>
-                ${ref ? `<div class="referencia-topico">${escapeHtml(ref)}</div>` : ""}
-                ${corpo}
-              </div>
-            `;
-          }).join("")}
-        </div>
+            <div class="cover-footer">
+              ${escapeHtml(c.ministry || m.ministry || "")}<br>
+              ${escapeHtml(c.author || m.author || "")}
+            </div>
+          </div>
+        </section>
       `;
     }
 
-    function renderValor(valorRecebido){
-      if(!valorRecebido) return "";
+    function contracapaRevista(m) {
+      const b = m.backCover || {};
+      const bg = m.backCoverImageUrl
+        ? `<div class="cover-art" style="background-image:url('${m.backCoverImageUrl}')"></div>`
+        : `<div class="cover-fallback-art"></div>`;
 
-      if(typeof valorRecebido === "string"){
-        return divTexto(valorRecebido);
-      }
+      return `
+        <section class="page back-cover-page">
+          ${bg}
+          <div class="cover-overlay"></div>
 
-      if(Array.isArray(valorRecebido)){
-        return `
-          <ul class="lista">
-            ${valorRecebido.map(v => `<li>${escapeHtml(typeof v === "object" ? Object.values(v).join(" — ") : v)}</li>`).join("")}
-          </ul>
-        `;
-      }
-
-      if(typeof valorRecebido === "object"){
-        return Object.entries(valorRecebido).map(([k, v]) => {
-          if(!v) return "";
-
-          return `
-            <div class="subtopico-revista">
-              <h4>${escapeHtml(rotulo(k))}</h4>
-              ${renderValor(v)}
+          <div class="back-content">
+            <div class="back-box">
+              <div class="back-phrase">${escapeHtml(b.backCoverPhrase || "A Palavra de Deus permanece para sempre.")}</div>
+              <p class="back-text">${escapeHtml(b.backCoverText || "Uma revista preparada para fortalecer o ensino bíblico, edificar a Igreja e conduzir o professor a uma exposição fiel das Escrituras.")}</p>
+              <div class="back-ministry">
+                ${escapeHtml(b.ministry || m.ministry || "")}<br>
+                ${escapeHtml(b.author || m.author || "")}
+              </div>
             </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderLicao(lesson) {
+      if (!lesson) return "";
+
+      let html = `
+        <section class="page content-page">
+          <span class="badge">Lição ${escapeHtml(lesson.number || "")}</span>
+          <h1>${escapeHtml(lesson.title || "")}</h1>
+          ${lesson.subtitle ? `<h3>${escapeHtml(lesson.subtitle)}</h3>` : ""}
+
+          ${lesson.goldenText ? `<div class="quote"><strong>Texto áureo:</strong><br>${escapeHtml(lesson.goldenText)}</div>` : ""}
+          ${lesson.practicalTruth ? `<div class="box"><h3>Verdade prática</h3>${p(lesson.practicalTruth)}</div>` : ""}
+          ${lesson.bibleReading ? `<h2>Leitura bíblica em classe</h2>${p(lesson.bibleReading)}` : ""}
+
+          ${Array.isArray(lesson.objectives) ? `
+            <div class="objectives">
+              <h3>Objetivos da lição</h3>
+              <ul>
+                ${lesson.objectives.map((o) => `<li>${escapeHtml(o)}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+
+          ${lesson.teacherWord ? `<h2>Palavra ao professor</h2>${p(lesson.teacherWord)}` : ""}
+          ${lesson.lessonOverview ? `<h2>Panorama da lição</h2>${p(lesson.lessonOverview)}` : ""}
+          ${lesson.introduction ? `<h2>Introdução</h2>${p(lesson.introduction)}` : ""}
+      `;
+
+      if (Array.isArray(lesson.topics)) {
+        lesson.topics.forEach((topic, index) => {
+          html += `
+            <h2>${index + 1}. ${escapeHtml(topic.title || "")}</h2>
+            ${topic.reference ? `<div class="badge">${escapeHtml(topic.reference)}</div>` : ""}
+            ${p(topic.text)}
           `;
-        }).join("");
+
+          if (Array.isArray(topic.subtopics)) {
+            topic.subtopics.forEach((sub, subIndex) => {
+              html += `
+                <h3>${index + 1}.${subIndex + 1} ${escapeHtml(sub.title || "")}</h3>
+                ${sub.reference ? `<div class="badge">${escapeHtml(sub.reference)}</div>` : ""}
+                ${p(sub.text)}
+              `;
+            });
+          }
+        });
       }
 
-      return divTexto(valorRecebido);
+      html += `
+          ${lesson.lifeApplication ? `<h2>Aplicação para a vida</h2>${p(lesson.lifeApplication)}` : ""}
+          ${lesson.conclusion ? `<h2>Conclusão</h2>${p(lesson.conclusion)}` : ""}
+
+          ${lesson.bibliologicalAid ? `<div class="box"><h3>Auxílio bibliológico ou doutrinário</h3>${p(lesson.bibliologicalAid)}</div>` : ""}
+          ${lesson.historicalSupport ? `<div class="box"><h3>Subsídio histórico</h3>${p(lesson.historicalSupport)}</div>` : ""}
+          ${lesson.interpretationCare ? `<div class="box"><h3>Atenção, professor: cuidado na interpretação</h3>${p(lesson.interpretationCare)}</div>` : ""}
+          ${lesson.doctrinalSupport ? `<div class="box"><h3>Apoio doutrinário</h3>${p(lesson.doctrinalSupport)}</div>` : ""}
+
+          ${Array.isArray(lesson.recommendedDeepening) ? `
+            <div class="box">
+              <h3>Para aprofundamento</h3>
+              <ul>
+                ${lesson.recommendedDeepening.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+
+          ${lesson.teacherNotes ? `<div class="box"><h3>Orientações para o professor</h3>${p(lesson.teacherNotes)}</div>` : ""}
+
+          ${Array.isArray(lesson.reviewQuestions) ? `
+            <div class="review">
+              <h3>Revisando o conteúdo</h3>
+              ${lesson.reviewQuestions.map((q, i) => `
+                <p><strong>${i + 1}. ${escapeHtml(q.question || "")}</strong><br>
+                Resposta: ${escapeHtml(q.answer || "")}</p>
+              `).join("")}
+            </div>
+          ` : ""}
+        </section>
+      `;
+
+      return html;
     }
 
-    function rotulo(key){
-      const mapa = {
-        title:"Título",
-        subtitle:"Subtítulo",
-        theme:"Tema",
-        introduction:"Introdução",
-        biblicalBase:"Base bíblica",
-        supportReferences:"Referências de apoio",
-        crossReferences:"Referências cruzadas",
-        objectives:"Objetivos",
-        application:"Aplicação",
-        conclusion:"Conclusão",
-        prayer:"Oração",
-        summary:"Resumo",
-        text:"Texto",
-        content:"Conteúdo",
-        explanation:"Explicação",
-        development:"Desenvolvimento",
-        commentary:"Comentário",
+    function baixarPDF() {
+      const area = document.getElementById("printArea");
 
-        chapterQuestion:"Pergunta do capítulo",
-        centralThesis:"Tese central do capítulo",
-        openingNarrative:"Abertura narrativa",
-        ideaDevelopment:"Desenvolvimento da ideia",
-        biblicalExposition:"Exposição bíblica",
-        argumentDevelopment:"Desenvolvimento do argumento",
-        theologicalReflection:"Reflexão teológica",
-        biblicalExamples:"Exemplos bíblicos",
-        pastoralApplication:"Desdobramento para a vida cristã",
-        chapterSummary:"Fechamento do capítulo",
-        reflectiveClosing:"Conclusão reflexiva",
-        transitionToNextChapter:"Transição para o próximo capítulo",
-
-        goldenText:"Texto áureo",
-        practicalTruth:"Verdade prática",
-        bibleReading:"Leitura bíblica em classe",
-        teacherWord:"Palavra ao professor",
-        lessonOverview:"Panorama da lição",
-        lifeApplication:"Aplicação para a vida",
-        bibliologicalAid:"Auxílio bibliológico",
-        doctrinalAid:"Auxílio doutrinário",
-        historicalSupport:"Subsídio histórico",
-        interpretationCare:"Atenção, professor: cuidado na interpretação",
-        doctrinalSupport:"Apoio doutrinário",
-        recommendedDeepening:"Para aprofundamento",
-        teacherNotes:"Orientações para o professor",
-        reviewQuestions:"Revisando o conteúdo"
-      };
-
-      if(mapa[key]) return mapa[key];
-
-      return String(key)
-        .replace(/([A-Z])/g," $1")
-        .replace(/^./, letra => letra.toUpperCase());
-    }
-
-    function romano(num){
-      const map = {
-        1:"I",
-        2:"II",
-        3:"III",
-        4:"IV",
-        5:"V",
-        6:"VI",
-        7:"VII",
-        8:"VIII",
-        9:"IX",
-        10:"X"
-      };
-
-      return map[num] || String(num);
-    }
-
-    function ativarEdicao(){
-      const r = el("resultado");
-
-      r.setAttribute("contenteditable","true");
-      editando = true;
-
-      el("modoEdicao").style.display = "block";
-      el("btnEditar").disabled = true;
-      el("btnFinalizarEdicao").disabled = false;
-
-      setStatus("Modo edição ativado. Corrija o material diretamente na tela e depois clique em Finalizar edição.", "ok");
-    }
-
-    function finalizarEdicao(mostrarStatus = true){
-      const r = el("resultado");
-
-      r.removeAttribute("contenteditable");
-      editando = false;
-
-      el("modoEdicao").style.display = "none";
-      el("btnEditar").disabled = false;
-      el("btnFinalizarEdicao").disabled = true;
-
-      if(mostrarStatus){
-        setStatus("Edição finalizada. Agora você pode salvar em PDF.", "ok");
-      }
-    }
-
-    function prepararAreaImpressao(){
-      const areaResultado = el("resultado");
-      const printArea = el("printArea");
-
-      if(!areaResultado || !printArea) return null;
-
-      const doc = areaResultado.querySelector(".doc");
-
-      if(!doc){
-        return null;
-      }
-
-      printArea.innerHTML = doc.outerHTML;
-      return printArea;
-    }
-
-    async function salvarPDF(){
-      finalizarEdicao(false);
-
-      const areaResultado = el("resultado");
-
-      if(!areaResultado || !areaResultado.innerText.trim() || areaResultado.querySelector(".placeholder")){
-        setStatus("Gere um material antes de salvar em PDF.", "erro");
+      if (!materialAtual) {
+        setStatus("Gere um material antes de baixar o PDF.", "erro");
         return;
       }
 
-      const printArea = prepararAreaImpressao();
-
-      if(!printArea){
-        setStatus("Não encontrei o material formatado para salvar. Gere novamente o material.", "erro");
-        return;
-      }
-
-      setStatus("Preparando PDF somente com o material, sem a tela do aplicativo...");
-
-      const titulo = valor("title") || "material-verbo-ia";
-
-      const nomeArquivo = titulo
+      const titulo = (materialAtual.title || "material-cpid")
+        .toLowerCase()
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .replace(/[^a-zA-Z0-9]+/g,"-")
-        .replace(/^-+|-+$/g,"")
-        .toLowerCase() + ".pdf";
-
-      document.body.classList.add("gerando-pdf");
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
 
       const opt = {
-        margin:[0,0,0,0],
-        filename:nomeArquivo,
-        image:{
-          type:"jpeg",
-          quality:0.98
+        margin: 0,
+        filename: `${titulo || "material-cpid"}.pdf`,
+        image: {
+          type: "jpeg",
+          quality: 0.98
         },
-        html2canvas:{
-          scale:2,
-          useCORS:true,
-          scrollY:0,
-          backgroundColor:"#ffffff"
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: "#ffffff"
         },
-        jsPDF:{
-          unit:"mm",
-          format:"a4",
-          orientation:"portrait"
+        jsPDF: {
+          unit: "pt",
+          format: "a4",
+          orientation: "portrait"
         },
-        pagebreak:{
-          mode:["css", "legacy"],
-          before:[".licao-pagina"]
+        pagebreak: {
+          mode: ["css", "legacy"]
         }
       };
 
-      try{
-        printArea.style.display = "block";
-        await html2pdf().set(opt).from(printArea).save();
-        setStatus("PDF salvo com sucesso. Agora ele salva somente a revista/material, sem a tela do aplicativo.", "ok");
-      }catch(erro){
-        setStatus("O salvamento automático falhou. Abrindo impressão somente do material.", "erro");
+      setStatus("Preparando PDF...");
 
-        try{
-          printArea.style.display = "block";
-          window.print();
-        }catch(e){
-          setStatus("Não foi possível salvar automaticamente. Tente novamente pelo navegador.", "erro");
-        }
-      }finally{
-        document.body.classList.remove("gerando-pdf");
-        printArea.style.display = "";
-      }
+      html2pdf()
+        .set(opt)
+        .from(area)
+        .save()
+        .then(() => {
+          setStatus("PDF baixado com sucesso.", "ok");
+        })
+        .catch((erro) => {
+          setStatus(erro.message || "Erro ao baixar PDF.", "erro");
+        });
     }
 
-    function copiarTexto(){
-      const texto = el("resultado")?.innerText || "";
-
-      if(!texto.trim() || el("resultado").querySelector(".placeholder")){
-        setStatus("Não há texto para copiar.", "erro");
-        return;
-      }
-
-      navigator.clipboard.writeText(texto)
-        .then(() => setStatus("Texto copiado com sucesso.", "ok"))
-        .catch(() => setStatus("Não foi possível copiar automaticamente.", "erro"));
-    }
-
-    function limparCamposFormulario(){
-      const camposTexto = [
-        "adminCode",
-        "promptTema",
-        "bibleVersion",
-        "title",
-        "subtitle",
-        "theme",
-        "biblicalBase",
-        "quantity",
-        "targetAudience",
-        "author",
-        "ministry",
-        "tone"
-      ];
-
-      camposTexto.forEach(id => {
-        if(el(id)) el(id).value = "";
-      });
-
-      el("materialType").value = "sermao";
-      el("revistaVersion").value = "professor";
-      el("sermonPoints").value = "3";
-      el("depthLevel").value = "profundo";
-      el("visualStyle").value = "preto e branco";
-      el("coverMode").value = "sem-capa";
-
-      atualizarOpcoesPorTipo();
-    }
-
-    function limparTudo(){
-      ultimoMaterial = null;
-      finalizarEdicao(false);
-      limparCamposFormulario();
-      setProgresso(0);
-      setEtapas("");
-      setStatus("Tudo limpo. Os campos estão em branco para um novo material.", "ok");
-
-      el("resultado").innerHTML = `
-        <div class="placeholder">
-          <div>
-            <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
-            <p style="margin:0;">Escolha o tipo de material e clique em <strong>Gerar material</strong>.</p>
-          </div>
+    function limparResultado() {
+      materialAtual = null;
+      document.getElementById("printArea").innerHTML = `
+        <div class="empty">
+          O material gerado aparecerá aqui.
         </div>
       `;
-
-      if(el("printArea")){
-        el("printArea").innerHTML = "";
-      }
+      setStatus("Prévia limpa.");
     }
-
-    function prepararTelaInicial(){
-      limparCamposFormulario();
-      setProgresso(0);
-      setEtapas("");
-      setStatus("Aguardando geração.");
-    }
-
-    function preencherTeste(){
-      const tipo = tipoAtual();
-
-      if(tipo === "revista"){
-        el("title").value = "O Livro que Carregamos";
-        el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual";
-        el("theme").value = "Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, sobre Bibliologia. A revista deve ter apresentação ao professor antes da lição 1, panorama geral da revista, quatro lições completas, palavra ao professor em cada lição, panorama da lição, tópicos e subtópicos com referências bíblicas, auxílio bibliológico, materiais reais para aprofundamento, capa frontal profissional e contracapa final. O conteúdo deve ser profundo, bíblico, didático e pastoral.";
-        el("biblicalBase").value = "2 Timóteo 3.16-17; Salmos 119.105; 2 Pedro 1.20-21; Isaías 40.8; Mateus 24.35";
-        el("targetAudience").value = "Classe adulta da Escola Bíblica Dominical";
-        el("author").value = "Pr. Isiquel Rodrigues";
-        el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
-        el("quantity").value = "4";
-        el("tone").value = "bíblico, pedagógico, profundo, didático, pastoral, editorial e edificante";
-        el("coverMode").value = "com-capa";
-        el("visualStyle").value = "colorido";
-      }else if(tipo === "livro"){
-        el("title").value = "Quando Eu Me Encontro com Deus";
-        el("subtitle").value = "O encontro que revela, transforma e envia";
-        el("theme").value = "Os encontros bíblicos com Deus e como eles transformam identidade, propósito, santidade, fé e missão.";
-        el("biblicalBase").value = "Êxodo 3; Isaías 6; Lucas 5; Atos 9; Gênesis 32";
-        el("targetAudience").value = "Cristãos que desejam aprofundar sua vida espiritual";
-        el("author").value = "Pr. Isiquel Rodrigues";
-        el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
-        el("quantity").value = "10";
-        el("tone").value = "profundo, pastoral, bíblico, reflexivo e transformador";
-        el("coverMode").value = "com-capa";
-      }else if(tipo === "sermao"){
-        el("title").value = "Deus Ainda Restaura";
-        el("subtitle").value = "Uma palavra para quem pensa que perdeu tudo";
-        el("theme").value = "A restauração de Deus na vida daqueles que confiam em sua promessa.";
-        el("biblicalBase").value = "Joel 2.25";
-        el("targetAudience").value = "Igreja em geral";
-        el("sermonPoints").value = "3";
-        el("tone").value = "pastoral, bíblico, profundo e encorajador";
-      }else{
-        el("title").value = "A Fé que Sustenta";
-        el("subtitle").value = "Vivendo pela confiança em Deus";
-        el("theme").value = "A fé bíblica como fundamento da vida cristã em tempos difíceis.";
-        el("biblicalBase").value = "Hebreus 11.1; Romanos 10.17; Habacuque 2.4";
-        el("targetAudience").value = "Cristãos em crescimento espiritual";
-        el("tone").value = "bíblico, simples, profundo e edificante";
-      }
-
-      setStatus("Campos de teste preenchidos.", "ok");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      prepararTelaInicial();
-    });
   </script>
 </body>
 </html>
