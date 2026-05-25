@@ -418,6 +418,16 @@
       font-size: 25px;
     }
 
+    .bloco-professor {
+      background: #fff8e8;
+      border-left: 6px solid var(--dourado);
+    }
+
+    .bloco-final-professor {
+      background: #fffdf9;
+      border-left: 6px solid var(--marrom2);
+    }
+
     .topico-revista {
       margin-top: 28px;
       padding: 26px;
@@ -1622,9 +1632,19 @@
       return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
     }
 
+    function blocoClasse(titulo, texto, classe) {
+      if (!texto) return "";
+      return `<div class="bloco ${classe || ""}"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
+    }
+
     function blocoLista(titulo, arr) {
       if (!Array.isArray(arr) || !arr.filter(Boolean).length) return "";
       return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3><ul class="lista">${arr.filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
+    }
+
+    function blocoListaClasse(titulo, arr, classe) {
+      if (!Array.isArray(arr) || !arr.filter(Boolean).length) return "";
+      return `<div class="bloco ${classe || ""}"><h3>${escapeHtml(titulo)}</h3><ul class="lista">${arr.filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
     }
 
     function renderListaReferencias(titulo, lista) {
@@ -1966,6 +1986,12 @@
               <div class="pagina-interna">
                 <h2 class="titulo-grande">Lição ${escapeHtml(l.lesson)} — ${escapeHtml(l.title)}</h2>
 
+                ${!isAluno ? `
+                  ${blocoClasse("Orientações para o professor", l.teacherNotes, "bloco-professor")}
+                  ${blocoClasse("Sugestão de abordagem em classe", l.classApproach, "bloco-professor")}
+                  ${blocoClasse("Observação pastoral", l.pastoralObservation, "bloco-professor")}
+                ` : ""}
+
                 <div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>
                 <div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>
                 <div class="bloco"><h3>Leitura bíblica em classe</h3>${renderLeituraBiblica(l)}</div>
@@ -1982,11 +2008,8 @@
                 <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
 
                 ${!isAluno ? `
-                  <div class="bloco"><h3>Orientações para o professor</h3>${divTexto(l.teacherNotes)}</div>
-                  <div class="bloco"><h3>Sugestão de abordagem em classe</h3>${divTexto(l.classApproach)}</div>
-                  <div class="bloco"><h3>Observação pastoral</h3>${divTexto(l.pastoralObservation)}</div>
-                  ${l.doctrinalSupport ? `<div class="bloco"><h3>Apoio doutrinário</h3>${divTexto(l.doctrinalSupport)}</div>` : ""}
-                  ${(l.recommendedDeepening || []).length ? `<div class="bloco"><h3>Para aprofundamento</h3><ul class="lista">${l.recommendedDeepening.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : ""}
+                  ${blocoClasse("Apoio doutrinário", l.doctrinalSupport, "bloco-final-professor")}
+                  ${blocoListaClasse("Para aprofundamento", l.recommendedDeepening || [], "bloco-final-professor")}
                 ` : `
                   <div class="bloco">
                     <h3>Espaço para anotações</h3>
@@ -2207,22 +2230,23 @@
     }
 
     function preencherTeste() {
-      el("materialType").value = "livro";
-      el("title").value = "Quando Eu Me Encontro com Deus";
-      el("subtitle").value = "Uma jornada bíblica sobre transformação, quebrantamento e intimidade com o Senhor";
-      el("theme").value = "O encontro verdadeiro com Deus transforma a visão, o coração, a identidade e o propósito do cristão.";
-      el("biblicalBase").value = "Isaías 6.1-8; Lucas 5.1-11; Êxodo 3.1-12; Atos 9.1-18";
-      el("quantity").value = "3";
-      el("targetAudience").value = "Igreja em geral";
+      el("materialType").value = "revista";
+      el("revistaVersion").value = "professor";
+      el("title").value = "A Família no Propósito de Deus";
+      el("subtitle").value = "Lições bíblicas para fortalecer o lar cristão";
+      el("theme").value = "A vontade de Deus para a família cristã, seus desafios, responsabilidades espirituais e restauração.";
+      el("biblicalBase").value = "Josué 24.15; Efésios 5.22-33; Salmos 127.1; Deuteronômio 6.4-9";
+      el("quantity").value = "4";
+      el("targetAudience").value = "Classe de jovens e adultos";
       el("author").value = "Pr. Isiquel Rodrigues";
       el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
       el("depthLevel").value = "muito profundo";
       el("visualStyle").value = "preto e branco";
       el("coverMode").value = "sem-capa";
-      el("tone").value = "bíblico, pastoral, profundo, reflexivo e prazeroso de ler";
+      el("tone").value = "bíblico, pastoral, profundo, didático e aplicável";
 
       atualizarOpcoesPorTipo();
-      setStatus("Teste preenchido para Livro Cristão. Clique em Gerar material.", "ok");
+      setStatus("Teste preenchido para Revista do Professor. Clique em Gerar material.", "ok");
     }
 
     atualizarOpcoesPorTipo();
