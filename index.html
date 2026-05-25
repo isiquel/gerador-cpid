@@ -7,233 +7,907 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    :root {
-      --marrom:#5b3a24; --marrom2:#7a4f2f; --dourado:#c79b58;
-      --texto:#222; --muted:#666; --verde:#237a45; --vermelho:#a12d2d;
+    :root{
+      --marrom:#5b3a24;
+      --marrom2:#7a4f2f;
+      --marrom3:#2b170c;
+      --dourado:#c79b58;
+      --dourado2:#f3d58a;
+      --texto:#222;
+      --muted:#666;
+      --verde:#237a45;
+      --vermelho:#a12d2d;
       --sombra:0 12px 32px rgba(0,0,0,.08);
     }
 
     *{box-sizing:border-box}
+
     html,body{
-      margin:0;padding:0;width:100%;min-height:100%;
+      margin:0;
+      padding:0;
+      width:100%;
+      min-height:100%;
       font-family:Arial,Helvetica,sans-serif;
       background:linear-gradient(180deg,#f8f2ea,#eee2d4);
-      color:var(--texto);overflow-x:hidden;
+      color:var(--texto);
+      overflow-x:hidden;
     }
 
     header{
       background:linear-gradient(135deg,var(--marrom),var(--marrom2));
-      color:#fff;padding:24px 16px;text-align:center;
-      border-bottom:5px solid var(--dourado);box-shadow:var(--sombra);
+      color:#fff;
+      padding:24px 16px;
+      text-align:center;
+      border-bottom:5px solid var(--dourado);
+      box-shadow:var(--sombra);
     }
-    header h1{margin:0;font-size:36px;letter-spacing:1px}
-    header p{margin:8px 0 0;opacity:.95;font-size:16px}
+
+    header h1{
+      margin:0;
+      font-size:36px;
+      letter-spacing:1px;
+    }
+
+    header p{
+      margin:8px 0 0;
+      opacity:.95;
+      font-size:16px;
+    }
 
     .container{
-      max-width:1500px;margin:24px auto;padding:0 16px 28px;
-      display:grid;grid-template-columns:430px 1fr;gap:22px;align-items:start;
+      max-width:1500px;
+      margin:24px auto;
+      padding:0 16px 28px;
+      display:grid;
+      grid-template-columns:430px 1fr;
+      gap:22px;
+      align-items:start;
     }
 
     .card{
-      background:#fff;border:1px solid #eee0d0;border-radius:22px;
-      box-shadow:var(--sombra);overflow:hidden;
+      background:#fff;
+      border:1px solid #eee0d0;
+      border-radius:22px;
+      box-shadow:var(--sombra);
+      overflow:hidden;
     }
+
     .card-head{
-      padding:20px 22px;background:linear-gradient(180deg,#fffdf9,#fbf5ec);
+      padding:20px 22px;
+      background:linear-gradient(180deg,#fffdf9,#fbf5ec);
       border-bottom:1px solid #e6d8c7;
     }
-    .card-head h2{margin:0;color:var(--marrom);font-size:24px}
-    .card-head p{margin:9px 0 0;color:var(--muted);font-size:16px;line-height:1.55}
+
+    .card-head h2{
+      margin:0;
+      color:var(--marrom);
+      font-size:24px;
+    }
+
+    .card-head p{
+      margin:9px 0 0;
+      color:var(--muted);
+      font-size:16px;
+      line-height:1.55;
+    }
+
     .card-body{padding:20px}
 
     label{
-      display:block;margin:15px 0 7px;font-weight:bold;
-      color:var(--marrom);font-size:16px;line-height:1.3;
-    }
-    input,select,textarea{
-      width:100%;padding:15px;border:1px solid #dbc9b5;border-radius:14px;
-      outline:none;background:#fff;color:var(--texto);font-size:17px;line-height:1.45;
-    }
-    textarea{min-height:125px;resize:vertical;line-height:1.6}
-    input:focus,select:focus,textarea:focus{
-      border-color:var(--dourado);box-shadow:0 0 0 4px rgba(199,155,88,.16);
+      display:block;
+      margin:15px 0 7px;
+      font-weight:bold;
+      color:var(--marrom);
+      font-size:16px;
+      line-height:1.3;
     }
 
-    .linha{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    input,select,textarea{
+      width:100%;
+      padding:15px;
+      border:1px solid #dbc9b5;
+      border-radius:14px;
+      outline:none;
+      background:#fff;
+      color:var(--texto);
+      font-size:17px;
+      line-height:1.45;
+    }
+
+    textarea{
+      min-height:125px;
+      resize:vertical;
+      line-height:1.6;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--dourado);
+      box-shadow:0 0 0 4px rgba(199,155,88,.16);
+    }
+
+    .linha{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
     .campo-oculto{display:none!important}
 
     .aviso,.aviso-reservado{
-      padding:14px;border-radius:13px;font-size:15px;line-height:1.6;margin-bottom:12px;
+      padding:14px;
+      border-radius:13px;
+      font-size:15px;
+      line-height:1.6;
+      margin-bottom:12px;
     }
-    .aviso{background:#eef8f0;border-left:5px solid var(--verde);color:#225a35}
-    .aviso-reservado{background:#fff8e8;border-left:5px solid var(--dourado);color:#7a4f2f}
+
+    .aviso{
+      background:#eef8f0;
+      border-left:5px solid var(--verde);
+      color:#225a35;
+    }
+
+    .aviso-reservado{
+      background:#fff8e8;
+      border-left:5px solid var(--dourado);
+      color:#7a4f2f;
+    }
 
     .prompt-box{
-      background:#fff9f0;border:1px solid #ead8c4;border-radius:18px;
-      padding:16px;margin-bottom:14px;
+      background:#fff9f0;
+      border:1px solid #ead8c4;
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:14px;
     }
-    .prompt-box h3{margin:0 0 8px;color:var(--marrom);font-size:21px}
-    .prompt-box p{margin:0 0 10px;color:var(--muted);font-size:15px;line-height:1.6}
+
+    .prompt-box h3{
+      margin:0 0 8px;
+      color:var(--marrom);
+      font-size:21px;
+    }
+
+    .prompt-box p{
+      margin:0 0 10px;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.6;
+    }
 
     button{
-      border:none;border-radius:14px;padding:15px 16px;font-weight:bold;
-      cursor:pointer;font-size:16px;min-height:52px;line-height:1.25;
+      border:none;
+      border-radius:14px;
+      padding:15px 16px;
+      font-weight:bold;
+      cursor:pointer;
+      font-size:16px;
+      min-height:52px;
+      line-height:1.25;
     }
-    button:disabled{opacity:.65;cursor:not-allowed}
+
+    button:disabled{
+      opacity:.65;
+      cursor:not-allowed;
+    }
+
     .btn-principal{
-      width:100%;margin-top:16px;background:linear-gradient(135deg,var(--marrom),var(--marrom2));
-      color:#fff;font-size:17px;min-height:56px;
+      width:100%;
+      margin-top:16px;
+      background:linear-gradient(135deg,var(--marrom),var(--marrom2));
+      color:#fff;
+      font-size:17px;
+      min-height:56px;
     }
-    .btn-secundario{background:#f4eadf;color:var(--marrom);border:1px solid #e4d2bd}
-    .btn-verde{background:var(--verde);color:#fff}
-    .btn-cinza{background:#eee;color:#333}
-    .btn-alerta{background:#fff1d6;color:#7a4f2f;border:1px solid #e4c58f}
-    .botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+
+    .btn-secundario{
+      background:#f4eadf;
+      color:var(--marrom);
+      border:1px solid #e4d2bd;
+    }
+
+    .btn-verde{
+      background:var(--verde);
+      color:#fff;
+    }
+
+    .btn-cinza{
+      background:#eee;
+      color:#333;
+    }
+
+    .btn-alerta{
+      background:#fff1d6;
+      color:#7a4f2f;
+      border:1px solid #e4c58f;
+    }
+
+    .botoes{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
 
     .status{
-      margin-top:14px;padding:13px 14px;border-radius:13px;background:#f8f2e9;
-      border:1px solid #ead8c4;color:var(--muted);font-size:15px;line-height:1.6;min-height:44px;
+      margin-top:14px;
+      padding:13px 14px;
+      border-radius:13px;
+      background:#f8f2e9;
+      border:1px solid #ead8c4;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.6;
+      min-height:44px;
     }
-    .ok{color:var(--verde)} .erro{color:var(--vermelho)}
-    .progresso{margin-top:12px;height:12px;background:#eee2d5;border-radius:999px;overflow:hidden}
-    .barra{height:100%;width:0%;background:linear-gradient(90deg,var(--marrom),var(--dourado));transition:width .25s ease}
+
+    .ok{color:var(--verde)}
+    .erro{color:var(--vermelho)}
+
+    .progresso{
+      margin-top:12px;
+      height:12px;
+      background:#eee2d5;
+      border-radius:999px;
+      overflow:hidden;
+    }
+
+    .barra{
+      height:100%;
+      width:0%;
+      background:linear-gradient(90deg,var(--marrom),var(--dourado));
+      transition:width .25s ease;
+    }
+
+    .etapas{
+      margin-top:12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+    }
+
+    .etapa{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid #e6d8c7;
+      background:#fffdf9;
+      color:#7b5a39;
+      font-weight:bold;
+    }
+
+    .etapa.ativa{
+      background:#fff2cc;
+      border-color:#d7aa55;
+      color:#5b3a24;
+    }
+
+    .etapa.feita{
+      background:#edf8ef;
+      border-color:#9ac8a6;
+      color:#237a45;
+    }
 
     #resultado{
-      min-height:760px;background:#f7efe5;border:1px solid #eadbc9;
-      border-radius:18px;padding:22px;overflow:auto;
+      min-height:760px;
+      background:#f7efe5;
+      border:1px solid #eadbc9;
+      border-radius:18px;
+      padding:22px;
+      overflow:auto;
     }
-    #resultado[contenteditable="true"]{outline:4px solid rgba(199,155,88,.25);background:#fffaf2}
+
+    #resultado[contenteditable="true"]{
+      outline:4px solid rgba(199,155,88,.25);
+      background:#fffaf2;
+    }
 
     .modo-edicao{
-      background:#fff8e8;border:1px solid #e4c58f;color:#7a4f2f;
-      padding:12px 14px;border-radius:12px;margin-bottom:14px;
-      font-size:15px;line-height:1.6;display:none;
+      background:#fff8e8;
+      border:1px solid #e4c58f;
+      color:#7a4f2f;
+      padding:12px 14px;
+      border-radius:12px;
+      margin-bottom:14px;
+      font-size:15px;
+      line-height:1.6;
+      display:none;
     }
 
     .placeholder{
-      min-height:520px;display:flex;align-items:center;justify-content:center;text-align:center;
-      color:var(--muted);background:#fffdf9;border:1px dashed #d8c4ad;
-      border-radius:18px;padding:30px;line-height:1.7;font-size:17px;
+      min-height:520px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      color:var(--muted);
+      background:#fffdf9;
+      border:1px dashed #d8c4ad;
+      border-radius:18px;
+      padding:30px;
+      line-height:1.7;
+      font-size:17px;
     }
 
-    .doc{max-width:980px;margin:0 auto;display:grid;gap:22px}
-    .pagina{
-      background:#fff;border-radius:22px;border:1px solid #e6d8c7;
-      box-shadow:var(--sombra);overflow:visible;
+    .doc{
+      max-width:980px;
+      margin:0 auto;
+      display:grid;
+      gap:22px;
     }
+
+    .pagina{
+      background:#fff;
+      border-radius:22px;
+      border:1px solid #e6d8c7;
+      box-shadow:var(--sombra);
+      overflow:visible;
+    }
+
     .pagina-interna{padding:42px 48px}
-    .titulo-grande{margin:0 0 14px;color:var(--marrom);font-size:38px;line-height:1.18}
-    .subtitulo{color:var(--muted);font-size:21px;line-height:1.5;margin-bottom:22px}
-    .texto{font-size:20px;line-height:1.85;color:#302b26;white-space:pre-line}
+
+    .titulo-grande{
+      margin:0 0 14px;
+      color:var(--marrom);
+      font-size:38px;
+      line-height:1.18;
+    }
+
+    .subtitulo{
+      color:var(--muted);
+      font-size:21px;
+      line-height:1.5;
+      margin-bottom:22px;
+    }
+
+    .texto{
+      font-size:20px;
+      line-height:1.85;
+      color:#302b26;
+      white-space:pre-line;
+    }
 
     .bloco,.topico-revista{
-      margin-top:24px;padding:26px;border:1px solid #e6d8c7;border-radius:18px;background:#fffdf9;
+      margin-top:24px;
+      padding:26px;
+      border:1px solid #e6d8c7;
+      border-radius:18px;
+      background:#fffdf9;
     }
-    .bloco h3,.topico-revista h3{margin:0 0 12px;color:var(--marrom);font-size:25px}
+
+    .bloco h3,.topico-revista h3{
+      margin:0 0 12px;
+      color:var(--marrom);
+      font-size:25px;
+    }
+
     .topico-revista h3{font-size:26px}
+
     .subtopico-revista{
-      margin-top:18px;padding:18px;border-left:5px solid var(--dourado);
-      background:#fff;border-radius:12px;
+      margin-top:18px;
+      padding:18px;
+      border-left:5px solid var(--dourado);
+      background:#fff;
+      border-radius:12px;
     }
-    .subtopico-revista h4{margin:0 0 8px;color:#3a2a1c;font-size:21px}
-    .referencia{font-size:16px;color:#7b5a39;font-weight:bold;margin-bottom:8px;line-height:1.55}
-    .lista{padding-left:24px;font-size:19px;line-height:1.8}
-    .chips{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0 20px}
+
+    .subtopico-revista h4{
+      margin:0 0 8px;
+      color:#3a2a1c;
+      font-size:21px;
+    }
+
+    .referencia{
+      font-size:16px;
+      color:#7b5a39;
+      font-weight:bold;
+      margin-bottom:8px;
+      line-height:1.55;
+    }
+
+    .lista{
+      padding-left:24px;
+      font-size:19px;
+      line-height:1.8;
+    }
+
+    .chips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:9px;
+      margin:16px 0 20px;
+    }
+
     .chip{
-      border:1px solid #e6d8c7;background:#fffdf9;color:#7b5a39;font-weight:bold;
-      border-radius:999px;padding:8px 13px;font-size:14px;
+      border:1px solid #e6d8c7;
+      background:#fffdf9;
+      color:#7b5a39;
+      font-weight:bold;
+      border-radius:999px;
+      padding:8px 13px;
+      font-size:14px;
     }
 
     .capa{
-      min-height:850px;color:#fff;
-      background:
-        radial-gradient(circle at top left,rgba(255,255,255,.22),transparent 35%),
-        linear-gradient(135deg,#4a2d1a,#7a4f2f 45%,#c79b58);
-      display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;
-    }
-    .capa::before{
-      content:"";position:absolute;inset:32px;border:2px solid rgba(255,255,255,.35);border-radius:28px;
-    }
-    .capa-box{
-      width:min(760px,90%);padding:42px 34px;border-radius:28px;
-      background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.30);
-      position:relative;z-index:2;
-    }
-    .capa h1{margin:0 0 16px;font-size:46px;line-height:1.12;text-transform:uppercase}
-    .capa h2{margin:0;font-size:22px;line-height:1.45;font-weight:500}
-    .selo{
-      display:inline-block;padding:9px 16px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);
-      font-size:13px;margin-bottom:20px;font-weight:bold;letter-spacing:1px;
-    }
-    .selo-revista-centro{
-      display:block;margin:0 auto 12px;width:max-content;max-width:92%;
+      min-height:900px;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       text-align:center;
-    }
-    .selo-revista-tipo{
-      display:block;margin:0 auto 34px;width:max-content;max-width:80%;
-      text-align:center;font-size:12px;
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at 50% 24%, rgba(255,226,146,.75), transparent 18%),
+        radial-gradient(circle at 50% 38%, rgba(255,221,138,.38), transparent 35%),
+        linear-gradient(145deg,#160d07 0%,#2b170c 32%,#6b431f 68%,#b48339 100%);
     }
 
-    .gerando-pdf #resultado{background:#fff!important;border:none!important;padding:0!important}
-    .gerando-pdf .doc{max-width:100%!important;width:100%!important;gap:0!important}
-    .gerando-pdf .pagina{box-shadow:none!important;border-radius:0!important;border:none!important;page-break-after:auto;break-after:auto}
+    .capa::before{
+      content:"";
+      position:absolute;
+      inset:28px;
+      border:1px solid rgba(243,213,138,.55);
+      border-radius:28px;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.09),
+        inset 0 0 70px rgba(0,0,0,.45);
+      z-index:1;
+    }
+
+    .capa::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg,rgba(0,0,0,.48),transparent 20%,transparent 80%,rgba(0,0,0,.48)),
+        radial-gradient(circle at 20% 15%,rgba(255,255,255,.08),transparent 18%),
+        radial-gradient(circle at 80% 75%,rgba(255,255,255,.08),transparent 22%);
+      z-index:0;
+    }
+
+    .capa-decoracao{
+      position:absolute;
+      width:78%;
+      max-width:760px;
+      height:230px;
+      top:255px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:2;
+      opacity:.95;
+      pointer-events:none;
+    }
+
+    .biblia-css{
+      position:absolute;
+      left:50%;
+      top:70px;
+      width:520px;
+      height:135px;
+      transform:translateX(-50%) perspective(600px) rotateX(6deg);
+      filter:drop-shadow(0 28px 28px rgba(0,0,0,.55));
+    }
+
+    .biblia-css::before,
+    .biblia-css::after{
+      content:"";
+      position:absolute;
+      top:20px;
+      width:245px;
+      height:105px;
+      background:
+        repeating-linear-gradient(180deg,rgba(91,58,36,.18) 0,rgba(91,58,36,.18) 1px,transparent 1px,transparent 11px),
+        linear-gradient(180deg,#fff7db,#d8b977);
+      border:1px solid rgba(255,244,190,.9);
+      box-shadow:inset 0 0 22px rgba(91,58,36,.25);
+    }
+
+    .biblia-css::before{
+      left:18px;
+      border-radius:8px 18px 18px 8px;
+      transform:skewY(-3deg);
+    }
+
+    .biblia-css::after{
+      right:18px;
+      border-radius:18px 8px 8px 18px;
+      transform:skewY(3deg);
+    }
+
+    .luz-capa{
+      position:absolute;
+      left:50%;
+      top:0;
+      width:420px;
+      height:360px;
+      transform:translateX(-50%);
+      background:radial-gradient(circle,rgba(255,226,146,.8),rgba(255,226,146,.18) 38%,transparent 70%);
+      filter:blur(8px);
+      opacity:.75;
+    }
+
+    .capa-box{
+      width:min(790px,88%);
+      min-height:760px;
+      padding:46px 42px;
+      border-radius:30px;
+      border:1px solid rgba(243,213,138,.50);
+      position:relative;
+      z-index:3;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:space-between;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.10)),
+        rgba(0,0,0,.10);
+      box-shadow:0 30px 80px rgba(0,0,0,.32);
+    }
+
+    .capa-topo{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+    }
+
+    .selo{
+      display:inline-block;
+      padding:9px 16px;
+      border-radius:999px;
+      border:1px solid rgba(243,213,138,.65);
+      background:rgba(0,0,0,.22);
+      color:#fff6db;
+      font-size:13px;
+      margin-bottom:0;
+      font-weight:bold;
+      letter-spacing:1.5px;
+      text-transform:uppercase;
+      box-shadow:0 8px 24px rgba(0,0,0,.22);
+    }
+
+    .selo-revista-centro{
+      display:block;
+      margin:0 auto;
+      width:max-content;
+      max-width:92%;
+      text-align:center;
+      font-size:14px;
+      padding:12px 28px;
+    }
+
+    .selo-revista-tipo{
+      display:block;
+      margin:0 auto;
+      width:max-content;
+      max-width:80%;
+      text-align:center;
+      font-size:12px;
+      padding:10px 24px;
+    }
+
+    .capa-miolo{
+      width:100%;
+      padding-top:250px;
+      padding-bottom:20px;
+    }
+
+    .capa h1{
+      margin:0 auto 18px;
+      font-size:58px;
+      max-width:760px;
+      line-height:1.06;
+      letter-spacing:1px;
+      text-transform:uppercase;
+      color:#fff7de;
+      text-shadow:0 8px 24px rgba(0,0,0,.55);
+    }
+
+    .capa h2{
+      margin:0 auto;
+      font-size:24px;
+      max-width:690px;
+      line-height:1.45;
+      font-weight:600;
+      color:#f8e4b6;
+      text-shadow:0 5px 16px rgba(0,0,0,.5);
+    }
+
+    .ornamento{
+      width:190px;
+      height:1px;
+      background:linear-gradient(90deg,transparent,var(--dourado2),transparent);
+      margin:25px auto 0;
+      position:relative;
+    }
+
+    .ornamento::before{
+      content:"✦";
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      color:var(--dourado2);
+      background:#3b230f;
+      padding:0 10px;
+      font-size:13px;
+    }
+
+    .capa-rodape{
+      width:100%;
+      color:#f7e6bd;
+      font-size:16px;
+      line-height:1.5;
+      text-shadow:0 4px 14px rgba(0,0,0,.55);
+      padding-top:14px;
+    }
+
+    .capa-rodape p{margin:6px 0}
+
+    .gerando-pdf #resultado{
+      background:#fff!important;
+      border:none!important;
+      padding:0!important;
+    }
+
+    .gerando-pdf .doc{
+      max-width:100%!important;
+      width:100%!important;
+      gap:0!important;
+    }
+
+    .gerando-pdf .pagina{
+      box-shadow:none!important;
+      border-radius:0!important;
+      border:none!important;
+      page-break-after:auto;
+      break-after:auto;
+    }
+
     .gerando-pdf .pagina-interna{padding:18px 20px!important}
     .gerando-pdf .titulo-grande{font-size:27px!important}
     .gerando-pdf .subtitulo{font-size:17px!important}
-    .gerando-pdf .texto,.gerando-pdf p{font-size:15.5px!important;line-height:1.55!important}
-    .gerando-pdf .bloco,.gerando-pdf .topico-revista{
-      padding:12px 14px!important;margin-top:10px!important;break-inside:avoid;page-break-inside:avoid;
+
+    .gerando-pdf .texto,
+    .gerando-pdf p{
+      font-size:15.5px!important;
+      line-height:1.55!important;
     }
-    .gerando-pdf .bloco h3,.gerando-pdf .topico-revista h3{font-size:18px!important}
+
+    .gerando-pdf .bloco,
+    .gerando-pdf .topico-revista{
+      padding:12px 14px!important;
+      margin-top:10px!important;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .gerando-pdf .bloco h3,
+    .gerando-pdf .topico-revista h3{
+      font-size:18px!important;
+    }
+
     .gerando-pdf .subtopico-revista{
-      padding:10px 12px!important;margin-top:10px!important;break-inside:avoid;page-break-inside:avoid;
+      padding:10px 12px!important;
+      margin-top:10px!important;
+      break-inside:avoid;
+      page-break-inside:avoid;
     }
+
     .gerando-pdf .subtopico-revista h4{font-size:16.5px!important}
     .gerando-pdf .referencia{font-size:13.5px!important}
-    .gerando-pdf .lista{font-size:15px!important;line-height:1.55!important}
-    .gerando-pdf .capa{min-height:1050px!important;page-break-after:always;break-after:page}
+
+    .gerando-pdf .lista{
+      font-size:15px!important;
+      line-height:1.55!important;
+    }
+
+    .gerando-pdf .capa{
+      min-height:1080px!important;
+      page-break-after:always;
+      break-after:page;
+    }
+
+    .gerando-pdf .capa-box{
+      min-height:980px!important;
+    }
 
     @media(max-width:800px){
-      header{padding:18px 12px;border-bottom-width:4px}
+      header{
+        padding:18px 12px;
+        border-bottom-width:4px;
+      }
+
       header h1{font-size:31px}
-      header p{font-size:16px;line-height:1.4}
-      .container{width:100%;margin:0;padding:10px;display:block}
-      .card{border-radius:18px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.07)}
+
+      header p{
+        font-size:16px;
+        line-height:1.4;
+      }
+
+      .container{
+        width:100%;
+        margin:0;
+        padding:10px;
+        display:block;
+      }
+
+      .card{
+        border-radius:18px;
+        margin-bottom:12px;
+        box-shadow:0 6px 18px rgba(0,0,0,.07);
+      }
+
       .card-head{padding:16px 15px}
       .card-head h2{font-size:23px}
-      .card-head p{font-size:16px;line-height:1.55}
+
+      .card-head p{
+        font-size:16px;
+        line-height:1.55;
+      }
+
       .card-body{padding:14px}
-      .aviso,.aviso-reservado,.prompt-box,.status{font-size:16px;border-radius:13px;line-height:1.6}
-      .prompt-box h3{font-size:22px}.prompt-box p{font-size:16px}
-      label{font-size:17px;margin-top:16px;margin-bottom:8px}
-      input,select,textarea{font-size:18px;padding:16px;border-radius:13px;line-height:1.5}
+
+      .aviso,
+      .aviso-reservado,
+      .prompt-box,
+      .status{
+        font-size:16px;
+        border-radius:13px;
+        line-height:1.6;
+      }
+
+      .prompt-box h3{font-size:22px}
+      .prompt-box p{font-size:16px}
+
+      label{
+        font-size:17px;
+        margin-top:16px;
+        margin-bottom:8px;
+      }
+
+      input,select,textarea{
+        font-size:18px;
+        padding:16px;
+        border-radius:13px;
+        line-height:1.5;
+      }
+
       textarea{min-height:115px}
-      .linha,.botoes{grid-template-columns:1fr;gap:9px}
-      button{width:100%;min-height:56px;font-size:18px;border-radius:14px}
-      .btn-principal{font-size:19px;min-height:60px}
-      #resultado{min-height:420px;padding:10px;border-radius:16px}
-      .placeholder{min-height:360px;padding:18px;font-size:17px}
-      .doc{width:100%;max-width:100%;gap:12px}
+
+      .linha,
+      .botoes{
+        grid-template-columns:1fr;
+        gap:9px;
+      }
+
+      button{
+        width:100%;
+        min-height:56px;
+        font-size:18px;
+        border-radius:14px;
+      }
+
+      .btn-principal{
+        font-size:19px;
+        min-height:60px;
+      }
+
+      #resultado{
+        min-height:420px;
+        padding:10px;
+        border-radius:16px;
+      }
+
+      .placeholder{
+        min-height:360px;
+        padding:18px;
+        font-size:17px;
+      }
+
+      .doc{
+        width:100%;
+        max-width:100%;
+        gap:12px;
+      }
+
       .pagina{border-radius:16px}
       .pagina-interna{padding:20px 15px}
-      .titulo-grande{font-size:28px;line-height:1.18}
-      .subtitulo{font-size:17px;margin-bottom:12px}
-      .texto{font-size:18px;line-height:1.65}
-      .bloco,.topico-revista{margin-top:13px;padding:15px;border-radius:14px}
-      .bloco h3,.topico-revista h3{font-size:20px}
-      .subtopico-revista{padding:13px;border-radius:12px}
+
+      .titulo-grande{
+        font-size:28px;
+        line-height:1.18;
+      }
+
+      .subtitulo{
+        font-size:17px;
+        margin-bottom:12px;
+      }
+
+      .texto{
+        font-size:18px;
+        line-height:1.65;
+      }
+
+      .bloco,
+      .topico-revista{
+        margin-top:13px;
+        padding:15px;
+        border-radius:14px;
+      }
+
+      .bloco h3,
+      .topico-revista h3{
+        font-size:20px;
+      }
+
+      .subtopico-revista{
+        padding:13px;
+        border-radius:12px;
+      }
+
       .subtopico-revista h4{font-size:18px}
-      .referencia{font-size:14px}.lista{font-size:17px;line-height:1.6}
-      .chip{font-size:12px;padding:6px 9px}
-      .capa{min-height:560px}
-      .capa::before{inset:18px}
-      .capa-box{padding:28px 20px}
-      .capa h1{font-size:29px}
-      .capa h2{font-size:16px}
+      .referencia{font-size:14px}
+
+      .lista{
+        font-size:17px;
+        line-height:1.6;
+      }
+
+      .chip{
+        font-size:12px;
+        padding:6px 9px;
+      }
+
+      .capa{min-height:760px}
+      .capa::before{inset:16px}
+
+      .capa-box{
+        width:92%;
+        min-height:650px;
+        padding:28px 18px;
+      }
+
+      .capa-decoracao{
+        top:205px;
+        width:92%;
+        height:170px;
+      }
+
+      .biblia-css{
+        width:320px;
+        height:110px;
+        top:55px;
+      }
+
+      .biblia-css::before,
+      .biblia-css::after{
+        width:145px;
+        height:78px;
+      }
+
+      .capa-miolo{
+        padding-top:190px;
+        padding-bottom:10px;
+      }
+
+      .capa h1{font-size:34px}
+      .capa h2{font-size:17px}
+
+      .selo-revista-centro{
+        font-size:10px;
+        padding:9px 14px;
+      }
+
+      .selo-revista-tipo{
+        font-size:10px;
+        padding:8px 13px;
+      }
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1>VERBO IA</h1>
@@ -257,9 +931,13 @@
         <div class="prompt-box">
           <h3>Gerar prompt automático</h3>
           <p>Recurso reservado. Digite o código de acesso para usar.</p>
+
           <label for="promptTema">Crie um prompt sobre:</label>
           <input id="promptTema" type="text" autocomplete="off" placeholder="Ex: arrebatamento, família, missões, oração..." />
-          <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">Gerar prompt automático</button>
+
+          <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">
+            Gerar prompt automático
+          </button>
         </div>
 
         <label for="materialType">Tipo de material</label>
@@ -322,6 +1000,7 @@
             <label for="author">Autor / comentarista</label>
             <input id="author" type="text" autocomplete="off" value="Pr. Isiquel Rodrigues" />
           </div>
+
           <div>
             <label for="ministry">Editora / ministério</label>
             <input id="ministry" type="text" autocomplete="off" value="CPID - Casa Publicadora da Igreja de Deus" />
@@ -337,6 +1016,7 @@
               <option value="pastoral e profundo">Pastoral e profundo</option>
             </select>
           </div>
+
           <div id="campoVisual">
             <label for="visualStyle">Estilo visual</label>
             <select id="visualStyle" autocomplete="off">
@@ -374,7 +1054,12 @@
           <button class="btn-secundario" type="button" onclick="copiarTexto()">Copiar texto</button>
         </div>
 
-        <div class="progresso"><div class="barra" id="barra"></div></div>
+        <div class="progresso">
+          <div class="barra" id="barra"></div>
+        </div>
+
+        <div class="etapas" id="etapasGeracao"></div>
+
         <div class="status" id="status">Aguardando geração.</div>
       </div>
     </section>
@@ -386,7 +1071,10 @@
       </div>
 
       <div class="card-body">
-        <div class="modo-edicao" id="modoEdicao">Modo edição ativado. Você pode corrigir o material antes de salvar em PDF.</div>
+        <div class="modo-edicao" id="modoEdicao">
+          Modo edição ativado. Você pode corrigir o material antes de salvar em PDF.
+        </div>
+
         <div id="resultado">
           <div class="placeholder">
             <div>
@@ -398,44 +1086,108 @@
       </div>
     </section>
   </main>
-    <script>
+
+  <script>
     let ultimoMaterial = null;
     let editando = false;
 
     const el = (id) => document.getElementById(id);
     const valor = (id) => (el(id)?.value || "").trim();
 
-    function tipoAtual() {
+    function tipoAtual(){
       return valor("materialType") || "sermao";
     }
 
-    function setStatus(msg, classe = "") {
+    function setStatus(msg, classe = ""){
       const s = el("status");
       s.className = "status " + classe;
       s.innerHTML = msg;
     }
 
-    function setProgresso(n) {
+    function setProgresso(n){
       const barra = el("barra");
-      if (barra) barra.style.width = Math.max(0, Math.min(100, n)) + "%";
+      if(barra){
+        barra.style.width = Math.max(0, Math.min(100, n)) + "%";
+      }
     }
 
-    function escapeHtml(texto) {
-      if (texto === null || texto === undefined) return "";
+    function setEtapas(etapaAtual, concluidas = []){
+      const box = el("etapasGeracao");
+      if(!box) return;
+
+      const etapas = tipoAtual() === "revista"
+        ? ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]
+        : ["Estrutura", "Conteúdo", "Finalização"];
+
+      box.innerHTML = etapas.map(nome => {
+        const classe = concluidas.includes(nome) ? "feita" : (nome === etapaAtual ? "ativa" : "");
+        return `<span class="etapa ${classe}">${escapeHtml(nome)}</span>`;
+      }).join("");
+    }
+
+    function escapeHtml(texto){
+      if(texto === null || texto === undefined) return "";
+
       return String(texto)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    function divTexto(texto) {
-      if (!texto) return `<p class="texto"></p>`;
+    function divTexto(texto){
+      if(!texto) return `<p class="texto"></p>`;
       return `<div class="texto">${escapeHtml(texto)}</div>`;
     }
 
-    function atualizarOpcoesPorTipo() {
+    function pegarPrimeiroTexto(obj, chaves){
+      if(!obj || typeof obj !== "object") return "";
+
+      for(const chave of chaves){
+        if(obj[chave] && typeof obj[chave] === "string" && obj[chave].trim()){
+          return obj[chave].trim();
+        }
+      }
+
+      for(const chave of chaves){
+        if(Array.isArray(obj[chave]) && obj[chave].length){
+          return obj[chave].map(item => {
+            if(typeof item === "string") return item;
+            if(item && typeof item === "object") return Object.values(item).join(" — ");
+            return "";
+          }).filter(Boolean).join("\n");
+        }
+      }
+
+      return "";
+    }
+
+    function textoSubtopico(s){
+      return pegarPrimeiroTexto(s, [
+        "text",
+        "texto",
+        "content",
+        "conteudo",
+        "explanation",
+        "explicacao",
+        "development",
+        "desenvolvimento",
+        "commentary",
+        "comentario",
+        "body",
+        "paragraph",
+        "paragrafo",
+        "teaching",
+        "ensino",
+        "lesson",
+        "material",
+        "description",
+        "descricao"
+      ]);
+    }
+
+    function atualizarOpcoesPorTipo(){
       const tipo = tipoAtual();
 
       el("campoRevistaVersao").classList.toggle("campo-oculto", tipo !== "revista");
@@ -445,40 +1197,49 @@
 
       const labelQuantidade = el("labelQuantidade");
 
-      if (tipo === "revista") {
+      if(tipo === "revista"){
         labelQuantidade.textContent = "Lições mensais";
         el("quantity").value = "4";
         el("quantity").min = "4";
         el("quantity").max = "4";
         el("coverMode").value = "com-capa";
-      } else if (tipo === "livro") {
+      }else if(tipo === "livro"){
         labelQuantidade.textContent = "Capítulos";
         el("quantity").min = "1";
         el("quantity").max = "20";
-        if (!el("quantity").value || Number(el("quantity").value) < 1) el("quantity").value = "10";
+
+        if(!el("quantity").value || Number(el("quantity").value) < 1){
+          el("quantity").value = "10";
+        }
+
         el("coverMode").value = "com-capa";
-      } else if (tipo === "ebook") {
+      }else if(tipo === "ebook"){
         labelQuantidade.textContent = "Capítulos";
         el("quantity").min = "1";
         el("quantity").max = "12";
-        if (!el("quantity").value || Number(el("quantity").value) < 1) el("quantity").value = "6";
-      } else if (tipo === "curso") {
+
+        if(!el("quantity").value || Number(el("quantity").value) < 1){
+          el("quantity").value = "6";
+        }
+      }else if(tipo === "curso"){
         labelQuantidade.textContent = "Aulas";
         el("quantity").min = "1";
         el("quantity").max = "20";
-        if (!el("quantity").value || Number(el("quantity").value) < 1) el("quantity").value = "8";
+
+        if(!el("quantity").value || Number(el("quantity").value) < 1){
+          el("quantity").value = "8";
+        }
       }
     }
 
-    function dadosFormulario() {
+    function dadosFormulario(){
       const tipo = tipoAtual();
-
       let quantity = Number(valor("quantity") || 3);
 
-      if (tipo === "revista") quantity = 4;
-      if (tipo === "livro") quantity = Math.max(1, Math.min(20, quantity || 10));
-      if (tipo === "ebook") quantity = Math.max(1, Math.min(12, quantity || 6));
-      if (tipo === "curso") quantity = Math.max(1, Math.min(20, quantity || 8));
+      if(tipo === "revista") quantity = 4;
+      if(tipo === "livro") quantity = Math.max(1, Math.min(20, quantity || 10));
+      if(tipo === "ebook") quantity = Math.max(1, Math.min(12, quantity || 6));
+      if(tipo === "curso") quantity = Math.max(1, Math.min(20, quantity || 8));
 
       return {
         adminCode: valor("adminCode"),
@@ -500,32 +1261,33 @@
       };
     }
 
-    async function postJSON(url, body) {
+    async function postJSON(url, body){
       const resposta = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify(body)
       });
 
       let data = null;
-      try {
+
+      try{
         data = await resposta.json();
-      } catch (e) {
+      }catch(e){
         data = null;
       }
 
-      if (!resposta.ok) {
+      if(!resposta.ok){
         throw new Error(data?.error || data?.message || "Erro ao gerar material.");
       }
 
       return data;
     }
 
-    async function gerarPromptAutomatico() {
+    async function gerarPromptAutomatico(){
       const btn = el("btnPrompt");
       const tema = valor("promptTema");
 
-      if (!tema) {
+      if(!tema){
         setStatus("Digite o tema para gerar o prompt.", "erro");
         return;
       }
@@ -534,7 +1296,7 @@
       setStatus("Gerando prompt automático...");
       setProgresso(20);
 
-      try {
+      try{
         const data = await postJSON("/api/prompt", {
           adminCode: valor("adminCode"),
           theme: tema
@@ -556,128 +1318,148 @@
             </section>
           </article>
         `;
-      } catch (erro) {
+      }catch(erro){
         setStatus(escapeHtml(erro.message || "Erro ao gerar prompt."), "erro");
-      } finally {
+      }finally{
         btn.disabled = false;
       }
     }
 
-    async function gerarMaterial() {
+    async function gerarMaterial(){
       const btn = el("btnGerar");
       const dados = dadosFormulario();
 
-      if (!dados.title || !dados.theme) {
+      if(!dados.title || !dados.theme){
         setStatus("Preencha pelo menos o título e o tema principal.", "erro");
         return;
       }
 
       btn.disabled = true;
       setProgresso(5);
+      setEtapas("Estrutura");
       setStatus("Iniciando geração...");
 
-      try {
+      try{
         finalizarEdicao(false);
 
-        if (dados.materialType === "revista") {
+        if(dados.materialType === "revista"){
           await gerarRevistaPorPartes(dados);
-        } else if (dados.materialType === "livro") {
+        }else if(dados.materialType === "livro"){
           await gerarLivroPorPartes(dados);
-        } else {
+        }else{
           setStatus("Gerando material...");
           setProgresso(40);
+          setEtapas("Conteúdo", ["Estrutura"]);
 
           const data = await postJSON("/api/gerar", dados);
           ultimoMaterial = data.material || data;
 
           setProgresso(100);
+          setEtapas("Finalização", ["Estrutura", "Conteúdo"]);
           renderizarMaterial(ultimoMaterial);
           setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
         }
-      } catch (erro) {
+      }catch(erro){
         setStatus(escapeHtml(erro.message || "Erro ao gerar material."), "erro");
-      } finally {
+      }finally{
         btn.disabled = false;
       }
     }
 
-    async function gerarRevistaPorPartes(dados) {
-      setStatus("Criando planejamento da revista...");
+    async function gerarRevistaPorPartes(dados){
+      setStatus("Criando apresentação e estrutura da revista...");
+      setEtapas("Revista");
       setProgresso(8);
 
       const metaResp = await postJSON("/api/gerar", {
         ...dados,
-        revistaPart: "meta"
+        revistaPart:"meta"
       });
 
       const meta = metaResp.material || metaResp;
 
       const revista = {
         ...meta,
-        type: "revista",
-        title: meta.title || dados.title,
-        subtitle: meta.subtitle || dados.subtitle,
-        author: meta.author || dados.author,
-        ministry: meta.ministry || dados.ministry,
-        revistaVersion: dados.revistaVersion,
-        lessons: []
+        type:"revista",
+        title:meta.title || dados.title,
+        subtitle:meta.subtitle || dados.subtitle,
+        author:meta.author || dados.author,
+        ministry:meta.ministry || dados.ministry,
+        revistaVersion:dados.revistaVersion,
+        lessons:[]
       };
 
       ultimoMaterial = revista;
       renderizarMaterial(revista);
 
       const total = 4;
+
       const titulos = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
         ? meta.lessonTitles
-        : [
-            "Lição 1",
-            "Lição 2",
-            "Lição 3",
-            "Lição 4"
-          ];
+        : ["Lição 1", "Lição 2", "Lição 3", "Lição 4"];
 
-      for (let i = 1; i <= total; i++) {
-        setStatus(`Gerando lição ${i} de ${total}...`);
-        setProgresso(10 + Math.round((i - 1) * 75 / total));
+      const concluidas = ["Revista"];
+
+      for(let i = 1; i <= total; i++){
+        const etapaAtual = `Lição ${i}`;
+
+        setStatus(`Gerando ${etapaAtual} de ${total} com tópicos, subtópicos e conteúdo completo...`);
+        setEtapas(etapaAtual, concluidas);
+        setProgresso(10 + Math.round((i - 1) * 72 / total));
 
         const lessonResp = await postJSON("/api/gerar", {
           ...dados,
-          revistaPart: "lesson",
-          lessonNumber: i,
-          lessonTitles: titulos
+          revistaPart:"lesson",
+          lessonNumber:i,
+          lessonTitles:titulos,
+          instrucoesExtras:"Cada subtópico precisa trazer conteúdo desenvolvido, explicação bíblica profunda, aplicação e pelo menos um parágrafo completo. Não retorne apenas títulos de subtópicos."
         });
 
         const lesson = lessonResp.material || lessonResp;
+
         revista.lessons.push(lesson);
         ultimoMaterial = revista;
 
         renderizarMaterial(revista);
-        setProgresso(10 + Math.round(i * 75 / total));
+        concluidas.push(etapaAtual);
+        setProgresso(10 + Math.round(i * 72 / total));
       }
 
-      setProgresso(100);
-      setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
+      setStatus("Finalizando capa profissional da revista...");
+      setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4"]);
+      setProgresso(96);
+
+      revista.capaProfissional = true;
+      ultimoMaterial = revista;
+      renderizarMaterial(revista);
+
+      setTimeout(() => {
+        setProgresso(100);
+        setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]);
+        setStatus("Revista mensal gerada com sucesso, com capa profissional e lições completas.", "ok");
+      }, 400);
     }
 
-    async function gerarLivroPorPartes(dados) {
+    async function gerarLivroPorPartes(dados){
       setStatus("Criando plano geral do livro...");
+      setEtapas("Estrutura");
       setProgresso(7);
 
       const metaResp = await postJSON("/api/gerar", {
         ...dados,
-        livroPart: "meta"
+        livroPart:"meta"
       });
 
       const meta = metaResp.material || metaResp;
 
       const livro = {
         ...meta,
-        type: "livro",
-        title: meta.title || dados.title,
-        subtitle: meta.subtitle || dados.subtitle,
-        author: meta.author || dados.author,
-        ministry: meta.ministry || dados.ministry,
-        chapters: []
+        type:"livro",
+        title:meta.title || dados.title,
+        subtitle:meta.subtitle || dados.subtitle,
+        author:meta.author || dados.author,
+        ministry:meta.ministry || dados.ministry,
+        chapters:[]
       };
 
       ultimoMaterial = livro;
@@ -687,21 +1469,23 @@
       const chapterPlan = Array.isArray(meta.chapterPlan) ? meta.chapterPlan : [];
       let previousChapterSummary = "";
 
-      for (let i = 1; i <= totalCapitulos; i++) {
+      for(let i = 1; i <= totalCapitulos; i++){
         setStatus(`Gerando capítulo ${i} de ${totalCapitulos}...`);
+        setEtapas("Conteúdo", ["Estrutura"]);
         setProgresso(10 + Math.round((i - 1) * 80 / totalCapitulos));
 
         const chapterResp = await postJSON("/api/gerar", {
           ...dados,
-          livroPart: "chapter",
-          chapterNumber: i,
+          livroPart:"chapter",
+          chapterNumber:i,
           chapterPlan,
-          bookCentralThesis: meta.bookCentralThesis || "",
-          readingPath: meta.readingPath || "",
+          bookCentralThesis:meta.bookCentralThesis || "",
+          readingPath:meta.readingPath || "",
           previousChapterSummary
         });
 
         const chapter = chapterResp.material || chapterResp;
+
         livro.chapters.push(chapter);
 
         previousChapterSummary = chapter.chapterSummary || chapter.summary || "";
@@ -712,48 +1496,58 @@
       }
 
       setProgresso(100);
+      setEtapas("Finalização", ["Estrutura", "Conteúdo", "Finalização"]);
       setStatus("Livro gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
     }
 
-    function renderizarMaterial(m) {
+    function renderizarMaterial(m){
       const tipo = (m.type || tipoAtual()).toLowerCase();
 
-      if (tipo === "revista") return renderRevista(m);
-      if (tipo === "livro") return renderLivro(m);
+      if(tipo === "revista") return renderRevista(m);
+      if(tipo === "livro") return renderLivro(m);
 
       return renderMaterialGeral(m);
     }
 
-    function capaMaterial(m, selo) {
-      if (valor("coverMode") !== "com-capa") return "";
+    function capaMaterial(m, selo){
+      if(valor("coverMode") !== "com-capa") return "";
 
       const isRevista = (m.type || tipoAtual()) === "revista";
 
-      if (isRevista) {
+      if(isRevista){
         const versao = (m.revistaVersion || valor("revistaVersion")) === "aluno"
           ? "REVISTA DO ALUNO"
           : "REVISTA DO PROFESSOR";
 
         return `
           <section class="pagina capa">
+            <div class="luz-capa"></div>
+
+            <div class="capa-decoracao">
+              <div class="biblia-css"></div>
+            </div>
+
             <div class="capa-box">
-              <div class="selo selo-revista-centro">
-                REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL
+              <div class="capa-topo">
+                <div class="selo selo-revista-centro">
+                  REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL
+                </div>
+
+                <div class="selo selo-revista-tipo">
+                  ${escapeHtml(versao)}
+                </div>
               </div>
 
-              <div class="selo selo-revista-tipo">
-                ${escapeHtml(versao)}
+              <div class="capa-miolo">
+                <h1>${escapeHtml(m.title || "")}</h1>
+                <h2>${escapeHtml(m.subtitle || "")}</h2>
+                <div class="ornamento"></div>
               </div>
 
-              <h1>${escapeHtml(m.title || "")}</h1>
-              <h2>${escapeHtml(m.subtitle || "")}</h2>
-
-              <p style="margin-top:28px;font-size:16px;">
-                ${escapeHtml(m.ministry || valor("ministry"))}
-              </p>
-              <p style="font-size:15px;">
-                ${escapeHtml(m.author || valor("author"))}
-              </p>
+              <div class="capa-rodape">
+                <p>${escapeHtml(m.ministry || valor("ministry"))}</p>
+                <p>${escapeHtml(m.author || valor("author"))}</p>
+              </div>
             </div>
           </section>
         `;
@@ -761,24 +1555,40 @@
 
       return `
         <section class="pagina capa">
+          <div class="luz-capa"></div>
+
+          <div class="capa-decoracao">
+            <div class="biblia-css"></div>
+          </div>
+
           <div class="capa-box">
-            <div class="selo">${escapeHtml(selo || "VERBO IA")}</div>
-            <h1>${escapeHtml(m.title || "")}</h1>
-            <h2>${escapeHtml(m.subtitle || "")}</h2>
-            <p style="margin-top:28px;font-size:16px;">${escapeHtml(m.ministry || valor("ministry"))}</p>
-            <p style="font-size:15px;">${escapeHtml(m.author || valor("author"))}</p>
+            <div class="capa-topo">
+              <div class="selo">${escapeHtml(selo || "VERBO IA")}</div>
+            </div>
+
+            <div class="capa-miolo">
+              <h1>${escapeHtml(m.title || "")}</h1>
+              <h2>${escapeHtml(m.subtitle || "")}</h2>
+              <div class="ornamento"></div>
+            </div>
+
+            <div class="capa-rodape">
+              <p>${escapeHtml(m.ministry || valor("ministry"))}</p>
+              <p>${escapeHtml(m.author || valor("author"))}</p>
+            </div>
           </div>
         </section>
       `;
     }
 
-    function renderRevista(m) {
+    function renderRevista(m){
       const isAluno = (m.revistaVersion || valor("revistaVersion")) === "aluno";
       const lessons = Array.isArray(m.lessons) ? m.lessons : [];
 
       let html = `
         <article class="doc">
           ${capaMaterial(m, "REVISTA MENSAL")}
+
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
@@ -793,11 +1603,12 @@
 
               ${m.presentation ? `<div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.presentation)}</div>` : ""}
               ${m.quarterSummary ? `<div class="bloco"><h3>Sinopse do trimestre</h3>${divTexto(m.quarterSummary)}</div>` : ""}
+              ${m.monthSummary ? `<div class="bloco"><h3>Sinopse do mês</h3>${divTexto(m.monthSummary)}</div>` : ""}
             </div>
           </section>
       `;
 
-      if (!lessons.length) {
+      if(!lessons.length){
         html += `
           <section class="pagina">
             <div class="pagina-interna">
@@ -830,23 +1641,43 @@
               ${l.goldenText ? `<div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>` : ""}
               ${l.practicalTruth ? `<div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>` : ""}
               ${l.bibleReading ? `<div class="bloco"><h3>Leitura bíblica em classe</h3>${divTexto(l.bibleReading)}</div>` : ""}
-              ${Array.isArray(l.objectives) && l.objectives.length ? `<div class="bloco"><h3>Objetivos da lição</h3><ul class="lista">${l.objectives.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : ""}
+
+              ${Array.isArray(l.objectives) && l.objectives.length ? `
+                <div class="bloco">
+                  <h3>Objetivos da lição</h3>
+                  <ul class="lista">
+                    ${l.objectives.map(x => `<li>${escapeHtml(x)}</li>`).join("")}
+                  </ul>
+                </div>
+              ` : ""}
 
               ${l.introduction ? `<div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>` : ""}
 
-              ${topics.map((t, tIndex) => `
-                <div class="topico-revista">
-                  <h3>${romano(tIndex + 1)}. ${escapeHtml(t.title || `Tópico ${tIndex + 1}`)}</h3>
-                  ${t.text ? divTexto(t.text) : ""}
-                  ${Array.isArray(t.subtopics) ? t.subtopics.map((s, sIndex) => `
-                    <div class="subtopico-revista">
-                      <h4>${tIndex + 1}.${sIndex + 1} ${escapeHtml(s.title || "")}</h4>
-                      ${s.reference ? `<div class="referencia">${escapeHtml(s.reference)}</div>` : ""}
-                      ${divTexto(s.text || "")}
-                    </div>
-                  `).join("") : ""}
-                </div>
-              `).join("")}
+              ${topics.map((t, tIndex) => {
+                const topicoTexto = pegarPrimeiroTexto(t, ["text","texto","content","conteudo","explanation","explicacao","development","desenvolvimento","commentary","comentario","body"]);
+                const subtops = Array.isArray(t.subtopics) ? t.subtopics : [];
+
+                return `
+                  <div class="topico-revista">
+                    <h3>${romano(tIndex + 1)}. ${escapeHtml(t.title || `Tópico ${tIndex + 1}`)}</h3>
+
+                    ${topicoTexto ? divTexto(topicoTexto) : ""}
+
+                    ${subtops.map((s, sIndex) => {
+                      const conteudoSubtopico = textoSubtopico(s);
+
+                      return `
+                        <div class="subtopico-revista">
+                          <h4>${tIndex + 1}.${sIndex + 1} ${escapeHtml(s.title || s.titulo || "")}</h4>
+                          ${s.reference ? `<div class="referencia">${escapeHtml(s.reference)}</div>` : ""}
+                          ${s.referencia ? `<div class="referencia">${escapeHtml(s.referencia)}</div>` : ""}
+                          ${conteudoSubtopico ? divTexto(conteudoSubtopico) : `<div class="texto">Conteúdo não retornado pela IA para este subtópico. Edite este campo ou gere novamente a lição.</div>`}
+                        </div>
+                      `;
+                    }).join("")}
+                  </div>
+                `;
+              }).join("")}
 
               ${l.lifeApplication ? `<div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>` : ""}
 
@@ -856,7 +1687,16 @@
                 ${l.historicalSupport ? `<div class="bloco"><h3>Subsídio histórico</h3>${divTexto(l.historicalSupport)}</div>` : ""}
                 ${(l.interpretationCare || l.classApproach) ? `<div class="bloco"><h3>Atenção, professor: cuidado na interpretação</h3>${divTexto(l.interpretationCare || l.classApproach)}</div>` : ""}
                 ${l.doctrinalSupport ? `<div class="bloco"><h3>Apoio doutrinário</h3>${divTexto(l.doctrinalSupport)}</div>` : ""}
-                ${Array.isArray(l.recommendedDeepening) && l.recommendedDeepening.length ? `<div class="bloco"><h3>Para aprofundamento</h3><ul class="lista">${l.recommendedDeepening.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : ""}
+
+                ${Array.isArray(l.recommendedDeepening) && l.recommendedDeepening.length ? `
+                  <div class="bloco">
+                    <h3>Para aprofundamento</h3>
+                    <ul class="lista">
+                      ${l.recommendedDeepening.map(x => `<li>${escapeHtml(x)}</li>`).join("")}
+                    </ul>
+                  </div>
+                ` : ""}
+
                 ${l.teacherNotes ? `<div class="bloco"><h3>Orientações para o professor</h3>${divTexto(l.teacherNotes)}</div>` : ""}
               ` : `
                 <div class="bloco">
@@ -890,7 +1730,7 @@
       el("resultado").innerHTML = html;
     }
 
-    function renderLivro(m) {
+    function renderLivro(m){
       const chapters = Array.isArray(m.chapters) ? m.chapters : [];
       const chapterPlan = Array.isArray(m.chapterPlan) ? m.chapterPlan : [];
 
@@ -940,19 +1780,15 @@
             <div class="pagina-interna">
               <h1 class="titulo-grande">Capítulo ${escapeHtml(numero)} — ${escapeHtml(cap.title || "")}</h1>
 
-              ${cap.chapterQuestion ? `
-                <div class="subtitulo">${escapeHtml(cap.chapterQuestion)}</div>
-              ` : ""}
+              ${cap.chapterQuestion ? `<div class="subtitulo">${escapeHtml(cap.chapterQuestion)}</div>` : ""}
 
               ${cap.centralThesis ? `<div class="bloco"><h3>Tese do capítulo</h3>${divTexto(cap.centralThesis)}</div>` : ""}
               ${cap.openingNarrative ? `<div class="bloco"><h3>Abertura</h3>${divTexto(cap.openingNarrative)}</div>` : ""}
-
               ${cap.ideaDevelopment ? `<div class="bloco"><h3>Desenvolvimento da ideia</h3>${divTexto(cap.ideaDevelopment)}</div>` : ""}
               ${cap.biblicalExposition ? `<div class="bloco"><h3>Exposição bíblica e argumentação</h3>${divTexto(cap.biblicalExposition)}</div>` : ""}
               ${cap.argumentDevelopment ? `<div class="bloco"><h3>Desenvolvimento do argumento</h3>${divTexto(cap.argumentDevelopment)}</div>` : ""}
               ${cap.theologicalReflection ? `<div class="bloco"><h3>Reflexão teológica</h3>${divTexto(cap.theologicalReflection)}</div>` : ""}
               ${cap.biblicalExamples ? `<div class="bloco"><h3>Exemplos bíblicos no desenvolvimento</h3>${divTexto(cap.biblicalExamples)}</div>` : ""}
-
               ${cap.pastoralApplication ? `<div class="bloco"><h3>Desdobramento para a vida cristã</h3>${divTexto(cap.pastoralApplication)}</div>` : ""}
               ${cap.chapterSummary ? `<div class="bloco"><h3>Fechamento do capítulo</h3>${divTexto(cap.chapterSummary)}</div>` : ""}
               ${cap.reflectiveClosing ? `<div class="bloco"><h3>Conclusão reflexiva</h3>${divTexto(cap.reflectiveClosing)}</div>` : ""}
@@ -977,14 +1813,14 @@
       el("resultado").innerHTML = html;
     }
 
-    function renderMaterialGeral(m) {
+    function renderMaterialGeral(m){
       let selo = "MATERIAL CRISTÃO";
 
-      if ((m.type || tipoAtual()) === "sermao") selo = "SERMÃO";
-      if ((m.type || tipoAtual()) === "devocional") selo = "DEVOCIONAL";
-      if ((m.type || tipoAtual()) === "estudo") selo = "ESTUDO BÍBLICO";
-      if ((m.type || tipoAtual()) === "ebook") selo = "E-BOOK CRISTÃO";
-      if ((m.type || tipoAtual()) === "curso") selo = "CURSO CRISTÃO";
+      if((m.type || tipoAtual()) === "sermao") selo = "SERMÃO";
+      if((m.type || tipoAtual()) === "devocional") selo = "DEVOCIONAL";
+      if((m.type || tipoAtual()) === "estudo") selo = "ESTUDO BÍBLICO";
+      if((m.type || tipoAtual()) === "ebook") selo = "E-BOOK CRISTÃO";
+      if((m.type || tipoAtual()) === "curso") selo = "CURSO CRISTÃO";
 
       let conteudo = "";
 
@@ -1000,15 +1836,18 @@
       el("resultado").innerHTML = `
         <article class="doc">
           ${capaMaterial(m, selo)}
+
           <section class="pagina">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
+
               <div class="chips">
                 <span class="chip">${escapeHtml(selo)}</span>
                 <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
                 <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
               </div>
+
               ${conteudo || `<div class="bloco">${renderValor(m)}</div>`}
             </div>
           </section>
@@ -1016,23 +1855,27 @@
       `;
     }
 
-    function renderArray(titulo, lista, numeroCampo) {
-      if (!Array.isArray(lista) || !lista.length) return "";
+    function renderArray(titulo, lista, numeroCampo){
+      if(!Array.isArray(lista) || !lista.length) return "";
 
       return `
         <div class="bloco">
           <h3>${escapeHtml(titulo)}</h3>
+
           ${lista.map((item, i) => {
-            if (typeof item === "string") return `<p class="texto">${escapeHtml(item)}</p>`;
+            if(typeof item === "string"){
+              return `<p class="texto">${escapeHtml(item)}</p>`;
+            }
 
             const numero = item[numeroCampo] || item.number || i + 1;
-            const tituloItem = item.title || item.titulo || `${titulo.slice(0, -1)} ${numero}`;
+            const tituloItem = item.title || item.titulo || `${titulo.slice(0,-1)} ${numero}`;
 
             const corpo = Object.entries(item)
-              .filter(([key]) => !["title", "titulo", numeroCampo, "number", "lesson", "day"].includes(key))
+              .filter(([key]) => !["title","titulo",numeroCampo,"number","lesson","day"].includes(key))
               .map(([key, value]) => {
-                if (!value) return "";
-                if (Array.isArray(value)) {
+                if(!value) return "";
+
+                if(Array.isArray(value)){
                   return `
                     <div class="subtopico-revista">
                       <h4>${escapeHtml(rotulo(key))}</h4>
@@ -1042,7 +1885,8 @@
                     </div>
                   `;
                 }
-                if (typeof value === "object") {
+
+                if(typeof value === "object"){
                   return `
                     <div class="subtopico-revista">
                       <h4>${escapeHtml(rotulo(key))}</h4>
@@ -1050,6 +1894,7 @@
                     </div>
                   `;
                 }
+
                 return `
                   <div class="subtopico-revista">
                     <h4>${escapeHtml(rotulo(key))}</h4>
@@ -1069,20 +1914,25 @@
       `;
     }
 
-    function renderValor(valorRecebido) {
-      if (!valorRecebido) return "";
+    function renderValor(valorRecebido){
+      if(!valorRecebido) return "";
 
-      if (typeof valorRecebido === "string") {
+      if(typeof valorRecebido === "string"){
         return divTexto(valorRecebido);
       }
 
-      if (Array.isArray(valorRecebido)) {
-        return `<ul class="lista">${valorRecebido.map(v => `<li>${escapeHtml(typeof v === "object" ? Object.values(v).join(" — ") : v)}</li>`).join("")}</ul>`;
+      if(Array.isArray(valorRecebido)){
+        return `
+          <ul class="lista">
+            ${valorRecebido.map(v => `<li>${escapeHtml(typeof v === "object" ? Object.values(v).join(" — ") : v)}</li>`).join("")}
+          </ul>
+        `;
       }
 
-      if (typeof valorRecebido === "object") {
+      if(typeof valorRecebido === "object"){
         return Object.entries(valorRecebido).map(([k, v]) => {
-          if (!v) return "";
+          if(!v) return "";
+
           return `
             <div class="subtopico-revista">
               <h4>${escapeHtml(rotulo(k))}</h4>
@@ -1095,97 +1945,109 @@
       return divTexto(valorRecebido);
     }
 
-    function rotulo(key) {
+    function rotulo(key){
       const mapa = {
-        title: "Título",
-        subtitle: "Subtítulo",
-        theme: "Tema",
-        introduction: "Introdução",
-        biblicalBase: "Base bíblica",
-        supportReferences: "Referências de apoio",
-        crossReferences: "Referências cruzadas",
-        objectives: "Objetivos",
-        application: "Aplicação",
-        conclusion: "Conclusão",
-        prayer: "Oração",
-        summary: "Resumo",
+        title:"Título",
+        subtitle:"Subtítulo",
+        theme:"Tema",
+        introduction:"Introdução",
+        biblicalBase:"Base bíblica",
+        supportReferences:"Referências de apoio",
+        crossReferences:"Referências cruzadas",
+        objectives:"Objetivos",
+        application:"Aplicação",
+        conclusion:"Conclusão",
+        prayer:"Oração",
+        summary:"Resumo",
+        text:"Texto",
+        content:"Conteúdo",
+        explanation:"Explicação",
+        development:"Desenvolvimento",
+        commentary:"Comentário",
 
-        chapterQuestion: "Pergunta do capítulo",
-        centralThesis: "Tese central do capítulo",
-        openingNarrative: "Abertura narrativa",
-        ideaDevelopment: "Desenvolvimento da ideia",
-        biblicalExposition: "Exposição bíblica",
-        argumentDevelopment: "Desenvolvimento do argumento",
-        theologicalReflection: "Reflexão teológica",
-        biblicalExamples: "Exemplos bíblicos",
-        pastoralApplication: "Desdobramento para a vida cristã",
-        chapterSummary: "Fechamento do capítulo",
-        reflectiveClosing: "Conclusão reflexiva",
-        transitionToNextChapter: "Transição para o próximo capítulo",
+        chapterQuestion:"Pergunta do capítulo",
+        centralThesis:"Tese central do capítulo",
+        openingNarrative:"Abertura narrativa",
+        ideaDevelopment:"Desenvolvimento da ideia",
+        biblicalExposition:"Exposição bíblica",
+        argumentDevelopment:"Desenvolvimento do argumento",
+        theologicalReflection:"Reflexão teológica",
+        biblicalExamples:"Exemplos bíblicos",
+        pastoralApplication:"Desdobramento para a vida cristã",
+        chapterSummary:"Fechamento do capítulo",
+        reflectiveClosing:"Conclusão reflexiva",
+        transitionToNextChapter:"Transição para o próximo capítulo",
 
-        goldenText: "Texto áureo",
-        practicalTruth: "Verdade prática",
-        bibleReading: "Leitura bíblica em classe",
-        lifeApplication: "Aplicação para a vida",
-        historicalSupport: "Subsídio histórico",
-        interpretationCare: "Atenção, professor: cuidado na interpretação",
-        doctrinalSupport: "Apoio doutrinário",
-        recommendedDeepening: "Para aprofundamento",
-        teacherNotes: "Orientações para o professor",
-        reviewQuestions: "Revisando o conteúdo"
+        goldenText:"Texto áureo",
+        practicalTruth:"Verdade prática",
+        bibleReading:"Leitura bíblica em classe",
+        lifeApplication:"Aplicação para a vida",
+        historicalSupport:"Subsídio histórico",
+        interpretationCare:"Atenção, professor: cuidado na interpretação",
+        doctrinalSupport:"Apoio doutrinário",
+        recommendedDeepening:"Para aprofundamento",
+        teacherNotes:"Orientações para o professor",
+        reviewQuestions:"Revisando o conteúdo"
       };
 
-      if (mapa[key]) return mapa[key];
+      if(mapa[key]) return mapa[key];
 
       return String(key)
-        .replace(/([A-Z])/g, " $1")
+        .replace(/([A-Z])/g," $1")
         .replace(/^./, letra => letra.toUpperCase());
     }
 
-    function romano(num) {
+    function romano(num){
       const map = {
-        1: "I",
-        2: "II",
-        3: "III",
-        4: "IV",
-        5: "V",
-        6: "VI",
-        7: "VII",
-        8: "VIII",
-        9: "IX",
-        10: "X"
+        1:"I",
+        2:"II",
+        3:"III",
+        4:"IV",
+        5:"V",
+        6:"VI",
+        7:"VII",
+        8:"VIII",
+        9:"IX",
+        10:"X"
       };
+
       return map[num] || String(num);
     }
 
-    function ativarEdicao() {
+    function ativarEdicao(){
       const r = el("resultado");
-      r.setAttribute("contenteditable", "true");
+
+      r.setAttribute("contenteditable","true");
       editando = true;
+
       el("modoEdicao").style.display = "block";
       el("btnEditar").disabled = true;
       el("btnFinalizarEdicao").disabled = false;
+
       setStatus("Modo edição ativado. Corrija o material diretamente na tela e depois clique em Finalizar edição.", "ok");
     }
 
-    function finalizarEdicao(mostrarStatus = true) {
+    function finalizarEdicao(mostrarStatus = true){
       const r = el("resultado");
+
       r.removeAttribute("contenteditable");
       editando = false;
+
       el("modoEdicao").style.display = "none";
       el("btnEditar").disabled = false;
       el("btnFinalizarEdicao").disabled = true;
 
-      if (mostrarStatus) {
+      if(mostrarStatus){
         setStatus("Edição finalizada. Agora você pode salvar em PDF.", "ok");
       }
     }
 
-    async function salvarPDF() {
+    async function salvarPDF(){
       finalizarEdicao(false);
 
       const area = el("resultado");
-      if (!area || !area.innerText.trim() || area.querySelector(".placeholder")) {
+
+      if(!area || !area.innerText.trim() || area.querySelector(".placeholder")){
         setStatus("Gere um material antes de salvar em PDF.", "erro");
         return;
       }
@@ -1194,48 +2056,52 @@
       document.body.classList.add("gerando-pdf");
 
       const titulo = valor("title") || "material-verbo-ia";
+
       const nomeArquivo = titulo
         .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
+        .replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-zA-Z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"")
         .toLowerCase() + ".pdf";
 
       const opt = {
-        margin: [8, 8, 8, 8],
-        filename: nomeArquivo,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          scrollY: 0,
-          backgroundColor: "#ffffff"
+        margin:[8,8,8,8],
+        filename:nomeArquivo,
+        image:{
+          type:"jpeg",
+          quality:0.98
         },
-        jsPDF: {
-          unit: "mm",
-          format: "a4",
-          orientation: "portrait"
+        html2canvas:{
+          scale:2,
+          useCORS:true,
+          scrollY:0,
+          backgroundColor:"#ffffff"
         },
-        pagebreak: {
-          mode: ["avoid-all", "css", "legacy"]
+        jsPDF:{
+          unit:"mm",
+          format:"a4",
+          orientation:"portrait"
+        },
+        pagebreak:{
+          mode:["avoid-all","css","legacy"]
         }
       };
 
-      try {
+      try{
         await html2pdf().set(opt).from(area).save();
         setStatus("PDF salvo com sucesso.", "ok");
-      } catch (erro) {
+      }catch(erro){
         setStatus("Não foi possível salvar automaticamente. Use a opção imprimir/salvar em PDF do navegador.", "erro");
         window.print();
-      } finally {
+      }finally{
         document.body.classList.remove("gerando-pdf");
       }
     }
 
-    function copiarTexto() {
+    function copiarTexto(){
       const texto = el("resultado")?.innerText || "";
 
-      if (!texto.trim() || el("resultado").querySelector(".placeholder")) {
+      if(!texto.trim() || el("resultado").querySelector(".placeholder")){
         setStatus("Não há texto para copiar.", "erro");
         return;
       }
@@ -1245,10 +2111,11 @@
         .catch(() => setStatus("Não foi possível copiar automaticamente.", "erro"));
     }
 
-    function limparTudo() {
+    function limparTudo(){
       ultimoMaterial = null;
       finalizarEdicao(false);
       setProgresso(0);
+      setEtapas("");
       setStatus("Aguardando geração.");
 
       el("resultado").innerHTML = `
@@ -1261,21 +2128,21 @@
       `;
     }
 
-    function preencherTeste() {
+    function preencherTeste(){
       const tipo = tipoAtual();
 
-      if (tipo === "revista") {
+      if(tipo === "revista"){
         el("title").value = "O Livro que Carregamos";
         el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação e responsabilidade espiritual";
-        el("theme").value = "A importância da Bíblia como Palavra de Deus, sua origem, formação e o dever cristão em conhecê-la e obedecê-la.";
-        el("biblicalBase").value = "2 Timóteo 3.16-17; Salmos 119.105; 2 Pedro 1.20-21";
+        el("theme").value = "A importância da Bíblia como Palavra de Deus, sua origem, formação e o dever cristão em conhecê-la e obedecê-la. Gere uma revista completa de EBD sobre Bibliologia. Cada tópico e cada subtópico devem ter conteúdo desenvolvido, explicação bíblica profunda, aplicação e texto completo. Não gere apenas títulos.";
+        el("biblicalBase").value = "2 Timóteo 3.16-17; Salmos 119.105; 2 Pedro 1.20-21; Isaías 40.8; Mateus 24.35";
         el("targetAudience").value = "Alunos da Escola Bíblica Dominical";
         el("author").value = "Pr. Isiquel Rodrigues";
         el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
         el("quantity").value = "4";
-        el("tone").value = "bíblico, pedagógico, profundo, didático e edificante";
+        el("tone").value = "bíblico, pedagógico, profundo, didático, editorial e edificante";
         el("coverMode").value = "com-capa";
-      } else if (tipo === "livro") {
+      }else if(tipo === "livro"){
         el("title").value = "Quando Eu Me Encontro com Deus";
         el("subtitle").value = "O encontro que revela, transforma e envia";
         el("theme").value = "Os encontros bíblicos com Deus e como eles transformam identidade, propósito, santidade, fé e missão.";
@@ -1286,7 +2153,7 @@
         el("quantity").value = "10";
         el("tone").value = "profundo, pastoral, bíblico, reflexivo e transformador";
         el("coverMode").value = "com-capa";
-      } else if (tipo === "sermao") {
+      }else if(tipo === "sermao"){
         el("title").value = "Deus Ainda Restaura";
         el("subtitle").value = "Uma palavra para quem pensa que perdeu tudo";
         el("theme").value = "A restauração de Deus na vida daqueles que confiam em sua promessa.";
@@ -1294,7 +2161,7 @@
         el("targetAudience").value = "Igreja em geral";
         el("sermonPoints").value = "3";
         el("tone").value = "pastoral, bíblico, profundo e encorajador";
-      } else {
+      }else{
         el("title").value = "A Fé que Sustenta";
         el("subtitle").value = "Vivendo pela confiança em Deus";
         el("theme").value = "A fé bíblica como fundamento da vida cristã em tempos difíceis.";
