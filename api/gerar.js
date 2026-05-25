@@ -148,6 +148,7 @@ function normalizeForm(body) {
 }
 
 function buildPrompt(form) {
+  if (form.materialType === "revista" && form.revistaPart === "cover") return promptRevistaCapa(form);
   if (form.materialType === "revista" && form.revistaPart === "meta") return promptRevistaMeta(form);
   if (form.materialType === "revista" && form.revistaPart === "lesson") return promptRevistaLicao(form, false);
 
@@ -190,7 +191,7 @@ REGRAS OBRIGATÓRIAS:
 3. Não escreva nada fora do JSON.
 4. Não gere HTML.
 5. Não gere PDF.
-6. Não gere imagem.
+6. Não gere imagem binária.
 7. Use português do Brasil.
 8. O conteúdo precisa ser bíblico, profundo, pastoral, claro e aplicável.
 9. Não use aspas duplas dentro dos textos, a não ser que estejam escapadas corretamente.
@@ -203,6 +204,87 @@ REGRAS OBRIGATÓRIAS:
 16. Não entregue conteúdo raso, genérico ou sem desenvolvimento.
 17. Não escreva como se estivesse preenchendo formulário.
 18. Não use linguagem robótica.
+`.trim();
+}
+
+function promptRevistaCapa(form) {
+  const versaoTexto = form.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR";
+
+  return `
+Você é diretor de arte cristão, designer editorial e capista profissional de revistas bíblicas.
+
+Crie o CONCEITO COMPLETO DE CAPA para uma revista mensal de Escola Bíblica Dominical.
+A capa será renderizada pelo sistema em formato visual, por isso você deve entregar um projeto de capa em JSON.
+Não escreva a revista. Não escreva as lições. Crie apenas a capa.
+
+${baseDados(form, "Capa de revista de Escola Bíblica Dominical")}
+${regrasJson()}
+
+VERSÃO DA REVISTA:
+${versaoTexto}
+
+OBJETIVO DA CAPA:
+Criar uma capa bonita, séria, cristã, editorial, elegante e adequada para revista de EBD.
+A capa deve parecer profissional, não infantil, não genérica e não amadora.
+A capa deve comunicar visualmente o tema da revista.
+
+REGRAS VISUAIS:
+1. A capa deve ter aparência editorial cristã.
+2. A imagem central deve representar o tema de modo simbólico e respeitoso.
+3. Use símbolos como Bíblia aberta, luz, mesa de estudo, pergaminho, páginas antigas, pena, rolo, manuscritos, igreja, raios de luz, textura de papel antigo, mas sem exagero.
+4. Não use cruz de forma excessiva se não for necessária.
+5. Não use imagens confusas.
+6. Não use excesso de elementos.
+7. Priorize leitura clara do título.
+8. A capa deve funcionar em celular e em PDF.
+9. A capa deve ter uma composição vertical de revista.
+10. A capa deve combinar com a identidade CPID e com a seriedade da Escola Bíblica Dominical.
+
+TIPOS DE CAPA POSSÍVEIS:
+Escolha a melhor direção para o tema:
+- Bíblia aberta iluminada sobre uma mesa de estudo.
+- Bíblia com páginas antigas e luz suave.
+- Manuscritos antigos em transição para uma Bíblia moderna.
+- Rolo antigo, pergaminho e Bíblia atual juntos.
+- Estudante cristão olhando para a Bíblia aberta, sem rosto muito detalhado.
+- Composição simbólica mostrando Palavra, história e preservação.
+
+ENTREGUE TAMBÉM:
+1. Um prompt de imagem profissional para futura geração de imagem.
+2. Uma descrição curta para o professor entender a ideia da capa.
+3. Uma paleta de cores.
+4. Um símbolo principal.
+5. Um símbolo secundário.
+6. Um fundo.
+7. Um estilo editorial.
+8. Uma frase de impacto curta para a capa, se fizer sentido.
+
+FORMATO JSON:
+{
+  "type": "revistaCover",
+  "title": "",
+  "subtitle": "",
+  "editionLabel": "${versaoTexto}",
+  "monthlyLabel": "Revista mensal de Escola Bíblica Dominical",
+  "author": "",
+  "ministry": "",
+  "visualConcept": "",
+  "coverDescription": "",
+  "mainSymbol": "",
+  "secondarySymbol": "",
+  "backgroundStyle": "",
+  "editorialStyle": "",
+  "colorPalette": {
+    "primary": "",
+    "secondary": "",
+    "accent": "",
+    "background": ""
+  },
+  "coverPhrase": "",
+  "imagePrompt": "",
+  "negativePrompt": "",
+  "teacherNoteAboutCover": ""
+}
 `.trim();
 }
 
@@ -342,10 +424,9 @@ MUITO IMPORTANTE SOBRE O FORMATO:
 3. Não crie seções chamadas "Base bíblica", "Referências cruzadas", "Aplicação pastoral", "Resumo do capítulo" ou "Fechamento reflexivo".
 4. Não coloque listas de referências bíblicas separadas.
 5. As referências bíblicas devem aparecer naturalmente dentro dos parágrafos.
-6. As referências cruzadas devem estar no meio do argumento, por exemplo:
-   - Essa tensão já aparece em Gênesis 3, quando a voz da serpente tenta deslocar a confiança humana da Palavra de Deus, e reaparece em Lucas 4, quando Cristo vence a tentação respondendo com as Escrituras.
+6. As referências cruzadas devem estar no meio do argumento.
 7. Não coloque "Aplicação pastoral" como título.
-8. A aplicação deve estar misturada ao desenvolvimento do argumento, como parte natural da escrita.
+8. A aplicação deve estar misturada ao desenvolvimento do argumento.
 9. O capítulo deve ter leitura fluida, como um livro publicado.
 10. Escreva como autor conduzindo o leitor, não como professor preenchendo campos.
 
@@ -380,16 +461,9 @@ REGRAS DE ESTILO:
 4. Evite títulos técnicos demais.
 5. Evite linguagem seca.
 6. Use transições naturais entre os parágrafos.
-7. Use expressões de ligação entre ideias:
-   - À luz disso;
-   - Por essa razão;
-   - O texto nos conduz a perceber;
-   - Essa verdade se aprofunda quando observamos;
-   - A Escritura não trata isso de forma isolada;
-   - Portanto, o caminho do leitor passa por essa compreensão.
-8. O texto deve ser prazeroso de ler, mas com peso bíblico.
-9. Use linguagem pastoral, madura e fluida.
-10. Não repita a mesma ideia apenas com outras palavras.
+7. O texto deve ser prazeroso de ler, mas com peso bíblico.
+8. Use linguagem pastoral, madura e fluida.
+9. Não repita a mesma ideia apenas com outras palavras.
 
 REGRAS BÍBLICAS:
 1. Use a Bíblia como fundamento do argumento.
@@ -506,12 +580,13 @@ function promptRevistaLicao(form, compacto) {
 REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
 1. O conteúdo principal da lição deve continuar profundo.
 2. As respostas das perguntas devem ser objetivas, com no máximo 35 palavras cada.
-3. Orientações para o professor: máximo 100 palavras.
-4. Sugestão de abordagem em classe: máximo 100 palavras.
-5. Observação pastoral: máximo 90 palavras.
+3. Orientações para o professor: máximo 130 palavras.
+4. Sugestão de abordagem em classe: máximo 130 palavras.
+5. Observação pastoral: máximo 110 palavras.
 6. Não repita o conteúdo dos tópicos nas orientações do professor.
 7. Acrescente apoio doutrinário seguro dentro de teacherNotes, pastoralObservation ou doctrinalSupport.
 8. O professor precisa ter mais referências bíblicas de apoio para conduzir a aula com segurança.
+9. Inclua subsídios úteis para o professor quando o tema exigir aprofundamento histórico, bíblico ou doutrinário.
 `
     : `
 REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
@@ -579,6 +654,7 @@ REGRAS DA LIÇÃO:
 14. Siga linha bíblica conservadora.
 15. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
 16. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
+17. Inclua referências bíblicas junto ao argumento quando isso fortalecer a explicação.
 
 ${limites}
 
@@ -635,8 +711,13 @@ FORMATO JSON:
   "teacherNotes": "",
   "classApproach": "",
   "pastoralObservation": "",
+  "teacherSubsidies": [
+    { "title": "", "content": "" },
+    { "title": "", "content": "" }
+  ],
   "doctrinalSupport": "",
   "recommendedDeepening": ["", "", ""],
+  "bibliographicReferences": ["", "", "", ""],
   "studentNotesSpace": "",
   "conclusion": "",
   "questionsAndAnswers": [
