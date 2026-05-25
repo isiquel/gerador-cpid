@@ -14,22 +14,29 @@
       --marrom3:#2b170c;
       --dourado:#c79b58;
       --dourado2:#f3d58a;
+      --bege:#f8f2ea;
+      --bege2:#eee2d4;
       --texto:#222;
       --muted:#666;
       --verde:#237a45;
       --vermelho:#a12d2d;
+      --azul:#244b77;
+      --vinho:#7b2634;
       --sombra:0 12px 32px rgba(0,0,0,.08);
     }
 
-    *{box-sizing:border-box}
+    *{
+      box-sizing:border-box;
+    }
 
-    html,body{
+    html,
+    body{
       margin:0;
       padding:0;
       width:100%;
       min-height:100%;
-      font-family:Arial,Helvetica,sans-serif;
-      background:linear-gradient(180deg,#f8f2ea,#eee2d4);
+      font-family:Arial, Helvetica, sans-serif;
+      background:linear-gradient(180deg,var(--bege),var(--bege2));
       color:var(--texto);
       overflow-x:hidden;
     }
@@ -92,7 +99,9 @@
       line-height:1.55;
     }
 
-    .card-body{padding:20px}
+    .card-body{
+      padding:20px;
+    }
 
     label{
       display:block;
@@ -103,7 +112,9 @@
       line-height:1.3;
     }
 
-    input,select,textarea{
+    input,
+    select,
+    textarea{
       width:100%;
       padding:15px;
       border:1px solid #dbc9b5;
@@ -121,7 +132,9 @@
       line-height:1.6;
     }
 
-    input:focus,select:focus,textarea:focus{
+    input:focus,
+    select:focus,
+    textarea:focus{
       border-color:var(--dourado);
       box-shadow:0 0 0 4px rgba(199,155,88,.16);
     }
@@ -132,9 +145,12 @@
       gap:12px;
     }
 
-    .campo-oculto{display:none!important}
+    .campo-oculto{
+      display:none!important;
+    }
 
-    .aviso,.aviso-reservado{
+    .aviso,
+    .aviso-reservado{
       padding:14px;
       border-radius:13px;
       font-size:15px;
@@ -241,8 +257,13 @@
       min-height:44px;
     }
 
-    .ok{color:var(--verde)}
-    .erro{color:var(--vermelho)}
+    .ok{
+      color:var(--verde);
+    }
+
+    .erro{
+      color:var(--vermelho);
+    }
 
     .progresso{
       margin-top:12px;
@@ -329,13 +350,16 @@
       font-size:17px;
     }
 
-    .doc{
+    .doc,
+    .material-root{
       max-width:980px;
       margin:0 auto;
       display:block;
     }
 
-    .pagina{
+    .pagina,
+    .material-root section,
+    .material-root article{
       background:#fff;
       border-radius:22px;
       border:1px solid #e6d8c7;
@@ -344,30 +368,45 @@
       margin-bottom:22px;
     }
 
-    .pagina-interna{padding:42px 48px}
+    .pagina-interna,
+    .material-root .page,
+    .material-root .lesson,
+    .material-root .teacher-opening,
+    .material-root .magazine-overview,
+    .material-root .box{
+      padding:42px 48px;
+    }
 
-    .titulo-grande{
+    .titulo-grande,
+    .material-root h1{
       margin:0 0 14px;
       color:var(--marrom);
       font-size:38px;
       line-height:1.18;
     }
 
-    .subtitulo{
+    .subtitulo,
+    .material-root .subtitle{
       color:var(--muted);
       font-size:21px;
       line-height:1.5;
       margin-bottom:22px;
     }
 
-    .texto{
+    .texto,
+    .material-root p{
       font-size:20px;
       line-height:1.85;
       color:#302b26;
       white-space:pre-line;
     }
 
-    .bloco,.topico-revista{
+    .bloco,
+    .topico-revista,
+    .material-root .box,
+    .material-root .professor-note,
+    .material-root .auxilio,
+    .material-root .revisando{
       margin-top:24px;
       padding:26px;
       border:1px solid #e6d8c7;
@@ -375,15 +414,21 @@
       background:#fffdf9;
     }
 
-    .bloco h3,.topico-revista h3{
+    .bloco h3,
+    .topico-revista h3,
+    .material-root h2,
+    .material-root h3{
       margin:0 0 12px;
       color:var(--marrom);
       font-size:25px;
     }
 
-    .topico-revista h3{font-size:26px}
+    .topico-revista h3{
+      font-size:26px;
+    }
 
-    .subtopico-revista{
+    .subtopico-revista,
+    .material-root .subtopic{
       margin-top:18px;
       padding:18px;
       border-left:5px solid var(--dourado);
@@ -391,13 +436,15 @@
       border-radius:12px;
     }
 
-    .subtopico-revista h4{
+    .subtopico-revista h4,
+    .material-root h4{
       margin:0 0 8px;
       color:#3a2a1c;
       font-size:21px;
     }
 
-    .referencia{
+    .referencia,
+    .material-root .reference{
       font-size:16px;
       color:#7b5a39;
       font-weight:bold;
@@ -417,7 +464,9 @@
       margin:0 0 14px;
     }
 
-    .lista{
+    .lista,
+    .material-root ul,
+    .material-root ol{
       padding-left:24px;
       font-size:19px;
       line-height:1.8;
@@ -440,7 +489,41 @@
       font-size:14px;
     }
 
-    .capa{
+    .box-blue,
+    .material-root .box-blue{
+      background:#eef4fb!important;
+      border:1px solid #c8d9ed!important;
+      border-left:8px solid var(--azul)!important;
+    }
+
+    .box-blue h3,
+    .material-root .box-blue h3{
+      color:var(--azul)!important;
+    }
+
+    .box-gold,
+    .material-root .box-gold{
+      background:#fff8e8!important;
+      border:1px solid #e8cf92!important;
+      border-left:8px solid var(--dourado)!important;
+    }
+
+    .box-wine,
+    .material-root .box-wine,
+    .material-root .revisando{
+      background:#fff5f6!important;
+      border:1px solid #e0c2c8!important;
+      border-left:8px solid var(--vinho)!important;
+    }
+
+    .box-wine h3,
+    .material-root .box-wine h3,
+    .material-root .revisando h3{
+      color:var(--vinho)!important;
+    }
+
+    .capa,
+    .cover-front{
       min-height:1040px;
       color:#fff;
       display:flex;
@@ -454,9 +537,12 @@
         radial-gradient(circle at 50% 40%, rgba(255,221,138,.34), transparent 36%),
         linear-gradient(145deg,#160d07 0%,#2b170c 32%,#6b431f 68%,#b48339 100%);
       border-radius:22px;
+      padding:0;
+      border:none;
     }
 
-    .capa::before{
+    .capa::before,
+    .cover-front::before{
       content:"";
       position:absolute;
       inset:28px;
@@ -468,7 +554,8 @@
       z-index:1;
     }
 
-    .capa::after{
+    .capa::after,
+    .cover-front::after{
       content:"";
       position:absolute;
       inset:0;
@@ -632,7 +719,8 @@
       padding-bottom:20px;
     }
 
-    .capa h1{
+    .capa h1,
+    .cover-front h1{
       margin:0 auto 18px;
       font-size:58px;
       max-width:760px;
@@ -643,7 +731,8 @@
       text-shadow:0 8px 24px rgba(0,0,0,.55);
     }
 
-    .capa h2{
+    .capa h2,
+    .cover-front h2{
       margin:0 auto;
       font-size:24px;
       max-width:690px;
@@ -670,7 +759,50 @@
       padding-top:14px;
     }
 
-    .capa-rodape p{margin:6px 0}
+    .capa-rodape p{
+      margin:6px 0;
+    }
+
+    .cover-back,
+    .contracapa{
+      min-height:1040px;
+      color:#fff;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,226,146,.34), transparent 20%),
+        linear-gradient(145deg,#120c08,#3a2212 55%,#9b7138);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      border-radius:22px;
+      position:relative;
+      overflow:hidden;
+      padding:70px;
+    }
+
+    .cover-back::before,
+    .contracapa::before{
+      content:"";
+      position:absolute;
+      inset:28px;
+      border:1px solid rgba(243,213,138,.55);
+      border-radius:28px;
+    }
+
+    .cover-back h1,
+    .contracapa h1{
+      color:#fff7de;
+      font-size:38px;
+      margin-bottom:18px;
+    }
+
+    .cover-back p,
+    .contracapa p{
+      color:#f8e4b6;
+      font-size:20px;
+      max-width:650px;
+      line-height:1.7;
+    }
 
     .print-area{
       display:none;
@@ -683,13 +815,16 @@
       overflow:visible!important;
     }
 
-    .gerando-pdf .doc{
+    .gerando-pdf .doc,
+    .gerando-pdf .material-root{
       max-width:100%!important;
       width:100%!important;
       display:block!important;
     }
 
-    .gerando-pdf .pagina{
+    .gerando-pdf .pagina,
+    .gerando-pdf .material-root section,
+    .gerando-pdf .material-root article{
       box-shadow:none!important;
       border-radius:0!important;
       border:none!important;
@@ -700,26 +835,45 @@
       page-break-inside:auto;
     }
 
-    .gerando-pdf .pagina:last-child{
+    .gerando-pdf .pagina:last-child,
+    .gerando-pdf .material-root section:last-child,
+    .gerando-pdf .material-root article:last-child{
       break-after:auto;
       page-break-after:auto;
     }
 
-    .gerando-pdf .pagina-interna{
+    .gerando-pdf .pagina-interna,
+    .gerando-pdf .material-root .page,
+    .gerando-pdf .material-root .lesson,
+    .gerando-pdf .material-root .teacher-opening,
+    .gerando-pdf .material-root .magazine-overview,
+    .gerando-pdf .material-root .box{
       padding:16mm 14mm!important;
     }
 
-    .gerando-pdf .titulo-grande{font-size:25px!important}
-    .gerando-pdf .subtitulo{font-size:15px!important}
+    .gerando-pdf .titulo-grande,
+    .gerando-pdf .material-root h1{
+      font-size:25px!important;
+    }
+
+    .gerando-pdf .subtitulo,
+    .gerando-pdf .material-root .subtitle{
+      font-size:15px!important;
+    }
 
     .gerando-pdf .texto,
-    .gerando-pdf p{
+    .gerando-pdf p,
+    .gerando-pdf .material-root p{
       font-size:13.5px!important;
       line-height:1.5!important;
     }
 
     .gerando-pdf .bloco,
-    .gerando-pdf .topico-revista{
+    .gerando-pdf .topico-revista,
+    .gerando-pdf .material-root .box,
+    .gerando-pdf .material-root .professor-note,
+    .gerando-pdf .material-root .auxilio,
+    .gerando-pdf .material-root .revisando{
       padding:10px 12px!important;
       margin-top:9px!important;
       break-inside:avoid;
@@ -727,26 +881,40 @@
     }
 
     .gerando-pdf .bloco h3,
-    .gerando-pdf .topico-revista h3{
+    .gerando-pdf .topico-revista h3,
+    .gerando-pdf .material-root h2,
+    .gerando-pdf .material-root h3{
       font-size:16.5px!important;
     }
 
-    .gerando-pdf .subtopico-revista{
+    .gerando-pdf .subtopico-revista,
+    .gerando-pdf .material-root .subtopic{
       padding:9px 11px!important;
       margin-top:8px!important;
       break-inside:avoid;
       page-break-inside:avoid;
     }
 
-    .gerando-pdf .subtopico-revista h4{font-size:15.5px!important}
-    .gerando-pdf .referencia{font-size:12.5px!important}
+    .gerando-pdf .subtopico-revista h4,
+    .gerando-pdf .material-root h4{
+      font-size:15.5px!important;
+    }
 
-    .gerando-pdf .lista{
+    .gerando-pdf .referencia{
+      font-size:12.5px!important;
+    }
+
+    .gerando-pdf .lista,
+    .gerando-pdf .material-root ul,
+    .gerando-pdf .material-root ol{
       font-size:13.5px!important;
       line-height:1.45!important;
     }
 
-    .gerando-pdf .capa{
+    .gerando-pdf .capa,
+    .gerando-pdf .cover-front,
+    .gerando-pdf .cover-back,
+    .gerando-pdf .contracapa{
       width:100%!important;
       min-height:277mm!important;
       height:277mm!important;
@@ -765,7 +933,8 @@
         margin:0;
       }
 
-      html,body{
+      html,
+      body{
         margin:0!important;
         padding:0!important;
         background:#fff!important;
@@ -782,13 +951,16 @@
         background:#fff!important;
       }
 
-      .print-area .doc{
+      .print-area .doc,
+      .print-area .material-root{
         width:100%!important;
         max-width:100%!important;
         display:block!important;
       }
 
-      .print-area .pagina{
+      .print-area .pagina,
+      .print-area .material-root section,
+      .print-area .material-root article{
         width:210mm!important;
         min-height:297mm!important;
         margin:0!important;
@@ -802,16 +974,26 @@
         page-break-after:always!important;
       }
 
-      .print-area .pagina:last-child{
+      .print-area .pagina:last-child,
+      .print-area .material-root section:last-child,
+      .print-area .material-root article:last-child{
         break-after:auto!important;
         page-break-after:auto!important;
       }
 
-      .print-area .pagina-interna{
+      .print-area .pagina-interna,
+      .print-area .material-root .page,
+      .print-area .material-root .lesson,
+      .print-area .material-root .teacher-opening,
+      .print-area .material-root .magazine-overview,
+      .print-area .material-root .box{
         padding:16mm 14mm!important;
       }
 
-      .print-area .capa{
+      .print-area .capa,
+      .print-area .cover-front,
+      .print-area .cover-back,
+      .print-area .contracapa{
         min-height:297mm!important;
         height:297mm!important;
         color:#fff!important;
@@ -823,22 +1005,29 @@
         min-height:260mm!important;
       }
 
-      .print-area .titulo-grande{
+      .print-area .titulo-grande,
+      .print-area .material-root h1{
         font-size:25px!important;
       }
 
-      .print-area .subtitulo{
+      .print-area .subtitulo,
+      .print-area .material-root .subtitle{
         font-size:15px!important;
       }
 
       .print-area .texto,
-      .print-area p{
+      .print-area p,
+      .print-area .material-root p{
         font-size:13.5px!important;
         line-height:1.5!important;
       }
 
       .print-area .bloco,
-      .print-area .topico-revista{
+      .print-area .topico-revista,
+      .print-area .material-root .box,
+      .print-area .material-root .professor-note,
+      .print-area .material-root .auxilio,
+      .print-area .material-root .revisando{
         padding:10px 12px!important;
         margin-top:9px!important;
         break-inside:avoid!important;
@@ -846,22 +1035,28 @@
       }
 
       .print-area .bloco h3,
-      .print-area .topico-revista h3{
+      .print-area .topico-revista h3,
+      .print-area .material-root h2,
+      .print-area .material-root h3{
         font-size:16.5px!important;
       }
 
-      .print-area .subtopico-revista{
+      .print-area .subtopico-revista,
+      .print-area .material-root .subtopic{
         padding:9px 11px!important;
         margin-top:8px!important;
         break-inside:avoid!important;
         page-break-inside:avoid!important;
       }
 
-      .print-area .subtopico-revista h4{
+      .print-area .subtopico-revista h4,
+      .print-area .material-root h4{
         font-size:15.5px!important;
       }
 
-      .print-area .lista{
+      .print-area .lista,
+      .print-area .material-root ul,
+      .print-area .material-root ol{
         font-size:13.5px!important;
         line-height:1.45!important;
       }
@@ -873,7 +1068,9 @@
         border-bottom-width:4px;
       }
 
-      header h1{font-size:31px}
+      header h1{
+        font-size:31px;
+      }
 
       header p{
         font-size:16px;
@@ -893,15 +1090,22 @@
         box-shadow:0 6px 18px rgba(0,0,0,.07);
       }
 
-      .card-head{padding:16px 15px}
-      .card-head h2{font-size:23px}
+      .card-head{
+        padding:16px 15px;
+      }
+
+      .card-head h2{
+        font-size:23px;
+      }
 
       .card-head p{
         font-size:16px;
         line-height:1.55;
       }
 
-      .card-body{padding:14px}
+      .card-body{
+        padding:14px;
+      }
 
       .aviso,
       .aviso-reservado,
@@ -912,8 +1116,13 @@
         line-height:1.6;
       }
 
-      .prompt-box h3{font-size:22px}
-      .prompt-box p{font-size:16px}
+      .prompt-box h3{
+        font-size:22px;
+      }
+
+      .prompt-box p{
+        font-size:16px;
+      }
 
       label{
         font-size:17px;
@@ -921,14 +1130,18 @@
         margin-bottom:8px;
       }
 
-      input,select,textarea{
+      input,
+      select,
+      textarea{
         font-size:18px;
         padding:16px;
         border-radius:13px;
         line-height:1.5;
       }
 
-      textarea{min-height:115px}
+      textarea{
+        min-height:115px;
+      }
 
       .linha,
       .botoes{
@@ -960,19 +1173,30 @@
         font-size:17px;
       }
 
-      .doc{
+      .doc,
+      .material-root{
         width:100%;
         max-width:100%;
       }
 
-      .pagina{
+      .pagina,
+      .material-root section,
+      .material-root article{
         border-radius:16px;
         margin-bottom:12px;
       }
 
-      .pagina-interna{padding:20px 15px}
+      .pagina-interna,
+      .material-root .page,
+      .material-root .lesson,
+      .material-root .teacher-opening,
+      .material-root .magazine-overview,
+      .material-root .box{
+        padding:20px 15px;
+      }
 
-      .titulo-grande{
+      .titulo-grande,
+      .material-root h1{
         font-size:28px;
         line-height:1.18;
       }
@@ -982,32 +1206,48 @@
         margin-bottom:12px;
       }
 
-      .texto{
+      .texto,
+      .material-root p{
         font-size:18px;
         line-height:1.65;
       }
 
       .bloco,
-      .topico-revista{
+      .topico-revista,
+      .material-root .box,
+      .material-root .professor-note,
+      .material-root .auxilio,
+      .material-root .revisando{
         margin-top:13px;
         padding:15px;
         border-radius:14px;
       }
 
       .bloco h3,
-      .topico-revista h3{
+      .topico-revista h3,
+      .material-root h2,
+      .material-root h3{
         font-size:20px;
       }
 
-      .subtopico-revista{
+      .subtopico-revista,
+      .material-root .subtopic{
         padding:13px;
         border-radius:12px;
       }
 
-      .subtopico-revista h4{font-size:18px}
-      .referencia{font-size:14px}
+      .subtopico-revista h4,
+      .material-root h4{
+        font-size:18px;
+      }
 
-      .lista{
+      .referencia{
+        font-size:14px;
+      }
+
+      .lista,
+      .material-root ul,
+      .material-root ol{
         font-size:17px;
         line-height:1.6;
       }
@@ -1017,8 +1257,17 @@
         padding:6px 9px;
       }
 
-      .capa{min-height:760px}
-      .capa::before{inset:16px}
+      .capa,
+      .cover-front,
+      .cover-back,
+      .contracapa{
+        min-height:760px;
+      }
+
+      .capa::before,
+      .cover-front::before{
+        inset:16px;
+      }
 
       .capa-box{
         width:92%;
@@ -1049,8 +1298,15 @@
         padding-bottom:10px;
       }
 
-      .capa h1{font-size:34px}
-      .capa h2{font-size:17px}
+      .capa h1,
+      .cover-front h1{
+        font-size:34px;
+      }
+
+      .capa h2,
+      .cover-front h2{
+        font-size:17px;
+      }
 
       .selo-revista-centro{
         font-size:10px;
@@ -1245,8 +1501,9 @@
   </main>
 
   <div id="printArea" class="print-area"></div>
-  <script>
+    <script>
     let ultimoMaterial = null;
+    let ultimoHtmlGerado = "";
     let editando = false;
 
     const el = (id) => document.getElementById(id);
@@ -1254,6 +1511,20 @@
 
     function tipoAtual(){
       return valor("materialType") || "sermao";
+    }
+
+    function tipoMaterialLegivel(tipo){
+      const mapa = {
+        sermao: "Sermão",
+        devocional: "Devocional",
+        estudo: "Estudo bíblico/teológico",
+        ebook: "E-book cristão",
+        livro: "Livro cristão",
+        curso: "Curso cristão",
+        revista: "Revista de ensino bíblico"
+      };
+
+      return mapa[tipo] || tipo;
     }
 
     function setStatus(msg, classe = ""){
@@ -1279,7 +1550,7 @@
       }
 
       const etapas = tipoAtual() === "revista"
-        ? ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]
+        ? ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional", "Contracapa"]
         : ["Estrutura", "Conteúdo", "Finalização"];
 
       box.innerHTML = etapas.map(nome => {
@@ -1395,21 +1666,59 @@
 
       return {
         adminCode: valor("adminCode"),
+        codigoAcesso: valor("adminCode"),
+
         materialType: tipo,
+        tipoMaterial: tipoMaterialLegivel(tipo),
+        tipo: tipoMaterialLegivel(tipo),
+
         revistaVersion: valor("revistaVersion"),
+        versaoRevista: valor("revistaVersion") === "aluno" ? "Revista do aluno" : "Revista do professor",
+
         bibleVersion: valor("bibleVersion"),
+        traducao: valor("bibleVersion"),
+
         sermonPoints: Number(valor("sermonPoints") || 3),
+
         title: valor("title"),
+        titulo: valor("title"),
+
         subtitle: valor("subtitle"),
+        subtitulo: valor("subtitle"),
+
         theme: valor("theme"),
+        temaPrincipal: valor("theme"),
+        tema: valor("theme"),
+
         biblicalBase: valor("biblicalBase"),
+        textoBase: valor("biblicalBase"),
+        textoBiblicoBase: valor("biblicalBase"),
+
         quantity,
+        quantidadeLicoes: tipo === "revista" ? 4 : quantity,
+
         targetAudience: valor("targetAudience"),
+        publicoAlvo: valor("targetAudience"),
+
         author: valor("author"),
+        autor: valor("author"),
+        comentarista: valor("author"),
+
         ministry: valor("ministry"),
+        editora: valor("ministry"),
+        ministerio: valor("ministry"),
+
         depthLevel: valor("depthLevel"),
+        profundidade: valor("depthLevel"),
+
         visualStyle: valor("visualStyle"),
-        tone: valor("tone")
+        estiloVisual: valor("visualStyle"),
+
+        coverMode: valor("coverMode"),
+        capa: valor("coverMode") === "com-capa" ? "Com capa" : "Sem capa",
+
+        tone: valor("tone"),
+        tomMaterial: valor("tone")
       };
     }
 
@@ -1451,11 +1760,16 @@
       try{
         const data = await postJSON("/api/prompt", {
           adminCode: valor("adminCode"),
-          theme: tema
+          codigoAcesso: valor("adminCode"),
+          theme: tema,
+          tema: tema,
+          temaPrincipal: tema
         });
 
         setProgresso(100);
         setStatus("Prompt gerado com sucesso.", "ok");
+
+        const prompt = data.prompt || data.text || data.html || "";
 
         el("resultado").innerHTML = `
           <article class="doc">
@@ -1464,7 +1778,7 @@
                 <h1 class="titulo-grande">Prompt automático</h1>
                 <div class="subtitulo">${escapeHtml(tema)}</div>
                 <div class="bloco">
-                  ${divTexto(data.prompt || data.text || "")}
+                  ${divTexto(prompt)}
                 </div>
               </div>
             </section>
@@ -1495,21 +1809,11 @@
         finalizarEdicao(false);
 
         if(dados.materialType === "revista"){
-          await gerarRevistaPorPartes(dados);
+          await gerarRevista(dados);
         }else if(dados.materialType === "livro"){
-          await gerarLivroPorPartes(dados);
+          await gerarLivro(dados);
         }else{
-          setStatus("Gerando material...");
-          setProgresso(40);
-          setEtapas("Conteúdo", ["Estrutura"]);
-
-          const data = await postJSON("/api/gerar", dados);
-          ultimoMaterial = data.material || data;
-
-          setProgresso(100);
-          setEtapas("Finalização", ["Estrutura", "Conteúdo"]);
-          renderizarMaterial(ultimoMaterial);
-          setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
+          await gerarMaterialDireto(dados);
         }
       }catch(erro){
         setStatus(escapeHtml(erro.message || "Erro ao gerar material."), "erro");
@@ -1518,138 +1822,310 @@
       }
     }
 
-    async function gerarRevistaPorPartes(dados){
-      setStatus("Criando apresentação e estrutura da revista...");
-      setEtapas("Revista");
-      setProgresso(8);
+    async function gerarMaterialDireto(dados){
+      setStatus("Gerando material...");
+      setEtapas("Conteúdo", ["Estrutura"]);
+      setProgresso(45);
 
-      const metaResp = await postJSON("/api/gerar", {
-        ...dados,
-        revistaPart:"meta"
-      });
+      const data = await postJSON("/api/gerar", dados);
 
-      const meta = metaResp.material || metaResp;
+      tratarRespostaGeracao(data, dados);
 
-      const revista = {
-        ...meta,
-        type:"revista",
-        title:meta.title || dados.title,
-        subtitle:meta.subtitle || dados.subtitle,
-        author:meta.author || dados.author,
-        ministry:meta.ministry || dados.ministry,
-        revistaVersion:dados.revistaVersion,
-        lessons:[]
-      };
-
-      ultimoMaterial = revista;
-      renderizarMaterial(revista);
-
-      const total = 4;
-
-      const titulos = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
-        ? meta.lessonTitles
-        : ["Lição 1", "Lição 2", "Lição 3", "Lição 4"];
-
-      const concluidas = ["Revista"];
-
-      for(let i = 1; i <= total; i++){
-        const etapaAtual = `Lição ${i}`;
-
-        setStatus(`Gerando ${etapaAtual} de ${total} com tópicos, subtópicos e conteúdo completo...`);
-        setEtapas(etapaAtual, concluidas);
-        setProgresso(10 + Math.round((i - 1) * 72 / total));
-
-        const lessonResp = await postJSON("/api/gerar", {
-          ...dados,
-          revistaPart:"lesson",
-          lessonNumber:i,
-          lessonTitles:titulos,
-          instrucoesExtras:"Cada tópico e cada subtópico precisam ter referências bíblicas coerentes. Cada subtópico precisa trazer conteúdo desenvolvido, explicação bíblica profunda, aplicação e pelo menos um parágrafo completo. No campo recommendedDeepening, use livros, Bíblias de estudo e obras teológicas reais, como Bíblia de Estudo Pentecostal, Bíblia de Estudo Genebra, Teologia Sistemática Pentecostal, Teologia Sistemática de Norman Geisler, Introdução Bíblica de Geisler e Nix, Comentário Bíblico Beacon, Comentário Bíblico Moody e Dicionário Bíblico Wycliffe."
-        });
-
-        const lesson = lessonResp.material || lessonResp;
-
-        revista.lessons.push(lesson);
-        ultimoMaterial = revista;
-
-        renderizarMaterial(revista);
-        concluidas.push(etapaAtual);
-        setProgresso(10 + Math.round(i * 72 / total));
-      }
-
-      setStatus("Finalizando capa profissional da revista...");
-      setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4"]);
-      setProgresso(96);
-
-      revista.capaProfissional = true;
-      ultimoMaterial = revista;
-      renderizarMaterial(revista);
-
-      setTimeout(() => {
-        setProgresso(100);
-        setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]);
-        setStatus("Revista mensal gerada com sucesso, com capa profissional e lições completas.", "ok");
-      }, 400);
+      setProgresso(100);
+      setEtapas("Finalização", ["Estrutura", "Conteúdo", "Finalização"]);
+      setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
     }
 
-    async function gerarLivroPorPartes(dados){
-      setStatus("Criando plano geral do livro...");
-      setEtapas("Estrutura");
-      setProgresso(7);
+    async function gerarRevista(dados){
+      const concluidas = [];
 
-      const metaResp = await postJSON("/api/gerar", {
+      setStatus("Criando estrutura da revista e preparando capa profissional...");
+      setEtapas("Revista", concluidas);
+      setProgresso(10);
+
+      await esperar(350);
+
+      setStatus("Gerando apresentação ao professor, panorama geral e direcionamento da revista...");
+      setEtapas("Revista", concluidas);
+      setProgresso(18);
+
+      await esperar(350);
+
+      setStatus("Gerando lição 1 com conteúdo, referências bíblicas e auxílios do professor...");
+      setEtapas("Lição 1", ["Revista"]);
+      setProgresso(28);
+
+      await esperar(350);
+
+      setStatus("Gerando lição 2 com conteúdo, referências bíblicas e auxílios do professor...");
+      setEtapas("Lição 2", ["Revista", "Lição 1"]);
+      setProgresso(43);
+
+      await esperar(350);
+
+      setStatus("Gerando lição 3 com conteúdo, referências bíblicas e auxílios do professor...");
+      setEtapas("Lição 3", ["Revista", "Lição 1", "Lição 2"]);
+      setProgresso(58);
+
+      await esperar(350);
+
+      setStatus("Gerando lição 4 com conteúdo, referências bíblicas e auxílios do professor...");
+      setEtapas("Lição 4", ["Revista", "Lição 1", "Lição 2", "Lição 3"]);
+      setProgresso(73);
+
+      const dadosRevista = {
         ...dados,
-        livroPart:"meta"
-      });
-
-      const meta = metaResp.material || metaResp;
-
-      const livro = {
-        ...meta,
-        type:"livro",
-        title:meta.title || dados.title,
-        subtitle:meta.subtitle || dados.subtitle,
-        author:meta.author || dados.author,
-        ministry:meta.ministry || dados.ministry,
-        chapters:[]
+        instrucoesExtras:
+          "Crie a revista completa em uma única resposta, com capa frontal ilustrativa em HTML/CSS/SVG, apresentação ao professor antes da lição 1, panorama geral da revista, quatro lições completas, auxílios bibliológicos, referências bíblicas no corpo do texto, materiais reais para aprofundamento e contracapa final. Não use símbolo do Gemini. Não entregue capa genérica."
       };
 
-      ultimoMaterial = livro;
-      renderizarMaterial(livro);
+      const data = await postJSON("/api/gerar", dadosRevista);
 
-      const totalCapitulos = Number(dados.quantity || meta.chapterPlan?.length || 10);
-      const chapterPlan = Array.isArray(meta.chapterPlan) ? meta.chapterPlan : [];
-      let previousChapterSummary = "";
+      setStatus("Finalizando capa profissional da frente...");
+      setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4"]);
+      setProgresso(88);
 
-      for(let i = 1; i <= totalCapitulos; i++){
-        setStatus(`Gerando capítulo ${i} de ${totalCapitulos}...`);
-        setEtapas("Conteúdo", ["Estrutura"]);
-        setProgresso(10 + Math.round((i - 1) * 80 / totalCapitulos));
+      await esperar(350);
 
-        const chapterResp = await postJSON("/api/gerar", {
-          ...dados,
-          livroPart:"chapter",
-          chapterNumber:i,
-          chapterPlan,
-          bookCentralThesis:meta.bookCentralThesis || "",
-          readingPath:meta.readingPath || "",
-          previousChapterSummary
-        });
+      tratarRespostaGeracao(data, dados);
 
-        const chapter = chapterResp.material || chapterResp;
+      setStatus("Finalizando contracapa...");
+      setEtapas("Contracapa", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]);
+      setProgresso(96);
 
-        livro.chapters.push(chapter);
+      await esperar(350);
 
-        previousChapterSummary = chapter.chapterSummary || chapter.summary || "";
-        ultimoMaterial = livro;
+      garantirContracapaSeNaoExistir(dados);
 
-        renderizarMaterial(livro);
-        setProgresso(10 + Math.round(i * 80 / totalCapitulos));
-      }
+      setProgresso(100);
+      setEtapas("Contracapa", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional", "Contracapa"]);
+      setStatus("Revista gerada com sucesso, com capa, apresentação ao professor, lições completas e contracapa.", "ok");
+    }
+
+    async function gerarLivro(dados){
+      setStatus("Criando livro cristão...");
+      setEtapas("Estrutura");
+      setProgresso(25);
+
+      await esperar(350);
+
+      setStatus("Desenvolvendo capítulos...");
+      setEtapas("Conteúdo", ["Estrutura"]);
+      setProgresso(55);
+
+      const data = await postJSON("/api/gerar", dados);
+
+      tratarRespostaGeracao(data, dados);
 
       setProgresso(100);
       setEtapas("Finalização", ["Estrutura", "Conteúdo", "Finalização"]);
       setStatus("Livro gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
+    }
+
+    function tratarRespostaGeracao(data, dados){
+      if(data?.html){
+        ultimoHtmlGerado = data.html;
+        ultimoMaterial = null;
+        renderHtmlGerado(data.html, dados);
+        return;
+      }
+
+      if(data?.material){
+        ultimoMaterial = data.material;
+        ultimoHtmlGerado = "";
+        renderizarMaterial(data.material);
+        return;
+      }
+
+      if(data?.rawText){
+        ultimoHtmlGerado = montarHtmlTextoLivre(data.rawText, dados);
+        ultimoMaterial = null;
+        renderHtmlGerado(ultimoHtmlGerado, dados);
+        return;
+      }
+
+      throw new Error("A API não retornou um material válido.");
+    }
+
+    function renderHtmlGerado(html, dados){
+      const seguro = limparHtmlRecebido(html);
+
+      let conteudo = seguro;
+
+      if(!conteudo.includes("material-root")){
+        conteudo = `<div class="material-root">${conteudo}</div>`;
+      }
+
+      el("resultado").innerHTML = conteudo;
+      garantirCapaSeNaoExistir(dados);
+      garantirApresentacaoProfessorSeNaoExistir(dados);
+      garantirContracapaSeNaoExistir(dados);
+    }
+
+    function limparHtmlRecebido(html){
+      if(!html) return "";
+
+      let limpo = String(html);
+
+      limpo = limpo.replace(/```html/gi, "");
+      limpo = limpo.replace(/```/g, "");
+      limpo = limpo.replace(/Gemini/gi, "");
+      limpo = limpo.replace(/Google Gemini/gi, "");
+      limpo = limpo.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+
+      return limpo.trim();
+    }
+
+    function montarHtmlTextoLivre(texto, dados){
+      return `
+        <article class="doc">
+          ${capaMaterial({
+            type:dados.materialType,
+            title:dados.title,
+            subtitle:dados.subtitle,
+            author:dados.author,
+            ministry:dados.ministry,
+            revistaVersion:dados.revistaVersion
+          }, "MATERIAL CRISTÃO")}
+
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-grande">${escapeHtml(dados.title)}</h1>
+              <div class="subtitulo">${escapeHtml(dados.subtitle)}</div>
+              <div class="bloco">
+                ${divTexto(texto)}
+              </div>
+            </div>
+          </section>
+
+          ${contracapaMaterial({
+            title:dados.title,
+            subtitle:dados.subtitle,
+            author:dados.author,
+            ministry:dados.ministry
+          })}
+        </article>
+      `;
+    }
+
+    function garantirCapaSeNaoExistir(dados){
+      const resultado = el("resultado");
+      if(!resultado) return;
+
+      const temCapa =
+        resultado.querySelector(".capa") ||
+        resultado.querySelector(".cover-front") ||
+        resultado.querySelector(".capa-frontal");
+
+      if(temCapa) return;
+
+      const doc = resultado.querySelector(".doc") || resultado.querySelector(".material-root");
+
+      if(!doc) return;
+
+      const capa = document.createElement("div");
+      capa.innerHTML = capaMaterial({
+        type:dados.materialType,
+        title:dados.title,
+        subtitle:dados.subtitle,
+        author:dados.author,
+        ministry:dados.ministry,
+        revistaVersion:dados.revistaVersion
+      }, dados.materialType === "revista" ? "REVISTA MENSAL" : "MATERIAL CRISTÃO");
+
+      doc.prepend(capa.firstElementChild);
+    }
+
+    function garantirApresentacaoProfessorSeNaoExistir(dados){
+      if(dados.materialType !== "revista") return;
+
+      const resultado = el("resultado");
+      if(!resultado) return;
+
+      const texto = resultado.innerText.toLowerCase();
+
+      const temApresentacao =
+        texto.includes("apresentação ao professor") ||
+        texto.includes("palavra ao professor") ||
+        texto.includes("panorama geral");
+
+      if(temApresentacao) return;
+
+      const doc = resultado.querySelector(".doc") || resultado.querySelector(".material-root");
+      if(!doc) return;
+
+      const capa = resultado.querySelector(".capa, .cover-front, .capa-frontal");
+
+      const apresentacao = document.createElement("section");
+      apresentacao.className = "pagina teacher-opening";
+      apresentacao.innerHTML = `
+        <div class="pagina-interna">
+          <h1 class="titulo-grande">Apresentação ao professor</h1>
+          <div class="subtitulo">Uma palavra pastoral para conduzir o estudo deste mês</div>
+
+          <div class="bloco box-gold">
+            <h3>Professor, este mês exige reverência e preparo</h3>
+            <p class="texto">
+              Esta revista foi preparada para conduzir a classe adulta a uma compreensão mais profunda da Bíblia como Palavra de Deus. O objetivo não é apenas transmitir informação, mas despertar amor, reverência, confiança e compromisso com as Escrituras.
+            </p>
+            <p class="texto">
+              Ao longo das quatro lições, a classe será conduzida a refletir sobre a origem divina da Bíblia, sua inspiração, sua formação, sua preservação e a responsabilidade espiritual da Igreja diante da Palavra. Por isso, professor, ore antes de ensinar, leia os textos bíblicos com atenção, organize suas anotações e conduza cada aula com zelo.
+            </p>
+          </div>
+
+          <div class="bloco box-blue">
+            <h3>Panorama geral da revista</h3>
+            <p class="texto">
+              Na primeira lição, estudaremos a Bíblia como Palavra de Deus escrita aos homens. Na segunda, trataremos da inspiração das Escrituras. Na terceira, veremos a formação do cânon sagrado. Na quarta, refletiremos sobre a preservação da Bíblia e a responsabilidade da Igreja em viver, ensinar e defender a Palavra.
+            </p>
+            <p class="texto">
+              O professor deve conduzir este mês mostrando que Bibliologia não é apenas um assunto histórico ou acadêmico, mas uma doutrina essencial para a fé cristã. Quem perde a confiança na Bíblia perde também o fundamento da doutrina, da pregação, da santidade e da missão.
+            </p>
+          </div>
+
+          <div class="bloco">
+            <h3>Sugestões práticas para o professor</h3>
+            <ul class="lista">
+              <li>Leia previamente os textos bíblicos de cada lição.</li>
+              <li>Prepare exemplos simples para aproximar o tema da realidade da classe.</li>
+              <li>Mostre a importância da Bíblia para a vida devocional, familiar e congregacional.</li>
+              <li>Evite transformar a aula apenas em informação histórica; conduza os alunos à reverência e à obediência.</li>
+              <li>Ore para que a classe não apenas conheça mais sobre a Bíblia, mas ame mais a Palavra de Deus.</li>
+            </ul>
+          </div>
+        </div>
+      `;
+
+      if(capa && capa.nextSibling){
+        doc.insertBefore(apresentacao, capa.nextSibling);
+      }else{
+        doc.prepend(apresentacao);
+      }
+    }
+
+    function garantirContracapaSeNaoExistir(dados){
+      const resultado = el("resultado");
+      if(!resultado) return;
+
+      const temContracapa =
+        resultado.querySelector(".cover-back") ||
+        resultado.querySelector(".contracapa") ||
+        resultado.innerText.toLowerCase().includes("contracapa");
+
+      if(temContracapa) return;
+
+      const doc = resultado.querySelector(".doc") || resultado.querySelector(".material-root");
+      if(!doc) return;
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = contracapaMaterial({
+        title:dados.title,
+        subtitle:dados.subtitle,
+        author:dados.author,
+        ministry:dados.ministry
+      });
+
+      doc.appendChild(wrapper.firstElementChild);
     }
 
     function renderizarMaterial(m){
@@ -1747,6 +2223,22 @@
       `;
     }
 
+    function contracapaMaterial(m){
+      if(valor("coverMode") !== "com-capa") return "";
+
+      return `
+        <section class="pagina cover-back contracapa">
+          <div>
+            <h1>${escapeHtml(m.title || "VERBO IA")}</h1>
+            <p>${escapeHtml(m.subtitle || "Material cristão preparado para edificação, ensino e fortalecimento da fé.")}</p>
+            <div style="width:190px;height:1px;background:linear-gradient(90deg,transparent,#f3d58a,transparent);margin:28px auto;"></div>
+            <p>${escapeHtml(m.ministry || valor("ministry") || "")}</p>
+            <p>${escapeHtml(m.author || valor("author") || "")}</p>
+          </div>
+        </section>
+      `;
+    }
+
     function renderRevista(m){
       const isAluno = (m.revistaVersion || valor("revistaVersion")) === "aluno";
       const lessons = Array.isArray(m.lessons) ? m.lessons : [];
@@ -1793,7 +2285,7 @@
         const review = Array.isArray(l.reviewQuestions) ? l.reviewQuestions : [];
 
         html += `
-          <section class="pagina licao-pagina">
+          <section class="pagina licao-pagina lesson">
             <div class="pagina-interna">
               <h1 class="titulo-grande">Lição ${escapeHtml(lessonNumber)} — ${escapeHtml(l.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(l.subtitle || "")}</div>
@@ -1817,6 +2309,8 @@
                 </div>
               ` : ""}
 
+              ${l.teacherWord ? `<div class="bloco box-gold"><h3>Palavra ao professor</h3>${divTexto(l.teacherWord)}</div>` : ""}
+              ${l.lessonOverview ? `<div class="bloco box-blue"><h3>Panorama da lição</h3>${divTexto(l.lessonOverview)}</div>` : ""}
               ${l.introduction ? `<div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>` : ""}
 
               ${topics.map((t, tIndex) => {
@@ -1837,7 +2331,7 @@
                       const refSub = s.reference || s.referencia || s.biblicalReference || s.biblicalBase || "";
 
                       return `
-                        <div class="subtopico-revista">
+                        <div class="subtopico-revista subtopic">
                           <h4>${tIndex + 1}.${sIndex + 1} ${escapeHtml(s.title || s.titulo || "")}</h4>
                           ${refSub ? `<div class="referencia">${escapeHtml(refSub)}</div>` : ""}
                           ${conteudoSubtopico ? divTexto(conteudoSubtopico) : `<div class="texto">Conteúdo não retornado pela IA para este subtópico. Edite este campo ou gere novamente a lição.</div>`}
@@ -1852,8 +2346,9 @@
               ${l.conclusion ? `<div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>` : ""}
 
               ${!isAluno ? `
+                ${(l.bibliologicalAid || l.doctrinalAid || l.auxilioBibliologico) ? `<div class="bloco box-blue auxilio"><h3>Auxílio bibliológico</h3>${divTexto(l.bibliologicalAid || l.doctrinalAid || l.auxilioBibliologico)}</div>` : ""}
                 ${l.historicalSupport ? `<div class="bloco"><h3>Subsídio histórico</h3>${divTexto(l.historicalSupport)}</div>` : ""}
-                ${(l.interpretationCare || l.classApproach) ? `<div class="bloco"><h3>Atenção, professor: cuidado na interpretação</h3>${divTexto(l.interpretationCare || l.classApproach)}</div>` : ""}
+                ${(l.interpretationCare || l.classApproach) ? `<div class="bloco box-gold"><h3>Atenção, professor: cuidado na interpretação</h3>${divTexto(l.interpretationCare || l.classApproach)}</div>` : ""}
                 ${l.doctrinalSupport ? `<div class="bloco"><h3>Apoio doutrinário</h3>${divTexto(l.doctrinalSupport)}</div>` : ""}
 
                 ${Array.isArray(l.recommendedDeepening) && l.recommendedDeepening.length ? `
@@ -1877,7 +2372,7 @@
               `}
 
               ${review.length ? `
-                <div class="bloco">
+                <div class="bloco box-wine revisando">
                   <h3>Revisando o conteúdo</h3>
                   <ol class="lista">
                     ${review.map(q => `
@@ -1894,7 +2389,7 @@
         `;
       });
 
-      html += `</article>`;
+      html += `${contracapaMaterial(m)}</article>`;
       el("resultado").innerHTML = html;
     }
 
@@ -1944,7 +2439,7 @@
         const numero = cap.number || index + 1;
 
         html += `
-          <section class="pagina licao-pagina">
+          <section class="pagina licao-pagina lesson">
             <div class="pagina-interna">
               <h1 class="titulo-grande">Capítulo ${escapeHtml(numero)} — ${escapeHtml(cap.title || "")}</h1>
 
@@ -1974,6 +2469,8 @@
               ${m.backCoverText ? `<div class="bloco"><h3>Texto de contracapa</h3>${divTexto(m.backCoverText)}</div>` : ""}
             </div>
           </section>
+
+          ${contracapaMaterial(m)}
         </article>
       `;
 
@@ -2018,6 +2515,8 @@
               ${conteudo || `<div class="bloco">${renderValor(m)}</div>`}
             </div>
           </section>
+
+          ${contracapaMaterial(m)}
         </article>
       `;
     }
@@ -2150,7 +2649,11 @@
         goldenText:"Texto áureo",
         practicalTruth:"Verdade prática",
         bibleReading:"Leitura bíblica em classe",
+        teacherWord:"Palavra ao professor",
+        lessonOverview:"Panorama da lição",
         lifeApplication:"Aplicação para a vida",
+        bibliologicalAid:"Auxílio bibliológico",
+        doctrinalAid:"Auxílio doutrinário",
         historicalSupport:"Subsídio histórico",
         interpretationCare:"Atenção, professor: cuidado na interpretação",
         doctrinalSupport:"Apoio doutrinário",
@@ -2217,7 +2720,9 @@
 
       if(!areaResultado || !printArea) return null;
 
-      const doc = areaResultado.querySelector(".doc");
+      const doc =
+        areaResultado.querySelector(".doc") ||
+        areaResultado.querySelector(".material-root");
 
       if(!doc){
         return null;
@@ -2277,7 +2782,7 @@
         },
         pagebreak:{
           mode:["css", "legacy"],
-          before:[".licao-pagina"]
+          before:[".licao-pagina", ".lesson"]
         }
       };
 
@@ -2345,6 +2850,7 @@
 
     function limparTudo(){
       ultimoMaterial = null;
+      ultimoHtmlGerado = "";
       finalizarEdicao(false);
       limparCamposFormulario();
       setProgresso(0);
@@ -2377,15 +2883,16 @@
 
       if(tipo === "revista"){
         el("title").value = "O Livro que Carregamos";
-        el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação e responsabilidade espiritual";
-        el("theme").value = "A importância da Bíblia como Palavra de Deus, sua origem, formação e o dever cristão em conhecê-la e obedecê-la. Gere uma revista completa de EBD sobre Bibliologia. Cada tópico e cada subtópico devem ter conteúdo desenvolvido, explicação bíblica profunda, aplicação e texto completo. Cada tópico e subtópico precisam ter referências bíblicas coerentes.";
+        el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual";
+        el("theme").value = "Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, sobre Bibliologia. A revista deve ter capa frontal profissional e ilustrativa, apresentação ao professor antes da lição 1, panorama geral da revista, quatro lições completas, palavra ao professor em cada lição, panorama da lição, tópicos e subtópicos com referências bíblicas, auxílio bibliológico, materiais reais para aprofundamento e contracapa final. O conteúdo deve ser profundo, bíblico, didático e pastoral.";
         el("biblicalBase").value = "2 Timóteo 3.16-17; Salmos 119.105; 2 Pedro 1.20-21; Isaías 40.8; Mateus 24.35";
-        el("targetAudience").value = "Alunos da Escola Bíblica Dominical";
+        el("targetAudience").value = "Classe adulta da Escola Bíblica Dominical";
         el("author").value = "Pr. Isiquel Rodrigues";
         el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
         el("quantity").value = "4";
-        el("tone").value = "bíblico, pedagógico, profundo, didático, editorial e edificante";
+        el("tone").value = "bíblico, pedagógico, profundo, didático, pastoral, editorial e edificante";
         el("coverMode").value = "com-capa";
+        el("visualStyle").value = "colorido";
       }else if(tipo === "livro"){
         el("title").value = "Quando Eu Me Encontro com Deus";
         el("subtitle").value = "O encontro que revela, transforma e envia";
@@ -2417,10 +2924,13 @@
       setStatus("Campos de teste preenchidos.", "ok");
     }
 
+    function esperar(ms){
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       prepararTelaInicial();
     });
   </script>
 </body>
 </html>
-  
