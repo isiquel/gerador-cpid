@@ -3,1332 +3,237 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-
   <title>VERBO IA - Gerador de Materiais Cristãos</title>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
     :root {
-      --marrom: #5b3a24;
-      --marrom2: #7a4f2f;
-      --dourado: #c79b58;
-      --texto: #222;
-      --muted: #666;
-      --verde: #237a45;
-      --vermelho: #a12d2d;
-      --fundo: #f8f2ea;
-      --sombra: 0 12px 32px rgba(0,0,0,0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      min-height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg, #f8f2ea, #eee2d4);
-      color: var(--texto);
-      overflow-x: hidden;
+      --marrom:#5b3a24; --marrom2:#7a4f2f; --dourado:#c79b58;
+      --texto:#222; --muted:#666; --verde:#237a45; --vermelho:#a12d2d;
+      --sombra:0 12px 32px rgba(0,0,0,.08);
     }
 
-    header {
-      background: linear-gradient(135deg, var(--marrom), var(--marrom2));
-      color: white;
-      padding: 24px 16px;
-      text-align: center;
-      border-bottom: 5px solid var(--dourado);
-      box-shadow: var(--sombra);
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;padding:0;width:100%;min-height:100%;
+      font-family:Arial,Helvetica,sans-serif;
+      background:linear-gradient(180deg,#f8f2ea,#eee2d4);
+      color:var(--texto);overflow-x:hidden;
     }
 
-    header h1 {
-      margin: 0;
-      font-size: 36px;
-      letter-spacing: 1px;
+    header{
+      background:linear-gradient(135deg,var(--marrom),var(--marrom2));
+      color:#fff;padding:24px 16px;text-align:center;
+      border-bottom:5px solid var(--dourado);box-shadow:var(--sombra);
     }
+    header h1{margin:0;font-size:36px;letter-spacing:1px}
+    header p{margin:8px 0 0;opacity:.95;font-size:16px}
 
-    header p {
-      margin: 8px 0 0;
-      opacity: 0.95;
-      font-size: 16px;
+    .container{
+      max-width:1500px;margin:24px auto;padding:0 16px 28px;
+      display:grid;grid-template-columns:430px 1fr;gap:22px;align-items:start;
     }
 
-    .container {
-      max-width: 1500px;
-      margin: 24px auto;
-      padding: 0 16px 28px;
-      display: grid;
-      grid-template-columns: 430px 1fr;
-      gap: 22px;
-      align-items: start;
+    .card{
+      background:#fff;border:1px solid #eee0d0;border-radius:22px;
+      box-shadow:var(--sombra);overflow:hidden;
     }
-
-    .card {
-      background: white;
-      border: 1px solid #eee0d0;
-      border-radius: 22px;
-      box-shadow: var(--sombra);
-      overflow: hidden;
-    }
-
-    .card-head {
-      padding: 20px 22px;
-      background: linear-gradient(180deg, #fffdf9, #fbf5ec);
-      border-bottom: 1px solid #e6d8c7;
-    }
-
-    .card-head h2 {
-      margin: 0;
-      color: var(--marrom);
-      font-size: 24px;
-    }
-
-    .card-head p {
-      margin: 9px 0 0;
-      color: var(--muted);
-      font-size: 16px;
-      line-height: 1.55;
-    }
-
-    .card-body {
-      padding: 20px;
-    }
-
-    label {
-      display: block;
-      margin: 15px 0 7px;
-      font-weight: bold;
-      color: var(--marrom);
-      font-size: 16px;
-      line-height: 1.3;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 15px;
-      border: 1px solid #dbc9b5;
-      border-radius: 14px;
-      outline: none;
-      background: white;
-      color: var(--texto);
-      font-size: 17px;
-      line-height: 1.45;
-    }
-
-    textarea {
-      min-height: 125px;
-      resize: vertical;
-      line-height: 1.6;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--dourado);
-      box-shadow: 0 0 0 4px rgba(199,155,88,0.16);
-    }
-
-    .linha {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .campo-oculto {
-      display: none !important;
-    }
-
-    .aviso {
-      background: #eef8f0;
-      border-left: 5px solid var(--verde);
-      color: #225a35;
-      padding: 14px;
-      border-radius: 13px;
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .aviso-reservado {
-      background: #fff8e8;
-      border-left: 5px solid var(--dourado);
-      color: #7a4f2f;
-      padding: 14px;
-      border-radius: 13px;
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 12px;
-    }
-
-    .prompt-box {
-      background: #fff9f0;
-      border: 1px solid #ead8c4;
-      border-radius: 18px;
-      padding: 16px;
-      margin-bottom: 14px;
-    }
-
-    .prompt-box h3 {
-      margin: 0 0 8px;
-      color: var(--marrom);
-      font-size: 21px;
-    }
-
-    .prompt-box p {
-      margin: 0 0 10px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-
-    button {
-      border: none;
-      border-radius: 14px;
-      padding: 15px 16px;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 16px;
-      min-height: 52px;
-      line-height: 1.25;
-    }
-
-    button:disabled {
-      opacity: 0.65;
-      cursor: not-allowed;
-    }
-
-    .btn-principal {
-      width: 100%;
-      margin-top: 16px;
-      background: linear-gradient(135deg, var(--marrom), var(--marrom2));
-      color: white;
-      font-size: 17px;
-      min-height: 56px;
-    }
-
-    .btn-secundario {
-      background: #f4eadf;
-      color: var(--marrom);
-      border: 1px solid #e4d2bd;
-    }
-
-    .btn-verde {
-      background: var(--verde);
-      color: white;
-    }
-
-    .btn-cinza {
-      background: #eee;
-      color: #333;
-    }
-
-    .btn-alerta {
-      background: #fff1d6;
-      color: #7a4f2f;
-      border: 1px solid #e4c58f;
-    }
-
-    .botoes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .status {
-      margin-top: 14px;
-      padding: 13px 14px;
-      border-radius: 13px;
-      background: #f8f2e9;
-      border: 1px solid #ead8c4;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.6;
-      min-height: 44px;
-    }
-
-    .ok {
-      color: var(--verde);
-    }
-
-    .erro {
-      color: var(--vermelho);
-    }
-
-    .progresso {
-      margin-top: 12px;
-      height: 12px;
-      background: #eee2d5;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .barra {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--marrom), var(--dourado));
-      transition: width 0.25s ease;
-    }
-
-    #resultado {
-      min-height: 760px;
-      background: #f7efe5;
-      border: 1px solid #eadbc9;
-      border-radius: 18px;
-      padding: 22px;
-      overflow: auto;
-    }
-
-    #resultado[contenteditable="true"] {
-      outline: 4px solid rgba(199,155,88,0.25);
-      background: #fffaf2;
-    }
-
-    .modo-edicao {
-      background: #fff8e8;
-      border: 1px solid #e4c58f;
-      color: #7a4f2f;
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 14px;
-      font-size: 15px;
-      line-height: 1.6;
-      display: none;
-    }
-
-    .placeholder {
-      min-height: 520px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: var(--muted);
-      background: #fffdf9;
-      border: 1px dashed #d8c4ad;
-      border-radius: 18px;
-      padding: 30px;
-      line-height: 1.7;
-      font-size: 17px;
+    .card-head{
+      padding:20px 22px;background:linear-gradient(180deg,#fffdf9,#fbf5ec);
+      border-bottom:1px solid #e6d8c7;
     }
+    .card-head h2{margin:0;color:var(--marrom);font-size:24px}
+    .card-head p{margin:9px 0 0;color:var(--muted);font-size:16px;line-height:1.55}
+    .card-body{padding:20px}
 
-    .doc {
-      max-width: 980px;
-      margin: 0 auto;
-      display: grid;
-      gap: 22px;
+    label{
+      display:block;margin:15px 0 7px;font-weight:bold;
+      color:var(--marrom);font-size:16px;line-height:1.3;
     }
-
-    .pagina {
-      background: white;
-      border-radius: 22px;
-      border: 1px solid #e6d8c7;
-      box-shadow: var(--sombra);
-      overflow: visible;
-    }
-
-    .pagina-interna {
-      padding: 42px 48px;
-    }
-
-    .titulo-grande {
-      margin: 0 0 14px;
-      color: var(--marrom);
-      font-size: 38px;
-      line-height: 1.18;
-    }
-
-    .subtitulo {
-      color: var(--muted);
-      font-size: 21px;
-      line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
-    .texto {
-      font-size: 20px;
-      line-height: 1.85;
-      color: #302b26;
-      white-space: pre-line;
-    }
-
-    .texto-livro {
-      font-size: 21px;
-      line-height: 1.95;
-      color: #26221d;
-      white-space: pre-line;
-      text-align: left;
-      margin-top: 18px;
+    input,select,textarea{
+      width:100%;padding:15px;border:1px solid #dbc9b5;border-radius:14px;
+      outline:none;background:#fff;color:var(--texto);font-size:17px;line-height:1.45;
     }
-
-    .capitulo-livro {
-      margin-top: 28px;
-      padding-top: 26px;
-      border-top: 1px solid #e6d8c7;
-    }
-
-    .capitulo-livro:first-child {
-      border-top: none;
-      padding-top: 0;
-    }
-
-    .capitulo-livro h2 {
-      color: var(--marrom);
-      font-size: 32px;
-      line-height: 1.25;
-      margin: 0 0 10px;
+    textarea{min-height:125px;resize:vertical;line-height:1.6}
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--dourado);box-shadow:0 0 0 4px rgba(199,155,88,.16);
     }
 
-    .pergunta-livro {
-      font-size: 18px;
-      line-height: 1.6;
-      color: #7b5a39;
-      font-weight: bold;
-      margin-bottom: 18px;
-      border-left: 5px solid var(--dourado);
-      padding: 12px 14px;
-      background: #fff8e8;
-      border-radius: 12px;
-    }
-
-    .subtitulo-livro {
-      color: var(--marrom);
-      font-size: 24px;
-      margin: 30px 0 10px;
-      line-height: 1.35;
-    }
+    .linha{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .campo-oculto{display:none!important}
 
-    .bloco {
-      margin-top: 24px;
-      padding: 26px;
-      border: 1px solid #e6d8c7;
-      border-radius: 18px;
-      background: #fffdf9;
+    .aviso,.aviso-reservado{
+      padding:14px;border-radius:13px;font-size:15px;line-height:1.6;margin-bottom:12px;
     }
+    .aviso{background:#eef8f0;border-left:5px solid var(--verde);color:#225a35}
+    .aviso-reservado{background:#fff8e8;border-left:5px solid var(--dourado);color:#7a4f2f}
 
-    .bloco h3 {
-      margin: 0 0 12px;
-      color: var(--marrom);
-      font-size: 25px;
+    .prompt-box{
+      background:#fff9f0;border:1px solid #ead8c4;border-radius:18px;
+      padding:16px;margin-bottom:14px;
     }
+    .prompt-box h3{margin:0 0 8px;color:var(--marrom);font-size:21px}
+    .prompt-box p{margin:0 0 10px;color:var(--muted);font-size:15px;line-height:1.6}
 
-    .bloco-professor {
-      background: #fff8e8;
-      border-left: 6px solid var(--dourado);
+    button{
+      border:none;border-radius:14px;padding:15px 16px;font-weight:bold;
+      cursor:pointer;font-size:16px;min-height:52px;line-height:1.25;
     }
-
-    .bloco-final-professor {
-      background: #fffdf9;
-      border-left: 6px solid var(--marrom2);
+    button:disabled{opacity:.65;cursor:not-allowed}
+    .btn-principal{
+      width:100%;margin-top:16px;background:linear-gradient(135deg,var(--marrom),var(--marrom2));
+      color:#fff;font-size:17px;min-height:56px;
     }
+    .btn-secundario{background:#f4eadf;color:var(--marrom);border:1px solid #e4d2bd}
+    .btn-verde{background:var(--verde);color:#fff}
+    .btn-cinza{background:#eee;color:#333}
+    .btn-alerta{background:#fff1d6;color:#7a4f2f;border:1px solid #e4c58f}
+    .botoes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 
-    .topico-revista {
-      margin-top: 28px;
-      padding: 26px;
-      border: 1px solid #e6d8c7;
-      border-radius: 18px;
-      background: #fffdf9;
+    .status{
+      margin-top:14px;padding:13px 14px;border-radius:13px;background:#f8f2e9;
+      border:1px solid #ead8c4;color:var(--muted);font-size:15px;line-height:1.6;min-height:44px;
     }
+    .ok{color:var(--verde)} .erro{color:var(--vermelho)}
+    .progresso{margin-top:12px;height:12px;background:#eee2d5;border-radius:999px;overflow:hidden}
+    .barra{height:100%;width:0%;background:linear-gradient(90deg,var(--marrom),var(--dourado));transition:width .25s ease}
 
-    .topico-revista h3 {
-      margin: 0 0 12px;
-      color: var(--marrom);
-      font-size: 26px;
+    #resultado{
+      min-height:760px;background:#f7efe5;border:1px solid #eadbc9;
+      border-radius:18px;padding:22px;overflow:auto;
     }
+    #resultado[contenteditable="true"]{outline:4px solid rgba(199,155,88,.25);background:#fffaf2}
 
-    .subtopico-revista {
-      margin-top: 18px;
-      padding: 18px;
-      border-left: 5px solid var(--dourado);
-      background: #fff;
-      border-radius: 12px;
+    .modo-edicao{
+      background:#fff8e8;border:1px solid #e4c58f;color:#7a4f2f;
+      padding:12px 14px;border-radius:12px;margin-bottom:14px;
+      font-size:15px;line-height:1.6;display:none;
     }
 
-    .subtopico-revista h4 {
-      margin: 0 0 8px;
-      color: #3a2a1c;
-      font-size: 21px;
+    .placeholder{
+      min-height:520px;display:flex;align-items:center;justify-content:center;text-align:center;
+      color:var(--muted);background:#fffdf9;border:1px dashed #d8c4ad;
+      border-radius:18px;padding:30px;line-height:1.7;font-size:17px;
     }
 
-    .referencia {
-      font-size: 16px;
-      color: #7b5a39;
-      font-weight: bold;
-      margin-bottom: 8px;
-      line-height: 1.55;
+    .doc{max-width:980px;margin:0 auto;display:grid;gap:22px}
+    .pagina{
+      background:#fff;border-radius:22px;border:1px solid #e6d8c7;
+      box-shadow:var(--sombra);overflow:visible;
     }
+    .pagina-interna{padding:42px 48px}
+    .titulo-grande{margin:0 0 14px;color:var(--marrom);font-size:38px;line-height:1.18}
+    .subtitulo{color:var(--muted);font-size:21px;line-height:1.5;margin-bottom:22px}
+    .texto{font-size:20px;line-height:1.85;color:#302b26;white-space:pre-line}
 
-    .lista {
-      padding-left: 24px;
-      font-size: 19px;
-      line-height: 1.8;
+    .bloco,.topico-revista{
+      margin-top:24px;padding:26px;border:1px solid #e6d8c7;border-radius:18px;background:#fffdf9;
     }
-
-    .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin: 16px 0 20px;
+    .bloco h3,.topico-revista h3{margin:0 0 12px;color:var(--marrom);font-size:25px}
+    .topico-revista h3{font-size:26px}
+    .subtopico-revista{
+      margin-top:18px;padding:18px;border-left:5px solid var(--dourado);
+      background:#fff;border-radius:12px;
     }
-
-    .chip {
-      border: 1px solid #e6d8c7;
-      background: #fffdf9;
-      color: #7b5a39;
-      font-weight: bold;
-      border-radius: 999px;
-      padding: 8px 13px;
-      font-size: 14px;
+    .subtopico-revista h4{margin:0 0 8px;color:#3a2a1c;font-size:21px}
+    .referencia{font-size:16px;color:#7b5a39;font-weight:bold;margin-bottom:8px;line-height:1.55}
+    .lista{padding-left:24px;font-size:19px;line-height:1.8}
+    .chips{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0 20px}
+    .chip{
+      border:1px solid #e6d8c7;background:#fffdf9;color:#7b5a39;font-weight:bold;
+      border-radius:999px;padding:8px 13px;font-size:14px;
     }
 
-    .capa {
-      min-height: 850px;
-      color: white;
+    .capa{
+      min-height:850px;color:#fff;
       background:
-        radial-gradient(circle at 15% 20%, rgba(255,255,255,0.20), transparent 28%),
-        radial-gradient(circle at 85% 15%, rgba(255,255,255,0.14), transparent 30%),
-        linear-gradient(135deg, #2b1a12, #5b3a24 45%, #9a6a37);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+        radial-gradient(circle at top left,rgba(255,255,255,.22),transparent 35%),
+        linear-gradient(135deg,#4a2d1a,#7a4f2f 45%,#c79b58);
+      display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;
+    }
+    .capa::before{
+      content:"";position:absolute;inset:32px;border:2px solid rgba(255,255,255,.35);border-radius:28px;
+    }
+    .capa-box{
+      width:min(760px,90%);padding:42px 34px;border-radius:28px;
+      background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.30);
+      position:relative;z-index:2;
+    }
+    .capa h1{margin:0 0 16px;font-size:46px;line-height:1.12;text-transform:uppercase}
+    .capa h2{margin:0;font-size:22px;line-height:1.45;font-weight:500}
+    .selo{
+      display:inline-block;padding:9px 16px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);
+      font-size:13px;margin-bottom:20px;font-weight:bold;letter-spacing:1px;
+    }
+    .selo-revista-centro{
+      display:block;margin:0 auto 12px;width:max-content;max-width:92%;
+      text-align:center;
+    }
+    .selo-revista-tipo{
+      display:block;margin:0 auto 34px;width:max-content;max-width:80%;
+      text-align:center;font-size:12px;
     }
 
-    .capa::before {
-      content: "";
-      position: absolute;
-      inset: 32px;
-      border: 2px solid rgba(255,255,255,0.35);
-      border-radius: 28px;
-      z-index: 2;
-      pointer-events: none;
+    .gerando-pdf #resultado{background:#fff!important;border:none!important;padding:0!important}
+    .gerando-pdf .doc{max-width:100%!important;width:100%!important;gap:0!important}
+    .gerando-pdf .pagina{box-shadow:none!important;border-radius:0!important;border:none!important;page-break-after:auto;break-after:auto}
+    .gerando-pdf .pagina-interna{padding:18px 20px!important}
+    .gerando-pdf .titulo-grande{font-size:27px!important}
+    .gerando-pdf .subtitulo{font-size:17px!important}
+    .gerando-pdf .texto,.gerando-pdf p{font-size:15.5px!important;line-height:1.55!important}
+    .gerando-pdf .bloco,.gerando-pdf .topico-revista{
+      padding:12px 14px!important;margin-top:10px!important;break-inside:avoid;page-break-inside:avoid;
     }
-
-    .capa::after {
-      content: "";
-      position: absolute;
-      width: 520px;
-      height: 520px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.18), transparent 60%);
-      top: 90px;
-      right: -130px;
-      z-index: 1;
+    .gerando-pdf .bloco h3,.gerando-pdf .topico-revista h3{font-size:18px!important}
+    .gerando-pdf .subtopico-revista{
+      padding:10px 12px!important;margin-top:10px!important;break-inside:avoid;page-break-inside:avoid;
     }
-
-    .capa-box {
-      width: min(760px, 90%);
-      padding: 42px 34px;
-      border-radius: 28px;
-      background: rgba(255,255,255,0.12);
-      border: 1px solid rgba(255,255,255,0.30);
-      position: relative;
-      z-index: 3;
-      backdrop-filter: blur(2px);
-    }
-
-    .capa h1 {
-      margin: 0 0 16px;
-      font-size: 46px;
-      line-height: 1.12;
-      text-transform: uppercase;
-    }
-
-    .capa h2 {
-      margin: 0;
-      font-size: 22px;
-      line-height: 1.45;
-      font-weight: 500;
-    }
-
-    .selo {
-      display: inline-block;
-      padding: 9px 16px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.35);
-      background: rgba(255,255,255,0.14);
-      font-size: 13px;
-      margin-bottom: 20px;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .capa-profissional {
-      min-height: 980px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-      background:
-        radial-gradient(circle at 50% 28%, rgba(255,255,255,0.20), transparent 18%),
-        linear-gradient(145deg, #1b120c, #3e2618 42%, #7a4f2f 72%, #b58a4d);
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-      padding: 42px;
-    }
-
-    .capa-profissional::before {
-      content: "";
-      position: absolute;
-      inset: 28px;
-      border: 2px solid rgba(255,255,255,0.25);
-      border-radius: 32px;
-      z-index: 2;
-      pointer-events: none;
-    }
-
-    .capa-profissional::after {
-      content: "";
-      position: absolute;
-      width: 680px;
-      height: 680px;
-      right: -220px;
-      top: -160px;
-      background: radial-gradient(circle, rgba(255,255,255,0.22), rgba(199,155,88,0.10), transparent 68%);
-      z-index: 1;
-    }
-
-    .capa-conteudo {
-      width: 100%;
-      max-width: 760px;
-      position: relative;
-      z-index: 3;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      text-align: center;
-    }
-
-    .capa-topo {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      font-size: 13px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-weight: bold;
-    }
-
-    .capa-etiqueta {
-      padding: 9px 13px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.14);
-      border: 1px solid rgba(255,255,255,0.25);
-    }
-
-    .capa-imagem-simbolica {
-      margin: 54px auto 34px;
-      width: 360px;
-      max-width: 85%;
-      height: 250px;
-      position: relative;
-    }
-
-    .biblia-capa {
-      position: absolute;
-      left: 50%;
-      bottom: 20px;
-      transform: translateX(-50%);
-      width: 300px;
-      height: 116px;
-      background: linear-gradient(180deg, #fff8e8, #e1c99c);
-      border-radius: 12px 12px 26px 26px;
-      box-shadow: 0 28px 48px rgba(0,0,0,0.28);
-    }
-
-    .biblia-capa::before {
-      content: "";
-      position: absolute;
-      left: 50%;
-      top: 0;
-      width: 2px;
-      height: 116px;
-      background: rgba(91,58,36,0.35);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.35);
-    }
-
-    .biblia-capa::after {
-      content: "";
-      position: absolute;
-      left: 28px;
-      right: 28px;
-      top: 24px;
-      height: 2px;
-      background:
-        linear-gradient(90deg, rgba(91,58,36,0.25), transparent 35%, transparent 65%, rgba(91,58,36,0.25));
-      box-shadow:
-        0 18px 0 rgba(91,58,36,0.16),
-        0 36px 0 rgba(91,58,36,0.14),
-        0 54px 0 rgba(91,58,36,0.12);
-    }
-
-    .luz-capa {
-      position: absolute;
-      left: 50%;
-      bottom: 90px;
-      transform: translateX(-50%);
-      width: 260px;
-      height: 230px;
-      background: radial-gradient(ellipse at center, rgba(255,245,200,0.70), rgba(255,245,200,0.18) 38%, transparent 70%);
-      filter: blur(2px);
-    }
-
-    .pergaminho-capa {
-      position: absolute;
-      width: 120px;
-      height: 72px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #e8d1a6, #b98a4b);
-      opacity: 0.55;
-      transform: rotate(-16deg);
-      left: 8px;
-      bottom: 58px;
-      box-shadow: 0 14px 24px rgba(0,0,0,0.18);
-    }
-
-    .pergaminho-capa.dois {
-      left: auto;
-      right: 8px;
-      transform: rotate(15deg);
-      opacity: 0.50;
-    }
-
-    .titulo-capa-profissional {
-      margin: 0;
-      font-size: 52px;
-      line-height: 1.05;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 4px 18px rgba(0,0,0,0.25);
-    }
-
-    .subtitulo-capa-profissional {
-      margin: 18px auto 0;
-      max-width: 660px;
-      font-size: 23px;
-      line-height: 1.45;
-      color: rgba(255,255,255,0.92);
-    }
-
-    .frase-capa {
-      margin: 28px auto 0;
-      max-width: 640px;
-      padding: 14px 18px;
-      border-top: 1px solid rgba(255,255,255,0.28);
-      border-bottom: 1px solid rgba(255,255,255,0.28);
-      font-size: 18px;
-      line-height: 1.45;
-      color: #fff8e8;
-      font-style: italic;
-    }
-
-    .rodape-capa {
-      margin-top: 42px;
-      font-size: 15px;
-      line-height: 1.6;
-      color: rgba(255,255,255,0.88);
-    }
-
-    .capa-nota-professor {
-      background: #fff8e8;
-      border-left: 6px solid var(--dourado);
-    }
-
-    .gerando-pdf #resultado {
-      background: white !important;
-      border: none !important;
-      padding: 0 !important;
-    }
-
-    .gerando-pdf .doc {
-      max-width: 100% !important;
-      width: 100% !important;
-      gap: 0 !important;
-    }
-
-    .gerando-pdf .pagina {
-      box-shadow: none !important;
-      border-radius: 0 !important;
-      border: none !important;
-      page-break-after: auto;
-      break-after: auto;
-    }
-
-    .gerando-pdf .pagina-interna {
-      padding: 18px 20px !important;
-    }
-
-    .gerando-pdf .titulo-grande {
-      font-size: 27px !important;
-    }
-
-    .gerando-pdf .subtitulo {
-      font-size: 17px !important;
-    }
-
-    .gerando-pdf .texto,
-    .gerando-pdf .texto-livro,
-    .gerando-pdf p {
-      font-size: 15.5px !important;
-      line-height: 1.6 !important;
-    }
-
-    .gerando-pdf .bloco,
-    .gerando-pdf .topico-revista {
-      padding: 12px 14px !important;
-      margin-top: 10px !important;
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-
-    .gerando-pdf .capitulo-livro {
-      page-break-before: auto;
-      break-before: auto;
-      padding-top: 18px !important;
-      margin-top: 18px !important;
-    }
-
-    .gerando-pdf .capitulo-livro h2 {
-      font-size: 22px !important;
-    }
-
-    .gerando-pdf .subtitulo-livro {
-      font-size: 18px !important;
-      margin-top: 18px !important;
-    }
-
-    .gerando-pdf .pergunta-livro {
-      font-size: 14px !important;
-    }
-
-    .gerando-pdf .bloco h3,
-    .gerando-pdf .topico-revista h3 {
-      font-size: 18px !important;
-    }
-
-    .gerando-pdf .subtopico-revista {
-      padding: 10px 12px !important;
-      margin-top: 10px !important;
-      break-inside: avoid;
-      page-break-inside: avoid;
-    }
-
-    .gerando-pdf .subtopico-revista h4 {
-      font-size: 16.5px !important;
-    }
-
-    .gerando-pdf .referencia {
-      font-size: 13.5px !important;
-    }
-
-    .gerando-pdf .lista {
-      font-size: 15px !important;
-      line-height: 1.55 !important;
-    }
-
-    .gerando-pdf .capa,
-    .gerando-pdf .capa-profissional {
-      min-height: 1050px !important;
-      page-break-after: always;
-      break-after: page;
-    }
-
-    @media (max-width: 800px) {
-      html,
-      body {
-        background: #f8f2ea;
-      }
-
-      header {
-        padding: 18px 12px;
-        border-bottom-width: 4px;
-      }
-
-      header h1 {
-        font-size: 31px;
-      }
-
-      header p {
-        font-size: 16px;
-        line-height: 1.4;
-      }
-
-      .container {
-        width: 100%;
-        margin: 0;
-        padding: 10px;
-        display: block;
-      }
-
-      .card {
-        border-radius: 18px;
-        margin-bottom: 12px;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.07);
-      }
-
-      .card-head {
-        padding: 16px 15px;
-      }
-
-      .card-head h2 {
-        font-size: 23px;
-      }
-
-      .card-head p {
-        font-size: 16px;
-        line-height: 1.55;
-      }
-
-      .card-body {
-        padding: 14px;
-      }
-
-      .aviso,
-      .aviso-reservado,
-      .prompt-box,
-      .status {
-        font-size: 16px;
-        border-radius: 13px;
-        line-height: 1.6;
-      }
-
-      .prompt-box h3 {
-        font-size: 22px;
-      }
-
-      .prompt-box p {
-        font-size: 16px;
-      }
-
-      label {
-        font-size: 17px;
-        margin-top: 16px;
-        margin-bottom: 8px;
-      }
-
-      input,
-      select,
-      textarea {
-        font-size: 18px;
-        padding: 16px;
-        border-radius: 13px;
-        line-height: 1.5;
-      }
-
-      textarea {
-        min-height: 115px;
-      }
-
-      .linha,
-      .botoes {
-        grid-template-columns: 1fr;
-        gap: 9px;
-      }
-
-      button {
-        width: 100%;
-        min-height: 56px;
-        font-size: 18px;
-        border-radius: 14px;
-      }
-
-      .btn-principal {
-        font-size: 19px;
-        min-height: 60px;
-      }
-
-      #resultado {
-        min-height: 420px;
-        padding: 10px;
-        border-radius: 16px;
-      }
-
-      .placeholder {
-        min-height: 360px;
-        padding: 18px;
-        font-size: 17px;
-      }
-
-      .placeholder h2 {
-        font-size: 24px;
-      }
-
-      .doc {
-        width: 100%;
-        max-width: 100%;
-        gap: 12px;
-      }
-
-      .pagina {
-        border-radius: 16px;
-      }
-
-      .pagina-interna {
-        padding: 20px 15px;
-      }
-
-      .titulo-grande {
-        font-size: 28px;
-        line-height: 1.18;
-      }
-
-      .subtitulo {
-        font-size: 17px;
-        margin-bottom: 12px;
-      }
-
-      .texto {
-        font-size: 18px;
-        line-height: 1.65;
-      }
-
-      .texto-livro {
-        font-size: 18px;
-        line-height: 1.75;
-      }
-
-      .capitulo-livro h2 {
-        font-size: 25px;
-      }
-
-      .subtitulo-livro {
-        font-size: 20px;
-      }
-
-      .pergunta-livro {
-        font-size: 16px;
-      }
-
-      .bloco,
-      .topico-revista {
-        margin-top: 13px;
-        padding: 15px;
-        border-radius: 14px;
-      }
-
-      .bloco h3,
-      .topico-revista h3 {
-        font-size: 20px;
-      }
-
-      .subtopico-revista {
-        padding: 13px;
-        border-radius: 12px;
-      }
-
-      .subtopico-revista h4 {
-        font-size: 18px;
-      }
-
-      .referencia {
-        font-size: 14px;
-      }
-
-      .lista {
-        font-size: 17px;
-        line-height: 1.6;
-      }
-
-      .chip {
-        font-size: 12px;
-        padding: 6px 9px;
-      }
-
-      .capa {
-        min-height: 560px;
-      }
-
-      .capa::before {
-        inset: 18px;
-      }
-
-      .capa-box {
-        padding: 28px 20px;
-      }
-
-      .capa h1 {
-        font-size: 29px;
-      }
-
-      .capa h2 {
-        font-size: 16px;
-      }
-
-      .capa-profissional {
-        min-height: 720px;
-        padding: 26px 18px;
-      }
-
-      .capa-profissional::before {
-        inset: 16px;
-        border-radius: 22px;
-      }
-
-      .capa-topo {
-        flex-direction: column;
-        justify-content: center;
-        font-size: 11px;
-      }
-
-      .capa-imagem-simbolica {
-        margin: 34px auto 24px;
-        width: 280px;
-        height: 210px;
-      }
-
-      .biblia-capa {
-        width: 240px;
-        height: 96px;
-      }
-
-      .luz-capa {
-        width: 220px;
-        height: 200px;
-      }
-
-      .pergaminho-capa {
-        width: 90px;
-        height: 58px;
-      }
-
-      .titulo-capa-profissional {
-        font-size: 31px;
-      }
-
-      .subtitulo-capa-profissional {
-        font-size: 17px;
-      }
-
-      .frase-capa {
-        font-size: 15px;
-      }
-
-      .rodape-capa {
-        font-size: 13px;
-      }
-    }
-
-    @media print {
-      @page {
-        size: A4;
-        margin: 12mm 10mm;
-      }
-
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-
-      header,
-      .painel,
-      .card-head,
-      .modo-edicao {
-        display: none !important;
-      }
-
-      html,
-      body {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: white !important;
-        overflow: visible !important;
-      }
-
-      .container,
-      .card,
-      .card-body,
-      #resultado {
-        display: block !important;
-        width: 100% !important;
-        max-width: none !important;
-        height: auto !important;
-        min-height: auto !important;
-        overflow: visible !important;
-        border: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: white !important;
-      }
-
-      .doc {
-        display: block;
-        width: 100%;
-        max-width: none;
-        margin: 0;
-        padding: 0;
-      }
-
-      .pagina {
-        display: block;
-        width: 100%;
-        height: auto;
-        min-height: auto;
-        overflow: visible;
-        background: #fff;
-        border: none;
-        box-shadow: none;
-        border-radius: 0;
-        margin: 0;
-        padding: 0;
-        page-break-after: auto;
-        break-after: auto;
-      }
-
-      .pagina-interna {
-        padding: 0;
-        margin: 0;
-      }
-
-      .capa,
-      .capa-profissional {
-        width: 100%;
-        min-height: 273mm;
-        page-break-after: always;
-        break-after: page;
-        margin: -12mm -10mm 0 -10mm;
-        padding: 12mm 10mm;
-      }
-
-      .pagina-apresentacao-revista {
-        page-break-after: always;
-        break-after: page;
-      }
-
-      .licao-revista {
-        page-break-before: always;
-        break-before: page;
-      }
-
-      .pagina-final-revista {
-        page-break-before: always;
-        break-before: page;
-      }
-
-      .titulo-grande {
-        margin: 0 0 8px;
-        color: #5b3a24;
-        font-size: 26px;
-        line-height: 1.18;
-        page-break-after: avoid;
-        break-after: avoid;
-      }
-
-      .subtitulo {
-        color: #555;
-        font-size: 16px;
-        line-height: 1.4;
-        margin-bottom: 10px;
-      }
-
-      .texto,
-      .texto-livro,
-      p {
-        font-size: 14.5px;
-        line-height: 1.5;
-        color: #222;
-        white-space: pre-line;
-        margin: 0 0 6px;
-      }
-
-      .capitulo-livro {
-        margin-top: 14px;
-        padding-top: 14px;
-        page-break-inside: auto;
-        break-inside: auto;
-      }
-
-      .capitulo-livro h2 {
-        font-size: 21px;
-        line-height: 1.2;
-      }
-
-      .subtitulo-livro {
-        font-size: 16px;
-        margin-top: 12px;
-      }
-
-      .pergunta-livro {
-        font-size: 12.8px;
-        padding: 8px;
-      }
-
-      .bloco,
-      .topico-revista {
-        margin-top: 8px;
-        padding: 9px 11px;
-        border: 1px solid #ddd;
-        border-radius: 7px;
-        background: #fff;
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      .topico-revista {
-        page-break-inside: auto;
-        break-inside: auto;
-      }
-
-      .bloco h3,
-      .topico-revista h3 {
-        margin: 0 0 5px;
-        color: #5b3a24;
-        font-size: 17px;
-        page-break-after: avoid;
-        break-after: avoid;
-      }
-
-      .subtopico-revista {
-        margin-top: 8px;
-        padding: 8px 10px;
-        border-left: 4px solid #c79b58;
-        background: #fff;
-        border-radius: 7px;
-        page-break-inside: avoid;
-        break-inside: avoid;
-      }
-
-      .subtopico-revista h4 {
-        margin: 0 0 5px;
-        color: #333;
-        font-size: 15.5px;
-      }
-
-      .referencia {
-        font-size: 12.8px;
-        color: #7b5a39;
-        font-weight: bold;
-        margin-bottom: 4px;
-      }
-
-      .lista {
-        padding-left: 16px;
-        font-size: 14.5px;
-        line-height: 1.5;
-        margin: 4px 0;
-      }
-
-      .titulo-capa-profissional {
-        font-size: 44px;
-      }
-
-      .subtitulo-capa-profissional {
-        font-size: 20px;
-      }
+    .gerando-pdf .subtopico-revista h4{font-size:16.5px!important}
+    .gerando-pdf .referencia{font-size:13.5px!important}
+    .gerando-pdf .lista{font-size:15px!important;line-height:1.55!important}
+    .gerando-pdf .capa{min-height:1050px!important;page-break-after:always;break-after:page}
+
+    @media(max-width:800px){
+      header{padding:18px 12px;border-bottom-width:4px}
+      header h1{font-size:31px}
+      header p{font-size:16px;line-height:1.4}
+      .container{width:100%;margin:0;padding:10px;display:block}
+      .card{border-radius:18px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,.07)}
+      .card-head{padding:16px 15px}
+      .card-head h2{font-size:23px}
+      .card-head p{font-size:16px;line-height:1.55}
+      .card-body{padding:14px}
+      .aviso,.aviso-reservado,.prompt-box,.status{font-size:16px;border-radius:13px;line-height:1.6}
+      .prompt-box h3{font-size:22px}.prompt-box p{font-size:16px}
+      label{font-size:17px;margin-top:16px;margin-bottom:8px}
+      input,select,textarea{font-size:18px;padding:16px;border-radius:13px;line-height:1.5}
+      textarea{min-height:115px}
+      .linha,.botoes{grid-template-columns:1fr;gap:9px}
+      button{width:100%;min-height:56px;font-size:18px;border-radius:14px}
+      .btn-principal{font-size:19px;min-height:60px}
+      #resultado{min-height:420px;padding:10px;border-radius:16px}
+      .placeholder{min-height:360px;padding:18px;font-size:17px}
+      .doc{width:100%;max-width:100%;gap:12px}
+      .pagina{border-radius:16px}
+      .pagina-interna{padding:20px 15px}
+      .titulo-grande{font-size:28px;line-height:1.18}
+      .subtitulo{font-size:17px;margin-bottom:12px}
+      .texto{font-size:18px;line-height:1.65}
+      .bloco,.topico-revista{margin-top:13px;padding:15px;border-radius:14px}
+      .bloco h3,.topico-revista h3{font-size:20px}
+      .subtopico-revista{padding:13px;border-radius:12px}
+      .subtopico-revista h4{font-size:18px}
+      .referencia{font-size:14px}.lista{font-size:17px;line-height:1.6}
+      .chip{font-size:12px;padding:6px 9px}
+      .capa{min-height:560px}
+      .capa::before{inset:18px}
+      .capa-box{padding:28px 20px}
+      .capa h1{font-size:29px}
+      .capa h2{font-size:16px}
     }
   </style>
 </head>
-
 <body>
   <header>
     <h1>VERBO IA</h1>
@@ -1343,13 +248,8 @@
       </div>
 
       <div class="card-body">
-        <div class="aviso">
-          Liberado para todos: Sermão, Devocional e Estudo Bíblico.
-        </div>
-
-        <div class="aviso-reservado">
-          Reservado com código: Prompt automático, E-book, Livro, Curso e Revista.
-        </div>
+        <div class="aviso">Liberado para todos: Sermão, Devocional e Estudo Bíblico.</div>
+        <div class="aviso-reservado">Reservado com código: Prompt automático, E-book, Livro, Curso e Revista.</div>
 
         <label for="adminCode">Código de acesso</label>
         <input id="adminCode" type="password" autocomplete="off" placeholder="Digite o código para liberar recursos reservados" oninput="atualizarOpcoesPorTipo()" />
@@ -1357,13 +257,9 @@
         <div class="prompt-box">
           <h3>Gerar prompt automático</h3>
           <p>Recurso reservado. Digite o código de acesso para usar.</p>
-
           <label for="promptTema">Crie um prompt sobre:</label>
           <input id="promptTema" type="text" autocomplete="off" placeholder="Ex: arrebatamento, família, missões, oração..." />
-
-          <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">
-            Gerar prompt automático
-          </button>
+          <button class="btn-alerta" id="btnPrompt" type="button" onclick="gerarPromptAutomatico()" style="width:100%;margin-top:10px;">Gerar prompt automático</button>
         </div>
 
         <label for="materialType">Tipo de material</label>
@@ -1426,7 +322,6 @@
             <label for="author">Autor / comentarista</label>
             <input id="author" type="text" autocomplete="off" value="Pr. Isiquel Rodrigues" />
           </div>
-
           <div>
             <label for="ministry">Editora / ministério</label>
             <input id="ministry" type="text" autocomplete="off" value="CPID - Casa Publicadora da Igreja de Deus" />
@@ -1442,7 +337,6 @@
               <option value="pastoral e profundo">Pastoral e profundo</option>
             </select>
           </div>
-
           <div id="campoVisual">
             <label for="visualStyle">Estilo visual</label>
             <select id="visualStyle" autocomplete="off">
@@ -1455,17 +349,15 @@
         <div id="campoCapa">
           <label for="coverMode">Capa</label>
           <select id="coverMode" autocomplete="off">
-            <option value="com-capa" selected>Com capa</option>
-            <option value="sem-capa">Sem capa</option>
+            <option value="com-capa">Com capa</option>
+            <option value="sem-capa" selected>Sem capa</option>
           </select>
         </div>
 
         <label for="tone">Tom do material</label>
         <input id="tone" type="text" autocomplete="off" value="pastoral, bíblico, atual, profundo, acolhedor e encorajador" />
 
-        <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">
-          Gerar material
-        </button>
+        <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">Gerar material</button>
 
         <div class="botoes">
           <button class="btn-verde" type="button" onclick="salvarPDF()">Salvar em PDF</button>
@@ -1482,13 +374,8 @@
           <button class="btn-secundario" type="button" onclick="copiarTexto()">Copiar texto</button>
         </div>
 
-        <div class="progresso">
-          <div class="barra" id="barra"></div>
-        </div>
-
-        <div class="status" id="status">
-          Aguardando geração.
-        </div>
+        <div class="progresso"><div class="barra" id="barra"></div></div>
+        <div class="status" id="status">Aguardando geração.</div>
       </div>
     </section>
 
@@ -1499,10 +386,7 @@
       </div>
 
       <div class="card-body">
-        <div class="modo-edicao" id="modoEdicao">
-          Modo edição ativado. Você pode corrigir o material antes de salvar em PDF.
-        </div>
-
+        <div class="modo-edicao" id="modoEdicao">Modo edição ativado. Você pode corrigir o material antes de salvar em PDF.</div>
         <div id="resultado">
           <div class="placeholder">
             <div>
@@ -1514,20 +398,31 @@
       </div>
     </section>
   </main>
+    <script>
+    let ultimoMaterial = null;
+    let editando = false;
 
-  <script>
-    let materialAtual = null;
+    const el = (id) => document.getElementById(id);
+    const valor = (id) => (el(id)?.value || "").trim();
 
-    function el(id) {
-      return document.getElementById(id);
+    function tipoAtual() {
+      return valor("materialType") || "sermao";
     }
 
-    function valor(id) {
-      return el(id).value.trim();
+    function setStatus(msg, classe = "") {
+      const s = el("status");
+      s.className = "status " + classe;
+      s.innerHTML = msg;
+    }
+
+    function setProgresso(n) {
+      const barra = el("barra");
+      if (barra) barra.style.width = Math.max(0, Math.min(100, n)) + "%";
     }
 
     function escapeHtml(texto) {
-      return String(texto || "")
+      if (texto === null || texto === undefined) return "";
+      return String(texto)
         .replaceAll("&", "&amp;")
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
@@ -1535,202 +430,136 @@
         .replaceAll("'", "&#039;");
     }
 
-    function setStatus(msg, tipo) {
-      const s = el("status");
-      s.innerHTML = msg;
-      s.className = "status " + (tipo || "");
-    }
-
-    function setBarra(percent) {
-      el("barra").style.width = Math.max(0, Math.min(100, percent)) + "%";
-    }
-
-    function tipoAtual() {
-      return valor("materialType");
-    }
-
-    function recursoReservado(tipo) {
-      return ["ebook", "livro", "curso", "revista"].includes(tipo);
-    }
-
-    function codigoInformado() {
-      return valor("adminCode");
-    }
-
-    function temCodigo() {
-      return codigoInformado().length > 0;
-    }
-
-    function validarAcesso(tipo) {
-      if (recursoReservado(tipo) && !temCodigo()) {
-        alert("Este recurso é reservado. Digite o código de acesso.");
-        return false;
-      }
-
-      return true;
+    function divTexto(texto) {
+      if (!texto) return `<p class="texto"></p>`;
+      return `<div class="texto">${escapeHtml(texto)}</div>`;
     }
 
     function atualizarOpcoesPorTipo() {
       const tipo = tipoAtual();
 
-      el("campoQuantidade").classList.remove("campo-oculto");
-      el("campoTopicos").classList.add("campo-oculto");
-      el("campoCapa").classList.remove("campo-oculto");
-      el("campoVisual").classList.remove("campo-oculto");
+      el("campoRevistaVersao").classList.toggle("campo-oculto", tipo !== "revista");
+      el("campoTraducaoBiblica").classList.toggle("campo-oculto", tipo !== "revista");
+      el("campoTopicos").classList.toggle("campo-oculto", tipo !== "sermao");
+      el("campoQuantidade").classList.toggle("campo-oculto", tipo === "sermao" || tipo === "devocional" || tipo === "estudo");
 
-      el("campoRevistaVersao").classList.add("campo-oculto");
-      el("campoTraducaoBiblica").classList.add("campo-oculto");
-
-      if (tipo === "sermao") {
-        el("campoQuantidade").classList.add("campo-oculto");
-        el("campoTopicos").classList.remove("campo-oculto");
-        el("campoCapa").classList.add("campo-oculto");
-        el("quantity").value = "1";
-        setStatus("Modo Sermão: liberado para todos.", "ok");
-        return;
-      }
-
-      if (tipo === "devocional") {
-        el("labelQuantidade").innerText = "Dias devocionais";
-        el("campoCapa").classList.add("campo-oculto");
-        setStatus("Modo Devocional: liberado para todos.", "ok");
-        return;
-      }
-
-      if (tipo === "estudo") {
-        el("labelQuantidade").innerText = "Partes do estudo";
-        el("campoCapa").classList.add("campo-oculto");
-        setStatus("Modo Estudo Bíblico: liberado para todos.", "ok");
-        return;
-      }
-
-      if (recursoReservado(tipo)) {
-        setStatus("Recurso reservado. Para gerar este material, digite o código de acesso.", temCodigo() ? "ok" : "");
-      }
-
-      if (tipo === "ebook") {
-        el("labelQuantidade").innerText = "Capítulos";
-        return;
-      }
-
-      if (tipo === "livro") {
-        el("labelQuantidade").innerText = "Capítulos";
-        return;
-      }
-
-      if (tipo === "curso") {
-        el("labelQuantidade").innerText = "Aulas";
-        el("campoCapa").classList.add("campo-oculto");
-        return;
-      }
+      const labelQuantidade = el("labelQuantidade");
 
       if (tipo === "revista") {
-        el("labelQuantidade").innerText = "Lições mensais";
+        labelQuantidade.textContent = "Lições mensais";
         el("quantity").value = "4";
-        el("campoRevistaVersao").classList.remove("campo-oculto");
-        el("campoTraducaoBiblica").classList.remove("campo-oculto");
+        el("quantity").min = "4";
+        el("quantity").max = "4";
+        el("coverMode").value = "com-capa";
+      } else if (tipo === "livro") {
+        labelQuantidade.textContent = "Capítulos";
+        el("quantity").min = "1";
+        el("quantity").max = "20";
+        if (!el("quantity").value || Number(el("quantity").value) < 1) el("quantity").value = "10";
+        el("coverMode").value = "com-capa";
+      } else if (tipo === "ebook") {
+        labelQuantidade.textContent = "Capítulos";
+        el("quantity").min = "1";
+        el("quantity").max = "12";
+        if (!el("quantity").value || Number(el("quantity").value) < 1) el("quantity").value = "6";
+      } else if (tipo === "curso") {
+        labelQuantidade.textContent = "Aulas";
+        el("quantity").min = "1";
+        el("quantity").max = "20";
+        if (!el("quantity").value || Number(el("quantity").value) < 1) el("quantity").value = "8";
       }
     }
 
     function dadosFormulario() {
       const tipo = tipoAtual();
 
+      let quantity = Number(valor("quantity") || 3);
+
+      if (tipo === "revista") quantity = 4;
+      if (tipo === "livro") quantity = Math.max(1, Math.min(20, quantity || 10));
+      if (tipo === "ebook") quantity = Math.max(1, Math.min(12, quantity || 6));
+      if (tipo === "curso") quantity = Math.max(1, Math.min(20, quantity || 8));
+
       return {
-        adminCode: codigoInformado(),
+        adminCode: valor("adminCode"),
         materialType: tipo,
-        revistaVersion: valor("revistaVersion") || "professor",
-        bibleVersion: valor("bibleVersion") || "King James Fiel 1611",
+        revistaVersion: valor("revistaVersion"),
+        bibleVersion: valor("bibleVersion"),
         sermonPoints: Number(valor("sermonPoints") || 3),
         title: valor("title"),
         subtitle: valor("subtitle"),
         theme: valor("theme"),
         biblicalBase: valor("biblicalBase"),
-        quantity: tipo === "sermao" ? 1 : tipo === "revista" ? 4 : Number(valor("quantity") || 1),
+        quantity,
         targetAudience: valor("targetAudience"),
         author: valor("author"),
         ministry: valor("ministry"),
         depthLevel: valor("depthLevel"),
         visualStyle: valor("visualStyle"),
-        coverMode: tipo === "sermao" || tipo === "devocional" || tipo === "estudo" || tipo === "curso" ? "sem-capa" : valor("coverMode"),
         tone: valor("tone")
       };
     }
 
-    async function chamarApiGerar(dados) {
-      const resposta = await fetch("/api/gerar", {
+    async function postJSON(url, body) {
+      const resposta = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dados)
+        body: JSON.stringify(body)
       });
 
-      const texto = await resposta.text();
-      let json = null;
-
+      let data = null;
       try {
-        json = JSON.parse(texto);
-      } catch (_) {
-        throw new Error("A API devolveu uma resposta inválida. Aguarde alguns segundos e tente novamente.");
+        data = await resposta.json();
+      } catch (e) {
+        data = null;
       }
 
-      if (!resposta.ok || !json.ok) {
-        throw new Error(json.error || "Erro ao gerar material.");
+      if (!resposta.ok) {
+        throw new Error(data?.error || data?.message || "Erro ao gerar material.");
       }
 
-      return json.material;
+      return data;
     }
 
     async function gerarPromptAutomatico() {
-      const assunto = valor("promptTema");
-
-      if (!temCodigo()) {
-        alert("O Gerador de Prompt Automático é reservado. Digite o código de acesso.");
-        return;
-      }
-
-      if (!assunto) {
-        alert("Digite um tema. Exemplo: arrebatamento da igreja.");
-        return;
-      }
-
       const btn = el("btnPrompt");
+      const tema = valor("promptTema");
+
+      if (!tema) {
+        setStatus("Digite o tema para gerar o prompt.", "erro");
+        return;
+      }
+
       btn.disabled = true;
-      btn.innerText = "Criando prompt...";
-      setStatus("A IA está criando um prompt profundo...", "");
+      setStatus("Gerando prompt automático...");
+      setProgresso(20);
 
       try {
-        const resposta = await fetch("/api/prompt", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            adminCode: codigoInformado(),
-            assunto,
-            materialType: tipoAtual()
-          })
+        const data = await postJSON("/api/prompt", {
+          adminCode: valor("adminCode"),
+          theme: tema
         });
 
-        const json = await resposta.json();
+        setProgresso(100);
+        setStatus("Prompt gerado com sucesso.", "ok");
 
-        if (!resposta.ok || !json.ok) {
-          throw new Error(json.error || "Erro ao criar prompt automático.");
-        }
-
-        const d = json.promptData || {};
-
-        el("title").value = d.title || "";
-        el("subtitle").value = d.subtitle || "";
-        el("theme").value = d.theme || "";
-        el("biblicalBase").value = d.biblicalBase || "";
-        el("targetAudience").value = d.targetAudience || "";
-        el("tone").value = d.tone || "";
-
-        setStatus("Prompt automático criado e campos preenchidos.", "ok");
-
-      } catch (error) {
-        console.error(error);
-        setStatus("Erro ao criar prompt automático: " + escapeHtml(error.message), "erro");
+        el("resultado").innerHTML = `
+          <article class="doc">
+            <section class="pagina">
+              <div class="pagina-interna">
+                <h1 class="titulo-grande">Prompt automático</h1>
+                <div class="subtitulo">${escapeHtml(tema)}</div>
+                <div class="bloco">
+                  ${divTexto(data.prompt || data.text || "")}
+                </div>
+              </div>
+            </section>
+          </article>
+        `;
+      } catch (erro) {
+        setStatus(escapeHtml(erro.message || "Erro ao gerar prompt."), "erro");
       } finally {
         btn.disabled = false;
-        btn.innerText = "Gerar prompt automático";
       }
     }
 
@@ -1738,86 +567,131 @@
       const btn = el("btnGerar");
       const dados = dadosFormulario();
 
-      if (!dados.title) {
-        alert("Preencha o título.");
+      if (!dados.title || !dados.theme) {
+        setStatus("Preencha pelo menos o título e o tema principal.", "erro");
         return;
       }
 
-      if (!validarAcesso(dados.materialType)) return;
-
-      finalizarEdicao();
-
       btn.disabled = true;
-      btn.innerText = "Gerando...";
-      setBarra(5);
-
-      el("resultado").innerHTML = `
-        <div class="placeholder">
-          <div>
-            <h2 style="color:#5b3a24;margin:0 0 10px;">Gerando...</h2>
-            <p style="margin:0;">Aguarde enquanto o VERBO IA prepara o material.</p>
-          </div>
-        </div>
-      `;
+      setProgresso(5);
+      setStatus("Iniciando geração...");
 
       try {
+        finalizarEdicao(false);
+
         if (dados.materialType === "revista") {
           await gerarRevistaPorPartes(dados);
         } else if (dados.materialType === "livro") {
           await gerarLivroPorPartes(dados);
         } else {
-          setStatus("Gerando conteúdo no formato correto...", "");
-          const material = await chamarApiGerar(dados);
-          materialAtual = material;
-          setBarra(90);
-          renderizarMaterial(materialAtual);
-          setBarra(100);
+          setStatus("Gerando material...");
+          setProgresso(40);
+
+          const data = await postJSON("/api/gerar", dados);
+          ultimoMaterial = data.material || data;
+
+          setProgresso(100);
+          renderizarMaterial(ultimoMaterial);
           setStatus("Material gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
         }
-      } catch (error) {
-        console.error(error);
-        setStatus("Erro: " + escapeHtml(error.message), "erro");
-        el("resultado").innerHTML = `
-          <div class="placeholder">
-            <div>
-              <h2 style="color:#a12d2d;margin:0 0 10px;">Erro ao gerar material</h2>
-              <p>${escapeHtml(error.message)}</p>
-            </div>
-          </div>
-        `;
+      } catch (erro) {
+        setStatus(escapeHtml(erro.message || "Erro ao gerar material."), "erro");
       } finally {
         btn.disabled = false;
-        btn.innerText = "Gerar material";
       }
     }
 
-    async function gerarLivroPorPartes(dados) {
-      setStatus("Organizando o plano geral do livro...", "");
-      setBarra(5);
+    async function gerarRevistaPorPartes(dados) {
+      setStatus("Criando planejamento da revista...");
+      setProgresso(8);
 
-      const meta = await chamarApiGerar({
+      const metaResp = await postJSON("/api/gerar", {
+        ...dados,
+        revistaPart: "meta"
+      });
+
+      const meta = metaResp.material || metaResp;
+
+      const revista = {
+        ...meta,
+        type: "revista",
+        title: meta.title || dados.title,
+        subtitle: meta.subtitle || dados.subtitle,
+        author: meta.author || dados.author,
+        ministry: meta.ministry || dados.ministry,
+        revistaVersion: dados.revistaVersion,
+        lessons: []
+      };
+
+      ultimoMaterial = revista;
+      renderizarMaterial(revista);
+
+      const total = 4;
+      const titulos = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
+        ? meta.lessonTitles
+        : [
+            "Lição 1",
+            "Lição 2",
+            "Lição 3",
+            "Lição 4"
+          ];
+
+      for (let i = 1; i <= total; i++) {
+        setStatus(`Gerando lição ${i} de ${total}...`);
+        setProgresso(10 + Math.round((i - 1) * 75 / total));
+
+        const lessonResp = await postJSON("/api/gerar", {
+          ...dados,
+          revistaPart: "lesson",
+          lessonNumber: i,
+          lessonTitles: titulos
+        });
+
+        const lesson = lessonResp.material || lessonResp;
+        revista.lessons.push(lesson);
+        ultimoMaterial = revista;
+
+        renderizarMaterial(revista);
+        setProgresso(10 + Math.round(i * 75 / total));
+      }
+
+      setProgresso(100);
+      setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
+    }
+
+    async function gerarLivroPorPartes(dados) {
+      setStatus("Criando plano geral do livro...");
+      setProgresso(7);
+
+      const metaResp = await postJSON("/api/gerar", {
         ...dados,
         livroPart: "meta"
       });
 
-      const totalCapitulos = Number(dados.quantity || 1);
+      const meta = metaResp.material || metaResp;
+
       const livro = {
         ...meta,
         type: "livro",
+        title: meta.title || dados.title,
+        subtitle: meta.subtitle || dados.subtitle,
+        author: meta.author || dados.author,
+        ministry: meta.ministry || dados.ministry,
         chapters: []
       };
 
-      materialAtual = livro;
-      renderizarMaterial(materialAtual);
+      ultimoMaterial = livro;
+      renderizarMaterial(livro);
 
-      const chapterPlan = meta.chapterPlan || [];
+      const totalCapitulos = Number(dados.quantity || meta.chapterPlan?.length || 10);
+      const chapterPlan = Array.isArray(meta.chapterPlan) ? meta.chapterPlan : [];
       let previousChapterSummary = "";
 
       for (let i = 1; i <= totalCapitulos; i++) {
-        setStatus(`Gerando capítulo ${i} de ${totalCapitulos}...`, "");
-        setBarra(8 + Math.round((i - 1) / totalCapitulos * 82));
+        setStatus(`Gerando capítulo ${i} de ${totalCapitulos}...`);
+        setProgresso(10 + Math.round((i - 1) * 80 / totalCapitulos));
 
-        const capitulo = await chamarApiGerar({
+        const chapterResp = await postJSON("/api/gerar", {
           ...dados,
           livroPart: "chapter",
           chapterNumber: i,
@@ -1827,142 +701,63 @@
           previousChapterSummary
         });
 
-        livro.chapters.push(capitulo);
-        previousChapterSummary = capitulo.chapterSummary || capitulo.chapterConclusion || capitulo.thesisPresentation || "";
+        const chapter = chapterResp.material || chapterResp;
+        livro.chapters.push(chapter);
 
-        materialAtual = livro;
-        renderizarMaterial(materialAtual);
+        previousChapterSummary = chapter.chapterSummary || chapter.summary || "";
+        ultimoMaterial = livro;
+
+        renderizarMaterial(livro);
+        setProgresso(10 + Math.round(i * 80 / totalCapitulos));
       }
 
-      setBarra(100);
-      setStatus("Livro gerado com sucesso, capítulo por capítulo. Você pode editar antes de salvar em PDF.", "ok");
+      setProgresso(100);
+      setStatus("Livro gerado com sucesso. Você pode editar antes de salvar em PDF.", "ok");
     }
 
-    async function gerarRevistaPorPartes(dados) {
-      setStatus("Organizando a revista mensal...", "");
-      setBarra(8);
+    function renderizarMaterial(m) {
+      const tipo = (m.type || tipoAtual()).toLowerCase();
 
-      const meta = await chamarApiGerar({
-        ...dados,
-        revistaPart: "meta"
-      });
+      if (tipo === "revista") return renderRevista(m);
+      if (tipo === "livro") return renderLivro(m);
 
-      const revista = {
-        ...meta,
-        type: "revista",
-        revistaVersion: dados.revistaVersion,
-        bibleVersion: dados.bibleVersion,
-        cover: null,
-        lessons: []
-      };
-
-      materialAtual = revista;
-      renderizarMaterial(materialAtual);
-
-      const lessonTitles = meta.lessonTitles || [];
-
-      for (let i = 1; i <= 4; i++) {
-        setStatus(`Gerando lição ${i} de 4...`, "");
-        setBarra(10 + i * 18);
-
-        const lesson = await chamarApiGerar({
-          ...dados,
-          revistaPart: "lesson",
-          lessonNumber: i,
-          lessonTitles
-        });
-
-        revista.lessons.push(lesson);
-        materialAtual = revista;
-        renderizarMaterial(materialAtual);
-      }
-
-      if (dados.coverMode === "com-capa") {
-        setStatus("Conteúdo completo. Agora criando a capa profissional da revista...", "");
-        setBarra(94);
-
-        try {
-          const cover = await chamarApiGerar({
-            ...dados,
-            revistaPart: "cover",
-            lessonTitles: revista.lessonTitles || [],
-            revistaTitle: revista.title || dados.title,
-            revistaSubtitle: revista.subtitle || dados.subtitle
-          });
-
-          revista.cover = cover;
-          materialAtual = revista;
-          renderizarMaterial(materialAtual);
-
-          setBarra(100);
-          setStatus("Revista mensal gerada com 4 lições e capa profissional. Você pode editar antes de salvar em PDF.", "ok");
-
-        } catch (error) {
-          console.error("A capa profissional falhou, usando capa automática:", error);
-
-          revista.cover = {
-            type: "revistaCover",
-            title: revista.title || dados.title,
-            subtitle: revista.subtitle || dados.subtitle,
-            editionLabel: dados.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR",
-            monthlyLabel: "Revista mensal de Escola Bíblica Dominical",
-            author: dados.author,
-            ministry: dados.ministry,
-            visualConcept: "Capa editorial cristã com Bíblia aberta, luz suave, textura de papel antigo e aparência séria para Escola Bíblica Dominical.",
-            coverPhrase: "Conhecer a Palavra é carregar luz com responsabilidade.",
-            teacherNoteAboutCover: "A capa automática foi aplicada para preservar a revista mesmo sem a resposta da IA para o conceito visual."
-          };
-
-          materialAtual = revista;
-          renderizarMaterial(materialAtual);
-
-          setBarra(100);
-          setStatus("Revista gerada com sucesso. A capa da IA falhou, mas uma capa automática profissional foi aplicada.", "ok");
-        }
-
-        return;
-      }
-
-      setBarra(100);
-      setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
-    }
-
-    function divTexto(texto) {
-      return `<div class="texto">${escapeHtml(texto || "")}</div>`;
-    }
-
-    function divLivro(texto) {
-      return `<div class="texto-livro">${escapeHtml(texto || "")}</div>`;
-    }
-
-    function bloco(titulo, texto) {
-      if (!texto) return "";
-      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
-    }
-
-    function blocoClasse(titulo, texto, classe) {
-      if (!texto) return "";
-      return `<div class="bloco ${classe || ""}"><h3>${escapeHtml(titulo)}</h3>${divTexto(texto)}</div>`;
-    }
-
-    function blocoLista(titulo, arr) {
-      if (!Array.isArray(arr) || !arr.filter(Boolean).length) return "";
-      return `<div class="bloco"><h3>${escapeHtml(titulo)}</h3><ul class="lista">${arr.filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
-    }
-
-    function blocoListaClasse(titulo, arr, classe) {
-      if (!Array.isArray(arr) || !arr.filter(Boolean).length) return "";
-      return `<div class="bloco ${classe || ""}"><h3>${escapeHtml(titulo)}</h3><ul class="lista">${arr.filter(Boolean).map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>`;
-    }
-
-    function renderListaReferencias(titulo, lista) {
-      const limpa = (lista || []).filter(Boolean);
-      if (!limpa.length) return "";
-      return `<div class="referencia">${escapeHtml(titulo)}: ${escapeHtml(limpa.join("; "))}</div>`;
+      return renderMaterialGeral(m);
     }
 
     function capaMaterial(m, selo) {
       if (valor("coverMode") !== "com-capa") return "";
+
+      const isRevista = (m.type || tipoAtual()) === "revista";
+
+      if (isRevista) {
+        const versao = (m.revistaVersion || valor("revistaVersion")) === "aluno"
+          ? "REVISTA DO ALUNO"
+          : "REVISTA DO PROFESSOR";
+
+        return `
+          <section class="pagina capa">
+            <div class="capa-box">
+              <div class="selo selo-revista-centro">
+                REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL
+              </div>
+
+              <div class="selo selo-revista-tipo">
+                ${escapeHtml(versao)}
+              </div>
+
+              <h1>${escapeHtml(m.title || "")}</h1>
+              <h2>${escapeHtml(m.subtitle || "")}</h2>
+
+              <p style="margin-top:28px;font-size:16px;">
+                ${escapeHtml(m.ministry || valor("ministry"))}
+              </p>
+              <p style="font-size:15px;">
+                ${escapeHtml(m.author || valor("author"))}
+              </p>
+            </div>
+          </section>
+        `;
+      }
 
       return `
         <section class="pagina capa">
@@ -1977,651 +772,543 @@
       `;
     }
 
-    function renderCapaRevista(m) {
-      if (valor("coverMode") !== "com-capa") return "";
-
-      const cover = m.cover || {};
-      const titulo = cover.title || m.title || valor("title") || "";
-      const subtitulo = cover.subtitle || m.subtitle || valor("subtitle") || "";
-      const etiqueta = cover.editionLabel || (m.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR");
-      const mensal = cover.monthlyLabel || "Revista mensal de Escola Bíblica Dominical";
-      const frase = cover.coverPhrase || cover.visualConcept || "Conhecer a Palavra é carregar luz com responsabilidade.";
-      const ministerio = cover.ministry || m.ministry || valor("ministry");
-      const autor = cover.author || m.author || valor("author");
-
-      return `
-        <section class="pagina capa-profissional">
-          <div class="capa-conteudo">
-            <div class="capa-topo">
-              <span class="capa-etiqueta">${escapeHtml(etiqueta)}</span>
-              <span class="capa-etiqueta">${escapeHtml(mensal)}</span>
-            </div>
-
-            <div>
-              <div class="capa-imagem-simbolica" aria-hidden="true">
-                <div class="luz-capa"></div>
-                <div class="pergaminho-capa"></div>
-                <div class="pergaminho-capa dois"></div>
-                <div class="biblia-capa"></div>
-              </div>
-
-              <h1 class="titulo-capa-profissional">${escapeHtml(titulo)}</h1>
-              <div class="subtitulo-capa-profissional">${escapeHtml(subtitulo)}</div>
-              <div class="frase-capa">${escapeHtml(frase)}</div>
-            </div>
-
-            <div class="rodape-capa">
-              <strong>${escapeHtml(ministerio)}</strong><br>
-              ${escapeHtml(autor)}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderizarMaterial(m) {
-      const type = m.type || m.selectedType || tipoAtual();
-
-      if (type === "revista") return renderRevista(m);
-      if (type === "sermao") return renderSermao(m);
-      if (type === "livro") return renderLivro(m);
-      return renderMaterialGeral(m, type);
-    }
-
-    function renderLivro(m) {
-      const chapters = Array.isArray(m.chapters) ? m.chapters : [];
-
-      let conteudo = "";
-
-      conteudo += bloco("Apresentação", m.presentation || "");
-      conteudo += bloco("Prefácio", m.preface || "");
-      conteudo += bloco("Introdução", m.generalIntroduction || "");
-
-      if (m.bookCentralThesis) {
-        conteudo += `
-          <div class="bloco">
-            <h3>Ideia central do livro</h3>
-            ${divTexto(m.bookCentralThesis)}
-          </div>
-        `;
-      }
-
-      if (chapters.length === 0 && Array.isArray(m.chapterPlan)) {
-        conteudo += blocoLista("Plano de capítulos", m.chapterPlan.map(c => `${c.number}. ${c.title} — ${c.centralIdea}`));
-      }
-
-      conteudo += chapters.map((capitulo, index) => renderCapituloLivro(capitulo, index)).join("");
-
-      conteudo += bloco("Conclusão final", m.finalConclusion || "");
-      conteudo += bloco("Palavra ao leitor", m.wordToReader || "");
-      conteudo += bloco("Sobre o autor", m.authorBio || "");
-      conteudo += bloco("Texto de contracapa", m.backCoverText || "");
-
-      el("resultado").innerHTML = `
-        <article class="doc">
-          ${capaMaterial(m, "LIVRO CRISTÃO")}
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
-              ${conteudo}
-            </div>
-          </section>
-        </article>
-      `;
-    }
-
-    function renderCapituloLivro(capitulo, index) {
-      const numero = capitulo.number || index + 1;
-      const blocos = Array.isArray(capitulo.developmentBlocks) ? capitulo.developmentBlocks : [];
+    function renderRevista(m) {
+      const isAluno = (m.revistaVersion || valor("revistaVersion")) === "aluno";
+      const lessons = Array.isArray(m.lessons) ? m.lessons : [];
 
       let html = `
-        <section class="capitulo-livro">
-          <h2>Capítulo ${escapeHtml(numero)} — ${escapeHtml(capitulo.title || "")}</h2>
-      `;
-
-      if (capitulo.chapterQuestion) {
-        html += `<div class="pergunta-livro">${escapeHtml(capitulo.chapterQuestion)}</div>`;
-      }
-
-      html += divLivro(capitulo.opening || "");
-      html += divLivro(capitulo.thesisPresentation || "");
-
-      html += blocos.map((bloco) => `
-        <h3 class="subtitulo-livro">${escapeHtml(bloco.heading || "")}</h3>
-        ${divLivro(bloco.content || "")}
-      `).join("");
-
-      html += divLivro(capitulo.chapterConclusion || "");
-      html += divLivro(capitulo.transitionToNextChapter || "");
-
-      html += `</section>`;
-      return html;
-    }
-
-    function renderSermao(m) {
-      el("resultado").innerHTML = `
         <article class="doc">
+          ${capaMaterial(m, "REVISTA MENSAL")}
           <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
-
-              ${bloco("Texto bíblico", m.biblicalText || "")}
-              ${bloco("Tema", m.theme || "")}
-              ${bloco("Objetivo", m.objective || "")}
-              ${bloco("Introdução", m.introduction || "")}
-              ${bloco("Contexto bíblico", m.biblicalContext || "")}
-              ${bloco("Explicação do texto", m.textExplanation || "")}
-              ${bloco("Proposição central", m.centralProposition || "")}
-              ${bloco("Frase de transição", m.transitionPhrase || "")}
-
-              ${(m.points || []).map((pt, i) => `
-                <div class="bloco">
-                  <h3>${i + 1}. ${escapeHtml(pt.title || "")}</h3>
-                  ${renderListaReferencias("Referências de apoio", pt.references)}
-                  ${renderListaReferencias("Referências cruzadas", pt.crossReferences)}
-                  ${divTexto(pt.explanation || "")}
-                  <h3>Aplicação pastoral</h3>${divTexto(pt.pastoralApplication || "")}
-                  <h3>Ilustração</h3>${divTexto(pt.illustration || "")}
-                </div>
-              `).join("")}
-
-              <div class="bloco"><h3>Aplicações práticas</h3><ul class="lista">${(m.dailyApplications || []).map(a => `<li>${escapeHtml(a)}</li>`).join("")}</ul></div>
-              ${bloco("Conclusão", m.conclusion || "")}
-              ${bloco("Apelo", m.appeal || "")}
-              ${bloco("Oração final", m.finalPrayer || "")}
-            </div>
-          </section>
-        </article>
-      `;
-    }
-
-    function renderMaterialGeral(m, type) {
-      const tituloTipo = {
-        ebook: "E-BOOK CRISTÃO",
-        devocional: "DEVOCIONAL",
-        estudo: "ESTUDO BÍBLICO",
-        curso: "CURSO CRISTÃO"
-      }[type] || "MATERIAL CRISTÃO";
-
-      let conteudo = "";
-
-      conteudo += bloco("Apresentação", m.presentation || m.summaryIntro || "");
-      conteudo += bloco("Prefácio", m.preface || "");
-      conteudo += bloco("Introdução geral", m.generalIntroduction || "");
-      conteudo += bloco("Descrição do curso", m.courseDescription || "");
-      conteudo += bloco("Objetivo geral", m.generalObjective || "");
-      conteudo += bloco("Objetivo", m.objective || "");
-      conteudo += bloco("Introdução", m.introduction || "");
-      conteudo += bloco("Contexto bíblico", m.biblicalContext || "");
-
-      if (m.supportReferences) conteudo += blocoLista("Referências de apoio", m.supportReferences);
-      if (m.crossReferences) conteudo += blocoLista("Referências cruzadas", m.crossReferences);
-
-      conteudo += renderArray("Capítulos", m.chapters, "number");
-      conteudo += renderArray("Aulas", m.lessons, "lesson");
-      conteudo += renderArray("Dias devocionais", m.days, "day");
-      conteudo += renderArray("Partes", m.parts, "number");
-
-      conteudo += bloco("Conclusão final", m.finalConclusion || "");
-      conteudo += bloco("Conclusão", m.conclusion || "");
-      conteudo += bloco("Encerramento", m.closing || "");
-      conteudo += bloco("Palavra final", m.finalWord || "");
-      conteudo += bloco("Avaliação final", m.finalEvaluation || "");
-      conteudo += bloco("Palavra ao leitor", m.wordToReader || "");
-      conteudo += bloco("Sobre o autor", m.authorBio || "");
-      conteudo += bloco("Texto de contracapa", m.backCoverText || "");
-
-      el("resultado").innerHTML = `
-        <article class="doc">
-          ${capaMaterial(m, tituloTipo)}
-          <section class="pagina">
-            <div class="pagina-interna">
-              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
-              <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
-              ${conteudo}
-            </div>
-          </section>
-        </article>
-      `;
-    }
-
-    function renderArray(tituloGeral, arr, numeroCampo) {
-      if (!Array.isArray(arr) || arr.length === 0) return "";
-
-      return arr.map((item, index) => {
-        const numero = item[numeroCampo] || item.number || item.lesson || item.day || index + 1;
-        const titulo = item.title || `${tituloGeral} ${numero}`;
-
-        let html = `<div class="bloco"><h3>${escapeHtml(numero)}. ${escapeHtml(titulo)}</h3>`;
-
-        Object.keys(item).forEach(key => {
-          if (["title", numeroCampo, "number", "lesson", "day"].includes(key)) return;
-
-          const value = item[key];
-          const nomeBonito = rotulo(key);
-
-          if (Array.isArray(value)) {
-            const listaLimpa = value.filter(Boolean);
-
-            if (listaLimpa.length > 0) {
-              html += `
-                <h3>${escapeHtml(nomeBonito)}</h3>
-                <ul class="lista">
-                  ${listaLimpa.map(v => {
-                    if (typeof v === "string") {
-                      return `<li>${escapeHtml(v)}</li>`;
-                    }
-
-                    if (typeof v === "object" && v !== null) {
-                      const textoObjeto = Object.values(v).filter(Boolean).join(" — ");
-                      return `<li>${escapeHtml(textoObjeto)}</li>`;
-                    }
-
-                    return "";
-                  }).join("")}
-                </ul>
-              `;
-            }
-
-            return;
-          }
-
-          if (typeof value === "object" && value !== null) {
-            const textoObjeto = Object.entries(value)
-              .map(([k, v]) => `${rotulo(k)}: ${v}`)
-              .join("\n");
-
-            if (textoObjeto.trim()) {
-              html += `<h3>${escapeHtml(nomeBonito)}</h3>${divTexto(textoObjeto)}`;
-            }
-
-            return;
-          }
-
-          if (value) {
-            html += `<h3>${escapeHtml(nomeBonito)}</h3>${divTexto(value)}`;
-          }
-        });
-
-        html += `</div>`;
-        return html;
-      }).join("");
-    }
-
-    function rotulo(key) {
-      const labels = {
-        chapterQuestion: "Pergunta do capítulo",
-        centralThesis: "Tese central do capítulo",
-        openingNarrative: "Abertura narrativa",
-        biblicalBase: "Base bíblica",
-        supportReferences: "Referências de apoio",
-        crossReferences: "Referências cruzadas",
-        ideaDevelopment: "Desenvolvimento da ideia",
-        biblicalExposition: "Exposição bíblica",
-        argumentDevelopment: "Desenvolvimento do argumento",
-        theologicalReflection: "Reflexão teológica",
-        biblicalExamples: "Exemplos bíblicos",
-        pastoralApplication: "Aplicação pastoral",
-        chapterSummary: "Resumo do capítulo",
-        reflectiveClosing: "Fechamento reflexivo",
-        transitionToNextChapter: "Transição para o próximo capítulo",
-        development: "Desenvolvimento",
-        chapterClosing: "Fechamento do capítulo",
-        opening: "Abertura",
-        centralIdea: "Ideia central",
-        sections: "Seções",
-        heading: "Tópico",
-        content: "Conteúdo",
-        highlightQuote: "Frase de destaque",
-        reflectionQuestions: "Perguntas de reflexão",
-        practice: "Prática",
-        prayer: "Oração",
-        verse: "Versículo",
-        reflection: "Reflexão",
-        practicalApplication: "Aplicação prática",
-        meditationQuestion: "Pergunta para meditação",
-        explanation: "Explicação",
-        theologicalAnalysis: "Análise teológica",
-        classActivity: "Atividade em classe",
-        homework: "Tarefa",
-        summary: "Resumo",
-        biblicalTexts: "Textos bíblicos",
-        objective: "Objetivo",
-        introduction: "Introdução",
-        conclusion: "Conclusão",
-        finalWord: "Palavra final",
-        teacherSubsidies: "Subsídios para o professor",
-        bibliographicReferences: "Referências bibliográficas"
-      };
-
-      return labels[key] || key
-        .replace(/([A-Z])/g, " $1")
-        .replace(/^./, letra => letra.toUpperCase());
-    }
-
-    function renderRevista(m) {
-      const versao = m.revistaVersion || valor("revistaVersion") || "professor";
-      const isAluno = versao === "aluno";
-      const lessons = m.lessons || [];
-
-      el("resultado").innerHTML = `
-        <article class="doc revista-doc">
-          ${renderCapaRevista(m)}
-
-          <section class="pagina pagina-apresentacao-revista">
             <div class="pagina-interna">
               <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
               <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
 
               <div class="chips">
-                <span class="chip">Revista mensal</span>
-                <span class="chip">4 lições</span>
-                <span class="chip">${isAluno ? "Versão do aluno" : "Versão do professor"}</span>
-                <span class="chip">${escapeHtml(m.bibleVersion || "King James Fiel 1611")}</span>
+                <span class="chip">${isAluno ? "Revista do aluno" : "Revista do professor"}</span>
+                <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
+                <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
+                <span class="chip">${escapeHtml(valor("bibleVersion") || "King James Fiel 1611")}</span>
               </div>
 
-              <div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.quarterPresentation)}</div>
+              ${m.presentation ? `<div class="bloco"><h3>Apresentação da revista</h3>${divTexto(m.presentation)}</div>` : ""}
+              ${m.quarterSummary ? `<div class="bloco"><h3>Sinopse do trimestre</h3>${divTexto(m.quarterSummary)}</div>` : ""}
+            </div>
+          </section>
+      `;
 
-              ${m.cover && m.cover.teacherNoteAboutCover ? `
-                <div class="bloco capa-nota-professor">
-                  <h3>Conceito da capa</h3>
-                  ${divTexto(m.cover.teacherNoteAboutCover)}
+      if (!lessons.length) {
+        html += `
+          <section class="pagina">
+            <div class="pagina-interna">
+              <div class="bloco">
+                <h3>Gerando lições...</h3>
+                <p class="texto">A estrutura da revista já foi criada. As lições aparecerão aqui conforme forem geradas.</p>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      lessons.forEach((l, index) => {
+        const lessonNumber = l.number || l.lesson || index + 1;
+        const topics = Array.isArray(l.topics) ? l.topics : [];
+        const review = Array.isArray(l.reviewQuestions) ? l.reviewQuestions : [];
+
+        html += `
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-grande">Lição ${escapeHtml(lessonNumber)} — ${escapeHtml(l.title || "")}</h1>
+              <div class="subtitulo">${escapeHtml(l.subtitle || "")}</div>
+
+              <div class="chips">
+                ${l.goldenText ? `<span class="chip">Texto áureo</span>` : ""}
+                ${l.practicalTruth ? `<span class="chip">Verdade prática</span>` : ""}
+                ${l.bibleReading ? `<span class="chip">Leitura bíblica</span>` : ""}
+              </div>
+
+              ${l.goldenText ? `<div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>` : ""}
+              ${l.practicalTruth ? `<div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>` : ""}
+              ${l.bibleReading ? `<div class="bloco"><h3>Leitura bíblica em classe</h3>${divTexto(l.bibleReading)}</div>` : ""}
+              ${Array.isArray(l.objectives) && l.objectives.length ? `<div class="bloco"><h3>Objetivos da lição</h3><ul class="lista">${l.objectives.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : ""}
+
+              ${l.introduction ? `<div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>` : ""}
+
+              ${topics.map((t, tIndex) => `
+                <div class="topico-revista">
+                  <h3>${romano(tIndex + 1)}. ${escapeHtml(t.title || `Tópico ${tIndex + 1}`)}</h3>
+                  ${t.text ? divTexto(t.text) : ""}
+                  ${Array.isArray(t.subtopics) ? t.subtopics.map((s, sIndex) => `
+                    <div class="subtopico-revista">
+                      <h4>${tIndex + 1}.${sIndex + 1} ${escapeHtml(s.title || "")}</h4>
+                      ${s.reference ? `<div class="referencia">${escapeHtml(s.reference)}</div>` : ""}
+                      ${divTexto(s.text || "")}
+                    </div>
+                  `).join("") : ""}
                 </div>
-              ` : ""}
+              `).join("")}
 
-              ${lessons.length < 4 ? `
+              ${l.lifeApplication ? `<div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>` : ""}
+
+              ${l.conclusion ? `<div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>` : ""}
+
+              ${!isAluno ? `
+                ${l.historicalSupport ? `<div class="bloco"><h3>Subsídio histórico</h3>${divTexto(l.historicalSupport)}</div>` : ""}
+                ${(l.interpretationCare || l.classApproach) ? `<div class="bloco"><h3>Atenção, professor: cuidado na interpretação</h3>${divTexto(l.interpretationCare || l.classApproach)}</div>` : ""}
+                ${l.doctrinalSupport ? `<div class="bloco"><h3>Apoio doutrinário</h3>${divTexto(l.doctrinalSupport)}</div>` : ""}
+                ${Array.isArray(l.recommendedDeepening) && l.recommendedDeepening.length ? `<div class="bloco"><h3>Para aprofundamento</h3><ul class="lista">${l.recommendedDeepening.map(x => `<li>${escapeHtml(x)}</li>`).join("")}</ul></div>` : ""}
+                ${l.teacherNotes ? `<div class="bloco"><h3>Orientações para o professor</h3>${divTexto(l.teacherNotes)}</div>` : ""}
+              ` : `
                 <div class="bloco">
-                  <h3>Geração em andamento</h3>
-                  <p>${lessons.length} de 4 lições geradas até agora.</p>
+                  <h3>Espaço para anotações</h3>
+                  <p>__________________________________________________________________</p>
+                  <p>__________________________________________________________________</p>
+                  <p>__________________________________________________________________</p>
+                  <p>__________________________________________________________________</p>
+                </div>
+              `}
+
+              ${review.length ? `
+                <div class="bloco">
+                  <h3>Revisando o conteúdo</h3>
+                  <ol class="lista">
+                    ${review.map(q => `
+                      <li>
+                        <strong>${escapeHtml(q.question || q.pergunta || "")}</strong>
+                        ${!isAluno ? `<br><em>Resposta: ${escapeHtml(q.answer || q.resposta || "")}</em>` : ""}
+                      </li>
+                    `).join("")}
+                  </ol>
                 </div>
               ` : ""}
             </div>
           </section>
+        `;
+      });
 
-          ${lessons.map(l => `
-            <section class="pagina licao-revista">
-              <div class="pagina-interna">
-                <h2 class="titulo-grande">Lição ${escapeHtml(l.lesson)} — ${escapeHtml(l.title)}</h2>
+      html += `</article>`;
+      el("resultado").innerHTML = html;
+    }
 
-                ${!isAluno ? `
-                  ${blocoClasse("Orientações para o professor", l.teacherNotes, "bloco-professor")}
-                  ${blocoClasse("Sugestão de abordagem em classe", l.classApproach, "bloco-professor")}
-                  ${blocoClasse("Observação pastoral", l.pastoralObservation, "bloco-professor")}
-                ` : ""}
+    function renderLivro(m) {
+      const chapters = Array.isArray(m.chapters) ? m.chapters : [];
+      const chapterPlan = Array.isArray(m.chapterPlan) ? m.chapterPlan : [];
 
-                <div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>
-                <div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>
-                <div class="bloco"><h3>Leitura bíblica em classe</h3>${renderLeituraBiblica(l)}</div>
+      let html = `
+        <article class="doc">
+          ${capaMaterial(m, "LIVRO CRISTÃO")}
 
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
+              <div class="subtitulo">${escapeHtml(m.subtitle || "")}</div>
+
+              <div class="chips">
+                <span class="chip">Livro cristão</span>
+                <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
+                <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
+              </div>
+
+              ${m.presentation ? `<div class="bloco"><h3>Apresentação</h3>${divTexto(m.presentation)}</div>` : ""}
+              ${m.preface ? `<div class="bloco"><h3>Prefácio</h3>${divTexto(m.preface)}</div>` : ""}
+              ${m.generalIntroduction ? `<div class="bloco"><h3>Introdução geral</h3>${divTexto(m.generalIntroduction)}</div>` : ""}
+              ${m.bookCentralThesis ? `<div class="bloco"><h3>Tese central do livro</h3>${divTexto(m.bookCentralThesis)}</div>` : ""}
+              ${m.readingPath ? `<div class="bloco"><h3>Caminho de leitura</h3>${divTexto(m.readingPath)}</div>` : ""}
+
+              ${!chapters.length && chapterPlan.length ? `
                 <div class="bloco">
-                  <h3>Objetivos</h3>
-                  <ul class="lista">${(l.objectives || []).map(o => `<li>${escapeHtml(o)}</li>`).join("")}</ul>
+                  <h3>Plano de capítulos</h3>
+                  <ol class="lista">
+                    ${chapterPlan.map(c => `
+                      <li>
+                        <strong>${escapeHtml(c.title || "")}</strong>
+                        ${c.centralIdea ? `<br>${escapeHtml(c.centralIdea)}` : ""}
+                      </li>
+                    `).join("")}
+                  </ol>
                 </div>
+              ` : ""}
+            </div>
+          </section>
+      `;
 
-                <div class="bloco"><h3>Introdução</h3>${divTexto(l.introduction)}</div>
+      chapters.forEach((cap, index) => {
+        const numero = cap.number || index + 1;
 
-                ${renderTopicosRevista(l)}
+        html += `
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-grande">Capítulo ${escapeHtml(numero)} — ${escapeHtml(cap.title || "")}</h1>
 
-                <div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>
+              ${cap.chapterQuestion ? `
+                <div class="subtitulo">${escapeHtml(cap.chapterQuestion)}</div>
+              ` : ""}
 
-                ${!isAluno ? `
-                  ${renderSubsidiosProfessor(l.teacherSubsidies || [])}
-                  ${blocoClasse("Apoio doutrinário", l.doctrinalSupport, "bloco-final-professor")}
-                  ${blocoListaClasse("Para aprofundamento", l.recommendedDeepening || [], "bloco-final-professor")}
-                  ${blocoListaClasse("Referências para estudo do professor", l.bibliographicReferences || [], "bloco-final-professor")}
-                ` : `
-                  <div class="bloco">
-                    <h3>Espaço para anotações</h3>
-                    <p>__________________________________________________________________</p>
-                    <p>__________________________________________________________________</p>
-                    <p>__________________________________________________________________</p>
-                    <p>__________________________________________________________________</p>
-                  </div>
-                `}
+              ${cap.centralThesis ? `<div class="bloco"><h3>Tese do capítulo</h3>${divTexto(cap.centralThesis)}</div>` : ""}
+              ${cap.openingNarrative ? `<div class="bloco"><h3>Abertura</h3>${divTexto(cap.openingNarrative)}</div>` : ""}
 
-                <div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>
+              ${cap.ideaDevelopment ? `<div class="bloco"><h3>Desenvolvimento da ideia</h3>${divTexto(cap.ideaDevelopment)}</div>` : ""}
+              ${cap.biblicalExposition ? `<div class="bloco"><h3>Exposição bíblica e argumentação</h3>${divTexto(cap.biblicalExposition)}</div>` : ""}
+              ${cap.argumentDevelopment ? `<div class="bloco"><h3>Desenvolvimento do argumento</h3>${divTexto(cap.argumentDevelopment)}</div>` : ""}
+              ${cap.theologicalReflection ? `<div class="bloco"><h3>Reflexão teológica</h3>${divTexto(cap.theologicalReflection)}</div>` : ""}
+              ${cap.biblicalExamples ? `<div class="bloco"><h3>Exemplos bíblicos no desenvolvimento</h3>${divTexto(cap.biblicalExamples)}</div>` : ""}
 
-                <div class="bloco revisao-revista">
-                  <h3>Revisando o conteúdo</h3>
-                  ${isAluno ? renderPerguntasAluno(l) : renderPerguntasProfessor(l)}
-                </div>
+              ${cap.pastoralApplication ? `<div class="bloco"><h3>Desdobramento para a vida cristã</h3>${divTexto(cap.pastoralApplication)}</div>` : ""}
+              ${cap.chapterSummary ? `<div class="bloco"><h3>Fechamento do capítulo</h3>${divTexto(cap.chapterSummary)}</div>` : ""}
+              ${cap.reflectiveClosing ? `<div class="bloco"><h3>Conclusão reflexiva</h3>${divTexto(cap.reflectiveClosing)}</div>` : ""}
+              ${cap.transitionToNextChapter ? `<div class="bloco"><h3>Transição para o próximo capítulo</h3>${divTexto(cap.transitionToNextChapter)}</div>` : ""}
+            </div>
+          </section>
+        `;
+      });
+
+      html += `
+          <section class="pagina">
+            <div class="pagina-interna">
+              ${m.finalConclusion ? `<div class="bloco"><h3>Conclusão final</h3>${divTexto(m.finalConclusion)}</div>` : ""}
+              ${m.wordToReader ? `<div class="bloco"><h3>Palavra ao leitor</h3>${divTexto(m.wordToReader)}</div>` : ""}
+              ${m.authorBio ? `<div class="bloco"><h3>Sobre o autor</h3>${divTexto(m.authorBio)}</div>` : ""}
+              ${m.backCoverText ? `<div class="bloco"><h3>Texto de contracapa</h3>${divTexto(m.backCoverText)}</div>` : ""}
+            </div>
+          </section>
+        </article>
+      `;
+
+      el("resultado").innerHTML = html;
+    }
+
+    function renderMaterialGeral(m) {
+      let selo = "MATERIAL CRISTÃO";
+
+      if ((m.type || tipoAtual()) === "sermao") selo = "SERMÃO";
+      if ((m.type || tipoAtual()) === "devocional") selo = "DEVOCIONAL";
+      if ((m.type || tipoAtual()) === "estudo") selo = "ESTUDO BÍBLICO";
+      if ((m.type || tipoAtual()) === "ebook") selo = "E-BOOK CRISTÃO";
+      if ((m.type || tipoAtual()) === "curso") selo = "CURSO CRISTÃO";
+
+      let conteudo = "";
+
+      conteudo += m.introduction ? `<div class="bloco"><h3>Introdução</h3>${divTexto(m.introduction)}</div>` : "";
+      conteudo += m.biblicalBase ? `<div class="bloco"><h3>Base bíblica</h3>${renderValor(m.biblicalBase)}</div>` : "";
+      conteudo += renderArray("Tópicos", m.topics || m.points, "number");
+      conteudo += renderArray("Capítulos", m.chapters, "number");
+      conteudo += renderArray("Aulas", m.lessons || m.classes, "number");
+      conteudo += m.application ? `<div class="bloco"><h3>Aplicação</h3>${divTexto(m.application)}</div>` : "";
+      conteudo += m.conclusion ? `<div class="bloco"><h3>Conclusão</h3>${divTexto(m.conclusion)}</div>` : "";
+      conteudo += m.prayer ? `<div class="bloco"><h3>Oração</h3>${divTexto(m.prayer)}</div>` : "";
+
+      el("resultado").innerHTML = `
+        <article class="doc">
+          ${capaMaterial(m, selo)}
+          <section class="pagina">
+            <div class="pagina-interna">
+              <h1 class="titulo-grande">${escapeHtml(m.title || "")}</h1>
+              <div class="subtitulo">${escapeHtml(m.subtitle || m.theme || "")}</div>
+              <div class="chips">
+                <span class="chip">${escapeHtml(selo)}</span>
+                <span class="chip">${escapeHtml(m.author || valor("author"))}</span>
+                <span class="chip">${escapeHtml(m.ministry || valor("ministry"))}</span>
               </div>
-            </section>
-          `).join("")}
-
-          ${lessons.length === 4 ? `
-            <section class="pagina pagina-final-revista">
-              <div class="pagina-interna">
-                <h2 class="titulo-grande">Palavra final</h2>
-                ${divTexto(m.finalWord)}
-              </div>
-            </section>
-          ` : ""}
+              ${conteudo || `<div class="bloco">${renderValor(m)}</div>`}
+            </div>
+          </section>
         </article>
       `;
     }
 
-    function renderSubsidiosProfessor(subsidios) {
-      if (!Array.isArray(subsidios) || subsidios.length === 0) return "";
+    function renderArray(titulo, lista, numeroCampo) {
+      if (!Array.isArray(lista) || !lista.length) return "";
 
-      return subsidios.filter(s => s && (s.title || s.content)).map(s => `
-        <div class="bloco bloco-final-professor">
-          <h3>${escapeHtml(s.title || "Subsídio para o professor")}</h3>
-          ${divTexto(s.content || "")}
+      return `
+        <div class="bloco">
+          <h3>${escapeHtml(titulo)}</h3>
+          ${lista.map((item, i) => {
+            if (typeof item === "string") return `<p class="texto">${escapeHtml(item)}</p>`;
+
+            const numero = item[numeroCampo] || item.number || i + 1;
+            const tituloItem = item.title || item.titulo || `${titulo.slice(0, -1)} ${numero}`;
+
+            const corpo = Object.entries(item)
+              .filter(([key]) => !["title", "titulo", numeroCampo, "number", "lesson", "day"].includes(key))
+              .map(([key, value]) => {
+                if (!value) return "";
+                if (Array.isArray(value)) {
+                  return `
+                    <div class="subtopico-revista">
+                      <h4>${escapeHtml(rotulo(key))}</h4>
+                      <ul class="lista">
+                        ${value.map(v => `<li>${escapeHtml(typeof v === "object" ? Object.values(v).join(" — ") : v)}</li>`).join("")}
+                      </ul>
+                    </div>
+                  `;
+                }
+                if (typeof value === "object") {
+                  return `
+                    <div class="subtopico-revista">
+                      <h4>${escapeHtml(rotulo(key))}</h4>
+                      ${divTexto(Object.entries(value).map(([k, v]) => `${rotulo(k)}: ${v}`).join("\n"))}
+                    </div>
+                  `;
+                }
+                return `
+                  <div class="subtopico-revista">
+                    <h4>${escapeHtml(rotulo(key))}</h4>
+                    ${divTexto(value)}
+                  </div>
+                `;
+              }).join("");
+
+            return `
+              <div class="topico-revista">
+                <h3>${escapeHtml(numero)}. ${escapeHtml(tituloItem)}</h3>
+                ${corpo}
+              </div>
+            `;
+          }).join("")}
         </div>
-      `).join("");
+      `;
     }
 
-    function renderTopicosRevista(l) {
-      return (l.topics || []).map((t, index) => `
-        <div class="topico-revista">
-          <h3>${numeroRomano(index + 1)}. ${escapeHtml(t.title || "")}</h3>
-          ${renderListaReferencias("Referências do tópico", t.topicReferences)}
-          ${divTexto(t.content || "")}
+    function renderValor(valorRecebido) {
+      if (!valorRecebido) return "";
 
-          ${(t.subtopics || []).map((s, subIndex) => `
-            <div class="subtopico-revista">
-              <h4>${subIndex + 1}. ${escapeHtml(s.title || "")}</h4>
-              ${s.reference ? `<div class="referencia">Referência principal: ${escapeHtml(s.reference)}</div>` : ""}
-              ${renderListaReferencias("Referências de apoio", s.supportReferences)}
-              ${renderListaReferencias("Referências cruzadas", s.crossReferences)}
-              ${divTexto(s.content || "")}
-            </div>
-          `).join("")}
-        </div>
-      `).join("");
-    }
-
-    function numeroRomano(num) {
-      const romanos = ["I", "II", "III", "IV", "V"];
-      return romanos[num - 1] || String(num);
-    }
-
-    function renderLeituraBiblica(l) {
-      const leituras = l.biblicalReadingFull || [];
-
-      if (leituras.length > 0) {
-        return leituras.map(item => `
-          <div style="margin-bottom:14px;">
-            <p><strong>${escapeHtml(item.reference || "")}</strong></p>
-            <div class="texto">${escapeHtml(item.text || "")}</div>
-          </div>
-        `).join("");
+      if (typeof valorRecebido === "string") {
+        return divTexto(valorRecebido);
       }
 
-      return `<p><strong>${escapeHtml(l.biblicalReadingReference || "")}</strong></p>`;
+      if (Array.isArray(valorRecebido)) {
+        return `<ul class="lista">${valorRecebido.map(v => `<li>${escapeHtml(typeof v === "object" ? Object.values(v).join(" — ") : v)}</li>`).join("")}</ul>`;
+      }
+
+      if (typeof valorRecebido === "object") {
+        return Object.entries(valorRecebido).map(([k, v]) => {
+          if (!v) return "";
+          return `
+            <div class="subtopico-revista">
+              <h4>${escapeHtml(rotulo(k))}</h4>
+              ${renderValor(v)}
+            </div>
+          `;
+        }).join("");
+      }
+
+      return divTexto(valorRecebido);
     }
 
-    function renderPerguntasProfessor(l) {
-      return (l.questionsAndAnswers || []).map((qa, index) => `
-        <p><strong>${index + 1}. ${escapeHtml(qa.question || "")}</strong></p>
-        <p><strong>Resposta:</strong> ${escapeHtml(qa.answer || "")}</p>
-      `).join("");
+    function rotulo(key) {
+      const mapa = {
+        title: "Título",
+        subtitle: "Subtítulo",
+        theme: "Tema",
+        introduction: "Introdução",
+        biblicalBase: "Base bíblica",
+        supportReferences: "Referências de apoio",
+        crossReferences: "Referências cruzadas",
+        objectives: "Objetivos",
+        application: "Aplicação",
+        conclusion: "Conclusão",
+        prayer: "Oração",
+        summary: "Resumo",
+
+        chapterQuestion: "Pergunta do capítulo",
+        centralThesis: "Tese central do capítulo",
+        openingNarrative: "Abertura narrativa",
+        ideaDevelopment: "Desenvolvimento da ideia",
+        biblicalExposition: "Exposição bíblica",
+        argumentDevelopment: "Desenvolvimento do argumento",
+        theologicalReflection: "Reflexão teológica",
+        biblicalExamples: "Exemplos bíblicos",
+        pastoralApplication: "Desdobramento para a vida cristã",
+        chapterSummary: "Fechamento do capítulo",
+        reflectiveClosing: "Conclusão reflexiva",
+        transitionToNextChapter: "Transição para o próximo capítulo",
+
+        goldenText: "Texto áureo",
+        practicalTruth: "Verdade prática",
+        bibleReading: "Leitura bíblica em classe",
+        lifeApplication: "Aplicação para a vida",
+        historicalSupport: "Subsídio histórico",
+        interpretationCare: "Atenção, professor: cuidado na interpretação",
+        doctrinalSupport: "Apoio doutrinário",
+        recommendedDeepening: "Para aprofundamento",
+        teacherNotes: "Orientações para o professor",
+        reviewQuestions: "Revisando o conteúdo"
+      };
+
+      if (mapa[key]) return mapa[key];
+
+      return String(key)
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, letra => letra.toUpperCase());
     }
 
-    function renderPerguntasAluno(l) {
-      const perguntas = l.questionsOnly && l.questionsOnly.length > 0
-        ? l.questionsOnly
-        : (l.questionsAndAnswers || []).map(qa => qa.question);
+    function romano(num) {
+      const map = {
+        1: "I",
+        2: "II",
+        3: "III",
+        4: "IV",
+        5: "V",
+        6: "VI",
+        7: "VII",
+        8: "VIII",
+        9: "IX",
+        10: "X"
+      };
+      return map[num] || String(num);
+    }
 
-      return perguntas.map((q, index) => `
-        <p><strong>${index + 1}. ${escapeHtml(q || "")}</strong></p>
-        <p>Resposta: ____________________________________________________________</p>
-        <p>____________________________________________________________________</p>
-      `).join("");
+    function ativarEdicao() {
+      const r = el("resultado");
+      r.setAttribute("contenteditable", "true");
+      editando = true;
+      el("modoEdicao").style.display = "block";
+      el("btnEditar").disabled = true;
+      el("btnFinalizarEdicao").disabled = false;
+      setStatus("Modo edição ativado. Corrija o material diretamente na tela e depois clique em Finalizar edição.", "ok");
+    }
+
+    function finalizarEdicao(mostrarStatus = true) {
+      const r = el("resultado");
+      r.removeAttribute("contenteditable");
+      editando = false;
+      el("modoEdicao").style.display = "none";
+      el("btnEditar").disabled = false;
+      el("btnFinalizarEdicao").disabled = true;
+
+      if (mostrarStatus) {
+        setStatus("Edição finalizada. Agora você pode salvar em PDF.", "ok");
+      }
     }
 
     async function salvarPDF() {
-      finalizarEdicao();
+      finalizarEdicao(false);
 
-      const conteudo = el("resultado");
-
-      if (!materialAtual || !conteudo.innerHTML.trim() || conteudo.innerHTML.includes("Seu material aparecerá aqui")) {
-        alert("Gere um material antes de salvar em PDF.");
+      const area = el("resultado");
+      if (!area || !area.innerText.trim() || area.querySelector(".placeholder")) {
+        setStatus("Gere um material antes de salvar em PDF.", "erro");
         return;
       }
 
-      setStatus("Gerando PDF. Aguarde, isso pode demorar em materiais grandes.", "ok");
+      setStatus("Preparando PDF...");
+      document.body.classList.add("gerando-pdf");
 
-      const nomeArquivo = criarNomeArquivoPDF();
+      const titulo = valor("title") || "material-verbo-ia";
+      const nomeArquivo = titulo
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-zA-Z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .toLowerCase() + ".pdf";
+
+      const opt = {
+        margin: [8, 8, 8, 8],
+        filename: nomeArquivo,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          scrollY: 0,
+          backgroundColor: "#ffffff"
+        },
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait"
+        },
+        pagebreak: {
+          mode: ["avoid-all", "css", "legacy"]
+        }
+      };
 
       try {
-        if (typeof html2pdf === "undefined") {
-          throw new Error("Biblioteca de PDF não carregou.");
-        }
-
-        document.body.classList.add("gerando-pdf");
-
-        const opcoes = {
-          margin: [8, 8, 8, 8],
-          filename: nomeArquivo,
-          image: { type: "jpeg", quality: 0.95 },
-          html2canvas: {
-            scale: 1.45,
-            useCORS: true,
-            scrollY: 0,
-            backgroundColor: "#ffffff"
-          },
-          jsPDF: {
-            unit: "mm",
-            format: "a4",
-            orientation: "portrait"
-          },
-          pagebreak: {
-            mode: ["css", "legacy"],
-            before: [".licao-revista", ".pagina-final-revista"],
-            after: [".pagina-apresentacao-revista", ".capa", ".capa-profissional"],
-            avoid: [".bloco", ".subtopico-revista", ".revisao-revista"]
-          }
-        };
-
-        await html2pdf().set(opcoes).from(conteudo).save();
-
-        setStatus("PDF gerado. Se o celular não baixou automaticamente, tente abrir o site no navegador Chrome.", "ok");
-
-      } catch (error) {
-        console.error(error);
-        setStatus("Não foi possível gerar PDF direto no celular. Tentando abrir a opção de impressão.", "erro");
-
-        setTimeout(function () {
-          window.print();
-        }, 500);
-
+        await html2pdf().set(opt).from(area).save();
+        setStatus("PDF salvo com sucesso.", "ok");
+      } catch (erro) {
+        setStatus("Não foi possível salvar automaticamente. Use a opção imprimir/salvar em PDF do navegador.", "erro");
+        window.print();
       } finally {
         document.body.classList.remove("gerando-pdf");
       }
     }
 
-    function criarNomeArquivoPDF() {
-      const titulo = materialAtual?.title || valor("title") || "material-verbo-ia";
-      return titulo
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-zA-Z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .toLowerCase()
-        .slice(0, 60) + ".pdf";
-    }
+    function copiarTexto() {
+      const texto = el("resultado")?.innerText || "";
 
-    function ativarEdicao() {
-      const resultado = el("resultado");
-
-      if (!materialAtual || resultado.innerText.includes("Seu material aparecerá aqui")) {
-        alert("Gere um material antes de editar.");
+      if (!texto.trim() || el("resultado").querySelector(".placeholder")) {
+        setStatus("Não há texto para copiar.", "erro");
         return;
       }
 
-      resultado.setAttribute("contenteditable", "true");
-      resultado.focus();
-
-      el("modoEdicao").style.display = "block";
-      el("btnEditar").disabled = true;
-      el("btnFinalizarEdicao").disabled = false;
-
-      setStatus("Modo edição ativado. Edite diretamente antes de salvar o PDF.", "ok");
-    }
-
-    function finalizarEdicao() {
-      const resultado = el("resultado");
-
-      resultado.removeAttribute("contenteditable");
-      el("modoEdicao").style.display = "none";
-      el("btnEditar").disabled = false;
-      el("btnFinalizarEdicao").disabled = true;
+      navigator.clipboard.writeText(texto)
+        .then(() => setStatus("Texto copiado com sucesso.", "ok"))
+        .catch(() => setStatus("Não foi possível copiar automaticamente.", "erro"));
     }
 
     function limparTudo() {
-      finalizarEdicao();
-
-      materialAtual = null;
-      setBarra(0);
-      setStatus("Tudo limpo.", "ok");
+      ultimoMaterial = null;
+      finalizarEdicao(false);
+      setProgresso(0);
+      setStatus("Aguardando geração.");
 
       el("resultado").innerHTML = `
         <div class="placeholder">
           <div>
             <h2 style="color:#5b3a24;margin:0 0 10px;">Seu material aparecerá aqui</h2>
-            <p style="margin:0;">Preencha um novo material e clique em <strong>Gerar material</strong>.</p>
+            <p style="margin:0;">Escolha o tipo de material e clique em <strong>Gerar material</strong>.</p>
           </div>
         </div>
       `;
     }
 
-    function copiarTexto() {
-      const textoCopiar = el("resultado").innerText || "";
+    function preencherTeste() {
+      const tipo = tipoAtual();
 
-      if (!textoCopiar.trim()) {
-        alert("Não há texto para copiar.");
-        return;
+      if (tipo === "revista") {
+        el("title").value = "O Livro que Carregamos";
+        el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação e responsabilidade espiritual";
+        el("theme").value = "A importância da Bíblia como Palavra de Deus, sua origem, formação e o dever cristão em conhecê-la e obedecê-la.";
+        el("biblicalBase").value = "2 Timóteo 3.16-17; Salmos 119.105; 2 Pedro 1.20-21";
+        el("targetAudience").value = "Alunos da Escola Bíblica Dominical";
+        el("author").value = "Pr. Isiquel Rodrigues";
+        el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
+        el("quantity").value = "4";
+        el("tone").value = "bíblico, pedagógico, profundo, didático e edificante";
+        el("coverMode").value = "com-capa";
+      } else if (tipo === "livro") {
+        el("title").value = "Quando Eu Me Encontro com Deus";
+        el("subtitle").value = "O encontro que revela, transforma e envia";
+        el("theme").value = "Os encontros bíblicos com Deus e como eles transformam identidade, propósito, santidade, fé e missão.";
+        el("biblicalBase").value = "Êxodo 3; Isaías 6; Lucas 5; Atos 9; Gênesis 32";
+        el("targetAudience").value = "Cristãos que desejam aprofundar sua vida espiritual";
+        el("author").value = "Pr. Isiquel Rodrigues";
+        el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
+        el("quantity").value = "10";
+        el("tone").value = "profundo, pastoral, bíblico, reflexivo e transformador";
+        el("coverMode").value = "com-capa";
+      } else if (tipo === "sermao") {
+        el("title").value = "Deus Ainda Restaura";
+        el("subtitle").value = "Uma palavra para quem pensa que perdeu tudo";
+        el("theme").value = "A restauração de Deus na vida daqueles que confiam em sua promessa.";
+        el("biblicalBase").value = "Joel 2.25";
+        el("targetAudience").value = "Igreja em geral";
+        el("sermonPoints").value = "3";
+        el("tone").value = "pastoral, bíblico, profundo e encorajador";
+      } else {
+        el("title").value = "A Fé que Sustenta";
+        el("subtitle").value = "Vivendo pela confiança em Deus";
+        el("theme").value = "A fé bíblica como fundamento da vida cristã em tempos difíceis.";
+        el("biblicalBase").value = "Hebreus 11.1; Romanos 10.17; Habacuque 2.4";
+        el("targetAudience").value = "Cristãos em crescimento espiritual";
+        el("tone").value = "bíblico, simples, profundo e edificante";
       }
 
-      navigator.clipboard.writeText(textoCopiar);
-      setStatus("Texto copiado.", "ok");
+      setStatus("Campos de teste preenchidos.", "ok");
     }
 
-    function preencherTeste() {
-      el("materialType").value = "revista";
-      el("revistaVersion").value = "professor";
-      el("title").value = "O Livro que Carregamos";
-      el("subtitle").value = "Conhecendo a Bíblia, sua origem, formação e responsabilidade espiritual";
-      el("theme").value = "A necessidade que o cristão tem de conhecer a Bíblia que carrega, compreendendo sua origem, inspiração, formação, transmissão, materiais antigos, manuscritos, capítulos, versículos, traduções e a responsabilidade espiritual de obedecer à Palavra de Deus.";
-      el("biblicalBase").value = "2 Timóteo 3.14-17; 2 Pedro 1.20-21; Salmos 119.105; Josué 1.8; Neemias 8.1-8; Lucas 24.44; João 5.39; Hebreus 4.12";
-      el("quantity").value = "4";
-      el("targetAudience").value = "Classe de jovens e adultos";
-      el("author").value = "Pr. Isiquel Rodrigues";
-      el("ministry").value = "CPID - Casa Publicadora da Igreja de Deus";
-      el("depthLevel").value = "muito profundo";
-      el("visualStyle").value = "preto e branco";
-      el("coverMode").value = "com-capa";
-      el("tone").value = "bíblico, pastoral, profundo, didático, histórico, conservador e aplicável";
-
+    document.addEventListener("DOMContentLoaded", () => {
       atualizarOpcoesPorTipo();
-      setStatus("Teste preenchido para Revista do Professor com capa. Clique em Gerar material.", "ok");
-    }
-
-    atualizarOpcoesPorTipo();
+    });
   </script>
 </body>
 </html>
