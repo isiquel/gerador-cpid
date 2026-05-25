@@ -10,19 +10,18 @@
 
   <style>
     :root {
-      --bg: #0f172a;
-      --card: #111827;
-      --card2: #1f2937;
-      --text: #f9fafb;
+      --bg: #020617;
+      --panel: rgba(15, 23, 42, .92);
+      --panel2: rgba(30, 41, 59, .88);
+      --text: #f8fafc;
       --muted: #cbd5e1;
       --gold: #d6a84f;
-      --gold2: #f5d27a;
-      --line: rgba(255,255,255,.12);
-      --white: #ffffff;
-      --ink: #1f2937;
-      --paper: #fffaf0;
+      --gold2: #f8dc8c;
+      --line: rgba(255,255,255,.13);
       --danger: #ef4444;
       --success: #22c55e;
+      --paper: #ffffff;
+      --ink: #111827;
     }
 
     * {
@@ -32,74 +31,96 @@
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: radial-gradient(circle at top, #1e293b 0, #020617 60%);
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,.28), transparent 30%),
+        radial-gradient(circle at top right, rgba(214,168,79,.16), transparent 28%),
+        linear-gradient(135deg, #020617 0%, #0f172a 50%, #111827 100%);
       color: var(--text);
     }
 
     .app {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 22px;
     }
 
-    .header {
-      text-align: center;
-      padding: 28px 16px;
+    .topbar {
       border: 1px solid var(--line);
-      background: linear-gradient(135deg, rgba(214,168,79,.18), rgba(15,23,42,.75));
+      background: linear-gradient(135deg, rgba(214,168,79,.16), rgba(15,23,42,.9));
       border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.25);
-      margin-bottom: 22px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 22px 55px rgba(0,0,0,.28);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
     }
 
-    .brand {
-      font-size: 40px;
-      letter-spacing: 3px;
-      font-weight: 900;
-      color: var(--gold2);
+    .brand-area h1 {
       margin: 0;
+      color: var(--gold2);
+      letter-spacing: 3px;
+      font-size: 38px;
+      font-weight: 900;
     }
 
-    .tagline {
-      margin: 8px 0 0;
+    .brand-area p {
+      margin: 6px 0 0;
       color: var(--muted);
-      font-size: 15px;
+      font-size: 14px;
     }
 
-    .grid {
+    .top-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .layout {
       display: grid;
-      grid-template-columns: 420px 1fr;
-      gap: 22px;
+      grid-template-columns: 430px 1fr;
+      gap: 20px;
       align-items: start;
     }
 
-    .panel {
-      background: rgba(17,24,39,.88);
+    .panel,
+    .preview-panel {
+      background: var(--panel);
       border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 18px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.25);
+      border-radius: 24px;
+      box-shadow: 0 22px 55px rgba(0,0,0,.28);
     }
 
-    .panel h2 {
-      margin: 0 0 16px;
-      font-size: 20px;
+    .panel {
+      padding: 18px;
+    }
+
+    .panel h2,
+    .preview-title h2 {
+      margin: 0;
       color: var(--gold2);
+      font-size: 21px;
+    }
+
+    .form-section {
+      margin-top: 16px;
     }
 
     label {
       display: block;
-      font-size: 13px;
+      margin: 13px 0 6px;
       color: var(--muted);
-      margin: 14px 0 6px;
-      font-weight: 700;
+      font-size: 13px;
+      font-weight: 800;
     }
 
     input,
     select,
     textarea {
       width: 100%;
-      border: 1px solid rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.15);
       background: rgba(2,6,23,.55);
       color: var(--text);
       border-radius: 14px;
@@ -109,16 +130,16 @@
     }
 
     textarea {
-      min-height: 135px;
-      resize: vertical;
+      min-height: 170px;
       line-height: 1.45;
+      resize: vertical;
     }
 
     input:focus,
     select:focus,
     textarea:focus {
       border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(214,168,79,.12);
+      box-shadow: 0 0 0 3px rgba(214,168,79,.14);
     }
 
     .row {
@@ -127,30 +148,53 @@
       gap: 12px;
     }
 
-    .btns {
+    .btn-area {
       display: grid;
       gap: 10px;
       margin-top: 18px;
     }
 
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
     button {
       border: 0;
       border-radius: 16px;
-      padding: 13px 16px;
+      padding: 13px 14px;
+      font-size: 15px;
       font-weight: 900;
       cursor: pointer;
-      font-size: 15px;
+      transition: .15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #d6a84f, #f5d27a);
+      background: linear-gradient(135deg, #d6a84f, #f8dc8c);
       color: #111827;
     }
 
     .btn-secondary {
-      background: rgba(255,255,255,.1);
+      background: rgba(255,255,255,.10);
       color: var(--text);
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.14);
+    }
+
+    .btn-edit {
+      background: rgba(34,197,94,.14);
+      color: #bbf7d0;
+      border: 1px solid rgba(34,197,94,.35);
     }
 
     .btn-danger {
@@ -159,130 +203,166 @@
       border: 1px solid rgba(239,68,68,.35);
     }
 
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
-    .status {
+    .status-box {
       margin-top: 14px;
-      padding: 12px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 14px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.45;
+      padding: 13px;
+      background: rgba(255,255,255,.07);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 16px;
       display: none;
     }
 
-    .status.show {
+    .status-box.show {
       display: block;
     }
 
-    .preview-wrap {
-      background: rgba(17,24,39,.88);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 16px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.25);
-      overflow: hidden;
+    .status-main {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      margin: 0;
     }
 
-    .preview-head {
+    .status-ok {
+      border-color: rgba(34,197,94,.45);
+    }
+
+    .status-error {
+      border-color: rgba(239,68,68,.45);
+    }
+
+    .progress-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 7px;
+    }
+
+    .progress-list li {
+      color: #cbd5e1;
+      font-size: 13px;
+      background: rgba(2,6,23,.42);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 8px 10px;
+      border-radius: 12px;
+      line-height: 1.35;
+    }
+
+    .progress-list li.done {
+      color: #bbf7d0;
+      border-color: rgba(34,197,94,.30);
+    }
+
+    .progress-list li.error {
+      color: #fecaca;
+      border-color: rgba(239,68,68,.35);
+    }
+
+    .preview-panel {
+      overflow: hidden;
+      padding: 15px;
+    }
+
+    .preview-title {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
     }
 
-    .preview-head h2 {
-      margin: 0;
-      color: var(--gold2);
-      font-size: 20px;
-    }
-
-    .document {
-      background: #f8fafc;
-      color: #111827;
-      border-radius: 16px;
-      overflow: hidden;
-      min-height: 500px;
-    }
-
-    .empty {
-      min-height: 460px;
+    .preview-actions {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #64748b;
-      padding: 30px;
-      background: #f8fafc;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .document-shell {
+      background: #e5e7eb;
+      border-radius: 18px;
+      overflow: auto;
+      max-height: 82vh;
+      border: 1px solid rgba(255,255,255,.12);
     }
 
     #printArea {
-      background: #fff;
-      color: #111827;
-      width: 100%;
+      width: 794px;
+      margin: 0 auto;
+      background: #ffffff;
+      color: var(--ink);
+      min-height: 1120px;
+      transform-origin: top center;
+    }
+
+    #printArea.editing {
+      outline: 4px solid rgba(34,197,94,.45);
+    }
+
+    .empty {
+      min-height: 620px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      color: #64748b;
+      text-align: center;
+      background: #ffffff;
     }
 
     .page {
-      width: 100%;
-      min-height: 1120px;
+      width: 794px;
+      min-height: 1122px;
       padding: 58px;
-      background: #fff;
+      background: #ffffff;
       color: #111827;
       page-break-after: always;
       position: relative;
+      overflow: hidden;
     }
 
     .page:last-child {
       page-break-after: auto;
     }
 
-    .content-page {
-      background: #fff;
-    }
-
     .content-page h1 {
-      color: #111827;
-      font-size: 34px;
       margin: 0 0 16px;
+      font-size: 34px;
       line-height: 1.15;
+      color: #111827;
     }
 
     .content-page h2 {
-      color: #7c4a03;
-      font-size: 25px;
       margin: 30px 0 10px;
-      border-bottom: 2px solid #f0d38a;
       padding-bottom: 7px;
+      font-size: 25px;
+      color: #7c4a03;
+      border-bottom: 2px solid #f0d38a;
     }
 
     .content-page h3 {
-      color: #92400e;
-      font-size: 20px;
       margin: 24px 0 8px;
+      font-size: 20px;
+      color: #92400e;
     }
 
     .content-page h4 {
-      color: #1f2937;
-      font-size: 17px;
       margin: 18px 0 6px;
+      font-size: 17px;
+      color: #1f2937;
     }
 
     .content-page p {
+      margin: 0 0 12px;
       font-size: 15.5px;
       line-height: 1.72;
-      margin: 0 0 12px;
       text-align: justify;
     }
 
     .badge {
       display: inline-block;
-      padding: 7px 11px;
+      padding: 7px 12px;
       border-radius: 999px;
       background: #fff3c4;
       color: #7c4a03;
@@ -291,126 +371,122 @@
       margin-bottom: 14px;
     }
 
+    .quote {
+      margin: 18px 0;
+      padding: 14px 16px;
+      border-left: 5px solid #d6a84f;
+      background: #fef3c7;
+      border-radius: 12px;
+      color: #78350f;
+      font-weight: 700;
+      font-style: italic;
+    }
+
     .box {
+      margin: 18px 0;
+      padding: 16px;
       border: 1px solid #edd28a;
       background: #fffbeb;
       border-radius: 14px;
-      padding: 16px;
-      margin: 18px 0;
     }
 
     .box h3 {
       margin-top: 0;
     }
 
-    .quote {
-      border-left: 5px solid #d6a84f;
-      padding: 14px 16px;
-      background: #fef3c7;
-      border-radius: 12px;
-      margin: 18px 0;
-      font-style: italic;
-      font-weight: 700;
-      color: #78350f;
-    }
-
     .objectives {
+      margin: 18px 0;
+      padding: 16px;
       background: #f8fafc;
       border: 1px solid #e5e7eb;
-      padding: 16px;
       border-radius: 14px;
-      margin: 18px 0;
     }
 
-    .objectives ul {
+    .objectives ul,
+    .box ul {
       margin: 8px 0 0;
       padding-left: 22px;
     }
 
-    .objectives li {
+    .objectives li,
+    .box li {
       margin: 7px 0;
       line-height: 1.5;
     }
 
     .review {
+      margin: 18px 0;
+      padding: 16px;
       background: #f1f5f9;
       border-radius: 14px;
-      padding: 16px;
-      margin: 18px 0;
     }
 
     .review p {
       text-align: left;
     }
 
-    .small-muted {
-      color: #64748b;
-      font-size: 13px;
-      text-align: center;
-    }
-
-    .cover-page {
+    .cover-page,
+    .back-cover-page {
       padding: 0;
       background: #111827;
-      overflow: hidden;
-      position: relative;
+      color: #ffffff;
     }
 
-    .cover-art {
+    .cover-img-wrap {
       position: absolute;
       inset: 0;
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at center, rgba(245,210,122,.32), transparent 35%),
+        linear-gradient(135deg, #2a1607 0%, #4b270a 42%, #111827 100%);
+    }
+
+    .cover-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
       filter: saturate(1.05) contrast(1.03);
     }
 
-    .cover-fallback-art {
+    .cover-fallback-icon {
       position: absolute;
       inset: 0;
-      background:
-        radial-gradient(circle at center, rgba(245,210,122,.34), transparent 30%),
-        linear-gradient(135deg, #2a1607 0%, #4b270a 40%, #111827 100%);
-    }
-
-    .cover-fallback-art::before {
-      content: "📖";
-      position: absolute;
-      left: 50%;
-      top: 48%;
-      transform: translate(-50%, -50%);
-      font-size: 170px;
-      opacity: .32;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 160px;
+      opacity: .28;
     }
 
     .cover-overlay {
       position: absolute;
       inset: 0;
       background:
-        linear-gradient(to bottom, rgba(0,0,0,.72) 0%, rgba(0,0,0,.22) 38%, rgba(0,0,0,.32) 65%, rgba(0,0,0,.82) 100%);
+        linear-gradient(to bottom, rgba(0,0,0,.74) 0%, rgba(0,0,0,.20) 36%, rgba(0,0,0,.34) 65%, rgba(0,0,0,.84) 100%);
+      z-index: 1;
     }
 
     .cover-content {
       position: relative;
       z-index: 2;
-      min-height: 1120px;
+      min-height: 1122px;
       padding: 46px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      color: #fff;
       text-align: center;
     }
 
     .cover-top {
-      padding-top: 10px;
+      padding-top: 8px;
     }
 
     .cover-label {
       display: inline-block;
       padding: 9px 18px;
-      border: 1px solid rgba(245,210,122,.8);
-      background: rgba(0,0,0,.38);
+      border: 1px solid rgba(245,210,122,.85);
+      background: rgba(0,0,0,.42);
       color: #ffe8a3;
       border-radius: 999px;
       font-size: 13px;
@@ -429,12 +505,11 @@
     }
 
     .cover-title-area {
-      background: rgba(0,0,0,.48);
-      border: 1px solid rgba(245,210,122,.45);
+      background: rgba(0,0,0,.50);
+      border: 1px solid rgba(245,210,122,.50);
       border-radius: 26px;
       padding: 28px;
       box-shadow: 0 25px 70px rgba(0,0,0,.35);
-      backdrop-filter: blur(3px);
     }
 
     .cover-title {
@@ -449,11 +524,11 @@
 
     .cover-subtitle {
       margin: 18px auto 0;
-      max-width: 720px;
+      max-width: 680px;
       color: #ffffff;
-      font-size: 22px;
+      font-size: 21px;
       line-height: 1.3;
-      font-weight: 700;
+      font-weight: 800;
       text-shadow: 0 3px 16px rgba(0,0,0,.75);
     }
 
@@ -466,19 +541,11 @@
       text-shadow: 0 3px 14px rgba(0,0,0,.8);
     }
 
-    .back-cover-page {
-      padding: 0;
-      background: #111827;
-      overflow: hidden;
-      position: relative;
-    }
-
     .back-content {
       position: relative;
       z-index: 2;
-      min-height: 1120px;
+      min-height: 1122px;
       padding: 64px 54px;
-      color: #fff;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
@@ -486,26 +553,25 @@
     }
 
     .back-box {
-      background: rgba(0,0,0,.52);
-      border: 1px solid rgba(245,210,122,.45);
+      background: rgba(0,0,0,.54);
+      border: 1px solid rgba(245,210,122,.46);
       border-radius: 26px;
       padding: 30px;
-      backdrop-filter: blur(3px);
     }
 
     .back-phrase {
+      margin: 0 0 18px;
       color: #fff7d6;
       font-size: 28px;
       line-height: 1.25;
       font-weight: 900;
-      margin: 0 0 18px;
     }
 
     .back-text {
+      margin: 0 0 20px;
       color: #ffffff;
       font-size: 17px;
       line-height: 1.55;
-      margin: 0 0 20px;
       text-align: center;
     }
 
@@ -516,27 +582,46 @@
       line-height: 1.5;
     }
 
-    @media (max-width: 980px) {
-      .grid {
+    @media (max-width: 1050px) {
+      .layout {
         grid-template-columns: 1fr;
       }
 
+      .document-shell {
+        max-height: none;
+      }
+
+      #printArea {
+        transform: scale(.78);
+        transform-origin: top left;
+        margin: 0;
+      }
+
+      .document-shell {
+        min-height: 900px;
+      }
+    }
+
+    @media (max-width: 720px) {
       .app {
-        padding: 14px;
+        padding: 12px;
       }
 
-      .brand {
-        font-size: 32px;
+      .brand-area h1 {
+        font-size: 30px;
       }
 
-      .row {
+      .row,
+      .btn-row {
         grid-template-columns: 1fr;
       }
 
-      .page,
-      .cover-content,
-      .back-content {
-        min-height: auto;
+      #printArea {
+        transform: scale(.52);
+      }
+
+      .document-shell {
+        min-height: 650px;
       }
     }
 
@@ -545,9 +630,9 @@
         background: #fff;
       }
 
-      .app > .header,
-      .app > .grid > .panel,
-      .preview-head {
+      .topbar,
+      .panel,
+      .preview-title {
         display: none !important;
       }
 
@@ -556,71 +641,83 @@
         max-width: none;
       }
 
-      .grid {
+      .layout {
         display: block;
       }
 
-      .preview-wrap {
+      .preview-panel {
         padding: 0;
         border: 0;
         box-shadow: none;
       }
 
-      .document {
-        border-radius: 0;
+      .document-shell {
+        overflow: visible;
+        max-height: none;
+        border: 0;
       }
 
-      .page {
-        page-break-after: always;
+      #printArea {
+        transform: none;
+        margin: 0;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="app">
-    <header class="header">
-      <h1 class="brand">VERBO IA</h1>
-      <p class="tagline">Gerador de materiais cristãos — CPID</p>
+    <header class="topbar">
+      <div class="brand-area">
+        <h1>VERBO IA</h1>
+        <p>Gerador de materiais cristãos — CPID</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn-secondary" onclick="rolarParaPrevia()">Ver prévia</button>
+        <button class="btn-secondary" onclick="rolarParaFormulario()">Formulário</button>
+      </div>
     </header>
 
-    <main class="grid">
-      <section class="panel">
+    <main class="layout">
+      <section class="panel" id="formulario">
         <h2>Gerar material</h2>
 
-        <label>Tipo de material</label>
-        <select id="materialType">
-          <option value="sermao">Sermão</option>
-          <option value="devocional">Devocional</option>
-          <option value="estudo">Estudo bíblico / teológico</option>
-          <option value="ebook">E-book</option>
-          <option value="livro">Livro</option>
-          <option value="curso">Curso</option>
-          <option value="revista" selected>Revista de ensino bíblico</option>
-        </select>
+        <div class="form-section">
+          <label>Tipo de material</label>
+          <select id="materialType">
+            <option value="sermao">Sermão</option>
+            <option value="devocional">Devocional</option>
+            <option value="estudo">Estudo bíblico / teológico</option>
+            <option value="ebook">E-book</option>
+            <option value="livro">Livro</option>
+            <option value="curso">Curso</option>
+            <option value="revista" selected>Revista de ensino bíblico</option>
+          </select>
 
-        <div class="row">
-          <div>
-            <label>Versão da revista</label>
-            <select id="revistaVersion">
-              <option value="professor" selected>Revista do professor</option>
-              <option value="aluno">Revista do aluno</option>
-            </select>
+          <div class="row">
+            <div>
+              <label>Versão da revista</label>
+              <select id="revistaVersion">
+                <option value="professor" selected>Revista do professor</option>
+                <option value="aluno">Revista do aluno</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Tradução bíblica padrão</label>
+              <input id="bibleVersion" value="King James Fiel 1611" />
+            </div>
           </div>
 
-          <div>
-            <label>Tradução bíblica padrão</label>
-            <input id="bibleVersion" value="King James Fiel 1611" />
-          </div>
-        </div>
+          <label>Título</label>
+          <input id="title" value="O Livro que Carregamos" />
 
-        <label>Título</label>
-        <input id="title" value="O Livro que Carregamos" />
+          <label>Subtítulo</label>
+          <input id="subtitle" value="Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual" />
 
-        <label>Subtítulo</label>
-        <input id="subtitle" value="Conhecendo a Bíblia, sua origem, formação, inspiração, preservação e responsabilidade espiritual" />
-
-        <label>Tema principal / instruções</label>
-        <textarea id="theme">Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
+          <label>Tema principal / instruções</label>
+          <textarea id="theme">Crie uma revista mensal de Escola Bíblica Dominical, versão do professor, para a classe adulta, com 4 lições completas, sobre o tema da Bíblia dentro da área da Bibliologia.
 
 A revista deve ensinar sobre a Bíblia como Palavra de Deus, sua origem divina, sua inspiração, sua autoridade, sua formação, sua preservação e a responsabilidade espiritual da Igreja diante das Escrituras.
 
@@ -633,82 +730,96 @@ Lição 2 — A Inspiração das Escrituras.
 Lição 3 — O Cânon Sagrado e a Formação da Bíblia.
 Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textarea>
 
-        <label>Texto bíblico base</label>
-        <input id="biblicalBase" value="2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12" />
+          <label>Texto bíblico base</label>
+          <input id="biblicalBase" value="2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmos 119.105; Isaías 40.8; Mateus 24.35; João 17.17; Hebreus 4.12" />
 
-        <div class="row">
-          <div>
-            <label>Lições / capítulos</label>
-            <input id="quantity" type="number" min="1" max="20" value="4" />
+          <div class="row">
+            <div>
+              <label>Lições / capítulos</label>
+              <input id="quantity" type="number" min="1" max="20" value="4" />
+            </div>
+
+            <div>
+              <label>Pontos do sermão</label>
+              <select id="sermonPoints">
+                <option value="3">3 tópicos</option>
+                <option value="4" selected>4 tópicos</option>
+                <option value="5">5 tópicos</option>
+              </select>
+            </div>
           </div>
 
-          <div>
-            <label>Pontos do sermão</label>
-            <select id="sermonPoints">
-              <option value="3">3 tópicos</option>
-              <option value="4" selected>4 tópicos</option>
-              <option value="5">5 tópicos</option>
-            </select>
+          <label>Público-alvo</label>
+          <input id="targetAudience" value="Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos" />
+
+          <label>Autor / comentarista</label>
+          <input id="author" value="Pr. Isiquel Rodrigues" />
+
+          <label>Editora / ministério</label>
+          <input id="ministry" value="CPID - Casa Publicadora da Igreja de Deus" />
+
+          <div class="row">
+            <div>
+              <label>Profundidade</label>
+              <select id="depthLevel">
+                <option>Simples</option>
+                <option>Intermediário</option>
+                <option selected>Muito profundo</option>
+              </select>
+            </div>
+
+            <div>
+              <label>Estilo visual</label>
+              <select id="visualStyle">
+                <option>Minimalista</option>
+                <option selected>Colorido</option>
+                <option>Editorial clássico</option>
+                <option>Luxo teológico</option>
+              </select>
+            </div>
+          </div>
+
+          <label>Capa</label>
+          <select id="coverMode">
+            <option value="com-capa" selected>Com capa</option>
+            <option value="sem-capa">Sem capa</option>
+          </select>
+
+          <label>Tom do material</label>
+          <input id="tone" value="Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante" />
+
+          <label>Código de acesso</label>
+          <input id="adminCode" placeholder="Código para recursos reservados" />
+
+          <div class="btn-area">
+            <button class="btn-primary" id="generateBtn" onclick="gerarMaterial()">Gerar material</button>
+
+            <div class="btn-row">
+              <button class="btn-edit" id="editBtn" onclick="alternarEdicao()">Editar prévia</button>
+              <button class="btn-secondary" onclick="baixarPDF()">Baixar PDF</button>
+            </div>
+
+            <button class="btn-danger" onclick="limparResultado()">Limpar</button>
+          </div>
+
+          <div id="statusBox" class="status-box">
+            <p id="statusText" class="status-main"></p>
+            <ul id="progressLog" class="progress-list"></ul>
           </div>
         </div>
-
-        <label>Público-alvo</label>
-        <input id="targetAudience" value="Classe adulta da Escola Bíblica Dominical, professores, líderes, obreiros e alunos adultos" />
-
-        <label>Autor / comentarista</label>
-        <input id="author" value="Pr. Isiquel Rodrigues" />
-
-        <label>Editora / ministério</label>
-        <input id="ministry" value="CPID - Casa Publicadora da Igreja de Deus" />
-
-        <div class="row">
-          <div>
-            <label>Profundidade</label>
-            <select id="depthLevel">
-              <option>Simples</option>
-              <option>Intermediário</option>
-              <option selected>Muito profundo</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Estilo visual</label>
-            <select id="visualStyle">
-              <option>Minimalista</option>
-              <option selected>Colorido</option>
-              <option>Editorial clássico</option>
-              <option>Luxo teológico</option>
-            </select>
-          </div>
-        </div>
-
-        <label>Capa</label>
-        <select id="coverMode">
-          <option value="com-capa" selected>Com capa</option>
-          <option value="sem-capa">Sem capa</option>
-        </select>
-
-        <label>Tom do material</label>
-        <input id="tone" value="Bíblico, doutrinário, pastoral, didático, reverente, pentecostal clássico, apologético, profundo e edificante" />
-
-        <label>Código de acesso</label>
-        <input id="adminCode" placeholder="Código para recursos reservados" />
-
-        <div class="btns">
-          <button class="btn-primary" id="generateBtn" onclick="gerarMaterial()">Gerar material</button>
-          <button class="btn-secondary" onclick="baixarPDF()">Baixar PDF</button>
-          <button class="btn-danger" onclick="limparResultado()">Limpar</button>
-        </div>
-
-        <div id="status" class="status"></div>
       </section>
 
-      <section class="preview-wrap">
-        <div class="preview-head">
+      <section class="preview-panel" id="previa">
+        <div class="preview-title">
           <h2>Prévia</h2>
+
+          <div class="preview-actions">
+            <button class="btn-edit" onclick="alternarEdicao()">Editar</button>
+            <button class="btn-secondary" onclick="baixarPDF()">Baixar PDF</button>
+          </div>
         </div>
 
-        <div class="document">
+        <div class="document-shell">
           <div id="printArea">
             <div class="empty">
               O material gerado aparecerá aqui.
@@ -718,9 +829,17 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       </section>
     </main>
   </div>
-
-  <script>
+    <script>
     let materialAtual = null;
+    let modoEdicao = false;
+
+    function rolarParaPrevia() {
+      document.getElementById("previa").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function rolarParaFormulario() {
+      document.getElementById("formulario").scrollIntoView({ behavior: "smooth" });
+    }
 
     function getDados() {
       return {
@@ -745,20 +864,32 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
     }
 
     function setStatus(texto, tipo = "") {
-      const el = document.getElementById("status");
-      el.className = "status show";
-      el.textContent = texto;
+      const box = document.getElementById("statusBox");
+      const txt = document.getElementById("statusText");
+
+      box.className = "status-box show";
+      txt.textContent = texto;
 
       if (tipo === "erro") {
-        el.style.borderColor = "rgba(239,68,68,.45)";
-        el.style.color = "#fecaca";
+        box.classList.add("status-error");
       } else if (tipo === "ok") {
-        el.style.borderColor = "rgba(34,197,94,.45)";
-        el.style.color = "#bbf7d0";
-      } else {
-        el.style.borderColor = "rgba(255,255,255,.1)";
-        el.style.color = "#cbd5e1";
+        box.classList.add("status-ok");
       }
+    }
+
+    function limparProgresso() {
+      document.getElementById("progressLog").innerHTML = "";
+    }
+
+    function addProgresso(texto, tipo = "") {
+      const ul = document.getElementById("progressLog");
+      const li = document.createElement("li");
+      li.textContent = texto;
+
+      if (tipo === "ok") li.classList.add("done");
+      if (tipo === "erro") li.classList.add("error");
+
+      ul.appendChild(li);
     }
 
     function setLoading(loading) {
@@ -771,21 +902,31 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       const dados = getDados();
 
       setLoading(true);
+      limparProgresso();
       setStatus("Iniciando geração do material...");
 
       try {
         if (dados.materialType === "revista") {
           materialAtual = await gerarRevistaPorPartes(dados);
           renderMaterial(materialAtual);
-          setStatus("Revista gerada com capa e contracapa por imagem.", "ok");
+          setStatus("Revista gerada com sucesso.", "ok");
+          addProgresso("Revista finalizada e pronta para revisão.", "ok");
+          rolarParaPrevia();
           return;
         }
 
+        addProgresso("Gerando material...");
         const resposta = await chamarGerar(dados);
+
         materialAtual = resposta.material;
         renderMaterial(materialAtual);
+
+        addProgresso("Material gerado com sucesso.", "ok");
         setStatus("Material gerado com sucesso.", "ok");
+        rolarParaPrevia();
       } catch (erro) {
+        console.error(erro);
+        addProgresso(erro.message || "Erro ao gerar material.", "erro");
         setStatus(erro.message || "Erro ao gerar material.", "erro");
       } finally {
         setLoading(false);
@@ -829,7 +970,8 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
     }
 
     async function gerarRevistaPorPartes(dados) {
-      setStatus("1/7 - Gerando estrutura da revista...");
+      setStatus("Gerando revista por etapas...");
+      addProgresso("1/9 - Gerando estrutura da revista...");
 
       const metaResp = await chamarGerar({
         ...dados,
@@ -837,19 +979,23 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       });
 
       const meta = metaResp.material || {};
+
+      addProgresso("1/9 - Estrutura da revista gerada.", "ok");
+
       const lessonTitles = Array.isArray(meta.lessonTitles) && meta.lessonTitles.length
         ? meta.lessonTitles
         : [
-          "Lição 1 - A Bíblia: A Palavra de Deus Escrita aos Homens",
-          "Lição 2 - A Inspiração das Escrituras",
-          "Lição 3 - O Cânon Sagrado e a Formação da Bíblia",
-          "Lição 4 - A Preservação da Bíblia e a Responsabilidade da Igreja"
-        ];
+            "Lição 1 - A Bíblia: A Palavra de Deus Escrita aos Homens",
+            "Lição 2 - A Inspiração das Escrituras",
+            "Lição 3 - O Cânon Sagrado e a Formação da Bíblia",
+            "Lição 4 - A Preservação da Bíblia e a Responsabilidade da Igreja"
+          ];
 
       const lessons = [];
 
       for (let i = 1; i <= 4; i++) {
-        setStatus(`${i + 1}/7 - Gerando Lição ${i}...`);
+        setStatus(`Gerando Lição ${i}...`);
+        addProgresso(`${i + 1}/9 - Gerando Lição ${i}...`);
 
         const lessonResp = await chamarGerar({
           ...dados,
@@ -863,50 +1009,61 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         });
 
         lessons.push(lessonResp.material);
+        addProgresso(`${i + 1}/9 - Lição ${i} gerada.`, "ok");
       }
 
-      let coverData = null;
-      let backCoverData = null;
       let coverImageUrl = "";
       let backCoverImageUrl = "";
 
       if (dados.coverMode !== "sem-capa") {
-        setStatus("6/7 - Gerando imagem profissional da capa...");
+        setStatus("Gerando imagem profissional da capa...");
+        addProgresso("6/9 - Gerando imagem profissional da capa...");
 
         try {
           const capaResp = await chamarCapa({
             ...dados,
             tipoImagem: "front",
             lessonTitles,
-            visualTheme: meta.visualTheme || "",
             title: meta.title || dados.title,
-            subtitle: meta.subtitle || dados.subtitle
+            subtitle: meta.subtitle || dados.subtitle,
+            theme: dados.theme
           });
 
           coverImageUrl = capaResp.imageDataUrl || "";
+          addProgresso("6/9 - Imagem da capa gerada com sucesso.", "ok");
         } catch (erro) {
-          console.warn("Falha ao gerar capa por imagem:", erro);
-          coverImageUrl = "";
+          console.error("Erro ao gerar capa:", erro);
+          addProgresso("6/9 - A imagem da capa falhou. A capa reserva será usada. Motivo: " + (erro.message || "erro desconhecido"), "erro");
         }
 
-        setStatus("7/7 - Gerando imagem profissional da contracapa...");
+        setStatus("Gerando imagem profissional da contracapa...");
+        addProgresso("7/9 - Gerando imagem profissional da contracapa...");
 
         try {
           const contracapaResp = await chamarCapa({
             ...dados,
             tipoImagem: "back",
             lessonTitles,
-            visualTheme: meta.visualTheme || "",
             title: meta.title || dados.title,
-            subtitle: meta.subtitle || dados.subtitle
+            subtitle: meta.subtitle || dados.subtitle,
+            theme: dados.theme
           });
 
           backCoverImageUrl = contracapaResp.imageDataUrl || "";
+          addProgresso("7/9 - Imagem da contracapa gerada com sucesso.", "ok");
         } catch (erro) {
-          console.warn("Falha ao gerar contracapa por imagem:", erro);
-          backCoverImageUrl = "";
+          console.error("Erro ao gerar contracapa:", erro);
+          addProgresso("7/9 - A imagem da contracapa falhou. A contracapa reserva será usada. Motivo: " + (erro.message || "erro desconhecido"), "erro");
         }
+      } else {
+        addProgresso("6/9 - Capa desativada pelo usuário.", "ok");
+        addProgresso("7/9 - Contracapa desativada pelo usuário.", "ok");
       }
+
+      let coverData = null;
+      let backCoverData = null;
+
+      addProgresso("8/9 - Gerando textos editoriais da capa...");
 
       try {
         const coverResp = await chamarGerar({
@@ -916,9 +1073,13 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         });
 
         coverData = coverResp.material;
+        addProgresso("8/9 - Textos da capa gerados.", "ok");
       } catch (erro) {
         coverData = criarCapaPadrao(dados);
+        addProgresso("8/9 - Texto da capa gerado pelo modo reserva.", "ok");
       }
+
+      addProgresso("9/9 - Gerando textos editoriais da contracapa...");
 
       try {
         const backResp = await chamarGerar({
@@ -928,8 +1089,10 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         });
 
         backCoverData = backResp.material;
+        addProgresso("9/9 - Textos da contracapa gerados.", "ok");
       } catch (erro) {
         backCoverData = criarContracapaPadrao(dados);
+        addProgresso("9/9 - Texto da contracapa gerado pelo modo reserva.", "ok");
       }
 
       return {
@@ -990,6 +1153,31 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       return `<p>${escapeHtml(texto)}</p>`;
     }
 
+    function alternarEdicao() {
+      const area = document.getElementById("printArea");
+
+      if (!materialAtual) {
+        setStatus("Gere um material antes de editar.", "erro");
+        return;
+      }
+
+      modoEdicao = !modoEdicao;
+      area.contentEditable = modoEdicao ? "true" : "false";
+      area.classList.toggle("editing", modoEdicao);
+
+      const botoes = document.querySelectorAll("#editBtn, .preview-actions .btn-edit");
+      botoes.forEach((btn) => {
+        btn.textContent = modoEdicao ? "Concluir edição" : "Editar prévia";
+      });
+
+      setStatus(
+        modoEdicao
+          ? "Modo edição ativado. Agora você pode clicar no texto da prévia e alterar."
+          : "Modo edição concluído. As alterações visuais foram mantidas na prévia.",
+        "ok"
+      );
+    }
+
     function renderMaterial(m) {
       if (!m) return;
 
@@ -1000,21 +1188,19 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
 
       let html = "";
 
-      if (m.title) {
-        html += `
-          <section class="page content-page">
-            <span class="badge">${escapeHtml(m.type || "Material cristão")}</span>
-            <h1>${escapeHtml(m.title)}</h1>
-            ${m.subtitle ? `<h3>${escapeHtml(m.subtitle)}</h3>` : ""}
-            ${m.biblicalBase ? `<div class="quote">${escapeHtml(m.biblicalBase)}</div>` : ""}
-            ${p(m.introduction)}
-        `;
-      }
+      html += `
+        <section class="page content-page">
+          <span class="badge">${escapeHtml(m.type || "Material cristão")}</span>
+          <h1>${escapeHtml(m.title || "")}</h1>
+          ${m.subtitle ? `<h3>${escapeHtml(m.subtitle)}</h3>` : ""}
+          ${m.biblicalBase ? `<div class="quote">${escapeHtml(m.biblicalBase)}</div>` : ""}
+          ${p(m.introduction)}
+      `;
 
       if (Array.isArray(m.topics)) {
         m.topics.forEach((t) => {
           html += `
-            <h2>${escapeHtml(t.number ? t.number + ". " : "")}${escapeHtml(t.title)}</h2>
+            <h2>${escapeHtml(t.number ? t.number + ". " : "")}${escapeHtml(t.title || "")}</h2>
             ${t.reference ? `<div class="badge">${escapeHtml(t.reference)}</div>` : ""}
             ${p(t.text)}
           `;
@@ -1024,7 +1210,7 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       if (Array.isArray(m.chapters)) {
         m.chapters.forEach((c) => {
           html += `
-            <h2>Capítulo ${escapeHtml(c.number)} - ${escapeHtml(c.title)}</h2>
+            <h2>Capítulo ${escapeHtml(c.number || "")} - ${escapeHtml(c.title || "")}</h2>
             ${p(c.text)}
           `;
         });
@@ -1033,7 +1219,7 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       if (Array.isArray(m.lessons)) {
         m.lessons.forEach((a) => {
           html += `
-            <h2>Aula ${escapeHtml(a.number)} - ${escapeHtml(a.title)}</h2>
+            <h2>Aula ${escapeHtml(a.number || "")} - ${escapeHtml(a.title || "")}</h2>
             ${p(a.objective)}
             ${p(a.content)}
             ${a.activity ? `<div class="box"><h3>Atividade</h3>${p(a.activity)}</div>` : ""}
@@ -1048,18 +1234,20 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         </section>
       `;
 
-      document.getElementById("printArea").innerHTML = html;
+      atualizarPreview(html);
     }
 
     function renderRevista(m) {
       let html = "";
 
-      html += capaRevista(m);
+      if (document.getElementById("coverMode").value !== "sem-capa") {
+        html += capaRevista(m);
+      }
 
       html += `
         <section class="page content-page">
           <span class="badge">Apresentação ao professor</span>
-          <h1>${escapeHtml(m.title)}</h1>
+          <h1>${escapeHtml(m.title || "")}</h1>
           ${m.subtitle ? `<h3>${escapeHtml(m.subtitle)}</h3>` : ""}
           <div class="quote">${escapeHtml(m.ministry || "")}<br>${escapeHtml(m.author || "")}</div>
 
@@ -1090,24 +1278,40 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
         });
       }
 
-      html += contracapaRevista(m);
+      if (document.getElementById("coverMode").value !== "sem-capa") {
+        html += contracapaRevista(m);
+      }
 
-      document.getElementById("printArea").innerHTML = html;
+      atualizarPreview(html);
+    }
+
+    function atualizarPreview(html) {
+      const area = document.getElementById("printArea");
+
+      area.contentEditable = "false";
+      area.classList.remove("editing");
+      modoEdicao = false;
+
+      area.innerHTML = html;
     }
 
     function capaRevista(m) {
       const c = m.cover || {};
-      const bg = m.coverImageUrl
-        ? `<div class="cover-art" style="background-image:url('${m.coverImageUrl}')"></div>`
-        : `<div class="cover-fallback-art"></div>`;
 
       const versionLabel =
         c.versionLabel ||
         (m.revistaVersion === "aluno" ? "Revista do Aluno" : "Revista do Professor");
 
+      const imgHtml = m.coverImageUrl
+        ? `<img src="${m.coverImageUrl}" alt="Capa da revista" />`
+        : `<div class="cover-fallback-icon">📖</div>`;
+
       return `
         <section class="page cover-page">
-          ${bg}
+          <div class="cover-img-wrap">
+            ${imgHtml}
+          </div>
+
           <div class="cover-overlay"></div>
 
           <div class="cover-content">
@@ -1132,13 +1336,17 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
 
     function contracapaRevista(m) {
       const b = m.backCover || {};
-      const bg = m.backCoverImageUrl
-        ? `<div class="cover-art" style="background-image:url('${m.backCoverImageUrl}')"></div>`
-        : `<div class="cover-fallback-art"></div>`;
+
+      const imgHtml = m.backCoverImageUrl
+        ? `<img src="${m.backCoverImageUrl}" alt="Contracapa da revista" />`
+        : `<div class="cover-fallback-icon">📖</div>`;
 
       return `
         <section class="page back-cover-page">
-          ${bg}
+          <div class="cover-img-wrap">
+            ${imgHtml}
+          </div>
+
           <div class="cover-overlay"></div>
 
           <div class="back-content">
@@ -1237,65 +1445,133 @@ Lição 4 — A Preservação da Bíblia e a Responsabilidade da Igreja.</textar
       return html;
     }
 
-    function baixarPDF() {
-      const area = document.getElementById("printArea");
+    function esperarImagens(container) {
+      const imagens = Array.from(container.querySelectorAll("img"));
+
+      if (!imagens.length) {
+        return Promise.resolve();
+      }
+
+      return Promise.all(
+        imagens.map((img) => {
+          return new Promise((resolve) => {
+            if (img.complete) {
+              resolve();
+              return;
+            }
+
+            img.onload = () => resolve();
+            img.onerror = () => resolve();
+
+            setTimeout(resolve, 7000);
+          });
+        })
+      );
+    }
+
+    async function baixarPDF() {
+      const areaOriginal = document.getElementById("printArea");
 
       if (!materialAtual) {
         setStatus("Gere um material antes de baixar o PDF.", "erro");
         return;
       }
 
-      const titulo = (materialAtual.title || "material-cpid")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
-
-      const opt = {
-        margin: 0,
-        filename: `${titulo || "material-cpid"}.pdf`,
-        image: {
-          type: "jpeg",
-          quality: 0.98
-        },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          allowTaint: true,
-          backgroundColor: "#ffffff"
-        },
-        jsPDF: {
-          unit: "pt",
-          format: "a4",
-          orientation: "portrait"
-        },
-        pagebreak: {
-          mode: ["css", "legacy"]
-        }
-      };
-
       setStatus("Preparando PDF...");
+      addProgresso("Preparando conteúdo para PDF...");
 
-      html2pdf()
-        .set(opt)
-        .from(area)
-        .save()
-        .then(() => {
-          setStatus("PDF baixado com sucesso.", "ok");
-        })
-        .catch((erro) => {
-          setStatus(erro.message || "Erro ao baixar PDF.", "erro");
-        });
+      try {
+        if (modoEdicao) {
+          alternarEdicao();
+        }
+
+        await esperarImagens(areaOriginal);
+
+        const clone = areaOriginal.cloneNode(true);
+        clone.id = "printAreaPDF";
+        clone.classList.remove("editing");
+        clone.contentEditable = "false";
+
+        clone.style.width = "794px";
+        clone.style.margin = "0";
+        clone.style.background = "#ffffff";
+        clone.style.color = "#111827";
+        clone.style.transform = "none";
+        clone.style.position = "fixed";
+        clone.style.left = "-9999px";
+        clone.style.top = "0";
+        clone.style.zIndex = "-1";
+
+        document.body.appendChild(clone);
+
+        await esperarImagens(clone);
+        await new Promise((resolve) => setTimeout(resolve, 600));
+
+        const titulo = (materialAtual.title || "material-cpid")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+
+        const opt = {
+          margin: 0,
+          filename: `${titulo || "material-cpid"}.pdf`,
+          image: {
+            type: "jpeg",
+            quality: 0.98
+          },
+          html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: "#ffffff",
+            logging: false,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 794
+          },
+          jsPDF: {
+            unit: "pt",
+            format: "a4",
+            orientation: "portrait"
+          },
+          pagebreak: {
+            mode: ["css", "legacy"]
+          }
+        };
+
+        await html2pdf()
+          .set(opt)
+          .from(clone)
+          .save();
+
+        document.body.removeChild(clone);
+
+        addProgresso("PDF baixado com sucesso.", "ok");
+        setStatus("PDF baixado com sucesso.", "ok");
+      } catch (erro) {
+        console.error(erro);
+        addProgresso("Erro ao baixar PDF: " + (erro.message || "erro desconhecido"), "erro");
+        setStatus(erro.message || "Erro ao baixar PDF.", "erro");
+      }
     }
 
     function limparResultado() {
       materialAtual = null;
-      document.getElementById("printArea").innerHTML = `
+      modoEdicao = false;
+
+      const area = document.getElementById("printArea");
+      area.contentEditable = "false";
+      area.classList.remove("editing");
+
+      area.innerHTML = `
         <div class="empty">
           O material gerado aparecerá aqui.
         </div>
       `;
+
+      limparProgresso();
       setStatus("Prévia limpa.");
     }
   </script>
