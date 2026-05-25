@@ -1839,20 +1839,8 @@
     }
 
     async function gerarRevistaPorPartes(dados) {
-      let cover = null;
-
-      if (dados.coverMode === "com-capa") {
-        setStatus("Criando conceito profissional da capa da revista...", "");
-        setBarra(4);
-
-        cover = await chamarApiGerar({
-          ...dados,
-          revistaPart: "cover"
-        });
-      }
-
       setStatus("Organizando a revista mensal...", "");
-      setBarra(10);
+      setBarra(8);
 
       const meta = await chamarApiGerar({
         ...dados,
@@ -1864,7 +1852,7 @@
         type: "revista",
         revistaVersion: dados.revistaVersion,
         bibleVersion: dados.bibleVersion,
-        cover,
+        cover: null,
         lessons: []
       };
 
@@ -1875,7 +1863,7 @@
 
       for (let i = 1; i <= 4; i++) {
         setStatus(`Gerando lição ${i} de 4...`, "");
-        setBarra(15 + i * 20);
+        setBarra(10 + i * 18);
 
         const lesson = await chamarApiGerar({
           ...dados,
@@ -1889,8 +1877,54 @@
         renderizarMaterial(materialAtual);
       }
 
+      if (dados.coverMode === "com-capa") {
+        setStatus("Conteúdo completo. Agora criando a capa profissional da revista...", "");
+        setBarra(94);
+
+        try {
+          const cover = await chamarApiGerar({
+            ...dados,
+            revistaPart: "cover",
+            lessonTitles: revista.lessonTitles || [],
+            revistaTitle: revista.title || dados.title,
+            revistaSubtitle: revista.subtitle || dados.subtitle
+          });
+
+          revista.cover = cover;
+          materialAtual = revista;
+          renderizarMaterial(materialAtual);
+
+          setBarra(100);
+          setStatus("Revista mensal gerada com 4 lições e capa profissional. Você pode editar antes de salvar em PDF.", "ok");
+
+        } catch (error) {
+          console.error("A capa profissional falhou, usando capa automática:", error);
+
+          revista.cover = {
+            type: "revistaCover",
+            title: revista.title || dados.title,
+            subtitle: revista.subtitle || dados.subtitle,
+            editionLabel: dados.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR",
+            monthlyLabel: "Revista mensal de Escola Bíblica Dominical",
+            author: dados.author,
+            ministry: dados.ministry,
+            visualConcept: "Capa editorial cristã com Bíblia aberta, luz suave, textura de papel antigo e aparência séria para Escola Bíblica Dominical.",
+            coverPhrase: "Conhecer a Palavra é carregar luz com responsabilidade.",
+            teacherNoteAboutCover: "A capa automática foi aplicada para preservar a revista mesmo sem a resposta da IA para o conceito visual."
+          };
+
+          materialAtual = revista;
+          renderizarMaterial(materialAtual);
+
+          setBarra(100);
+          setStatus("Revista gerada com sucesso. A capa da IA falhou, mas uma capa automática profissional foi aplicada.", "ok");
+        }
+
+        return;
+      }
+
       setBarra(100);
-      setStatus("Revista mensal gerada com capa profissional e 4 lições. Você pode editar antes de salvar em PDF.", "ok");
+      setStatus("Revista mensal gerada com sucesso. Você pode editar antes de salvar em PDF.", "ok");
     }
 
     function divTexto(texto) {
@@ -1947,8 +1981,8 @@
       if (valor("coverMode") !== "com-capa") return "";
 
       const cover = m.cover || {};
-      const titulo = cover.title || m.title || "";
-      const subtitulo = cover.subtitle || m.subtitle || "";
+      const titulo = cover.title || m.title || valor("title") || "";
+      const subtitulo = cover.subtitle || m.subtitle || valor("subtitle") || "";
       const etiqueta = cover.editionLabel || (m.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR");
       const mensal = cover.monthlyLabel || "Revista mensal de Escola Bíblica Dominical";
       const frase = cover.coverPhrase || cover.visualConcept || "Conhecer a Palavra é carregar luz com responsabilidade.";
