@@ -942,7 +942,7 @@
 
         <label for="materialType">Tipo de material</label>
         <select id="materialType" onchange="atualizarOpcoesPorTipo()" autocomplete="off">
-          <option value="sermao">Sermão</option>
+          <option value="sermao" selected>Sermão</option>
           <option value="devocional">Devocional</option>
           <option value="estudo">Estudo bíblico/teológico</option>
           <option value="ebook">E-book cristão - reservado</option>
@@ -961,25 +961,25 @@
 
         <div id="campoTraducaoBiblica" class="campo-oculto">
           <label for="bibleVersion">Tradução bíblica padrão</label>
-          <input id="bibleVersion" type="text" autocomplete="off" value="King James Fiel 1611" />
+          <input id="bibleVersion" type="text" autocomplete="off" placeholder="Ex: King James Fiel 1611" />
         </div>
 
         <label for="title">Título</label>
-        <input id="title" type="text" autocomplete="off" value="O Deus que Restaura" />
+        <input id="title" type="text" autocomplete="off" placeholder="Digite o título do material" />
 
         <label for="subtitle">Subtítulo</label>
-        <input id="subtitle" type="text" autocomplete="off" value="Uma palavra bíblica de esperança e transformação" />
+        <input id="subtitle" type="text" autocomplete="off" placeholder="Digite o subtítulo" />
 
         <label for="theme">Tema principal</label>
-        <textarea id="theme" autocomplete="off">A restauração de Deus na vida espiritual, familiar e emocional do cristão.</textarea>
+        <textarea id="theme" autocomplete="off" placeholder="Digite aqui o tema principal ou cole o prompt completo"></textarea>
 
         <label for="biblicalBase">Texto bíblico base</label>
-        <input id="biblicalBase" type="text" autocomplete="off" value="Joel 2.25; Salmos 23; Romanos 8.28; 1 Pedro 5.10" />
+        <input id="biblicalBase" type="text" autocomplete="off" placeholder="Ex: João 3.16; Romanos 8.28" />
 
         <div class="linha">
           <div id="campoQuantidade">
             <label for="quantity" id="labelQuantidade">Quantidade</label>
-            <input id="quantity" type="number" min="1" max="30" value="3" autocomplete="off" />
+            <input id="quantity" type="number" min="1" max="30" autocomplete="off" placeholder="Ex: 4" />
           </div>
 
           <div id="campoTopicos">
@@ -993,17 +993,17 @@
         </div>
 
         <label for="targetAudience">Público-alvo</label>
-        <input id="targetAudience" type="text" autocomplete="off" value="Igreja em geral" />
+        <input id="targetAudience" type="text" autocomplete="off" placeholder="Ex: Igreja em geral, jovens, professores..." />
 
         <div class="linha">
           <div>
             <label for="author">Autor / comentarista</label>
-            <input id="author" type="text" autocomplete="off" value="Pr. Isiquel Rodrigues" />
+            <input id="author" type="text" autocomplete="off" placeholder="Digite o nome do autor" />
           </div>
 
           <div>
             <label for="ministry">Editora / ministério</label>
-            <input id="ministry" type="text" autocomplete="off" value="CPID - Casa Publicadora da Igreja de Deus" />
+            <input id="ministry" type="text" autocomplete="off" placeholder="Digite o ministério ou editora" />
           </div>
         </div>
 
@@ -1011,8 +1011,8 @@
           <div>
             <label for="depthLevel">Profundidade</label>
             <select id="depthLevel" autocomplete="off">
-              <option value="profundo">Profundo</option>
-              <option value="muito profundo" selected>Muito profundo</option>
+              <option value="profundo" selected>Profundo</option>
+              <option value="muito profundo">Muito profundo</option>
               <option value="pastoral e profundo">Pastoral e profundo</option>
             </select>
           </div>
@@ -1029,13 +1029,13 @@
         <div id="campoCapa">
           <label for="coverMode">Capa</label>
           <select id="coverMode" autocomplete="off">
-            <option value="com-capa">Com capa</option>
             <option value="sem-capa" selected>Sem capa</option>
+            <option value="com-capa">Com capa</option>
           </select>
         </div>
 
         <label for="tone">Tom do material</label>
-        <input id="tone" type="text" autocomplete="off" value="pastoral, bíblico, atual, profundo, acolhedor e encorajador" />
+        <input id="tone" type="text" autocomplete="off" placeholder="Ex: bíblico, pastoral, profundo e didático" />
 
         <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">Gerar material</button>
 
@@ -1086,8 +1086,7 @@
       </div>
     </section>
   </main>
-
-  <script>
+    <script>
     let ultimoMaterial = null;
     let editando = false;
 
@@ -1114,6 +1113,11 @@
     function setEtapas(etapaAtual, concluidas = []){
       const box = el("etapasGeracao");
       if(!box) return;
+
+      if(!etapaAtual){
+        box.innerHTML = "";
+        return;
+      }
 
       const etapas = tipoAtual() === "revista"
         ? ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional"]
@@ -1199,7 +1203,7 @@
 
       if(tipo === "revista"){
         labelQuantidade.textContent = "Lições mensais";
-        el("quantity").value = "4";
+        if(!valor("quantity")) el("quantity").value = "4";
         el("quantity").min = "4";
         el("quantity").max = "4";
         el("coverMode").value = "com-capa";
@@ -1207,34 +1211,23 @@
         labelQuantidade.textContent = "Capítulos";
         el("quantity").min = "1";
         el("quantity").max = "20";
-
-        if(!el("quantity").value || Number(el("quantity").value) < 1){
-          el("quantity").value = "10";
-        }
-
         el("coverMode").value = "com-capa";
       }else if(tipo === "ebook"){
         labelQuantidade.textContent = "Capítulos";
         el("quantity").min = "1";
         el("quantity").max = "12";
-
-        if(!el("quantity").value || Number(el("quantity").value) < 1){
-          el("quantity").value = "6";
-        }
       }else if(tipo === "curso"){
         labelQuantidade.textContent = "Aulas";
         el("quantity").min = "1";
         el("quantity").max = "20";
-
-        if(!el("quantity").value || Number(el("quantity").value) < 1){
-          el("quantity").value = "8";
-        }
+      }else{
+        labelQuantidade.textContent = "Quantidade";
       }
     }
 
     function dadosFormulario(){
       const tipo = tipoAtual();
-      let quantity = Number(valor("quantity") || 3);
+      let quantity = Number(valor("quantity") || 0);
 
       if(tipo === "revista") quantity = 4;
       if(tipo === "livro") quantity = Math.max(1, Math.min(20, quantity || 10));
@@ -1680,7 +1673,6 @@
               }).join("")}
 
               ${l.lifeApplication ? `<div class="bloco"><h3>Aplicação para a vida</h3>${divTexto(l.lifeApplication)}</div>` : ""}
-
               ${l.conclusion ? `<div class="bloco"><h3>Conclusão</h3>${divTexto(l.conclusion)}</div>` : ""}
 
               ${!isAluno ? `
@@ -1781,7 +1773,6 @@
               <h1 class="titulo-grande">Capítulo ${escapeHtml(numero)} — ${escapeHtml(cap.title || "")}</h1>
 
               ${cap.chapterQuestion ? `<div class="subtitulo">${escapeHtml(cap.chapterQuestion)}</div>` : ""}
-
               ${cap.centralThesis ? `<div class="bloco"><h3>Tese do capítulo</h3>${divTexto(cap.centralThesis)}</div>` : ""}
               ${cap.openingNarrative ? `<div class="bloco"><h3>Abertura</h3>${divTexto(cap.openingNarrative)}</div>` : ""}
               ${cap.ideaDevelopment ? `<div class="bloco"><h3>Desenvolvimento da ideia</h3>${divTexto(cap.ideaDevelopment)}</div>` : ""}
@@ -2111,12 +2102,43 @@
         .catch(() => setStatus("Não foi possível copiar automaticamente.", "erro"));
     }
 
+    function limparCamposFormulario(){
+      const camposTexto = [
+        "adminCode",
+        "promptTema",
+        "bibleVersion",
+        "title",
+        "subtitle",
+        "theme",
+        "biblicalBase",
+        "quantity",
+        "targetAudience",
+        "author",
+        "ministry",
+        "tone"
+      ];
+
+      camposTexto.forEach(id => {
+        if(el(id)) el(id).value = "";
+      });
+
+      el("materialType").value = "sermao";
+      el("revistaVersion").value = "professor";
+      el("sermonPoints").value = "3";
+      el("depthLevel").value = "profundo";
+      el("visualStyle").value = "preto e branco";
+      el("coverMode").value = "sem-capa";
+
+      atualizarOpcoesPorTipo();
+    }
+
     function limparTudo(){
       ultimoMaterial = null;
       finalizarEdicao(false);
+      limparCamposFormulario();
       setProgresso(0);
       setEtapas("");
-      setStatus("Aguardando geração.");
+      setStatus("Tudo limpo. Os campos estão em branco para um novo material.", "ok");
 
       el("resultado").innerHTML = `
         <div class="placeholder">
@@ -2126,6 +2148,13 @@
           </div>
         </div>
       `;
+    }
+
+    function prepararTelaInicial(){
+      limparCamposFormulario();
+      setProgresso(0);
+      setEtapas("");
+      setStatus("Aguardando geração.");
     }
 
     function preencherTeste(){
@@ -2174,7 +2203,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      atualizarOpcoesPorTipo();
+      prepararTelaInicial();
     });
   </script>
 </body>
