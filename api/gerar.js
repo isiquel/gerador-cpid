@@ -1,1065 +1,713 @@
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ ok: false, error: "Método não permitido. Use POST." });
+    return res.status(405).json({
+      ok: false,
+      error: "Método não permitido. Use POST."
+    });
   }
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey =
+      process.env.GEMINI_API_KEY ||
+      process.env.GOOGLE_API_KEY ||
+      process.env.API_KEY_GEMINI ||
+      "";
 
     if (!apiKey) {
       return res.status(500).json({
         ok: false,
-        error: "A variável GEMINI_API_KEY não foi encontrada na Vercel."
+        error:
+          "Chave da API Gemini não encontrada. Configure GEMINI_API_KEY nas variáveis da Vercel."
       });
     }
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const form = normalizeForm(body);
+    const body = typeof req.body === "string" ? safeJsonParse(req.body) : (req.body || {});
+    const data = normalizeInput(body);
 
-    if (isMaterialReservado(form.materialType) && !codigoAdminValido(form.adminCode)) {
-      return res.status(403).json({
-        ok: false,
-        error: "Este recurso é reservado. Digite o código de acesso correto."
-      });
-    }
+    const prompt = buildMasterPrompt(data);
 
-    const models = [
-      process.env.GEMINI_TEXT_MODEL_1 || "gemini-3.5-flash",
-      process.env.GEMINI_TEXT_MODEL_2 || "gemini-3.1-flash-lite",
-      process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.5-flash",
-      process.env.GEMINI_TEXT_MODEL_4 || "gemini-2.5-flash-lite",
-      "gemini-2.0-flash"
-    ].filter(Boolean);
+    const rawText = await callGemini({
+      apiKey,
+      prompt
+    });
 
-    const prompt = buildPrompt(form);
-    const result = await callGeminiText(apiKey, models, prompt);
-    const text = extractText(result.data);
-    let material = parseJson(text);
-
-    if (!material && form.materialType === "revista" && form.revistaPart === "lesson") {
-      const compactPrompt = promptRevistaLicao(form, true);
-      const compactResult = await callGeminiText(apiKey, models, compactPrompt);
-      const compactText = extractText(compactResult.data);
-      material = parseJson(compactText);
-    }
-
-    if (!material && form.materialType === "livro" && form.livroPart === "chapter") {
-      const compactPrompt = promptLivroCapitulo(form, true);
-      const compactResult = await callGeminiText(apiKey, models, compactPrompt);
-      const compactText = extractText(compactResult.data);
-      material = parseJson(compactText);
-    }
-
-    if (!material) {
-      return res.status(500).json({
-        ok: false,
-        error: "A IA respondeu, mas não entregou um JSON válido. Tente novamente em alguns segundos."
-      });
-    }
-
-    material.appName = "VERBO IA";
-    material.selectedType = form.materialType;
-    material.revistaVersion = form.revistaVersion;
-    material.bibleVersion = form.bibleVersion;
-    material.author = material.author || form.author;
-    material.ministry = material.ministry || form.ministry;
-    material.visualStyle = form.visualStyle;
+    const html = extractHtml(rawText) || buildFallbackHtml(rawText, data);
 
     return res.status(200).json({
       ok: true,
-      modelUsed: result.modelUsed,
-      material
+      html: cleanHtml(html),
+      rawText
     });
-
   } catch (error) {
-    console.error("Erro em api/gerar.js:", error);
+    console.error("Erro em /api/gerar:", error);
 
     return res.status(500).json({
       ok: false,
-      error: error.message || "Erro interno ao gerar o material."
+      error:
+        error?.message ||
+        "Erro interno ao gerar material."
     });
   }
-};
-
-function codigoAdminValido(codigoRecebido) {
-  const codigoCorreto = process.env.Isiquel_Admin || "00";
-  return String(codigoRecebido || "").trim() === String(codigoCorreto).trim();
 }
 
-function isMaterialReservado(tipo) {
-  return ["ebook", "livro", "curso", "revista"].includes(String(tipo || "").trim());
-}
+/* =========================
+   NORMALIZAÇÃO
+========================= */
 
-function normalizeForm(body) {
-  const tipo = String(body.materialType || "sermao").trim();
-  const revistaPart = String(body.revistaPart || "").trim();
-  const livroPart = String(body.livroPart || "").trim();
-  const lessonNumber = Number(body.lessonNumber || 1);
-  const chapterNumber = Number(body.chapterNumber || 1);
+function normalizeInput(input = {}) {
+  const get = (...keys) => {
+    for (const key of keys) {
+      if (input[key] !== undefined && input[key] !== null) {
+        return String(input[key]).trim();
+      }
+    }
+    return "";
+  };
 
-  let quantidade = Number(body.quantity || 3);
-  let sermonPoints = Number(body.sermonPoints || 3);
+  const quantidadeLicoesRaw = get(
+    "quantidadeLicoes",
+    "qtdLicoes",
+    "licoes",
+    "quantidade_lições"
+  );
 
-  if (!Number.isFinite(quantidade)) quantidade = 3;
-  if (!Number.isFinite(sermonPoints)) sermonPoints = 3;
-
-  sermonPoints = Math.max(3, Math.min(sermonPoints, 5));
-
-  if (tipo === "sermao") {
-    quantidade = 1;
-  } else if (tipo === "revista") {
-    quantidade = 4;
-  } else if (tipo === "devocional") {
-    quantidade = Math.max(1, Math.min(quantidade, 30));
-  } else if (tipo === "livro") {
-    quantidade = Math.max(1, Math.min(quantidade, 20));
-  } else {
-    quantidade = Math.max(1, Math.min(quantidade, 12));
-  }
+  const quantidadeLicoes = Math.max(
+    1,
+    Math.min(12, parseInt(quantidadeLicoesRaw || "4", 10) || 4)
+  );
 
   return {
-    adminCode: String(body.adminCode || "").trim(),
-    appName: "VERBO IA",
-    materialType: tipo,
-    revistaPart,
-    livroPart,
-    lessonNumber,
-    chapterNumber,
-    lessonTitles: body.lessonTitles || [],
-    chapterPlan: body.chapterPlan || [],
-    previousChapterSummary: String(body.previousChapterSummary || "").trim(),
-    bookCentralThesis: String(body.bookCentralThesis || "").trim(),
-    readingPath: String(body.readingPath || "").trim(),
-    revistaVersion: String(body.revistaVersion || "professor").trim(),
-    bibleVersion: String(body.bibleVersion || "King James Fiel 1611").trim(),
-    sermonPoints,
-    title: String(body.title || "Material cristão").trim(),
-    subtitle: String(body.subtitle || "").trim(),
-    theme: String(body.theme || "").trim(),
-    biblicalBase: String(body.biblicalBase || "").trim(),
-    quantity: quantidade,
-    targetAudience: String(body.targetAudience || "Igreja em geral").trim(),
-    author: String(body.author || "Pr. Isiquel Rodrigues").trim(),
-    ministry: String(body.ministry || "CPID - Casa Publicadora da Igreja de Deus").trim(),
-    depthLevel: String(body.depthLevel || "muito profundo").trim(),
-    visualStyle: String(body.visualStyle || "preto e branco").trim(),
-    tone: String(body.tone || "pastoral, bíblico, profundo e encorajador").trim()
+    tipoMaterial: get("tipoMaterial", "tipo", "material", "tipo_de_material"),
+    versaoRevista: get("versaoRevista", "versao", "versão"),
+    traducao: get("traducao", "traducaoBiblica", "tradução"),
+    titulo: get("titulo", "title"),
+    subtitulo: get("subtitulo", "subtitle"),
+    textoBase: get("textoBase", "textobase", "textoBiblicoBase", "texto_biblico"),
+    temaPrincipal: get("temaPrincipal", "tema", "prompt", "descricao", "descrição"),
+    publicoAlvo: get("publicoAlvo", "publico", "público"),
+    autor: get("autor", "autorComentariasta", "comentarista"),
+    editora: get("editora", "ministerio", "ministério"),
+    profundidade: get("profundidade"),
+    estiloVisual: get("estiloVisual", "estilo"),
+    capa: get("capa"),
+    tomMaterial: get("tomMaterial", "tom"),
+    quantidadeLicoes,
+    gerarPromptAutomatico: get("gerarPromptAutomatico"),
+    codigoAcesso: get("codigoAcesso")
   };
 }
 
-function buildPrompt(form) {
-  if (form.materialType === "revista" && form.revistaPart === "cover") return promptRevistaCapa(form);
-  if (form.materialType === "revista" && form.revistaPart === "meta") return promptRevistaMeta(form);
-  if (form.materialType === "revista" && form.revistaPart === "lesson") return promptRevistaLicao(form, false);
+/* =========================
+   CHAMADA GEMINI
+========================= */
 
-  if (form.materialType === "livro" && form.livroPart === "meta") return promptLivroMeta(form);
-  if (form.materialType === "livro" && form.livroPart === "chapter") return promptLivroCapitulo(form, false);
+async function callGemini({ apiKey, prompt }) {
+  const endpoint =
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-  if (form.materialType === "sermao") return promptSermao(form);
-  if (form.materialType === "livro") return promptLivroMeta(form);
-  if (form.materialType === "devocional") return promptDevocional(form);
-  if (form.materialType === "estudo") return promptEstudo(form);
-  if (form.materialType === "curso") return promptCurso(form);
-  if (form.materialType === "revista") return promptRevistaMeta(form);
-  return promptEbook(form);
+  const payload = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: prompt
+          }
+        ]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.75,
+      topP: 0.95,
+      maxOutputTokens: 65535
+    }
+  };
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message =
+      data?.error?.message ||
+      `Gemini respondeu com status ${response.status}.`;
+    throw new Error(message);
+  }
+
+  const text = extractGeminiText(data);
+
+  if (!text || !text.trim()) {
+    throw new Error("A API devolveu uma resposta vazia.");
+  }
+
+  return text.trim();
 }
 
-function baseDados(form, nome) {
+function extractGeminiText(data) {
+  if (!data) return "";
+
+  const candidates = Array.isArray(data.candidates) ? data.candidates : [];
+  const parts = [];
+
+  for (const candidate of candidates) {
+    const contentParts = candidate?.content?.parts || [];
+    for (const part of contentParts) {
+      if (typeof part?.text === "string") {
+        parts.push(part.text);
+      }
+    }
+  }
+
+  return parts.join("\n").trim();
+}
+
+/* =========================
+   PROMPTS
+========================= */
+
+function buildMasterPrompt(data) {
+  const tipo = (data.tipoMaterial || "").toLowerCase();
+
+  if (tipo.includes("revista")) {
+    if ((data.versaoRevista || "").toLowerCase().includes("professor")) {
+      return buildRevistaProfessorPrompt(data);
+    }
+    return buildRevistaAlunoPrompt(data);
+  }
+
+  if (tipo.includes("livro")) {
+    return buildLivroCristaoPrompt(data);
+  }
+
+  if (tipo.includes("e-book") || tipo.includes("ebook")) {
+    return buildEbookCristaoPrompt(data);
+  }
+
+  if (tipo.includes("serm")) {
+    return buildSermaoPrompt(data);
+  }
+
+  if (tipo.includes("devoc")) {
+    return buildDevocionalPrompt(data);
+  }
+
+  if (tipo.includes("curso")) {
+    return buildCursoPrompt(data);
+  }
+
+  if (tipo.includes("estudo")) {
+    return buildEstudoBiblicoPrompt(data);
+  }
+
+  return buildPromptGenerico(data);
+}
+
+function commonContext(data) {
   return `
 DADOS DO MATERIAL:
-Tipo: ${nome}
-Título: ${form.title}
-Subtítulo: ${form.subtitle || "Crie se for necessário"}
-Tema: ${form.theme || form.title}
-Texto bíblico base: ${form.biblicalBase || "Escolha textos bíblicos coerentes"}
-Quantidade: ${form.quantity}
-Versão da revista: ${form.revistaVersion}
-Tradução bíblica padrão: ${form.bibleVersion}
-Público-alvo: ${form.targetAudience}
-Autor: ${form.author}
-Ministério/Editora: ${form.ministry}
-Profundidade: ${form.depthLevel}
-Tom: ${form.tone}
-`.trim();
-}
-
-function regrasJson() {
-  return `
-REGRAS OBRIGATÓRIAS:
-1. Responda somente em JSON válido.
-2. Não use markdown.
-3. Não escreva nada fora do JSON.
-4. Não gere HTML.
-5. Não gere PDF.
-6. Não gere imagem binária.
-7. Use português do Brasil.
-8. O conteúdo precisa ser bíblico, profundo, pastoral, claro e aplicável.
-9. Não use aspas duplas dentro dos textos, a não ser que estejam escapadas corretamente.
-10. Evite caracteres que quebrem JSON.
-11. Não invente citações literais de autores.
-12. Não invente número de página, editora ou frase exata de livro.
-13. Quando citar autores, cite apenas como referência de aprofundamento, sem aspas diretas.
-14. As referências bíblicas devem ser coerentes com o assunto tratado.
-15. Não coloque referências aleatórias. Toda referência precisa apoiar a ideia ensinada.
-16. Não entregue conteúdo raso, genérico ou sem desenvolvimento.
-17. Não escreva como se estivesse preenchendo formulário.
-18. Não use linguagem robótica.
-`.trim();
-}
-
-function promptRevistaCapa(form) {
-  const versaoTexto = form.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR";
-
-  return `
-Você é diretor de arte cristão, designer editorial e capista profissional de revistas bíblicas.
-
-Crie o CONCEITO COMPLETO DE CAPA para uma revista mensal de Escola Bíblica Dominical.
-A capa será renderizada pelo sistema em formato visual, por isso você deve entregar um projeto de capa em JSON.
-Não escreva a revista. Não escreva as lições. Crie apenas a capa.
-
-${baseDados(form, "Capa de revista de Escola Bíblica Dominical")}
-${regrasJson()}
-
-VERSÃO DA REVISTA:
-${versaoTexto}
-
-OBJETIVO DA CAPA:
-Criar uma capa bonita, séria, cristã, editorial, elegante e adequada para revista de EBD.
-A capa deve parecer profissional, não infantil, não genérica e não amadora.
-A capa deve comunicar visualmente o tema da revista.
-
-REGRAS VISUAIS:
-1. A capa deve ter aparência editorial cristã.
-2. A imagem central deve representar o tema de modo simbólico e respeitoso.
-3. Use símbolos como Bíblia aberta, luz, mesa de estudo, pergaminho, páginas antigas, pena, rolo, manuscritos, igreja, raios de luz, textura de papel antigo, mas sem exagero.
-4. Não use cruz de forma excessiva se não for necessária.
-5. Não use imagens confusas.
-6. Não use excesso de elementos.
-7. Priorize leitura clara do título.
-8. A capa deve funcionar em celular e em PDF.
-9. A capa deve ter uma composição vertical de revista.
-10. A capa deve combinar com a identidade CPID e com a seriedade da Escola Bíblica Dominical.
-
-TIPOS DE CAPA POSSÍVEIS:
-Escolha a melhor direção para o tema:
-- Bíblia aberta iluminada sobre uma mesa de estudo.
-- Bíblia com páginas antigas e luz suave.
-- Manuscritos antigos em transição para uma Bíblia moderna.
-- Rolo antigo, pergaminho e Bíblia atual juntos.
-- Estudante cristão olhando para a Bíblia aberta, sem rosto muito detalhado.
-- Composição simbólica mostrando Palavra, história e preservação.
-
-ENTREGUE TAMBÉM:
-1. Um prompt de imagem profissional para futura geração de imagem.
-2. Uma descrição curta para o professor entender a ideia da capa.
-3. Uma paleta de cores.
-4. Um símbolo principal.
-5. Um símbolo secundário.
-6. Um fundo.
-7. Um estilo editorial.
-8. Uma frase de impacto curta para a capa, se fizer sentido.
-
-FORMATO JSON:
-{
-  "type": "revistaCover",
-  "title": "",
-  "subtitle": "",
-  "editionLabel": "${versaoTexto}",
-  "monthlyLabel": "Revista mensal de Escola Bíblica Dominical",
-  "author": "",
-  "ministry": "",
-  "visualConcept": "",
-  "coverDescription": "",
-  "mainSymbol": "",
-  "secondarySymbol": "",
-  "backgroundStyle": "",
-  "editorialStyle": "",
-  "colorPalette": {
-    "primary": "",
-    "secondary": "",
-    "accent": "",
-    "background": ""
-  },
-  "coverPhrase": "",
-  "imagePrompt": "",
-  "negativePrompt": "",
-  "teacherNoteAboutCover": ""
-}
-`.trim();
-}
-
-function promptLivroMeta(form) {
-  return `
-Você é um escritor cristão experiente, pastor, teólogo, expositor bíblico e autor de livros de formação espiritual.
-
-Crie apenas o PLANO GERAL de um LIVRO CRISTÃO.
-Não escreva os capítulos completos agora.
-O livro será gerado depois capítulo por capítulo.
-
-${baseDados(form, "Livro cristão - planejamento")}
-${regrasJson()}
-
-OBJETIVO:
-Criar um plano de livro com unidade, progressão e linha de pensamento.
-O livro precisa ter começo, meio e fim.
-Cada capítulo precisa nascer do anterior e preparar o próximo.
-Não crie capítulos aleatórios.
-Não crie uma sequência de estudos independentes.
-Não faça parecer revista, apostila, curso ou sermão.
-
-COMO UM LIVRO DEVE FUNCIONAR:
-1. O livro precisa ter uma tese central.
-2. Cada capítulo deve trabalhar uma parte da tese do autor.
-3. Cada capítulo deve avançar o argumento geral.
-4. O capítulo 1 deve abrir o problema, a necessidade ou a visão central do livro.
-5. Os capítulos do meio devem desenvolver camadas do argumento.
-6. O último capítulo deve concluir a jornada do leitor.
-7. A progressão deve ser clara: o leitor precisa perceber que está caminhando.
-8. O livro deve ensinar e formar o leitor sem parecer roteiro de aula.
-9. O livro precisa ser agradável de ler, com linguagem fluida e madura.
-10. As referências bíblicas devem aparecer naturalmente dentro dos argumentos dos capítulos, não como listas isoladas.
-
-REGRAS DO PLANO:
-1. Crie uma tese central forte para o livro inteiro.
-2. Crie um caminho de leitura progressivo.
-3. Planeje exatamente ${form.quantity} capítulos.
-4. Cada capítulo deve responder uma pergunta importante dentro do tema geral.
-5. Cada capítulo deve ter uma ideia central clara.
-6. Cada capítulo deve ter relação com o capítulo anterior.
-7. O último capítulo deve concluir a caminhada do livro.
-8. O plano deve permitir desenvolvimento profundo, bíblico e prazeroso.
-9. Não faça títulos soltos.
-10. Não crie assuntos desconectados.
-
-FORMATO JSON:
-{
-  "type": "livro",
-  "title": "",
-  "subtitle": "",
-  "theme": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "preface": "",
-  "presentation": "",
-  "generalIntroduction": "",
-  "bookCentralThesis": "",
-  "readingPath": "",
-  "chapterPlan": [
-    {
-      "number": 1,
-      "title": "",
-      "chapterQuestion": "",
-      "centralIdea": "",
-      "purpose": "",
-      "connectionWithPrevious": "",
-      "preparesNext": "",
-      "mainBiblicalBase": "",
-      "argumentRoleInBook": ""
-    }
-  ],
-  "finalConclusion": "",
-  "wordToReader": "",
-  "authorBio": "",
-  "backCoverText": ""
-}
-`.trim();
-}
-
-function promptLivroCapitulo(form, compacto) {
-  const chapterPlanText = JSON.stringify(form.chapterPlan || [], null, 2);
-  const capituloAtual = Array.isArray(form.chapterPlan)
-    ? form.chapterPlan.find((c) => Number(c.number) === Number(form.chapterNumber))
-    : null;
-
-  const capituloPlanejado = capituloAtual ? JSON.stringify(capituloAtual, null, 2) : "Crie conforme o tema geral.";
-
-  const limite = compacto
-    ? `
-MODO COMPACTO DE SEGURANÇA:
-1. opening: 120 a 180 palavras.
-2. thesisPresentation: 90 a 140 palavras.
-3. developmentBlocks: cada bloco com 180 a 260 palavras.
-4. chapterConclusion: 100 a 160 palavras.
-5. transitionToNextChapter: 40 a 80 palavras.
-`
-    : `
-REGRAS DE TAMANHO:
-1. opening: 180 a 280 palavras.
-2. thesisPresentation: 120 a 190 palavras.
-3. Cada bloco de developmentBlocks deve ter de 260 a 420 palavras.
-4. O capítulo deve conter 4 blocos de desenvolvimento.
-5. chapterConclusion: 160 a 240 palavras.
-6. transitionToNextChapter: 60 a 100 palavras.
+- Tipo de material: ${fallback(data.tipoMaterial, "Material cristão")}
+- Versão: ${fallback(data.versaoRevista, "Não informada")}
+- Título: ${fallback(data.titulo, "Sem título")}
+- Subtítulo: ${fallback(data.subtitulo, "Sem subtítulo")}
+- Texto bíblico base: ${fallback(data.textoBase, "Não informado")}
+- Tema principal / instrução adicional do usuário: ${fallback(data.temaPrincipal, "Não informado")}
+- Público-alvo: ${fallback(data.publicoAlvo, "Não informado")}
+- Autor / comentarista: ${fallback(data.autor, "Não informado")}
+- Editora / ministério: ${fallback(data.editora, "Não informado")}
+- Tradução bíblica padrão: ${fallback(data.traducao, "King James Fiel 1611")}
+- Profundidade desejada: ${fallback(data.profundidade, "Profunda")}
+- Estilo visual: ${fallback(data.estiloVisual, "Colorido")}
+- Capa: ${fallback(data.capa, "Com capa")}
+- Tom do material: ${fallback(data.tomMaterial, "Bíblico, didático e pastoral")}
 `;
+}
+
+function buildRevistaProfessorPrompt(data) {
+  const qtd = data.quantidadeLicoes || 4;
 
   return `
-Você é um escritor cristão experiente, pastor, teólogo, expositor bíblico e autor de livros de formação espiritual.
+Você é um redator editorial cristão sênior, especialista em Escola Bíblica Dominical, Bibliologia, doutrina pentecostal clássica e produção de material didático para professores.
 
-Crie SOMENTE O CAPÍTULO ${form.chapterNumber} do livro.
-Não crie os outros capítulos.
-Este livro está sendo gerado por partes para ficar mais profundo e organizado.
+Sua tarefa é gerar uma REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL, VERSÃO DO PROFESSOR, para classe adulta, em HTML, muito bem organizada, bonita, rica e com conteúdo real.
 
-${baseDados(form, "Livro cristão - capítulo individual")}
-${regrasJson()}
+${commonContext(data)}
 
-TESE CENTRAL DO LIVRO:
-${form.bookCentralThesis || "Siga a tese central do tema informado."}
+REGRAS GERAIS IMPORTANTES:
+1. Gere SOMENTE HTML, sem markdown, sem crases, sem explicações fora do HTML.
+2. O HTML deve ser um fragmento pronto para ser inserido dentro de uma área de conteúdo.
+3. Use estrutura clara com <section>, <article>, <div>, <h1>, <h2>, <h3>, <p>, <ul>, <ol>, <blockquote>.
+4. Não escreva nada em inglês.
+5. Não escreva rótulos internos, nomes de campos técnicos, placeholders ou palavras soltas.
+6. Não deixe só títulos sem conteúdo.
+7. Não produza material raso, genérico ou repetitivo.
+8. Produza conteúdo argumentativo, prazeroso de ler, com começo, meio e fim.
+9. As referências bíblicas devem aparecer:
+   - nos cabeçalhos dos tópicos quando necessário;
+   - nos subtópicos;
+   - e também ao longo dos parágrafos, embasando as afirmações.
+10. Use como tradução padrão a ${fallback(data.traducao, "King James Fiel 1611")} quando precisar escrever textos bíblicos por extenso.
+11. Se citar obra de apoio, cite materiais reais e seguros. Se não tiver certeza da página exata, não invente paginação.
+12. A revista precisa ser pronta para professor, com tom pastoral, didático, reverente, bíblico e doutrinário.
+13. Cada lição deve começar claramente, bem no alto, como uma nova unidade bem definida.
+14. A capa frontal e a contracapa devem existir.
+15. A capa frontal NÃO pode ser aquela capa simples repetitiva com ícone genérico. Ela precisa ser mais viva, editorial e temática.
+16. Não incluir símbolo do Gemini em nenhuma parte.
+17. Gere capas visualmente fortes usando HTML + CSS inline + SVG inline quando necessário, de forma temática, editorial e elegante.
+18. O tema da capa deve seguir o conteúdo do material. Se o tema for Bibliologia/Bíblia, trabalhar visualmente elementos como Bíblia aberta, pergaminhos, manuscritos, luz, verdade, estudo, reverência e atmosfera editorial.
+19. Depois da capa frontal, antes da Lição 1, inclua uma APRESENTAÇÃO AO PROFESSOR, explicando a proposta da revista, panorama do mês, encorajamento, sugestões de preparo e orientação geral das quatro lições.
+20. Ao final de toda a revista, inclua uma CONTRACAPA elegante e harmoniosa.
+21. Não copiar CPAD. Apenas inspirar-se em acabamento editorial bonito.
+22. A revista deve conter ${qtd} lições.
+23. O tema central e todas as instruções do usuário devem ser obedecidos.
 
-CAMINHO DE LEITURA DO LIVRO:
-${form.readingPath || "Construa uma progressão lógica e espiritual."}
+ESTRUTURA OBRIGATÓRIA DA REVISTA:
+A. Capa frontal
+B. Apresentação ao professor
+C. Panorama geral do mês / da revista
+D. ${qtd} lições completas
+E. Contracapa
 
-RESUMO DO CAPÍTULO ANTERIOR:
-${form.previousChapterSummary || "Este é o primeiro capítulo ou não há resumo anterior."}
+A CAPA FRONTAL DEVE TER:
+- aspecto de revista de EBD realmente bonita;
+- título da revista;
+- subtítulo;
+- indicação “Revista mensal de Escola Bíblica Dominical”;
+- indicação “Revista do Professor”;
+- autor/comentarista;
+- editora/ministério;
+- composição visual rica, elegante, com ilustração/sensação editorial relacionada ao tema;
+- não deixar a capa vazia nem simples demais.
 
-PLANO GERAL DOS CAPÍTULOS:
-${chapterPlanText}
+A APRESENTAÇÃO AO PROFESSOR DEVE TER:
+- saudação pastoral ao professor;
+- palavra de encorajamento;
+- visão geral do que será estudado neste mês;
+- importância do estudo do tema;
+- como o professor pode se preparar;
+- orientação para oração, leitura prévia e aplicação em sala;
+- sugestões práticas e espirituais.
 
-CAPÍTULO QUE DEVE SER ESCRITO AGORA:
-${capituloPlanejado}
-
-MUITO IMPORTANTE SOBRE O FORMATO:
-1. Este capítulo precisa parecer capítulo de LIVRO, não apostila.
-2. Não escreva com cara de estudo bíblico em tópicos.
-3. Não crie seções chamadas "Base bíblica", "Referências cruzadas", "Aplicação pastoral", "Resumo do capítulo" ou "Fechamento reflexivo".
-4. Não coloque listas de referências bíblicas separadas.
-5. As referências bíblicas devem aparecer naturalmente dentro dos parágrafos.
-6. As referências cruzadas devem estar no meio do argumento.
-7. Não coloque "Aplicação pastoral" como título.
-8. A aplicação deve estar misturada ao desenvolvimento do argumento.
-9. O capítulo deve ter leitura fluida, como um livro publicado.
-10. Escreva como autor conduzindo o leitor, não como professor preenchendo campos.
-
-IDENTIDADE DO CAPÍTULO:
-1. O capítulo precisa trabalhar uma única ideia central.
-2. O capítulo precisa começar essa ideia, desenvolver essa ideia e concluir essa ideia.
-3. Não mude de assunto sem ligação.
-4. Não escreva parágrafos soltos.
-5. O leitor precisa sentir que está sendo conduzido por um caminho.
-6. O capítulo precisa ter começo, meio e fim.
-7. Cada seção deve nascer da anterior.
-8. A conclusão precisa retomar a tese inicial do capítulo.
-9. Este capítulo deve cumprir seu papel dentro do argumento maior do livro.
-10. Se o livro tiver muitos capítulos, este capítulo deve desenvolver apenas a parte que lhe cabe, sem tentar resolver tudo de uma vez.
-
-COMO DESENVOLVER O ARGUMENTO:
-1. Comece com uma abertura envolvente, pastoral, literária ou reflexiva.
-2. Apresente a tese do capítulo com clareza.
-3. Desenvolva a ideia em blocos de pensamento progressivos.
-4. Cada bloco precisa aprofundar um aspecto da mesma ideia.
-5. Use textos bíblicos dentro da explicação, não como lista isolada.
-6. Use referências cruzadas naturalmente dentro do raciocínio.
-7. Faça conexões entre Antigo e Novo Testamento quando isso fortalecer o argumento.
-8. Mostre o problema humano ou espiritual relacionado à tese.
-9. Mostre como a Escritura responde a esse problema.
-10. Conduza o leitor até uma conclusão clara.
-
-REGRAS DE ESTILO:
-1. Escreva como livro, não como sermão.
-2. Escreva como livro, não como revista.
-3. Escreva como livro, não como estudo bíblico em tópicos.
-4. Evite títulos técnicos demais.
-5. Evite linguagem seca.
-6. Use transições naturais entre os parágrafos.
-7. O texto deve ser prazeroso de ler, mas com peso bíblico.
-8. Use linguagem pastoral, madura e fluida.
-9. Não repita a mesma ideia apenas com outras palavras.
-
-REGRAS BÍBLICAS:
-1. Use a Bíblia como fundamento do argumento.
-2. Não coloque referência bíblica apenas enfeitando o texto.
-3. Explique o sentido bíblico dentro do desenvolvimento.
-4. As referências cruzadas devem estar integradas ao texto.
-5. Não use versículos fora de contexto.
-6. Siga linha bíblica conservadora.
-7. Em temas sobre Espírito Santo, dons, santificação, igreja, missões e escatologia, siga o pentecostalismo clássico.
-8. Ao citar textos bíblicos, use referências no próprio parágrafo, como: em João 15, em Romanos 8, em Isaías 6, em Lucas 5.
-9. Não crie uma seção separada apenas para referências.
-10. Não escreva versículos longos por extenso; cite e explique.
-
-${limite}
-
-FORMATO JSON:
-{
-  "number": ${form.chapterNumber},
-  "title": "",
-  "chapterQuestion": "",
-  "opening": "",
-  "thesisPresentation": "",
-  "developmentBlocks": [
-    {
-      "heading": "",
-      "content": ""
-    },
-    {
-      "heading": "",
-      "content": ""
-    },
-    {
-      "heading": "",
-      "content": ""
-    },
-    {
-      "heading": "",
-      "content": ""
-    }
-  ],
-  "chapterConclusion": "",
-  "transitionToNextChapter": "",
-  "chapterSummary": ""
-}
-
-ATENÇÃO FINAL:
-O capítulo não deve exibir listas de referências.
-As referências bíblicas e referências cruzadas devem aparecer dentro dos parágrafos.
-Não use o título "Aplicação pastoral".
-Não use o título "Base bíblica".
-Não use o título "Referências cruzadas".
-Não use o título "Resumo do capítulo" dentro do texto do capítulo.
-O campo chapterSummary é apenas resumo interno para ajudar a gerar o próximo capítulo; escreva curto e objetivo.
-`.trim();
-}
-
-function promptRevistaMeta(form) {
-  const versaoTexto = form.revistaVersion === "aluno" ? "REVISTA DO ALUNO" : "REVISTA DO PROFESSOR";
-
-  return `
-Você é um comentarista de revista bíblica, pastor, teólogo e professor de Escola Bíblica Dominical.
-
-Crie apenas os DADOS GERAIS de uma REVISTA MENSAL DE EBD.
-Não crie as lições completas agora. Apenas organize a revista e planeje os títulos das 4 lições.
-
-VERSÃO:
-${versaoTexto}
-
-${baseDados(form, "Revista mensal de ensino bíblico")}
-${regrasJson()}
-
-REGRAS:
-1. A revista é mensal.
-2. Deve ter exatamente 4 lições, uma por semana.
-3. Cada título de lição deve seguir o tema geral.
-4. A revista do aluno e a revista do professor devem ter a mesma linha temática.
-5. O conteúdo deve seguir linha bíblica conservadora.
-6. Em temas sobre Espírito Santo, dons espirituais, igreja, santificação, escatologia e missão, siga o pentecostalismo clássico.
-7. A apresentação deve ser boa, mas objetiva, com no máximo 220 palavras.
-8. Planeje lições que permitam muitas referências bíblicas e referências cruzadas.
-
-FORMATO JSON:
-{
-  "type": "revista",
-  "revistaVersion": "${form.revistaVersion}",
-  "bibleVersion": "${form.bibleVersion}",
-  "title": "",
-  "subtitle": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "quarterPresentation": "",
-  "lessonTitles": [
-    { "lesson": 1, "title": "" },
-    { "lesson": 2, "title": "" },
-    { "lesson": 3, "title": "" },
-    { "lesson": 4, "title": "" }
-  ],
-  "finalWord": ""
-}
-`.trim();
-}
-
-function promptRevistaLicao(form, compacto) {
-  const isProfessor = form.revistaVersion === "professor";
-  const versaoTexto = isProfessor ? "REVISTA DO PROFESSOR" : "REVISTA DO ALUNO";
-
-  const tituloPlanejado = Array.isArray(form.lessonTitles)
-    ? (form.lessonTitles.find(x => Number(x.lesson) === Number(form.lessonNumber))?.title || "")
-    : "";
-
-  const controleProfessor = isProfessor
-    ? `
-REGRAS EXTRAS PARA A VERSÃO DO PROFESSOR:
-1. O conteúdo principal da lição deve continuar profundo.
-2. As respostas das perguntas devem ser objetivas, com no máximo 35 palavras cada.
-3. Orientações para o professor: máximo 130 palavras.
-4. Sugestão de abordagem em classe: máximo 130 palavras.
-5. Observação pastoral: máximo 110 palavras.
-6. Não repita o conteúdo dos tópicos nas orientações do professor.
-7. Acrescente apoio doutrinário seguro dentro de teacherNotes, pastoralObservation ou doctrinalSupport.
-8. O professor precisa ter mais referências bíblicas de apoio para conduzir a aula com segurança.
-9. Inclua subsídios úteis para o professor quando o tema exigir aprofundamento histórico, bíblico ou doutrinário.
-`
-    : `
-REGRAS EXTRAS PARA A VERSÃO DO ALUNO:
-1. Não inclua gabarito.
-2. Não inclua orientação interna do professor.
-3. As perguntas devem vir sem respostas.
-4. A versão do aluno deve continuar bem explicada, bíblica e profunda.
-5. Mesmo na versão do aluno, inclua referências bíblicas e referências cruzadas para fortalecer o estudo.
-`;
-
-  const limites = compacto
-    ? `
-MODO COMPACTO DE SEGURANÇA:
-1. Introdução: 80 a 120 palavras.
-2. Cada tópico principal: 45 a 75 palavras.
-3. Cada subtópico: 60 a 90 palavras.
-4. Conclusão: 70 a 100 palavras.
-5. Leitura bíblica em classe: no máximo 4 versículos.
-`
-    : `
-LIMITES DE TAMANHO:
-1. Introdução: 95 a 145 palavras.
-2. Cada tópico principal: 55 a 85 palavras.
-3. Cada subtópico: 75 a 110 palavras.
-4. Conclusão: 80 a 120 palavras.
-5. Leitura bíblica em classe: no máximo 5 versículos.
-`;
-
-  return `
-Você é um comentarista de revista bíblica, pastor, teólogo e professor de Escola Bíblica Dominical.
-
-Crie SOMENTE A LIÇÃO ${form.lessonNumber} de uma revista mensal de EBD.
-Não crie as outras lições.
-Esta chamada faz parte de uma geração por partes.
-
-VERSÃO:
-${versaoTexto}
-
-TÍTULO PLANEJADO DA LIÇÃO:
-${tituloPlanejado || "Crie um título coerente com o tema"}
-
-${baseDados(form, "Revista mensal de ensino bíblico - lição individual")}
-${regrasJson()}
-
-REGRAS DA LIÇÃO:
-1. Crie somente a lição ${form.lessonNumber}.
-2. A lição deve ser profunda, didática, bíblica e aplicável.
-3. Deve seguir padrão de revista de EBD.
-4. Deve conter exatamente 3 tópicos principais.
-5. Cada tópico principal deve conter exatamente 3 subtópicos.
-6. Cada tópico principal deve ter uma abertura explicativa.
-7. Cada tópico principal deve ter um campo topicReferences com 4 a 6 referências bíblicas relacionadas ao assunto.
-8. Cada subtópico deve conter:
+CADA LIÇÃO DEVE CONTER, NESTA ORDEM:
+1. Título da lição
+2. Subtítulo
+3. Texto áureo (com o texto escrito por extenso)
+4. Verdade prática
+5. Leitura bíblica em classe (com os textos escritos por extenso)
+6. Objetivos da lição
+7. Palavra ao professor
+8. Panorama da lição
+9. Introdução
+10. Três tópicos principais
+11. Cada tópico principal com:
    - título;
-   - referência bíblica principal;
-   - explicação bíblica;
-   - aplicação prática;
-   - supportReferences com 3 a 5 referências bíblicas de apoio;
-   - crossReferences com 3 a 5 referências cruzadas relacionadas.
-9. Não encha a lição de versículos soltos sem explicar.
-10. As referências cruzadas devem conectar Antigo e Novo Testamento quando possível.
-11. A revista do aluno também deve ser completa, explicativa e profunda.
-12. A versão do professor deve ter o mesmo conteúdo principal da versão do aluno, mas com recursos extras controlados.
-13. Use como padrão textual a King James Fiel 1611.
-14. Siga linha bíblica conservadora.
-15. Em temas sobre Espírito Santo, dons, igreja, santificação, missões e escatologia, siga o pentecostalismo clássico.
-16. Não crie doutrinas estranhas, especulativas ou sensacionalistas.
-17. Inclua referências bíblicas junto ao argumento quando isso fortalecer a explicação.
+   - referência bíblica de cabeçalho;
+   - desenvolvimento argumentativo;
+   - três subtópicos
+12. Cada subtópico com:
+   - título;
+   - referência bíblica;
+   - conteúdo real, explicado e aplicado;
+   - referências cruzadas integradas ao texto
+13. Aplicação para a vida
+14. Conclusão
+15. Auxílio bibliológico ou auxílio doutrinário (quadro)
+16. Subsídio histórico
+17. Atenção, professor: cuidado na interpretação
+18. Apoio doutrinário
+19. Para aprofundamento
+20. Orientações para o professor
+21. Revisando o conteúdo (perguntas e respostas)
 
-${limites}
+ORDEM OBRIGATÓRIA NO FIM DE CADA LIÇÃO:
+- Aplicação para a vida
+- Conclusão
+- Auxílio bibliológico ou doutrinário
+- Subsídio histórico
+- Atenção, professor
+- Apoio doutrinário
+- Para aprofundamento
+- Orientações para o professor
+- Revisando o conteúdo
 
-${controleProfessor}
+REGRAS IMPORTANTES SOBRE REFERÊNCIAS:
+- Não concentrar todas as referências em um único bloco solto.
+- Integrar referências bíblicas dentro dos argumentos.
+- O tópico e os subtópicos precisam ter base bíblica clara.
+- Citar referências cruzadas relevantes ao longo da explicação.
+- Na seção “Para aprofundamento”, indicar materiais reais, por exemplo:
+  Bíblia de Estudo Pentecostal, Bíblia de Estudo Plenitude, Bíblia de Estudo de Genebra, Manual Bíblico de Halley, Introdução Bíblica de Norman Geisler e William Nix, Teologia Sistemática Pentecostal, Teologia Sistemática de Norman Geisler, Comentário Bíblico Beacon, Comentário Bíblico Moody, Dicionário Bíblico Wycliffe, Dicionário Bíblico Baker, etc.
 
-FORMATO JSON:
-{
-  "lesson": ${form.lessonNumber},
-  "title": "",
-  "goldenText": "",
-  "practicalTruth": "",
-  "biblicalReadingReference": "",
-  "biblicalReadingFull": [
-    {
-      "reference": "",
-      "text": ""
-    }
-  ],
-  "objectives": ["", "", ""],
-  "introduction": "",
-  "topics": [
-    {
-      "title": "",
-      "topicReferences": ["", "", "", ""],
-      "content": "",
-      "subtopics": [
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" }
-      ]
-    },
-    {
-      "title": "",
-      "topicReferences": ["", "", "", ""],
-      "content": "",
-      "subtopics": [
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" }
-      ]
-    },
-    {
-      "title": "",
-      "topicReferences": ["", "", "", ""],
-      "content": "",
-      "subtopics": [
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" },
-        { "title": "", "reference": "", "supportReferences": ["", "", "", ""], "crossReferences": ["", "", "", ""], "content": "" }
-      ]
-    }
-  ],
-  "lifeApplication": "",
-  "teacherNotes": "",
-  "classApproach": "",
-  "pastoralObservation": "",
-  "teacherSubsidies": [
-    { "title": "", "content": "" },
-    { "title": "", "content": "" }
-  ],
-  "doctrinalSupport": "",
-  "recommendedDeepening": ["", "", ""],
-  "bibliographicReferences": ["", "", "", ""],
-  "studentNotesSpace": "",
-  "conclusion": "",
-  "questionsAndAnswers": [
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" }
-  ],
-  "questionsOnly": ["", "", "", ""]
-}
-`.trim();
+REGRAS IMPORTANTES SOBRE O AUXÍLIO BIBLIOLÓGICO:
+- Criar um quadro especial de auxílio com título bonito.
+- O conteúdo deve realmente ajudar o professor.
+- Pode citar obra doutrinária, comentário, introdução bíblica, dicionário bíblico ou teologia sistemática.
+- Use autores reais e obras reais.
+- Não inventar referência exata se não tiver certeza.
+
+REGRAS IMPORTANTES SOBRE O HTML:
+- Gere HTML limpo.
+- Crie classes úteis, como:
+  material-root, cover-front, cover-back, teacher-opening, magazine-overview, lesson, box, box-blue, box-gold, auxilio, revisando, professor-note, etc.
+- Pode incluir um bloco <style> no começo do fragmento com o CSS essencial do material.
+- O HTML precisa ficar bonito e organizado mesmo dentro de uma área de conteúdo.
+- Cada lição deve estar separada visualmente.
+
+REGRAS IMPORTANTES SOBRE A CAPA:
+- A capa frontal deve ser profissional, viva e bonita.
+- A contracapa deve combinar com a capa frontal.
+- Trabalhar acabamento visual editorial.
+- Variar conforme o tema.
+- Se o tema for sobre Bíblia/Bibliologia, a capa pode trabalhar mesa de estudo, Bíblia aberta, luz dourada, manuscritos, pergaminhos, brilho suave, atmosfera reverente e editorial.
+- Não fazer capa repetitiva e sem vida.
+
+TEMA E INSTRUÇÕES ESPECIAIS DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+AGORA GERE O HTML COMPLETO DA REVISTA DO PROFESSOR.
+`;
 }
 
-function promptSermao(form) {
+function buildRevistaAlunoPrompt(data) {
+  const qtd = data.quantidadeLicoes || 4;
+
   return `
-Você é um pregador cristão, expositor bíblico, pastor e teólogo.
+Você é um redator editorial cristão sênior. Gere uma REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL, VERSÃO DO ALUNO, para classe adulta, em HTML.
 
-Crie um SERMÃO CRISTÃO pregável no púlpito.
-Não faça parecer e-book, livro ou revista.
-
-${baseDados(form, "Sermão cristão")}
-${regrasJson()}
+${commonContext(data)}
 
 REGRAS:
-1. O sermão deve ser bíblico, profundo e pregável.
-2. Cada ponto deve ter base bíblica clara.
-3. Cada ponto deve conter referências bíblicas de apoio.
-4. Cada ponto deve conter referências cruzadas conectando o tema com outros textos bíblicos.
-5. Não crie um texto com cara de e-book.
-6. Use linguagem de púlpito, pastoral e aplicável.
+- Gere SOMENTE HTML.
+- Não use inglês.
+- Produza conteúdo completo, profundo, agradável de ler e com ótima organização.
+- A revista deve ter ${qtd} lições.
+- Deve conter capa frontal, apresentação breve, ${qtd} lições completas e contracapa.
+- Cada lição precisa ter:
+  título, subtítulo, texto áureo, verdade prática, leitura bíblica em classe por extenso, objetivos, introdução, três tópicos principais, cada tópico com três subtópicos, aplicação para a vida, conclusão e revisão do conteúdo.
+- Integrar referências bíblicas ao longo dos argumentos.
+- A linguagem deve ser didática, bíblica, reverente e acessível para alunos adultos.
+- A capa deve ser bonita, editorial, temática e coerente com o assunto.
 
-FORMATO JSON:
-{
-  "type": "sermao",
-  "title": "",
-  "subtitle": "",
-  "theme": "",
-  "biblicalText": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "objective": "",
-  "introduction": "",
-  "biblicalContext": "",
-  "textExplanation": "",
-  "centralProposition": "",
-  "transitionPhrase": "",
-  "points": [
-    {
-      "title": "",
-      "references": ["", "", "", ""],
-      "crossReferences": ["", "", "", ""],
-      "explanation": "",
-      "pastoralApplication": "",
-      "illustration": ""
-    }
-  ],
-  "dailyApplications": ["", "", "", ""],
-  "conclusion": "",
-  "appeal": "",
-  "finalPrayer": ""
-}
-`.trim();
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo.
+`;
 }
 
-function promptEbook(form) {
+function buildLivroCristaoPrompt(data) {
   return `
-Você é um escritor cristão, pastor e organizador editorial.
+Você é um escritor cristão experiente e editor de livros teológicos.
 
-Crie um E-BOOK CRISTÃO moderno, prático, profundo e organizado.
+${commonContext(data)}
 
-${baseDados(form, "E-book cristão")}
-${regrasJson()}
+Gere SOMENTE HTML de um LIVRO CRISTÃO COMPLETO.
 
 REGRAS:
-1. E-book deve ser moderno, claro e prático.
-2. Cada capítulo deve ter base bíblica.
-3. Inclua referências bíblicas de apoio em cada capítulo.
-4. Inclua referências cruzadas em cada capítulo.
-5. Não faça parecer revista de EBD.
-6. Mesmo sendo e-book, cada capítulo deve ter começo, desenvolvimento e conclusão.
-7. Não faça comentários rasos.
-8. Desenvolva uma ideia por capítulo de modo claro e progressivo.
+- Não use markdown.
+- Não use inglês.
+- Produza um livro com desenvolvimento real de ideias.
+- O livro deve ter começo, meio e fim.
+- Cada capítulo precisa desenvolver uma parte do argumento central.
+- Não fazer comentários soltos.
+- Integrar referências bíblicas ao longo do texto.
+- Produzir leitura prazerosa, profunda, coerente, argumentativa e edificante.
+- Cada capítulo precisa ter:
+  - título;
+  - subtítulo opcional;
+  - introdução breve;
+  - desenvolvimento da ideia;
+  - argumentos bíblicos;
+  - aplicações pastorais quando fizer sentido;
+  - fechamento do capítulo;
+  - transição inteligente para o próximo capítulo.
+- Não gerar palavras técnicas aleatórias.
+- Se houver capa, gerar capa frontal e contracapa temáticas.
 
-FORMATO JSON:
-{
-  "type": "ebook",
-  "title": "",
-  "subtitle": "",
-  "theme": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "summaryIntro": "",
-  "chapters": [
-    {
-      "number": 1,
-      "title": "",
-      "heroCaption": "",
-      "biblicalBase": ["", "", "", ""],
-      "crossReferences": ["", "", "", ""],
-      "opening": "",
-      "centralIdea": "",
-      "sections": [
-        { "title": "", "content": "" },
-        { "title": "", "content": "" },
-        { "title": "", "content": "" }
-      ],
-      "highlightQuote": "",
-      "reflectionQuestions": ["", "", ""],
-      "practice": "",
-      "prayer": "",
-      "conclusion": ""
-    }
-  ],
-  "closing": ""
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo do livro.
+`;
 }
 
-Crie exatamente ${form.quantity} capítulos.
-`.trim();
-}
-
-function promptDevocional(form) {
+function buildEbookCristaoPrompt(data) {
   return `
-Você é um escritor devocional cristão e pastor.
+Você é um redator cristão experiente.
 
-Crie um DEVOCIONAL CRISTÃO bíblico, reflexivo e aplicável.
+${commonContext(data)}
 
-${baseDados(form, "Devocional cristão")}
-${regrasJson()}
+Gere SOMENTE HTML de um E-BOOK CRISTÃO completo, bonito e profundo.
 
 REGRAS:
-1. Devocional deve ser claro e direto.
-2. Cada dia deve ter versículo, reflexão, aplicação e oração.
-3. Inclua referências bíblicas de apoio e referências cruzadas curtas quando possível.
-4. Não faça parecer revista ou sermão.
+- Estrutura clara.
+- Conteúdo sólido.
+- Referências bíblicas integradas ao texto.
+- Introdução, capítulos bem desenvolvidos e conclusão forte.
+- Se houver capa, gerar capa frontal temática e contracapa simples.
+- Não escrever nada fora do HTML.
 
-FORMATO JSON:
-{
-  "type": "devocional",
-  "title": "",
-  "subtitle": "",
-  "theme": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "presentation": "",
-  "days": [
-    {
-      "day": 1,
-      "title": "",
-      "verse": "",
-      "supportReferences": ["", "", ""],
-      "crossReferences": ["", "", ""],
-      "reflection": "",
-      "practicalApplication": "",
-      "meditationQuestion": "",
-      "prayer": ""
-    }
-  ],
-  "finalWord": ""
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo.
+`;
 }
 
-Crie exatamente ${form.quantity} dias devocionais.
-`.trim();
-}
-
-function promptEstudo(form) {
+function buildSermaoPrompt(data) {
   return `
-Você é um professor de Bíblia e teólogo.
+Você é um pregador e escritor cristão experiente.
 
-Crie um ESTUDO BÍBLICO/TEOLÓGICO didático, analítico e bíblico.
+${commonContext(data)}
 
-${baseDados(form, "Estudo bíblico/teológico")}
-${regrasJson()}
+Gere SOMENTE HTML de um SERMÃO completo.
+
+ESTRUTURA:
+- título
+- texto base
+- tema
+- introdução
+- 3 ou 4 tópicos bem desenvolvidos
+- cada tópico com explicação, referências bíblicas e aplicação
+- conclusão
+- apelo final
+- oração final opcional
 
 REGRAS:
-1. O estudo deve ser bíblico, analítico e pastoral.
-2. Inclua referências bíblicas de apoio em cada parte.
-3. Inclua referências cruzadas em cada parte.
-4. Quando necessário, explique termos doutrinários com clareza.
-5. Cada parte precisa trabalhar uma ideia com começo, desenvolvimento e conclusão.
-6. Não entregue comentário curto.
+- profundo
+- bíblico
+- pentecostal clássico quando apropriado
+- argumentativo
+- pastoral
+- não superficial
 
-FORMATO JSON:
-{
-  "type": "estudo",
-  "title": "",
-  "theme": "",
-  "biblicalText": "",
-  "supportReferences": ["", "", "", ""],
-  "crossReferences": ["", "", "", ""],
-  "objective": "",
-  "introduction": "",
-  "biblicalContext": "",
-  "parts": [
-    {
-      "number": 1,
-      "title": "",
-      "references": ["", "", "", ""],
-      "crossReferences": ["", "", "", ""],
-      "explanation": "",
-      "theologicalAnalysis": "",
-      "practicalApplication": ""
-    }
-  ],
-  "reviewQuestions": ["", "", "", ""],
-  "conclusion": ""
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo.
+`;
 }
 
-Crie exatamente ${form.quantity} partes.
-`.trim();
-}
-
-function promptCurso(form) {
+function buildDevocionalPrompt(data) {
   return `
-Você é um professor cristão e organizador de cursos bíblicos.
+Você é um escritor devocional cristão.
 
-Crie um CURSO CRISTÃO em formato de aulas.
+${commonContext(data)}
 
-${baseDados(form, "Curso cristão")}
-${regrasJson()}
+Gere SOMENTE HTML de um DEVOCIONAL completo.
+
+ESTRUTURA:
+- título
+- texto bíblico base
+- meditação
+- desenvolvimento
+- aplicação prática
+- oração final
 
 REGRAS:
-1. O curso deve ser didático.
-2. Cada aula deve ter objetivo, introdução, conteúdo, atividade e resumo.
-3. Inclua referências bíblicas de apoio em cada aula.
-4. Inclua referências cruzadas em cada aula.
-5. Mantenha linguagem clara para ensino em igreja local.
-6. Cada aula precisa ter progressão didática: começo, desenvolvimento e conclusão.
+- linguagem bíblica, pastoral e edificante
+- conteúdo bonito, acolhedor e profundo
+- referências bíblicas coerentes ao longo do texto
 
-FORMATO JSON:
-{
-  "type": "curso",
-  "title": "",
-  "subtitle": "",
-  "targetAudience": "",
-  "author": "",
-  "ministry": "",
-  "courseDescription": "",
-  "generalObjective": "",
-  "lessons": [
-    {
-      "lesson": 1,
-      "title": "",
-      "objective": "",
-      "introduction": "",
-      "biblicalTexts": ["", "", "", ""],
-      "crossReferences": ["", "", "", ""],
-      "content": "",
-      "classActivity": "",
-      "homework": "",
-      "summary": ""
-    }
-  ],
-  "finalEvaluation": "",
-  "finalWord": ""
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo.
+`;
 }
 
-Crie exatamente ${form.quantity} aulas.
-`.trim();
+function buildCursoPrompt(data) {
+  return `
+Você é um produtor de cursos cristãos.
+
+${commonContext(data)}
+
+Gere SOMENTE HTML de um CURSO cristão completo e bem estruturado.
+
+ESTRUTURA:
+- capa
+- apresentação
+- módulos
+- aulas
+- objetivos
+- conteúdo
+- referências bíblicas
+- exercícios ou perguntas
+- conclusão
+
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo.
+`;
 }
 
-async function callGeminiText(apiKey, models, prompt) {
-  let lastError = null;
+function buildEstudoBiblicoPrompt(data) {
+  return `
+Você é um professor de Bíblia experiente.
 
-  for (const model of models) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.62,
-              topP: 0.9,
-              maxOutputTokens: 18000
-            }
-          })
-        }
-      );
+${commonContext(data)}
 
-      const rawText = await response.text();
-      const data = safeJson(rawText);
+Gere SOMENTE HTML de um ESTUDO BÍBLICO completo.
 
-      if (!response.ok) {
-        const msg = data?.error?.message || rawText || `Erro no modelo ${model}`;
-        throw new Error(msg.slice(0, 900));
-      }
+ESTRUTURA:
+- título
+- texto base
+- introdução
+- desenvolvimento em tópicos
+- referências cruzadas
+- aplicações práticas
+- conclusão
 
-      if (!data) {
-        throw new Error("O modelo respondeu em formato inválido.");
-      }
+REGRAS:
+- conteúdo profundo
+- bem argumentado
+- prazeroso de ler
+- fiel às Escrituras
 
-      return { modelUsed: model, data };
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
 
-    } catch (error) {
-      lastError = error;
-      console.error("Falha no modelo", model, error.message);
-    }
+Gere o HTML completo.
+`;
+}
+
+function buildPromptGenerico(data) {
+  return `
+Você é um redator cristão experiente.
+
+${commonContext(data)}
+
+Gere SOMENTE HTML de um material cristão completo, bonito, profundo e bem organizado, obedecendo as instruções do usuário.
+
+INSTRUÇÃO ESPECIAL DO USUÁRIO:
+${fallback(data.temaPrincipal, "Não informado.")}
+
+Gere o HTML completo.
+`;
+}
+
+/* =========================
+   EXTRAÇÃO / LIMPEZA HTML
+========================= */
+
+function extractHtml(rawText) {
+  if (!rawText) return "";
+
+  const beginEndMatch = rawText.match(
+    /<!--\s*BEGIN_HTML\s*-->([\s\S]*?)<!--\s*END_HTML\s*-->/i
+  );
+  if (beginEndMatch?.[1]) {
+    return beginEndMatch[1].trim();
   }
 
-  throw lastError || new Error("Nenhum modelo conseguiu gerar o texto.");
+  const fencedHtml = rawText.match(/```html([\s\S]*?)```/i);
+  if (fencedHtml?.[1]) {
+    return fencedHtml[1].trim();
+  }
+
+  const fencedGeneric = rawText.match(/```([\s\S]*?)```/i);
+  if (fencedGeneric?.[1] && looksLikeHtml(fencedGeneric[1])) {
+    return fencedGeneric[1].trim();
+  }
+
+  if (looksLikeHtml(rawText)) {
+    return rawText.trim();
+  }
+
+  return "";
 }
 
-function safeJson(text) {
+function looksLikeHtml(text) {
+  if (!text) return false;
+  const t = text.toLowerCase();
+  return (
+    t.includes("<section") ||
+    t.includes("<article") ||
+    t.includes("<div") ||
+    t.includes("<h1") ||
+    t.includes("<style")
+  );
+}
+
+function cleanHtml(html) {
+  if (!html) return "";
+
+  let cleaned = html;
+
+  cleaned = cleaned.replace(/```html/gi, "");
+  cleaned = cleaned.replace(/```/g, "");
+  cleaned = cleaned.replace(/chaptersummary/gi, "");
+  cleaned = cleaned.replace(/reflectiveclosing/gi, "");
+  cleaned = cleaned.replace(/transitiontonextchapter/gi, "");
+  cleaned = cleaned.replace(/chaptersummary/gi, "");
+  cleaned = cleaned.replace(/reflect close/gi, "");
+  cleaned = cleaned.replace(/gemini/gi, "");
+  cleaned = cleaned.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+
+  return cleaned.trim();
+}
+
+function buildFallbackHtml(rawText, data) {
+  const safeText = escapeHtml(rawText || "Não foi possível estruturar a resposta.");
+
+  return `
+<style>
+  .material-root{
+    max-width:900px;
+    margin:0 auto;
+    padding:24px;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#2b2118;
+    line-height:1.7;
+  }
+  .material-root h1,.material-root h2,.material-root h3{
+    color:#4b2d14;
+  }
+  .material-root .box{
+    background:#fffdf9;
+    border:1px solid #e6d7c3;
+    border-radius:18px;
+    padding:20px;
+    margin:18px 0;
+  }
+</style>
+<div class="material-root">
+  <section class="box">
+    <h1>${escapeHtml(fallback(data.titulo, "Material gerado"))}</h1>
+    <p><strong>Subtítulo:</strong> ${escapeHtml(fallback(data.subtitulo, "—"))}</p>
+    <p><strong>Tipo:</strong> ${escapeHtml(fallback(data.tipoMaterial, "Material cristão"))}</p>
+    <p><strong>Conteúdo retornado pela IA:</strong></p>
+    <div>${safeText.replace(/\n/g, "<br>")}</div>
+  </section>
+</div>
+`;
+}
+
+/* =========================
+   HELPERS
+========================= */
+
+function fallback(value, defaultValue = "") {
+  return value && String(value).trim() ? String(value).trim() : defaultValue;
+}
+
+function safeJsonParse(text) {
   try {
     return JSON.parse(text);
-  } catch (_) {
-    return null;
+  } catch {
+    return {};
   }
 }
 
-function extractText(data) {
-  const parts = data?.candidates?.[0]?.content?.parts || [];
-  return parts.map((part) => part.text || "").join("\n").trim();
-}
-
-function parseJson(text) {
-  const cleaned = String(text || "")
-    .trim()
-    .replace(/^```json/i, "")
-    .replace(/^```/i, "")
-    .replace(/```$/i, "")
-    .trim();
-
-  try {
-    return JSON.parse(cleaned);
-  } catch (_) {
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}");
-
-    if (start >= 0 && end > start) {
-      try {
-        return JSON.parse(cleaned.slice(start, end + 1));
-      } catch (_) {
-        return null;
-      }
-    }
-  }
-
-  return null;
+function escapeHtml(text) {
+  return String(text || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
