@@ -65,13 +65,8 @@ function normalizarFormulario(body) {
     "sermao"
   ).trim().toLowerCase();
 
-  const lessonTitles = Array.isArray(body.lessonTitles)
-    ? body.lessonTitles
-    : [];
-
-  const chapterPlan = Array.isArray(body.chapterPlan)
-    ? body.chapterPlan
-    : [];
+  const lessonTitles = Array.isArray(body.lessonTitles) ? body.lessonTitles : [];
+  const chapterPlan = Array.isArray(body.chapterPlan) ? body.chapterPlan : [];
 
   return {
     adminCode: String(body.adminCode || body.codigoAcesso || "").trim(),
@@ -98,7 +93,6 @@ function normalizarFormulario(body) {
     instrucoesExtras: String(body.instrucoesExtras || "").trim(),
 
     revistaVersion: String(body.revistaVersion || body.versaoRevista || "professor").trim(),
-
     bibleVersion: String(body.bibleVersion || body.traducao || "King James Fiel 1611").trim(),
 
     sermonPoints: Number(body.sermonPoints || 3),
@@ -253,12 +247,6 @@ function criarPrompt(form) {
     return promptRevistaCompleta(form);
   }
 
-  if (form.materialType === "sermao") return promptSermao(form);
-  if (form.materialType === "devocional") return promptDevocional(form);
-  if (form.materialType === "estudo") return promptEstudo(form);
-  if (form.materialType === "ebook") return promptEbook(form);
-  if (form.materialType === "curso") return promptCurso(form);
-
   if (form.materialType === "livro" && form.livroPart === "meta") {
     return promptLivroMeta(form);
   }
@@ -268,6 +256,11 @@ function criarPrompt(form) {
   }
 
   if (form.materialType === "livro") return promptLivro(form);
+  if (form.materialType === "sermao") return promptSermao(form);
+  if (form.materialType === "devocional") return promptDevocional(form);
+  if (form.materialType === "estudo") return promptEstudo(form);
+  if (form.materialType === "ebook") return promptEbook(form);
+  if (form.materialType === "curso") return promptCurso(form);
 
   return promptEstudo(form);
 }
@@ -295,16 +288,17 @@ Tom: ${form.tone}
 Tradução bíblica padrão: ${form.bibleVersion}
 
 Regras gerais:
-- Linguagem bíblica, pastoral, didática, profunda, reverente e adulta.
-- Não produzir conteúdo raso.
-- Não repetir ideias vazias.
-- Não mencionar inteligência artificial.
-- Não usar símbolo do Gemini.
-- Não inventar nomes de livros quando pedir materiais reais; prefira obras conhecidas e clássicas quando aplicável.
-- Manter fidelidade bíblica e doutrinária.
-- Explicar os textos bíblicos usados.
-- Escrever em português do Brasil.
-- Usar uma linha pentecostal clássica quando o assunto permitir.
+- Escreva em português do Brasil.
+- Use linguagem bíblica, pastoral, didática, reverente e adulta.
+- Siga uma linha pentecostal clássica quando o assunto permitir.
+- Não produza conteúdo raso.
+- Não repita frases vazias.
+- Não mencione inteligência artificial.
+- Não use símbolo do Gemini.
+- Não invente dados históricos inseguros.
+- Explique os textos bíblicos usados.
+- Use fidelidade bíblica e doutrinária.
+- Seja profundo, mas não escreva respostas longas demais a ponto de quebrar o JSON.
 `.trim();
 }
 
@@ -318,7 +312,11 @@ ${promptBase(form)}
 
 Crie apenas a estrutura inicial de uma revista mensal de Escola Bíblica Dominical, versão do professor.
 
-A revista deve ter nível editorial sério, adulto e profundo.
+O modelo deve seguir uma revista pedagógica de EBD do professor, com:
+- apresentação ao professor;
+- panorama geral da revista;
+- orientação geral ao professor;
+- quatro lições organizadas.
 
 Nesta etapa, crie somente:
 1. Dados gerais da revista.
@@ -330,10 +328,6 @@ Nesta etapa, crie somente:
 Não desenvolva as lições ainda.
 Não crie capa.
 Não crie contracapa.
-
-A apresentação ao professor deve ser pastoral, madura e explicar a importância do tema para a sala de aula.
-O panorama geral deve apresentar a linha de pensamento da revista.
-As orientações gerais devem ajudar o professor a conduzir as aulas.
 
 Retorne JSON neste formato:
 
@@ -389,32 +383,42 @@ Não gere capa.
 Não gere contracapa.
 Não gere outras lições.
 
-A lição deve ser digna de REVISTA DO PROFESSOR para classe adulta da EBD.
-O conteúdo deve ser robusto, bíblico, doutrinário, pastoral, didático, histórico quando necessário e profundamente explicativo.
+A lição deve seguir o modelo de uma REVISTA DO PROFESSOR de Escola Bíblica Dominical.
 
-REGRAS OBRIGATÓRIAS PARA A LIÇÃO:
-- O campo "goldenText" deve trazer a referência e o versículo por extenso.
-- O campo "bibleReading" NÃO pode trazer somente referências.
-- O campo "bibleReading" deve ser uma lista de blocos com referência e texto bíblico por extenso.
-- Cada tópico principal deve ter texto explicativo forte.
-- Cada tópico deve ter no mínimo 2 parágrafos.
-- Cada subtópico deve ter no mínimo 2 parágrafos.
-- Cada subtópico deve explicar a referência bíblica usada.
-- Cada subtópico deve ter aplicação para a compreensão do professor.
-- Não faça subtópicos curtos.
-- Não faça comentários genéricos.
-- Não use frases vazias.
-- Não use conteúdo raso.
-- Não deixe tópico somente com uma frase.
-- Use referências bíblicas em tópicos e subtópicos.
-- Explique os textos bíblicos no corpo da lição.
-- Inclua orientação prática para o professor conduzir a aula.
-- Inclua auxílio bibliológico ou doutrinário com densidade.
-- Inclua subsídio histórico quando o assunto permitir.
-- Inclua atenção ao professor sobre erros de interpretação.
-- Inclua apoio doutrinário.
-- Inclua materiais reais para aprofundamento.
-- Revisando o conteúdo deve ter 5 perguntas e respostas.
+FORMATO PEDAGÓGICO OBRIGATÓRIO:
+1. Cabeçalho da lição.
+2. Texto áureo com referência e versículo por extenso.
+3. Verdade prática.
+4. Leitura diária de segunda a sábado.
+5. Leitura bíblica em classe com referência e texto por extenso.
+6. Hinos sugeridos.
+7. Plano de aula.
+8. Palavra-chave.
+9. Comentário da lição com introdução, três tópicos e subtópicos.
+10. Sinopse de cada tópico.
+11. Auxílio bibliológico ou doutrinário.
+12. Ampliando o conhecimento.
+13. Aplicação prática.
+14. Conclusão.
+15. Perguntas e respostas para revisão.
+
+REGRAS PARA NÃO QUEBRAR A GERAÇÃO:
+- Não escreva textos enormes.
+- Cada subtópico deve ter 1 parágrafo forte, claro e útil ao professor.
+- Cada tópico principal deve ter 1 parágrafo introdutório.
+- A leitura bíblica em classe deve trazer o texto bíblico por extenso, mas escolha uma leitura moderada, de preferência entre 4 e 8 versículos.
+- Não tente escrever uma revista inteira dentro de uma única lição.
+- Não deixe o JSON quebrado.
+- Não coloque aspas desnecessárias dentro dos textos, para evitar quebrar o JSON.
+- Não use quebras exageradas.
+
+REGRAS DE QUALIDADE:
+- O conteúdo não pode ser raso.
+- Cada subtópico precisa ter explicação bíblica, doutrinária e aplicação pastoral.
+- Explique a referência bíblica usada.
+- Escreva como material para professor adulto.
+- Inclua orientação para o professor conduzir a aula.
+- Use linguagem clara, madura, bíblica e reverente.
 
 A LEITURA BÍBLICA EM CLASSE deve seguir este padrão:
 [
@@ -424,7 +428,14 @@ A LEITURA BÍBLICA EM CLASSE deve seguir este padrão:
   }
 ]
 
-Se a leitura bíblica tiver vários textos, cada texto deve vir em um objeto separado.
+A LEITURA DIÁRIA deve seguir este padrão:
+[
+  {
+    "day": "Segunda",
+    "reference": "",
+    "theme": ""
+  }
+]
 
 ${form.instrucoesExtras ? `Instruções extras do usuário:\n${form.instrucoesExtras}` : ""}
 
@@ -433,17 +444,59 @@ Retorne JSON válido neste formato:
 {
   "type": "revistaLesson",
   "number": ${numero},
+  "date": "",
   "title": "",
   "subtitle": "",
+  "imagePrompt": "",
   "goldenText": "",
   "practicalTruth": "",
+  "dailyReading": [
+    {
+      "day": "Segunda",
+      "reference": "",
+      "theme": ""
+    },
+    {
+      "day": "Terça",
+      "reference": "",
+      "theme": ""
+    },
+    {
+      "day": "Quarta",
+      "reference": "",
+      "theme": ""
+    },
+    {
+      "day": "Quinta",
+      "reference": "",
+      "theme": ""
+    },
+    {
+      "day": "Sexta",
+      "reference": "",
+      "theme": ""
+    },
+    {
+      "day": "Sábado",
+      "reference": "",
+      "theme": ""
+    }
+  ],
   "bibleReading": [
     {
       "reference": "",
       "text": ""
     }
   ],
-  "objectives": ["", "", ""],
+  "hymns": ["", "", ""],
+  "lessonPlan": {
+    "introduction": "",
+    "objectives": ["", "", ""],
+    "methodology": "",
+    "application": "",
+    "conclusion": ""
+  },
+  "keyword": "",
   "teacherWord": "",
   "lessonOverview": "",
   "introduction": "",
@@ -453,30 +506,75 @@ Retorne JSON válido neste formato:
       "reference": "",
       "text": "",
       "subtopics": [
-        { "title": "", "reference": "", "text": "" },
-        { "title": "", "reference": "", "text": "" },
-        { "title": "", "reference": "", "text": "" }
-      ]
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        }
+      ],
+      "synopsis": "",
+      "teacherAid": "",
+      "expandingKnowledge": ""
     },
     {
       "title": "",
       "reference": "",
       "text": "",
       "subtopics": [
-        { "title": "", "reference": "", "text": "" },
-        { "title": "", "reference": "", "text": "" },
-        { "title": "", "reference": "", "text": "" }
-      ]
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        }
+      ],
+      "synopsis": "",
+      "teacherAid": "",
+      "expandingKnowledge": ""
     },
     {
       "title": "",
       "reference": "",
       "text": "",
       "subtopics": [
-        { "title": "", "reference": "", "text": "" },
-        { "title": "", "reference": "", "text": "" },
-        { "title": "", "reference": "", "text": "" }
-      ]
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        },
+        {
+          "title": "",
+          "reference": "",
+          "text": ""
+        }
+      ],
+      "synopsis": "",
+      "teacherAid": "",
+      "expandingKnowledge": ""
     }
   ],
   "lifeApplication": "",
@@ -488,11 +586,26 @@ Retorne JSON válido neste formato:
   "recommendedDeepening": ["", "", "", ""],
   "teacherNotes": "",
   "reviewQuestions": [
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" },
-    { "question": "", "answer": "" }
+    {
+      "question": "",
+      "answer": ""
+    },
+    {
+      "question": "",
+      "answer": ""
+    },
+    {
+      "question": "",
+      "answer": ""
+    },
+    {
+      "question": "",
+      "answer": ""
+    },
+    {
+      "question": "",
+      "answer": ""
+    }
   ]
 }
 `;
@@ -510,9 +623,6 @@ Não gere imagem.
 A imagem será gerada por outro arquivo.
 
 A capa deve ser profissional, bíblica, editorial, reverente e coerente com o tema.
-
-Crie um tema visual forte para uma capa sobre:
-${form.title}
 
 Retorne JSON:
 
@@ -540,8 +650,6 @@ Não gere lições.
 Não gere a revista inteira.
 Não gere imagem.
 
-A contracapa deve ter uma frase forte e um texto editorial curto, maduro e pastoral.
-
 Retorne JSON:
 
 {
@@ -561,7 +669,7 @@ function promptRevistaCompleta(form) {
   return `
 ${promptBase(form)}
 
-Crie uma revista de EBD completa, mas em formato resumido. Preferencialmente use o modo por partes do sistema.
+Crie uma revista de EBD em formato resumido. O modo principal do sistema gera a revista por partes.
 
 Retorne JSON:
 
@@ -589,14 +697,6 @@ function promptSermao(form) {
 ${promptBase(form)}
 
 Crie um sermão completo com introdução, ${form.sermonPoints} tópicos, aplicação, conclusão e oração.
-
-O sermão deve ter:
-- Introdução envolvente.
-- Tópicos bem desenvolvidos.
-- Cada tópico com referência bíblica.
-- Aplicação espiritual.
-- Conclusão forte.
-- Oração final.
 
 Retorne JSON:
 
@@ -627,8 +727,6 @@ ${promptBase(form)}
 
 Crie um devocional cristão.
 
-O devocional deve ser profundo, pastoral e edificante.
-
 Retorne JSON:
 
 {
@@ -650,14 +748,6 @@ function promptEstudo(form) {
 ${promptBase(form)}
 
 Crie um estudo bíblico/teológico profundo.
-
-O estudo deve conter:
-- Introdução.
-- Tópicos bem desenvolvidos.
-- Referências bíblicas.
-- Explicação teológica.
-- Aplicação.
-- Conclusão.
 
 Retorne JSON:
 
@@ -691,8 +781,6 @@ ${promptBase(form)}
 
 Crie um e-book cristão com ${form.quantity} capítulos.
 
-Cada capítulo deve ter título e conteúdo bem desenvolvido.
-
 Retorne JSON:
 
 {
@@ -717,13 +805,6 @@ function promptCurso(form) {
 ${promptBase(form)}
 
 Crie um curso cristão com ${form.quantity} aulas.
-
-Cada aula deve ter:
-- título
-- objetivo
-- conteúdo
-- atividade
-- aplicação
 
 Retorne JSON:
 
@@ -842,8 +923,6 @@ ${form.readingPath}
 Resumo do capítulo anterior:
 ${form.previousChapterSummary}
 
-O capítulo deve ser robusto, pastoral, bíblico, profundo e bem escrito.
-
 Retorne JSON:
 
 {
@@ -886,9 +965,9 @@ async function callGeminiText(apiKey, model, prompt) {
       }
     ],
     generationConfig: {
-      temperature: 0.75,
-      topP: 0.95,
-      maxOutputTokens: 16000,
+      temperature: 0.65,
+      topP: 0.9,
+      maxOutputTokens: 12000,
       responseMimeType: "application/json"
     }
   };
@@ -935,8 +1014,8 @@ async function callOpenAIText(apiKey, model, prompt) {
         content: prompt
       }
     ],
-    temperature: 0.75,
-    max_tokens: 16000,
+    temperature: 0.65,
+    max_tokens: 12000,
     response_format: {
       type: "json_object"
     }
@@ -995,7 +1074,7 @@ function extrairJSON(texto) {
       try {
         return JSON.parse(recorte);
       } catch (erroRecorte) {
-        throw new Error("A IA respondeu, mas o JSON veio quebrado. Tente gerar novamente ou reduzir o tamanho do pedido.");
+        throw new Error("A IA respondeu, mas o JSON veio quebrado. A lição ficou grande demais. Tente gerar novamente.");
       }
     }
 
@@ -1025,8 +1104,13 @@ function limparMensagemErro(msg) {
     return "A chave da API está inválida ou não foi configurada corretamente na Vercel. Confira GEMINI_API_KEY e OPENAI_API_KEY.";
   }
 
-  if (texto.includes("maximum context") || texto.includes("max_tokens") || texto.includes("token")) {
-    return "O pedido ficou grande demais para a IA responder. Tente reduzir o tamanho ou gerar por partes.";
+  if (
+    texto.includes("maximum context") ||
+    texto.includes("max_tokens") ||
+    texto.includes("token") ||
+    texto.includes("json veio quebrado")
+  ) {
+    return "A lição ficou grande demais e a IA cortou a resposta. O código foi ajustado para reduzir o tamanho, mas tente gerar novamente.";
   }
 
   if (texto.includes("json")) {
