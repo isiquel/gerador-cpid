@@ -491,6 +491,16 @@
       color:var(--vinho)!important;
     }
 
+    .bloco-erro-licao{
+      background:#fff5f5!important;
+      border:1px solid #e7b6b6!important;
+      border-left:8px solid var(--vermelho)!important;
+    }
+
+    .bloco-erro-licao h3{
+      color:var(--vermelho)!important;
+    }
+
     .capa{
       min-height:1040px;
       color:#fff;
@@ -847,8 +857,7 @@
       background-position:center!important;
       background-repeat:no-repeat!important;
     }
-
-    #areaImpressao{
+        #areaImpressao{
       display:none;
     }
 
@@ -1371,7 +1380,8 @@
       </div>
     </section>
   </main>
-    <div id="areaImpressao"></div>
+
+  <div id="areaImpressao"></div>
 
   <script>
     let ultimoMaterial = null;
@@ -1391,7 +1401,8 @@
     }
 
     function limparErroApi(msg){
-      const texto = String(msg || "").toLowerCase();
+      const textoOriginal = String(msg || "");
+      const texto = textoOriginal.toLowerCase();
 
       if(
         texto.includes("quota") ||
@@ -1413,14 +1424,18 @@
       }
 
       if(texto.includes("json")){
-        return "A IA respondeu fora do formato esperado. Tente gerar novamente ou reduza um pouco o tamanho do pedido.";
+        return "A IA respondeu fora do formato esperado. O sistema vai tentar novamente ou deixar a lição marcada para refazer.";
+      }
+
+      if(texto.includes("maximum context") || texto.includes("max_tokens") || texto.includes("token")){
+        return "O conteúdo pedido ficou grande demais para esta chamada da IA. O sistema vai tentar uma versão mais leve da lição.";
       }
 
       if(texto.includes("model") && texto.includes("not found")){
         return "Um dos modelos configurados não está disponível na sua conta. Verifique os nomes dos modelos nas variáveis da Vercel.";
       }
 
-      return String(msg || "Erro ao gerar material.");
+      return textoOriginal || "Erro ao gerar material.";
     }
 
     function setStatus(msg, classe = ""){
@@ -1576,17 +1591,12 @@
         }
       }
 
-      if(ehSermao){
+      if(ehSermao || ehDevocional || ehEstudo){
         if(el("coverMode")) el("coverMode").value = "sem-capa";
       }
 
-      if(ehDevocional){
-        if(el("coverMode")) el("coverMode").value = "sem-capa";
-        if(el("sermonPoints")) el("sermonPoints").value = "3";
-      }
-
-      if(ehEstudo){
-        if(el("coverMode")) el("coverMode").value = "sem-capa";
+      if(ehDevocional && el("sermonPoints")){
+        el("sermonPoints").value = "3";
       }
     }
 
@@ -1676,6 +1686,145 @@
       }
 
       return data;
+    }
+
+    async function postJSONComTentativas(url, body, tentativas = 2){
+      let ultimoErro = null;
+
+      for(let tentativa = 1; tentativa <= tentativas; tentativa++){
+        try{
+          return await postJSON(url, body);
+        }catch(erro){
+          ultimoErro = erro;
+
+          if(tentativa < tentativas){
+            setStatus(`A tentativa ${tentativa} falhou. Tentando novamente...`, "erro");
+            await esperar(1200);
+          }
+        }
+      }
+
+      throw ultimoErro || new Error("Erro ao gerar material.");
+    }
+
+    function esperar(ms){
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function criarLicaoFalha(numero, titulo, erro){
+      const mensagem = limparErroApi(erro?.message || erro || "Erro desconhecido.");
+
+      return {
+        type:"revistaLesson",
+        failed:true,
+        number:numero,
+        title:titulo || `Lição ${numero}`,
+        subtitle:"Esta lição não foi gerada automaticamente.",
+        goldenText:"",
+        practicalTruth:"",
+        bibleReading:"",
+        objectives:[],
+        teacherWord:"",
+        lessonOverview:"",
+        introduction:`A Lição ${numero} não foi gerada porque a API retornou erro durante esta etapa. As lições anteriores foram preservadas. Gere novamente depois ou use o modo de edição para completar esta lição.`,
+        topics:[],
+        lifeApplication:"",
+        conclusion:"",
+        bibliologicalAid:"",
+        historicalSupport:"",
+        interpretationCare:"",
+        doctrinalSupport:"",
+        recommendedDeepening:[],
+        teacherNotes:`Erro registrado: ${mensagem}`,
+        reviewQuestions:[]
+      };
+    }
+
+    async function gerarLicaoComRecuperacao(dados, revista, titulos, numero){
+      const tituloLicao = titulos[numero - 1] || `Lição ${numero}`;
+
+      const base = {
+        ...dados,
+        revistaPart:"lesson",
+        lessonNumber:numero,
+        lessonTitles:titulos,
+        presentationToTeacher:revista.presentationToTeacher,
+        magazineOverview:revista.magazineOverview,
+        generalTeacherGuidance:revista.generalTeacherGuidance
+      };
+
+      const promptForte = `
+Gere somente esta lição. Não gere a revista inteira.
+
+A LIÇÃO PRECISA SER DIGNA DE REVISTA DO PROFESSOR.
+
+Obrigatório:
+- A leitura bíblica em classe deve vir com as referências E os versículos por extenso.
+- O campo bibleReading deve conter texto bíblico completo, não apenas referências.
+- Cada tópico precisa ter desenvolvimento robusto, com explicação bíblica, doutrinária e pastoral.
+- Cada subtópico precisa ter no mínimo 2 parágrafos bem desenvolvidos.
+- Cada subtópico precisa explicar a referência bíblica usada.
+- Inclua orientação prática para o professor conduzir a aula.
+- Não faça comentários curtos.
+- Não faça subtópicos rasos.
+- Não use frases genéricas.
+- Inclua Palavra ao professor, Panorama da lição, Auxílio bibliológico, subsídio histórico, apoio doutrinário, materiais reais para aprofundamento e Revisando o conteúdo.
+- Use linguagem adulta, profunda, pastoral, reverente e didática.
+`;
+
+      const promptLeve = `
+Gere somente esta lição. Não gere a revista inteira.
+
+Faça uma versão mais leve para evitar erro de limite.
+Mantenha qualidade de revista do professor, porém seja mais objetivo.
+
+Obrigatório:
+- Leitura bíblica em classe com referências e texto por extenso.
+- 3 tópicos principais.
+- 3 subtópicos em cada tópico.
+- Cada subtópico com pelo menos 1 parágrafo bem explicado.
+- Texto áureo por extenso.
+- Verdade prática.
+- Palavra ao professor.
+- Panorama da lição.
+- Introdução.
+- Conclusão.
+- Revisando o conteúdo com 5 perguntas e respostas.
+`;
+
+      try{
+        const lessonResp = await postJSONComTentativas("/api/gerar", {
+          ...base,
+          instrucoesExtras:promptForte
+        }, 2);
+
+        const lesson = lessonResp.material || lessonResp;
+
+        if(!lesson || typeof lesson !== "object"){
+          throw new Error("A IA respondeu, mas a lição veio vazia.");
+        }
+
+        return lesson;
+      }catch(erroPrimeiro){
+        setStatus(`A Lição ${numero} falhou na versão completa. Tentando versão mais leve...`, "erro");
+
+        try{
+          const lessonRespLeve = await postJSONComTentativas("/api/gerar", {
+            ...base,
+            instrucoesExtras:promptLeve
+          }, 1);
+
+          const lessonLeve = lessonRespLeve.material || lessonRespLeve;
+
+          if(!lessonLeve || typeof lessonLeve !== "object"){
+            throw new Error("A IA respondeu, mas a versão leve da lição veio vazia.");
+          }
+
+          return lessonLeve;
+        }catch(erroSegundo){
+          return criarLicaoFalha(numero, tituloLicao, erroSegundo);
+        }
+      }
     }
 
     async function gerarPromptAutomatico(){
@@ -1864,10 +2013,10 @@
       setEtapas("Revista");
       setProgresso(7);
 
-      const metaResp = await postJSON("/api/gerar", {
+      const metaResp = await postJSONComTentativas("/api/gerar", {
         ...dados,
         revistaPart:"meta"
-      });
+      }, 2);
 
       const meta = metaResp.material || metaResp;
 
@@ -1908,43 +2057,21 @@
         ];
 
       const concluidas = ["Revista"];
+      const falhas = [];
 
       for(let i = 1; i <= 4; i++){
         const etapaAtual = `Lição ${i}`;
 
-        setStatus(`Gerando ${etapaAtual} de 4 com conteúdo completo, referências bíblicas, auxílios e perguntas...`);
+        setStatus(`Gerando ${etapaAtual} de 4 com recuperação automática caso falhe...`);
         setEtapas(etapaAtual, concluidas);
         setProgresso(10 + Math.round((i - 1) * 62 / 4));
 
-        const lessonResp = await postJSON("/api/gerar", {
-          ...dados,
-          revistaPart:"lesson",
-          lessonNumber:i,
-          lessonTitles:titulos,
-          presentationToTeacher:revista.presentationToTeacher,
-          magazineOverview:revista.magazineOverview,
-          generalTeacherGuidance:revista.generalTeacherGuidance,
-          instrucoesExtras:`
-Gere somente esta lição. Não gere a revista inteira.
+        const lesson = await gerarLicaoComRecuperacao(dados, revista, titulos, i);
 
-A LIÇÃO PRECISA SER DIGNA DE REVISTA DO PROFESSOR.
-
-Obrigatório:
-- A leitura bíblica em classe deve vir com as referências E os versículos por extenso.
-- O campo bibleReading deve conter texto bíblico completo, não apenas referências.
-- Cada tópico precisa ter desenvolvimento robusto, com explicação bíblica, doutrinária e pastoral.
-- Cada subtópico precisa ter no mínimo 2 parágrafos bem desenvolvidos.
-- Cada subtópico precisa explicar a referência bíblica usada.
-- Inclua orientação prática para o professor conduzir a aula.
-- Não faça comentários curtos.
-- Não faça subtópicos rasos.
-- Não use frases genéricas.
-- Inclua Palavra ao professor, Panorama da lição, Auxílio bibliológico, subsídio histórico, apoio doutrinário, materiais reais para aprofundamento e Revisando o conteúdo.
-- Use linguagem adulta, profunda, pastoral, reverente e didática.
-`
-        });
-
-        const lesson = lessonResp.material || lessonResp;
+        if(lesson.failed){
+          falhas.push(`Lição ${i}`);
+          setStatus(`${etapaAtual} falhou, foi marcada para refazer depois. Continuando a revista...`, "erro");
+        }
 
         revista.lessons.push(lesson);
         ultimoMaterial = revista;
@@ -1953,6 +2080,8 @@ Obrigatório:
 
         concluidas.push(etapaAtual);
         setProgresso(10 + Math.round(i * 62 / 4));
+
+        await esperar(600);
       }
 
       setStatus("Gerando textos editoriais da capa profissional da revista...");
@@ -1960,14 +2089,14 @@ Obrigatório:
       setProgresso(78);
 
       try{
-        const coverResp = await postJSON("/api/gerar", {
+        const coverResp = await postJSONComTentativas("/api/gerar", {
           ...dados,
           revistaPart:"cover",
           lessonTitles:titulos,
           presentationToTeacher:revista.presentationToTeacher,
           magazineOverview:revista.magazineOverview,
           generalTeacherGuidance:revista.generalTeacherGuidance
-        });
+        }, 2);
 
         revista.cover = coverResp.material || coverResp;
       }catch(e){
@@ -1980,7 +2109,7 @@ Obrigatório:
       if(valor("coverMode") === "com-capa"){
         try{
           setStatus("Gerando imagem profissional da capa com IA...");
-          const imgResp = await postJSON("/api/capa", {
+          const imgResp = await postJSONComTentativas("/api/capa", {
             ...dados,
             tipoImagem:"front",
             lessonTitles:titulos,
@@ -1988,7 +2117,7 @@ Obrigatório:
             subtitle:revista.cover?.subtitle || revista.subtitle,
             theme:dados.theme,
             visualTheme:revista.cover?.visualTheme || ""
-          });
+          }, 1);
 
           revista.coverImageUrl = imgResp.imageDataUrl || "";
           revista.coverProvider = imgResp.provider || "";
@@ -2012,14 +2141,14 @@ Obrigatório:
       setProgresso(91);
 
       try{
-        const backCoverResp = await postJSON("/api/gerar", {
+        const backCoverResp = await postJSONComTentativas("/api/gerar", {
           ...dados,
           revistaPart:"backcover",
           lessonTitles:titulos,
           presentationToTeacher:revista.presentationToTeacher,
           magazineOverview:revista.magazineOverview,
           generalTeacherGuidance:revista.generalTeacherGuidance
-        });
+        }, 2);
 
         revista.backCover = backCoverResp.material || backCoverResp;
       }catch(e){
@@ -2032,7 +2161,7 @@ Obrigatório:
       if(valor("coverMode") === "com-capa"){
         try{
           setStatus("Gerando imagem profissional da contracapa com IA...");
-          const imgBackResp = await postJSON("/api/capa", {
+          const imgBackResp = await postJSONComTentativas("/api/capa", {
             ...dados,
             tipoImagem:"back",
             lessonTitles:titulos,
@@ -2040,7 +2169,7 @@ Obrigatório:
             subtitle:revista.backCover?.subtitle || revista.subtitle,
             theme:dados.theme,
             visualTheme:revista.backCover?.visualTheme || ""
-          });
+          }, 1);
 
           revista.backCoverImageUrl = imgBackResp.imageDataUrl || "";
           revista.backCoverProvider = imgBackResp.provider || "";
@@ -2058,7 +2187,9 @@ Obrigatório:
       setProgresso(100);
       setEtapas("Contracapa", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional", "Contracapa"]);
 
-      if(revista.coverImageUrl){
+      if(falhas.length){
+        setStatus(`Revista gerada, mas ${escapeHtml(falhas.join(", "))} falhou e foi marcada para refazer depois. As outras partes foram preservadas.`, "erro");
+      }else if(revista.coverImageUrl){
         setStatus("Revista gerada com sucesso, incluindo capa profissional com imagem de IA.", "ok");
       }else{
         setStatus("Revista gerada com sucesso, mas sem imagem profissional de capa. Veja se a API de imagem tem cota/crédito e se API/capa.js está correto.", "erro");
@@ -2071,10 +2202,10 @@ Obrigatório:
       setProgresso(7);
 
       try{
-        const metaResp = await postJSON("/api/gerar", {
+        const metaResp = await postJSONComTentativas("/api/gerar", {
           ...dados,
           livroPart:"meta"
-        });
+        }, 2);
 
         const meta = metaResp.material || metaResp;
 
@@ -2100,23 +2231,35 @@ Obrigatório:
           setEtapas("Conteúdo", ["Estrutura"]);
           setProgresso(10 + Math.round((i - 1) * 80 / totalCapitulos));
 
-          const chapterResp = await postJSON("/api/gerar", {
-            ...dados,
-            livroPart:"chapter",
-            chapterNumber:i,
-            chapterPlan,
-            bookCentralThesis:meta.bookCentralThesis || "",
-            readingPath:meta.readingPath || "",
-            previousChapterSummary
-          });
+          try{
+            const chapterResp = await postJSONComTentativas("/api/gerar", {
+              ...dados,
+              livroPart:"chapter",
+              chapterNumber:i,
+              chapterPlan,
+              bookCentralThesis:meta.bookCentralThesis || "",
+              readingPath:meta.readingPath || "",
+              previousChapterSummary
+            }, 2);
 
-          const chapter = chapterResp.material || chapterResp;
+            const chapter = chapterResp.material || chapterResp;
 
-          livro.chapters.push(chapter);
-          previousChapterSummary = chapter.chapterSummary || chapter.summary || "";
-          ultimoMaterial = livro;
+            livro.chapters.push(chapter);
+            previousChapterSummary = chapter.chapterSummary || chapter.summary || "";
+            ultimoMaterial = livro;
 
-          renderizarMaterial(livro);
+            renderizarMaterial(livro);
+          }catch(e){
+            livro.chapters.push({
+              number:i,
+              title:`Capítulo ${i} não gerado`,
+              chapterSummary:`Este capítulo falhou durante a geração. Erro: ${limparErroApi(e.message)}`
+            });
+
+            ultimoMaterial = livro;
+            renderizarMaterial(livro);
+          }
+
           setProgresso(10 + Math.round(i * 80 / totalCapitulos));
         }
 
@@ -2412,6 +2555,36 @@ Obrigatório:
 
       lessons.forEach((l, index) => {
         const lessonNumber = l.number || l.lesson || index + 1;
+
+        if(l.failed){
+          html += `
+            <section class="pagina licao-pagina">
+              <div class="pagina-interna">
+                <h1 class="titulo-grande">Lição ${escapeHtml(lessonNumber)} — ${escapeHtml(l.title || "")}</h1>
+                <div class="subtitulo">${escapeHtml(l.subtitle || "Esta lição precisa ser refeita.")}</div>
+
+                <div class="bloco bloco-erro-licao">
+                  <h3>Lição não gerada automaticamente</h3>
+                  ${divTexto(l.introduction || "Esta lição falhou durante a geração automática. As demais partes da revista foram preservadas.")}
+                </div>
+
+                ${l.teacherNotes ? `
+                  <div class="bloco box-wine">
+                    <h3>Erro registrado</h3>
+                    ${divTexto(l.teacherNotes)}
+                  </div>
+                ` : ""}
+
+                <div class="bloco box-gold">
+                  <h3>Como resolver</h3>
+                  <div class="texto">Gere novamente a revista quando a cota da IA estiver disponível, ou use o modo edição para preencher esta lição manualmente. O sistema continuou a geração para não perder as lições anteriores.</div>
+                </div>
+              </div>
+            </section>
+          `;
+          return;
+        }
+
         const topics = Array.isArray(l.topics) ? l.topics : [];
         const review = Array.isArray(l.reviewQuestions) ? l.reviewQuestions : [];
 
