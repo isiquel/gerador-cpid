@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>VERBO IA - Gerador de Materiais Cristãos</title>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
   <style>
     :root{
       --marrom:#5b3a24;
@@ -816,57 +814,8 @@
       background-repeat:no-repeat!important;
     }
 
-    #pdfCloneArea{
-      position:fixed;
-      left:-99999px;
-      top:0;
-      width:794px;
-      background:#ffffff;
-      color:#222;
-      z-index:-9999;
-      opacity:1;
-      pointer-events:none;
-    }
-
-    #pdfCloneArea .doc{
-      max-width:100%!important;
-      width:100%!important;
-      display:block!important;
-      margin:0!important;
-      background:#ffffff!important;
-    }
-
-    #pdfCloneArea .pagina{
-      box-shadow:none!important;
-      border-radius:0!important;
-      border:none!important;
-      margin:0!important;
-      width:794px!important;
-      min-height:1122px!important;
-      background:#ffffff;
-      break-after:page;
-      page-break-after:always;
-      overflow:hidden;
-    }
-
-    #pdfCloneArea .pagina:last-child{
-      break-after:auto;
-      page-break-after:auto;
-    }
-
-    #pdfCloneArea .pagina-interna{
-      padding:52px 48px!important;
-    }
-
-    #pdfCloneArea .capa,
-    #pdfCloneArea .contracapa{
-      width:794px!important;
-      min-height:1122px!important;
-      height:1122px!important;
-      border-radius:0!important;
-      color:#fff!important;
-      -webkit-print-color-adjust:exact!important;
-      print-color-adjust:exact!important;
+    #areaImpressao{
+      display:none;
     }
 
     @media print{
@@ -880,6 +829,110 @@
         margin:0!important;
         padding:0!important;
         background:#fff!important;
+        overflow:visible!important;
+      }
+
+      body > header,
+      body > main{
+        display:none!important;
+      }
+
+      #areaImpressao{
+        display:block!important;
+        width:100%!important;
+        background:#fff!important;
+        color:#222!important;
+      }
+
+      #areaImpressao .doc{
+        width:100%!important;
+        max-width:100%!important;
+        margin:0!important;
+        display:block!important;
+        background:#fff!important;
+      }
+
+      #areaImpressao .pagina{
+        width:210mm!important;
+        min-height:297mm!important;
+        margin:0!important;
+        padding:0!important;
+        border:none!important;
+        border-radius:0!important;
+        box-shadow:none!important;
+        background:#fff!important;
+        overflow:hidden!important;
+        page-break-after:always!important;
+        break-after:page!important;
+      }
+
+      #areaImpressao .pagina:last-child{
+        page-break-after:auto!important;
+        break-after:auto!important;
+      }
+
+      #areaImpressao .pagina-interna{
+        padding:16mm 14mm!important;
+      }
+
+      #areaImpressao .titulo-grande{
+        font-size:25px!important;
+        line-height:1.18!important;
+      }
+
+      #areaImpressao .subtitulo{
+        font-size:15px!important;
+        line-height:1.45!important;
+      }
+
+      #areaImpressao .texto,
+      #areaImpressao p{
+        font-size:13.5px!important;
+        line-height:1.55!important;
+      }
+
+      #areaImpressao .bloco,
+      #areaImpressao .topico-revista{
+        padding:10px 12px!important;
+        margin-top:9px!important;
+        break-inside:avoid!important;
+        page-break-inside:avoid!important;
+      }
+
+      #areaImpressao .bloco h3,
+      #areaImpressao .topico-revista h3{
+        font-size:16.5px!important;
+      }
+
+      #areaImpressao .subtopico-revista{
+        padding:9px 11px!important;
+        margin-top:8px!important;
+        break-inside:avoid!important;
+        page-break-inside:avoid!important;
+      }
+
+      #areaImpressao .subtopico-revista h4{
+        font-size:15.5px!important;
+      }
+
+      #areaImpressao .lista{
+        font-size:13.5px!important;
+        line-height:1.45!important;
+      }
+
+      #areaImpressao .capa,
+      #areaImpressao .contracapa{
+        width:210mm!important;
+        min-height:297mm!important;
+        height:297mm!important;
+        border-radius:0!important;
+        color:#fff!important;
+        -webkit-print-color-adjust:exact!important;
+        print-color-adjust:exact!important;
+      }
+
+      #areaImpressao .capa-box{
+        min-height:260mm!important;
       }
     }
 
@@ -1237,7 +1290,7 @@
         <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">Gerar material</button>
 
         <div class="botoes">
-          <button class="btn-verde" type="button" onclick="salvarPDF()">Salvar em PDF</button>
+          <button class="btn-verde" type="button" onclick="salvarPDF()">Salvar / imprimir PDF</button>
           <button class="btn-cinza" type="button" onclick="limparTudo()">Limpar tudo</button>
         </div>
 
@@ -1283,7 +1336,7 @@
       </div>
     </section>
   </main>
-    <div id="pdfCloneArea"></div>
+    <div id="areaImpressao"></div>
 
   <script>
     let ultimoMaterial = null;
@@ -2589,33 +2642,11 @@
       }
 
       if(mostrar){
-        setStatus("Edição finalizada. Você pode salvar em PDF.", "ok");
+        setStatus("Edição finalizada. Você pode salvar ou imprimir em PDF.", "ok");
       }
     }
 
-    function esperar(ms){
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    async function esperarImagensDoElemento(elemento){
-      if(!elemento) return;
-
-      const imagens = Array.from(elemento.querySelectorAll("img"));
-
-      await Promise.all(imagens.map(img => {
-        if(img.complete) return Promise.resolve();
-
-        return new Promise(resolve => {
-          img.onload = resolve;
-          img.onerror = resolve;
-          setTimeout(resolve, 2500);
-        });
-      }));
-
-      await esperar(700);
-    }
-
-    function prepararHtmlParaPDF(html){
+    function prepararHtmlParaImpressao(html){
       const temp = document.createElement("div");
       temp.innerHTML = html;
 
@@ -2631,12 +2662,12 @@
       return temp.innerHTML;
     }
 
-    async function salvarPDF(){
+    function salvarPDF(){
       const resultado = el("resultado");
-      const pdfCloneArea = el("pdfCloneArea");
+      const areaImpressao = el("areaImpressao");
 
-      if(!resultado || !pdfCloneArea){
-        setStatus("Área de PDF não encontrada no arquivo.", "erro");
+      if(!resultado || !areaImpressao){
+        setStatus("Área de impressão não encontrada.", "erro");
         return;
       }
 
@@ -2649,73 +2680,22 @@
 
       finalizarEdicao(false);
 
-      setStatus("Preparando PDF somente com o conteúdo gerado...");
-      setProgresso(92);
+      const htmlLimpo = prepararHtmlParaImpressao(resultado.innerHTML);
+      areaImpressao.innerHTML = htmlLimpo;
 
-      try{
-        const htmlLimpo = prepararHtmlParaPDF(resultado.innerHTML);
+      const textoImpresso = (areaImpressao.innerText || "").trim();
 
-        pdfCloneArea.innerHTML = htmlLimpo;
-        pdfCloneArea.style.display = "block";
-        pdfCloneArea.style.visibility = "visible";
-
-        await esperarImagensDoElemento(pdfCloneArea);
-
-        const textoPdf = (pdfCloneArea.innerText || "").trim();
-
-        if(!textoPdf){
-          throw new Error("O conteúdo do PDF ficou vazio antes da conversão. Gere novamente o material e tente salvar outra vez.");
-        }
-
-        const nomeArquivo = (valor("title") || "material-cristao")
-          .toLowerCase()
-          .normalize("NFD")
-          .replace(/[\u0300-\u036f]/g, "")
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-+|-+$/g, "");
-
-        const opt = {
-          margin:0,
-          filename:`${nomeArquivo || "material-cristao"}.pdf`,
-          image:{
-            type:"jpeg",
-            quality:0.98
-          },
-          html2canvas:{
-            scale:2,
-            useCORS:true,
-            allowTaint:true,
-            backgroundColor:"#ffffff",
-            logging:false,
-            scrollX:0,
-            scrollY:0,
-            windowWidth:794,
-            width:794
-          },
-          jsPDF:{
-            unit:"pt",
-            format:"a4",
-            orientation:"portrait"
-          },
-          pagebreak:{
-            mode:["css","legacy"],
-            before:".quebra-pagina"
-          }
-        };
-
-        await html2pdf().set(opt).from(pdfCloneArea).save();
-
-        pdfCloneArea.innerHTML = "";
-        pdfCloneArea.style.display = "none";
-
-        setProgresso(100);
-        setStatus("PDF baixado com sucesso, somente com o conteúdo gerado.", "ok");
-      }catch(erro){
-        pdfCloneArea.innerHTML = "";
-        pdfCloneArea.style.display = "none";
-
-        setStatus(escapeHtml(erro.message || "Erro ao salvar PDF."), "erro");
+      if(!textoImpresso){
+        setStatus("O conteúdo para impressão está vazio. Gere novamente o material.", "erro");
+        return;
       }
+
+      setStatus("Abrindo tela de impressão. Escolha 'Salvar como PDF' e selecione as páginas desejadas.", "ok");
+      setProgresso(100);
+
+      setTimeout(() => {
+        window.print();
+      }, 500);
     }
 
     function limparTudo(){
@@ -2804,9 +2784,8 @@
         el("btnPrompt").innerText = "Gerar prompt automático";
       }
 
-      if(el("pdfCloneArea")){
-        el("pdfCloneArea").innerHTML = "";
-        el("pdfCloneArea").style.display = "none";
+      if(el("areaImpressao")){
+        el("areaImpressao").innerHTML = "";
       }
 
       setProgresso(0);
