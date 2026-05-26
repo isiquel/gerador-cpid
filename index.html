@@ -1299,8 +1299,10 @@
         <label for="title">Título</label>
         <input id="title" type="text" autocomplete="off" placeholder="Digite o título do material" />
 
-        <label for="subtitle">Subtítulo</label>
-        <input id="subtitle" type="text" autocomplete="off" placeholder="Digite o subtítulo" />
+        <div id="campoSubtitulo">
+          <label for="subtitle">Subtítulo</label>
+          <input id="subtitle" type="text" autocomplete="off" placeholder="Digite o subtítulo" />
+        </div>
 
         <label for="theme">Tema principal</label>
         <textarea id="theme" autocomplete="off" placeholder="Digite aqui o tema principal ou cole o prompt completo"></textarea>
@@ -1324,10 +1326,12 @@
           </div>
         </div>
 
-        <label for="targetAudience">Público-alvo</label>
-        <input id="targetAudience" type="text" autocomplete="off" placeholder="Ex: Igreja em geral, jovens, professores..." />
+        <div id="campoPublico">
+          <label for="targetAudience">Público-alvo</label>
+          <input id="targetAudience" type="text" autocomplete="off" placeholder="Ex: Igreja em geral, jovens, professores..." />
+        </div>
 
-        <div class="linha">
+        <div class="linha" id="campoAutorMinisterio">
           <div>
             <label for="author">Autor / comentarista</label>
             <input id="author" type="text" autocomplete="off" placeholder="Digite o nome do autor" />
@@ -1339,7 +1343,7 @@
           </div>
         </div>
 
-        <div class="linha">
+        <div class="linha" id="campoProfundidadeVisual">
           <div>
             <label for="depthLevel">Profundidade</label>
             <select id="depthLevel" autocomplete="off">
@@ -1366,8 +1370,10 @@
           </select>
         </div>
 
-        <label for="tone">Tom do material</label>
-        <input id="tone" type="text" autocomplete="off" placeholder="Ex: bíblico, pastoral, profundo e didático" />
+        <div id="campoTom">
+          <label for="tone">Tom do material</label>
+          <input id="tone" type="text" autocomplete="off" placeholder="Ex: bíblico, pastoral, profundo e didático" />
+        </div>
 
         <button class="btn-principal" id="btnGerar" type="button" onclick="gerarMaterial()">Gerar material</button>
 
@@ -1568,51 +1574,72 @@
     function atualizarOpcoesPorTipo(){
       const tipo = tipoAtual();
 
-      if(el("campoRevistaVersao")){
-        el("campoRevistaVersao").classList.toggle("campo-oculto", tipo !== "revista");
-      }
+      const mostrar = (id, ativo) => {
+        const campo = el(id);
+        if(campo){
+          campo.classList.toggle("campo-oculto", !ativo);
+        }
+      };
 
-      if(el("campoTraducaoBiblica")){
-        el("campoTraducaoBiblica").classList.toggle("campo-oculto", tipo !== "revista");
-      }
+      const ehRevista = tipo === "revista";
+      const ehSermao = tipo === "sermao";
+      const ehDevocional = tipo === "devocional";
+      const ehEstudo = tipo === "estudo";
+      const ehMaterialGrande = ["ebook", "livro", "curso", "revista"].includes(tipo);
 
-      if(el("campoTopicos")){
-        el("campoTopicos").classList.toggle("campo-oculto", tipo !== "sermao");
-      }
-
-      if(el("campoQuantidade")){
-        el("campoQuantidade").classList.toggle("campo-oculto", tipo === "sermao" || tipo === "devocional" || tipo === "estudo");
-      }
+      mostrar("campoRevistaVersao", ehRevista);
+      mostrar("campoTraducaoBiblica", ehRevista);
+      mostrar("campoSubtitulo", ehMaterialGrande || ehEstudo);
+      mostrar("campoTopicos", ehSermao);
+      mostrar("campoQuantidade", ehMaterialGrande);
+      mostrar("campoPublico", ehSermao || ehEstudo || ehMaterialGrande);
+      mostrar("campoAutorMinisterio", ehMaterialGrande);
+      mostrar("campoProfundidadeVisual", ehMaterialGrande);
+      mostrar("campoCapa", ehMaterialGrande);
+      mostrar("campoTom", ehMaterialGrande);
 
       const labelQuantidade = el("labelQuantidade");
 
-      if(!labelQuantidade) return;
+      if(labelQuantidade){
+        if(tipo === "revista"){
+          labelQuantidade.textContent = "Lições mensais";
+          if(el("quantity")) el("quantity").value = "4";
+          if(el("quantity")) el("quantity").min = "4";
+          if(el("quantity")) el("quantity").max = "4";
+          if(el("coverMode")) el("coverMode").value = "com-capa";
+          if(el("bibleVersion") && !valor("bibleVersion")) el("bibleVersion").value = "King James Fiel 1611";
+        }else if(tipo === "livro"){
+          labelQuantidade.textContent = "Capítulos";
+          if(el("quantity")) el("quantity").min = "1";
+          if(el("quantity")) el("quantity").max = "20";
+          if(el("quantity") && !valor("quantity")) el("quantity").value = "10";
+          if(el("coverMode")) el("coverMode").value = "com-capa";
+        }else if(tipo === "ebook"){
+          labelQuantidade.textContent = "Capítulos";
+          if(el("quantity")) el("quantity").min = "1";
+          if(el("quantity")) el("quantity").max = "12";
+          if(el("quantity") && !valor("quantity")) el("quantity").value = "6";
+        }else if(tipo === "curso"){
+          labelQuantidade.textContent = "Aulas";
+          if(el("quantity")) el("quantity").min = "1";
+          if(el("quantity")) el("quantity").max = "20";
+          if(el("quantity") && !valor("quantity")) el("quantity").value = "8";
+        }else{
+          labelQuantidade.textContent = "Quantidade";
+        }
+      }
 
-      if(tipo === "revista"){
-        labelQuantidade.textContent = "Lições mensais";
-        if(el("quantity")) el("quantity").value = "4";
-        if(el("quantity")) el("quantity").min = "4";
-        if(el("quantity")) el("quantity").max = "4";
-        if(el("coverMode")) el("coverMode").value = "com-capa";
-        if(el("bibleVersion") && !valor("bibleVersion")) el("bibleVersion").value = "King James Fiel 1611";
-      }else if(tipo === "livro"){
-        labelQuantidade.textContent = "Capítulos";
-        if(el("quantity")) el("quantity").min = "1";
-        if(el("quantity")) el("quantity").max = "20";
-        if(el("quantity") && !valor("quantity")) el("quantity").value = "10";
-        if(el("coverMode")) el("coverMode").value = "com-capa";
-      }else if(tipo === "ebook"){
-        labelQuantidade.textContent = "Capítulos";
-        if(el("quantity")) el("quantity").min = "1";
-        if(el("quantity")) el("quantity").max = "12";
-        if(el("quantity") && !valor("quantity")) el("quantity").value = "6";
-      }else if(tipo === "curso"){
-        labelQuantidade.textContent = "Aulas";
-        if(el("quantity")) el("quantity").min = "1";
-        if(el("quantity")) el("quantity").max = "20";
-        if(el("quantity") && !valor("quantity")) el("quantity").value = "8";
-      }else{
-        labelQuantidade.textContent = "Quantidade";
+      if(ehSermao){
+        if(el("coverMode")) el("coverMode").value = "sem-capa";
+      }
+
+      if(ehDevocional){
+        if(el("coverMode")) el("coverMode").value = "sem-capa";
+        if(el("sermonPoints")) el("sermonPoints").value = "3";
+      }
+
+      if(ehEstudo){
+        if(el("coverMode")) el("coverMode").value = "sem-capa";
       }
     }
 
@@ -1785,7 +1812,7 @@
           "";
 
         if(!prompt || !String(prompt).trim()){
-          throw new Error("A API respondeu, mas não retornou o texto do prompt. Verifique o arquivo api/prompt.js.");
+          throw new Error("A API respondeu, mas não retornou o texto do prompt. Verifique o arquivo API/prompt.js.");
         }
 
         const promptFinal = String(prompt).trim();
