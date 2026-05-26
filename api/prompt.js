@@ -1,198 +1,342 @@
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ ok: false, error: "Método não permitido. Use POST." });
+    return res.status(405).json({
+      error: "Método não permitido. Use POST."
+    });
   }
 
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    const body = req.body || {};
 
-    if (!apiKey) {
+    const adminCodeServer = process.env.Isiquel_Admin || "00";
+    const adminCode = String(body.adminCode || body.codigoAcesso || "").trim();
+
+    if (!adminCode || adminCode !== adminCodeServer) {
+      return res.status(401).json({
+        error: "Código de acesso inválido para gerar prompt automático."
+      });
+    }
+
+    const geminiApiKey = process.env.GEMINI_API_KEY || "";
+    const openaiApiKey = process.env.OPENAI_API_KEY || "";
+
+    if (!geminiApiKey && !openaiApiKey) {
       return res.status(500).json({
-        ok: false,
-        error: "A variável GEMINI_API_KEY não foi encontrada na Vercel."
+        error: "Nenhuma chave de IA configurada. Configure GEMINI_API_KEY ou OPENAI_API_KEY na Vercel."
       });
     }
 
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body || {};
-    const assunto = String(body.assunto || "").trim();
-    const materialType = String(body.materialType || "sermao").trim();
-    const adminCode = String(body.adminCode || "").trim();
+    const tipo = String(body.materialType || body.tipoMaterial || "sermao").trim();
+    const tema = String(body.theme || body.tema || body.temaPrincipal || "").trim();
+    const titulo = String(body.title || body.titulo || "").trim();
+    const subtitulo = String(body.subtitle || body.subtitulo || "").trim();
+    const textoBase = String(body.biblicalBase || body.textoBase || body.textoBiblicoBase || "").trim();
+    const publico = String(body.targetAudience || body.publicoAlvo || "").trim();
+    const profundidade = String(body.depthLevel || body.profundidade || "muito profundo").trim();
+    const tom = String(body.tone || body.tomMaterial || "").trim();
+    const traducao = String(body.bibleVersion || body.traducao || "King James Fiel 1611").trim();
 
-    if (!codigoAdminValido(adminCode)) {
-      return res.status(403).json({
-        ok: false,
-        error: "O Gerador de Prompt Automático é reservado. Digite o código de acesso correto."
-      });
-    }
-
-    if (!assunto) {
+    if (!tema) {
       return res.status(400).json({
-        ok: false,
-        error: "Digite um assunto para gerar o prompt automático."
+        error: "Digite um tema para gerar o prompt."
       });
     }
 
-    const models = [
-      process.env.GEMINI_TEXT_MODEL_1 || "gemini-3.5-flash",
-      process.env.GEMINI_TEXT_MODEL_2 || "gemini-3.1-flash-lite",
-      process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.5-flash",
-      process.env.GEMINI_TEXT_MODEL_4 || "gemini-2.5-flash-lite",
-      "gemini-2.0-flash"
-    ].filter(Boolean);
+    const promptDeComando = criarPromptDeComando({
+      tipo,
+      tema,
+      titulo,
+      subtitulo,
+      textoBase,
+      publico,
+      profundidade,
+      tom,
+      traducao
+    });
 
-    const prompt = buildPromptAutomatico(assunto, materialType);
-    const result = await callGeminiText(apiKey, models, prompt);
-    const text = extractText(result.data);
-    const promptData = parseJson(text);
+    const resultado = await gerarComFallback({
+      prompt: promptDeComando,
+      geminiApiKey,
+      openaiApiKey
+    });
 
-    if (!promptData) {
+    if (!resultado.text) {
       return res.status(500).json({
-        ok: false,
-        error: "A IA respondeu, mas não entregou um JSON válido para o prompt automático."
+        error: limparMensagemErro(resultado.error || "Não foi possível gerar o prompt automático.")
       });
     }
 
     return res.status(200).json({
-      ok: true,
-      modelUsed: result.modelUsed,
-      promptData
+      prompt: resultado.text,
+      text: resultado.text,
+      content: resultado.text,
+      provider: resultado.provider
     });
-
-  } catch (error) {
-    console.error("Erro em api/prompt.js:", error);
-
+  } catch (erro) {
     return res.status(500).json({
-      ok: false,
-      error: error.message || "Erro interno ao gerar prompt automático."
+      error: limparMensagemErro(erro?.message || "Erro interno ao gerar prompt automático.")
     });
   }
-};
-
-function codigoAdminValido(codigoRecebido) {
-  const codigoCorreto = process.env.Isiquel_Admin || "00";
-  return String(codigoRecebido || "").trim() === String(codigoCorreto).trim();
 }
 
-function buildPromptAutomatico(assunto, materialType) {
+function criarPromptDeComando(dados) {
+  const nomeTipo = nomesTipo(dados.tipo);
+
   return `
-Você é um assistente pastoral, teológico, bíblico e editorial.
+Você é um pastor, teólogo, escritor cristão e editor de materiais bíblicos.
 
-Crie um prompt automático para preencher os campos de um aplicativo chamado VERBO IA.
+Crie um PROMPT DE COMANDO profundo, completo e pronto para ser usado em uma IA geradora de conteúdo cristão.
 
-ASSUNTO INFORMADO PELO USUÁRIO:
-${assunto}
+Tipo de material que o usuário quer criar:
+${nomeTipo}
 
-TIPO DE MATERIAL:
-${materialType}
+Tema informado pelo usuário:
+${dados.tema}
 
-REGRAS:
-1. Responda somente em JSON válido.
-2. Não use markdown.
-3. Não escreva nada fora do JSON.
-4. Use português do Brasil.
-5. Crie um título forte, bíblico e pastoral.
-6. Crie subtítulo coerente.
-7. Crie tema principal bem explicado.
-8. Crie base bíblica com várias referências.
-9. Crie público-alvo adequado.
-10. Crie tom do material.
-11. Seja bíblico, pastoral, profundo e seguro.
-12. Para revista, pense em revista mensal de EBD.
-13. Para sermão, pense em pregação de púlpito.
-14. Para curso, pense em aulas organizadas.
-15. Para e-book e livro, pense em material editorial cristão.
+Dados complementares:
+Título: ${dados.titulo || "não informado"}
+Subtítulo: ${dados.subtitulo || "não informado"}
+Texto bíblico base: ${dados.textoBase || "não informado"}
+Público-alvo: ${dados.publico || "não informado"}
+Profundidade: ${dados.profundidade || "muito profundo"}
+Tom: ${dados.tom || "bíblico, pastoral, profundo, didático, reverente e edificante"}
+Tradução bíblica preferida: ${dados.traducao || "King James Fiel 1611"}
 
-FORMATO JSON:
-{
-  "title": "",
-  "subtitle": "",
-  "theme": "",
-  "biblicalBase": "",
-  "targetAudience": "",
-  "tone": ""
+O prompt final deve:
+- ser escrito em português do Brasil;
+- ser profundo, organizado, bíblico, pastoral, didático e reverente;
+- pedir referências bíblicas coerentes;
+- pedir explicação dos textos bíblicos;
+- pedir aplicação espiritual;
+- evitar conteúdo raso, genérico ou repetitivo;
+- ser específico para o tipo de material selecionado;
+- sair pronto para ser colado no campo "Tema principal";
+- orientar a IA a criar conteúdo cristão fiel, claro e edificante.
+
+Regras por tipo de material:
+
+Se for SERMÃO:
+Peça um sermão completo com título, subtítulo, texto bíblico base, introdução forte, desenvolvimento, tópicos organizados, explicação bíblica, aplicação para a igreja, conclusão e oração final.
+
+Se for DEVOCIONAL:
+Peça um devocional com texto bíblico, reflexão, aplicação pessoal, direção espiritual e oração.
+
+Se for ESTUDO BÍBLICO/TEOLÓGICO:
+Peça introdução, contexto bíblico, explicação dos textos, tópicos doutrinários, aplicação prática, conclusão e perguntas para reflexão.
+
+Se for E-BOOK:
+Peça introdução, capítulos organizados, desenvolvimento profundo, aplicações, conclusão e linguagem pastoral.
+
+Se for LIVRO:
+Peça estrutura de livro cristão com capítulos, introdução geral, desenvolvimento progressivo, base bíblica, aplicações pastorais e conclusão final.
+
+Se for CURSO:
+Peça aulas organizadas, objetivos, conteúdo, atividades, perguntas, aplicação prática e conclusão.
+
+Se for REVISTA DE ENSINO BÍBLICO:
+Peça revista mensal de Escola Bíblica Dominical com capa, apresentação ao professor, panorama geral, orientações ao professor, 4 lições completas, texto áureo, verdade prática, leitura bíblica em classe, objetivos, introdução, tópicos, subtópicos, aplicação, conclusão, auxílios, subsídios, perguntas e respostas, capa e contracapa.
+
+Responda SOMENTE com o prompt final.
+Não use JSON.
+Não use markdown.
+Não explique o que você fez.
+`;
 }
-`.trim();
+
+function nomesTipo(tipo) {
+  const mapa = {
+    sermao: "Sermão",
+    devocional: "Devocional",
+    estudo: "Estudo bíblico/teológico",
+    ebook: "E-book cristão",
+    livro: "Livro cristão",
+    curso: "Curso cristão",
+    revista: "Revista de ensino bíblico"
+  };
+
+  return mapa[tipo] || tipo || "Material cristão";
 }
 
-async function callGeminiText(apiKey, models, prompt) {
-  let lastError = null;
+async function gerarComFallback({ prompt, geminiApiKey, openaiApiKey }) {
+  const erros = [];
 
-  for (const model of models) {
-    try {
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-              temperature: 0.55,
-              topP: 0.88,
-              maxOutputTokens: 4000
-            }
-          })
+  if (geminiApiKey) {
+    const modelosGemini = limparLista([
+      process.env.GEMINI_TEXT_MODEL_1 || "gemini-2.5-flash-lite",
+      process.env.GEMINI_TEXT_MODEL_2 || "gemini-2.5-flash",
+      process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.0-flash"
+    ]);
+
+    for (const model of modelosGemini) {
+      try {
+        const text = await callGeminiText(geminiApiKey, model, prompt);
+
+        if (text) {
+          return {
+            text,
+            provider: `gemini:${model}`
+          };
         }
-      );
+      } catch (erro) {
+        erros.push(`Gemini ${model}: ${erro?.message || "erro desconhecido"}`);
 
-      const rawText = await response.text();
-      const data = safeJson(rawText);
-
-      if (!response.ok) {
-        const msg = data?.error?.message || rawText || `Erro no modelo ${model}`;
-        throw new Error(msg.slice(0, 900));
+        if (ehErroDeCota(erro?.message)) {
+          break;
+        }
       }
-
-      if (!data) {
-        throw new Error("O modelo respondeu em formato inválido.");
-      }
-
-      return { modelUsed: model, data };
-
-    } catch (error) {
-      lastError = error;
-      console.error("Falha no modelo", model, error.message);
     }
   }
 
-  throw lastError || new Error("Nenhum modelo conseguiu gerar o prompt automático.");
-}
+  if (openaiApiKey) {
+    const modelosOpenAI = limparLista([
+      process.env.OPENAI_TEXT_MODEL_1 || "gpt-4.1-mini",
+      process.env.OPENAI_TEXT_MODEL_2 || "gpt-4.1",
+      process.env.OPENAI_TEXT_MODEL_3 || "gpt-4.1-nano"
+    ]);
 
-function safeJson(text) {
-  try {
-    return JSON.parse(text);
-  } catch (_) {
-    return null;
+    for (const model of modelosOpenAI) {
+      try {
+        const text = await callOpenAIText(openaiApiKey, model, prompt);
+
+        if (text) {
+          return {
+            text,
+            provider: `openai:${model}`
+          };
+        }
+      } catch (erro) {
+        erros.push(`OpenAI ${model}: ${erro?.message || "erro desconhecido"}`);
+
+        if (ehErroDeCota(erro?.message)) {
+          break;
+        }
+      }
+    }
   }
+
+  return {
+    text: "",
+    provider: "",
+    error: erros.join(" | ")
+  };
 }
 
-function extractText(data) {
-  const parts = data?.candidates?.[0]?.content?.parts || [];
-  return parts.map((part) => part.text || "").join("\n").trim();
+function limparLista(lista) {
+  return [...new Set(lista.filter(Boolean).map((x) => String(x).trim()).filter(Boolean))];
 }
 
-function parseJson(text) {
-  const cleaned = String(text || "")
-    .trim()
-    .replace(/^```json/i, "")
-    .replace(/^```/i, "")
-    .replace(/```$/i, "")
+async function callGeminiText(apiKey, model, prompt) {
+  const url =
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const resposta = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          role: "user",
+          parts: [{ text: prompt }]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.75,
+        topP: 0.9,
+        maxOutputTokens: 6000
+      }
+    })
+  });
+
+  const data = await resposta.json().catch(() => null);
+
+  if (!resposta.ok) {
+    throw new Error(data?.error?.message || `Erro no Gemini ${model}.`);
+  }
+
+  const texto = data?.candidates?.[0]?.content?.parts
+    ?.map((p) => p.text || "")
+    .join("\n")
     .trim();
 
-  try {
-    return JSON.parse(cleaned);
-  } catch (_) {
-    const start = cleaned.indexOf("{");
-    const end = cleaned.lastIndexOf("}");
-
-    if (start >= 0 && end > start) {
-      try {
-        return JSON.parse(cleaned.slice(start, end + 1));
-      } catch (_) {
-        return null;
-      }
-    }
+  if (!texto) {
+    throw new Error(`O Gemini ${model} não retornou texto.`);
   }
 
-  return null;
+  return texto;
+}
+
+async function callOpenAIText(apiKey, model, prompt) {
+  const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content: "Você cria prompts cristãos profundos, bíblicos, pastorais e editoriais. Responda somente com o prompt final."
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      temperature: 0.75,
+      max_tokens: 6000
+    })
+  });
+
+  const data = await resposta.json().catch(() => null);
+
+  if (!resposta.ok) {
+    throw new Error(data?.error?.message || `Erro na OpenAI ${model}.`);
+  }
+
+  const texto = data?.choices?.[0]?.message?.content?.trim();
+
+  if (!texto) {
+    throw new Error(`A OpenAI ${model} não retornou texto.`);
+  }
+
+  return texto;
+}
+
+function ehErroDeCota(msg) {
+  const texto = String(msg || "").toLowerCase();
+
+  return (
+    texto.includes("quota") ||
+    texto.includes("exceeded") ||
+    texto.includes("billing") ||
+    texto.includes("rate limit") ||
+    texto.includes("insufficient_quota")
+  );
+}
+
+function limparMensagemErro(msg) {
+  const texto = String(msg || "").toLowerCase();
+
+  if (ehErroDeCota(texto)) {
+    return "A cota da IA acabou ou a API está sem crédito disponível. Aguarde a renovação da cota ou adicione crédito na Gemini/OpenAI.";
+  }
+
+  if (
+    texto.includes("api key") ||
+    texto.includes("apikey") ||
+    texto.includes("invalid key") ||
+    texto.includes("unauthorized")
+  ) {
+    return "A chave da API está inválida ou não foi configurada corretamente na Vercel.";
+  }
+
+  if (texto.includes("not found") || texto.includes("model")) {
+    return "Um dos modelos configurados não está disponível na sua conta.";
+  }
+
+  return String(msg || "Erro ao gerar prompt automático.");
 }
