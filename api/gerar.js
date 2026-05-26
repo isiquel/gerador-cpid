@@ -1,6 +1,7 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({
+      ok: false,
       error: "Método não permitido. Use POST."
     });
   }
@@ -11,44 +12,43 @@ export default async function handler(req, res) {
 
     if (!geminiApiKey && !openaiApiKey) {
       return res.status(500).json({
+        ok: false,
         error: "Nenhuma chave de IA foi configurada. Configure GEMINI_API_KEY ou OPENAI_API_KEY na Vercel."
       });
     }
 
-    const body = req.body || {};
-    const form = normalizeForm(body);
+    const form = normalizarFormulario(req.body || {});
+    const adminCodeServer = process.env.Isiquel_Admin || "00";
 
     const tiposReservados = ["ebook", "livro", "curso", "revista"];
-    const adminCodeServer = process.env.Isiquel_Admin || "00";
 
     if (tiposReservados.includes(form.materialType)) {
       if (!form.adminCode || form.adminCode !== adminCodeServer) {
         return res.status(401).json({
-          error: "Código de acesso inválido para este recurso reservado."
+          ok: false,
+          error: "Código de acesso inválido para este material reservado."
         });
       }
     }
 
-    const prompt = buildPrompt(form);
+    const prompt = criarPrompt(form);
 
-    const resultado = await gerarComFallback({
+    const respostaIA = await gerarComFallback({
       prompt,
       geminiApiKey,
       openaiApiKey
     });
 
-    if (!resultado.material) {
-      return res.status(500).json({
-        error: limparMensagemErro(resultado.error)
-      });
-    }
+    const material = extrairJSON(respostaIA.text);
 
     return res.status(200).json({
-      material: resultado.material,
-      provider: resultado.provider
+      ok: true,
+      provider: respostaIA.provider,
+      material
     });
   } catch (erro) {
     return res.status(500).json({
+      ok: false,
       error: limparMensagemErro(erro?.message || "Erro interno ao gerar material.")
     });
   }
@@ -58,32 +58,20 @@ export default async function handler(req, res) {
    NORMALIZAÇÃO
 ========================================================= */
 
-function normalizeForm(body) {
+function normalizarFormulario(body) {
   const materialType = String(
     body.materialType ||
     body.tipoMaterial ||
-    body.tipo ||
     "sermao"
   ).trim().toLowerCase();
 
-  let sermonPoints = Number(body.sermonPoints || 4);
-  if (!Number.isFinite(sermonPoints)) sermonPoints = 4;
-  sermonPoints = Math.max(3, Math.min(5, sermonPoints));
+  const lessonTitles = Array.isArray(body.lessonTitles)
+    ? body.lessonTitles
+    : [];
 
-  let quantity = Number(
-    body.quantity ||
-    body.quantidadeLicoes ||
-    body.qtdLicoes ||
-    body.licoes ||
-    4
-  );
-
-  if (!Number.isFinite(quantity)) quantity = 4;
-
-  if (materialType === "revista") quantity = 4;
-  if (materialType === "livro") quantity = Math.max(1, Math.min(20, quantity));
-  if (materialType === "ebook") quantity = Math.max(1, Math.min(12, quantity));
-  if (materialType === "curso") quantity = Math.max(1, Math.min(20, quantity));
+  const chapterPlan = Array.isArray(body.chapterPlan)
+    ? body.chapterPlan
+    : [];
 
   return {
     adminCode: String(body.adminCode || body.codigoAcesso || "").trim(),
@@ -93,43 +81,90 @@ function normalizeForm(body) {
     revistaPart: String(body.revistaPart || "").trim(),
     livroPart: String(body.livroPart || "").trim(),
 
-    lessonNumber: Number(body.lessonNumber || 0),
-    chapterNumber: Number(body.chapterNumber || 0),
+    lessonNumber: Number(body.lessonNumber || 1),
+    chapterNumber: Number(body.chapterNumber || 1),
 
-    lessonTitles: Array.isArray(body.lessonTitles) ? body.lessonTitles : [],
-    chapterPlan: Array.isArray(body.chapterPlan) ? body.chapterPlan : [],
+    lessonTitles,
+    chapterPlan,
 
     presentationToTeacher: String(body.presentationToTeacher || "").trim(),
     magazineOverview: String(body.magazineOverview || "").trim(),
     generalTeacherGuidance: String(body.generalTeacherGuidance || "").trim(),
 
-    previousChapterSummary: String(body.previousChapterSummary || "").trim(),
     bookCentralThesis: String(body.bookCentralThesis || "").trim(),
     readingPath: String(body.readingPath || "").trim(),
+    previousChapterSummary: String(body.previousChapterSummary || "").trim(),
+
+    instrucoesExtras: String(body.instrucoesExtras || "").trim(),
 
     revistaVersion: String(body.revistaVersion || body.versaoRevista || "professor").trim(),
+
     bibleVersion: String(body.bibleVersion || body.traducao || "King James Fiel 1611").trim(),
 
-    sermonPoints,
+    sermonPoints: Number(body.sermonPoints || 3),
 
     title: String(body.title || body.titulo || "").trim(),
     subtitle: String(body.subtitle || body.subtitulo || "").trim(),
-    theme: String(body.theme || body.tema || body.temaPrincipal || "").trim(),
-    biblicalBase: String(body.biblicalBase || body.textoBase || body.textoBiblicoBase || "").trim(),
 
-    quantity,
+    theme: String(
+      body.theme ||
+      body.tema ||
+      body.temaPrincipal ||
+      ""
+    ).trim(),
 
-    targetAudience: String(body.targetAudience || body.publicoAlvo || "").trim(),
-    author: String(body.author || body.autor || body.comentarista || "").trim(),
-    ministry: String(body.ministry || body.editora || body.ministerio || "").trim(),
+    biblicalBase: String(
+      body.biblicalBase ||
+      body.textoBase ||
+      body.textoBiblicoBase ||
+      ""
+    ).trim(),
 
-    depthLevel: String(body.depthLevel || body.profundidade || "Muito profundo").trim(),
-    visualStyle: String(body.visualStyle || body.estiloVisual || "Colorido").trim(),
-    tone: String(body.tone || body.tomMaterial || "").trim(),
+    quantity: Number(body.quantity || body.quantidadeLicoes || 4),
 
-    coverMode: String(body.coverMode || body.capa || "com-capa").trim(),
+    targetAudience: String(
+      body.targetAudience ||
+      body.publicoAlvo ||
+      ""
+    ).trim(),
 
-    instrucoesExtras: String(body.instrucoesExtras || "").trim()
+    author: String(
+      body.author ||
+      body.autor ||
+      body.comentarista ||
+      ""
+    ).trim(),
+
+    ministry: String(
+      body.ministry ||
+      body.editora ||
+      body.ministerio ||
+      ""
+    ).trim(),
+
+    depthLevel: String(
+      body.depthLevel ||
+      body.profundidade ||
+      "profundo"
+    ).trim(),
+
+    visualStyle: String(
+      body.visualStyle ||
+      body.estiloVisual ||
+      "preto e branco"
+    ).trim(),
+
+    coverMode: String(
+      body.coverMode ||
+      body.capa ||
+      "sem-capa"
+    ).trim(),
+
+    tone: String(
+      body.tone ||
+      body.tomMaterial ||
+      "bíblico, pastoral, profundo, didático, reverente e edificante"
+    ).trim()
   };
 }
 
@@ -141,73 +176,63 @@ async function gerarComFallback({ prompt, geminiApiKey, openaiApiKey }) {
   const erros = [];
 
   if (geminiApiKey) {
-    const geminiModels = limparLista([
+    const modelosGemini = limparLista([
       process.env.GEMINI_TEXT_MODEL_1 || "gemini-2.5-flash-lite",
       process.env.GEMINI_TEXT_MODEL_2 || "gemini-2.5-flash",
       process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.0-flash"
     ]);
 
-    for (const model of geminiModels) {
+    for (const modelo of modelosGemini) {
       try {
-        const texto = await callGeminiText(geminiApiKey, model, prompt);
-        const material = parseJson(texto);
+        const text = await callGeminiText(geminiApiKey, modelo, prompt);
 
-        if (material) {
+        if (text && text.trim()) {
           return {
-            material,
-            provider: `gemini:${model}`
+            provider: `gemini:${modelo}`,
+            text
           };
         }
-
-        erros.push(`Gemini ${model}: resposta inválida.`);
       } catch (erro) {
-        erros.push(`Gemini ${model}: ${erro?.message || "erro desconhecido"}`);
+        erros.push(`Gemini ${modelo}: ${erro?.message || "erro desconhecido"}`);
       }
     }
   }
 
   if (openaiApiKey) {
-    const openaiModels = limparLista([
+    const modelosOpenAI = limparLista([
       process.env.OPENAI_TEXT_MODEL_1 || "gpt-4.1-mini",
       process.env.OPENAI_TEXT_MODEL_2 || "gpt-4.1",
       process.env.OPENAI_TEXT_MODEL_3 || "gpt-4.1-nano"
     ]);
 
-    for (const model of openaiModels) {
+    for (const modelo of modelosOpenAI) {
       try {
-        const texto = await callOpenAIText(openaiApiKey, model, prompt);
-        const material = parseJson(texto);
+        const text = await callOpenAIText(openaiApiKey, modelo, prompt);
 
-        if (material) {
+        if (text && text.trim()) {
           return {
-            material,
-            provider: `openai:${model}`
+            provider: `openai:${modelo}`,
+            text
           };
         }
-
-        erros.push(`OpenAI ${model}: resposta inválida.`);
       } catch (erro) {
-        erros.push(`OpenAI ${model}: ${erro?.message || "erro desconhecido"}`);
+        erros.push(`OpenAI ${modelo}: ${erro?.message || "erro desconhecido"}`);
       }
     }
   }
 
-  return {
-    material: null,
-    provider: null,
-    error: erros.join(" | ")
-  };
+  throw new Error(erros.join(" | ") || "Nenhuma IA conseguiu gerar o conteúdo.");
 }
 
 function limparLista(lista) {
-  return [...new Set(lista.filter(Boolean).map((x) => String(x).trim()).filter(Boolean))];
+  return [...new Set(lista.filter(Boolean).map(x => String(x).trim()).filter(Boolean))];
 }
 
 /* =========================================================
    PROMPTS
 ========================================================= */
 
-function buildPrompt(form) {
+function criarPrompt(form) {
   if (form.materialType === "revista" && form.revistaPart === "meta") {
     return promptRevistaMeta(form);
   }
@@ -224,11 +249,24 @@ function buildPrompt(form) {
     return promptRevistaContracapa(form);
   }
 
+  if (form.materialType === "revista") {
+    return promptRevistaCompleta(form);
+  }
+
   if (form.materialType === "sermao") return promptSermao(form);
   if (form.materialType === "devocional") return promptDevocional(form);
   if (form.materialType === "estudo") return promptEstudo(form);
   if (form.materialType === "ebook") return promptEbook(form);
   if (form.materialType === "curso") return promptCurso(form);
+
+  if (form.materialType === "livro" && form.livroPart === "meta") {
+    return promptLivroMeta(form);
+  }
+
+  if (form.materialType === "livro" && form.livroPart === "chapter") {
+    return promptLivroCapitulo(form);
+  }
+
   if (form.materialType === "livro") return promptLivro(form);
 
   return promptEstudo(form);
@@ -236,14 +274,15 @@ function buildPrompt(form) {
 
 function promptBase(form) {
   return `
-Você é um escritor cristão, pastor, teólogo, comentarista bíblico e editor de materiais cristãos.
+Você é um pastor, teólogo, escritor cristão, comentarista bíblico, professor de Escola Bíblica Dominical e editor de materiais cristãos.
 
-Responda somente em JSON válido.
-Não use markdown.
-Não use crases.
-Não escreva nada fora do JSON.
+RESPONDA SOMENTE EM JSON VÁLIDO.
+NÃO use markdown.
+NÃO use crases.
+NÃO escreva comentários fora do JSON.
+NÃO escreva texto antes nem depois do JSON.
 
-Dados:
+Dados do material:
 Título: ${form.title}
 Subtítulo: ${form.subtitle}
 Tema: ${form.theme}
@@ -255,21 +294,31 @@ Profundidade: ${form.depthLevel}
 Tom: ${form.tone}
 Tradução bíblica padrão: ${form.bibleVersion}
 
-Regras:
-- Linguagem bíblica, pastoral, didática, profunda e reverente.
+Regras gerais:
+- Linguagem bíblica, pastoral, didática, profunda, reverente e adulta.
 - Não produzir conteúdo raso.
 - Não repetir ideias vazias.
 - Não mencionar inteligência artificial.
 - Não usar símbolo do Gemini.
+- Não inventar nomes de livros quando pedir materiais reais; prefira obras conhecidas e clássicas quando aplicável.
 - Manter fidelidade bíblica e doutrinária.
-`;
+- Explicar os textos bíblicos usados.
+- Escrever em português do Brasil.
+- Usar uma linha pentecostal clássica quando o assunto permitir.
+`.trim();
 }
+
+/* =========================================================
+   REVISTA EBD
+========================================================= */
 
 function promptRevistaMeta(form) {
   return `
 ${promptBase(form)}
 
 Crie apenas a estrutura inicial de uma revista mensal de Escola Bíblica Dominical, versão do professor.
+
+A revista deve ter nível editorial sério, adulto e profundo.
 
 Nesta etapa, crie somente:
 1. Dados gerais da revista.
@@ -281,6 +330,10 @@ Nesta etapa, crie somente:
 Não desenvolva as lições ainda.
 Não crie capa.
 Não crie contracapa.
+
+A apresentação ao professor deve ser pastoral, madura e explicar a importância do tema para a sala de aula.
+O panorama geral deve apresentar a linha de pensamento da revista.
+As orientações gerais devem ajudar o professor a conduzir as aulas.
 
 Retorne JSON neste formato:
 
@@ -321,11 +374,11 @@ ${tituloSugerido}
 Lições da revista:
 ${form.lessonTitles.map((t, i) => `${i + 1}. ${t}`).join("\n")}
 
-Contexto geral:
+Contexto geral da revista:
 Apresentação ao professor:
 ${form.presentationToTeacher}
 
-Panorama:
+Panorama geral:
 ${form.magazineOverview}
 
 Orientações gerais:
@@ -336,33 +389,44 @@ Não gere capa.
 Não gere contracapa.
 Não gere outras lições.
 
-A lição deve conter conteúdo completo, profundo e organizado.
+A lição deve ser digna de REVISTA DO PROFESSOR para classe adulta da EBD.
+O conteúdo deve ser robusto, bíblico, doutrinário, pastoral, didático, histórico quando necessário e profundamente explicativo.
 
-Cada lição deve conter:
-- título
-- subtítulo
-- texto áureo com versículo por extenso
-- verdade prática
-- leitura bíblica em classe
-- objetivos
-- palavra ao professor
-- panorama da lição
-- introdução
-- três tópicos principais
-- três subtópicos em cada tópico
-- aplicação para a vida
-- conclusão
-- auxílio bibliológico ou doutrinário
-- subsídio histórico
-- atenção professor
-- apoio doutrinário
-- para aprofundamento
-- orientações para o professor
-- revisando o conteúdo com perguntas e respostas
+REGRAS OBRIGATÓRIAS PARA A LIÇÃO:
+- O campo "goldenText" deve trazer a referência e o versículo por extenso.
+- O campo "bibleReading" NÃO pode trazer somente referências.
+- O campo "bibleReading" deve ser uma lista de blocos com referência e texto bíblico por extenso.
+- Cada tópico principal deve ter texto explicativo forte.
+- Cada tópico deve ter no mínimo 2 parágrafos.
+- Cada subtópico deve ter no mínimo 2 parágrafos.
+- Cada subtópico deve explicar a referência bíblica usada.
+- Cada subtópico deve ter aplicação para a compreensão do professor.
+- Não faça subtópicos curtos.
+- Não faça comentários genéricos.
+- Não use frases vazias.
+- Não use conteúdo raso.
+- Não deixe tópico somente com uma frase.
+- Use referências bíblicas em tópicos e subtópicos.
+- Explique os textos bíblicos no corpo da lição.
+- Inclua orientação prática para o professor conduzir a aula.
+- Inclua auxílio bibliológico ou doutrinário com densidade.
+- Inclua subsídio histórico quando o assunto permitir.
+- Inclua atenção ao professor sobre erros de interpretação.
+- Inclua apoio doutrinário.
+- Inclua materiais reais para aprofundamento.
+- Revisando o conteúdo deve ter 5 perguntas e respostas.
 
-Use referências bíblicas em tópicos, subtópicos e desenvolvimento.
+A LEITURA BÍBLICA EM CLASSE deve seguir este padrão:
+[
+  {
+    "reference": "Referência bíblica",
+    "text": "Texto bíblico por extenso"
+  }
+]
 
-${form.instrucoesExtras ? `Instruções extras:\n${form.instrucoesExtras}` : ""}
+Se a leitura bíblica tiver vários textos, cada texto deve vir em um objeto separado.
+
+${form.instrucoesExtras ? `Instruções extras do usuário:\n${form.instrucoesExtras}` : ""}
 
 Retorne JSON válido neste formato:
 
@@ -373,7 +437,12 @@ Retorne JSON válido neste formato:
   "subtitle": "",
   "goldenText": "",
   "practicalTruth": "",
-  "bibleReading": "",
+  "bibleReading": [
+    {
+      "reference": "",
+      "text": ""
+    }
+  ],
   "objectives": ["", "", ""],
   "teacherWord": "",
   "lessonOverview": "",
@@ -437,8 +506,13 @@ Crie somente os textos editoriais da capa frontal.
 
 Não crie lições.
 Não crie a revista inteira.
+Não gere imagem.
+A imagem será gerada por outro arquivo.
 
 A capa deve ser profissional, bíblica, editorial, reverente e coerente com o tema.
+
+Crie um tema visual forte para uma capa sobre:
+${form.title}
 
 Retorne JSON:
 
@@ -464,6 +538,9 @@ Crie somente os textos editoriais da contracapa.
 
 Não gere lições.
 Não gere a revista inteira.
+Não gere imagem.
+
+A contracapa deve ter uma frase forte e um texto editorial curto, maduro e pastoral.
 
 Retorne JSON:
 
@@ -480,11 +557,46 @@ Retorne JSON:
 `;
 }
 
+function promptRevistaCompleta(form) {
+  return `
+${promptBase(form)}
+
+Crie uma revista de EBD completa, mas em formato resumido. Preferencialmente use o modo por partes do sistema.
+
+Retorne JSON:
+
+{
+  "type": "revista",
+  "title": "",
+  "subtitle": "",
+  "author": "",
+  "ministry": "",
+  "presentationToTeacher": "",
+  "magazineOverview": "",
+  "generalTeacherGuidance": "",
+  "lessonTitles": ["", "", "", ""],
+  "lessons": []
+}
+`;
+}
+
+/* =========================================================
+   SERMÃO / DEVOCIONAL / ESTUDO
+========================================================= */
+
 function promptSermao(form) {
   return `
 ${promptBase(form)}
 
 Crie um sermão completo com introdução, ${form.sermonPoints} tópicos, aplicação, conclusão e oração.
+
+O sermão deve ter:
+- Introdução envolvente.
+- Tópicos bem desenvolvidos.
+- Cada tópico com referência bíblica.
+- Aplicação espiritual.
+- Conclusão forte.
+- Oração final.
 
 Retorne JSON:
 
@@ -515,6 +627,8 @@ ${promptBase(form)}
 
 Crie um devocional cristão.
 
+O devocional deve ser profundo, pastoral e edificante.
+
 Retorne JSON:
 
 {
@@ -525,6 +639,7 @@ Retorne JSON:
   "introduction": "",
   "reflection": "",
   "application": "",
+  "conclusion": "",
   "prayer": ""
 }
 `;
@@ -535,6 +650,14 @@ function promptEstudo(form) {
 ${promptBase(form)}
 
 Crie um estudo bíblico/teológico profundo.
+
+O estudo deve conter:
+- Introdução.
+- Tópicos bem desenvolvidos.
+- Referências bíblicas.
+- Explicação teológica.
+- Aplicação.
+- Conclusão.
 
 Retorne JSON:
 
@@ -558,11 +681,17 @@ Retorne JSON:
 `;
 }
 
+/* =========================================================
+   EBOOK / CURSO / LIVRO
+========================================================= */
+
 function promptEbook(form) {
   return `
 ${promptBase(form)}
 
 Crie um e-book cristão com ${form.quantity} capítulos.
+
+Cada capítulo deve ter título e conteúdo bem desenvolvido.
 
 Retorne JSON:
 
@@ -589,6 +718,13 @@ ${promptBase(form)}
 
 Crie um curso cristão com ${form.quantity} aulas.
 
+Cada aula deve ter:
+- título
+- objetivo
+- conteúdo
+- atividade
+- aplicação
+
 Retorne JSON:
 
 {
@@ -602,7 +738,8 @@ Retorne JSON:
       "title": "",
       "objective": "",
       "content": "",
-      "activity": ""
+      "activity": "",
+      "application": ""
     }
   ],
   "conclusion": ""
@@ -614,7 +751,7 @@ function promptLivro(form) {
   return `
 ${promptBase(form)}
 
-Crie um livro cristão com ${form.quantity} capítulos.
+Crie um livro cristão com ${form.quantity || 10} capítulos.
 
 Retorne JSON:
 
@@ -622,7 +759,11 @@ Retorne JSON:
   "type": "livro",
   "title": "",
   "subtitle": "",
-  "introduction": "",
+  "author": "",
+  "ministry": "",
+  "presentation": "",
+  "preface": "",
+  "generalIntroduction": "",
   "chapters": [
     {
       "number": 1,
@@ -630,61 +771,154 @@ Retorne JSON:
       "text": ""
     }
   ],
-  "conclusion": ""
+  "finalConclusion": "",
+  "wordToReader": "",
+  "authorBio": "",
+  "backCoverText": ""
+}
+`;
+}
+
+function promptLivroMeta(form) {
+  const total = form.quantity || 10;
+
+  return `
+${promptBase(form)}
+
+Crie apenas a estrutura inicial de um livro cristão com ${total} capítulos.
+
+Não desenvolva os capítulos ainda.
+
+Retorne JSON:
+
+{
+  "type": "livro",
+  "title": "",
+  "subtitle": "",
+  "author": "",
+  "ministry": "",
+  "presentation": "",
+  "preface": "",
+  "generalIntroduction": "",
+  "bookCentralThesis": "",
+  "readingPath": "",
+  "chapterPlan": [
+    {
+      "number": 1,
+      "title": "",
+      "centralIdea": ""
+    }
+  ],
+  "finalConclusion": "",
+  "wordToReader": "",
+  "authorBio": "",
+  "backCoverText": ""
+}
+`;
+}
+
+function promptLivroCapitulo(form) {
+  const numero = form.chapterNumber || 1;
+  const plano = Array.isArray(form.chapterPlan) ? form.chapterPlan : [];
+  const capituloPlano = plano[numero - 1] || {};
+
+  return `
+${promptBase(form)}
+
+Crie somente o capítulo ${numero} do livro.
+
+Título sugerido:
+${capituloPlano.title || `Capítulo ${numero}`}
+
+Ideia central:
+${capituloPlano.centralIdea || ""}
+
+Tese central do livro:
+${form.bookCentralThesis}
+
+Caminho de leitura:
+${form.readingPath}
+
+Resumo do capítulo anterior:
+${form.previousChapterSummary}
+
+O capítulo deve ser robusto, pastoral, bíblico, profundo e bem escrito.
+
+Retorne JSON:
+
+{
+  "type": "bookChapter",
+  "number": ${numero},
+  "title": "",
+  "chapterQuestion": "",
+  "centralThesis": "",
+  "openingNarrative": "",
+  "ideaDevelopment": "",
+  "biblicalExposition": "",
+  "argumentDevelopment": "",
+  "theologicalReflection": "",
+  "biblicalExamples": "",
+  "pastoralApplication": "",
+  "chapterSummary": "",
+  "reflectiveClosing": "",
+  "transitionToNextChapter": ""
 }
 `;
 }
 
 /* =========================================================
-   GEMINI
+   CHAMADAS DE API
 ========================================================= */
 
 async function callGeminiText(apiKey, model, prompt) {
   const url =
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: prompt
+          }
+        ]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.75,
+      topP: 0.95,
+      maxOutputTokens: 16000,
+      responseMimeType: "application/json"
+    }
+  };
+
   const resposta = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: prompt }]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.62,
-        topP: 0.9,
-        maxOutputTokens: 14000,
-        responseMimeType: "application/json"
-      }
-    })
+    body: JSON.stringify(body)
   });
 
   const data = await resposta.json().catch(() => null);
 
   if (!resposta.ok) {
-    throw new Error(data?.error?.message || `Erro no modelo Gemini ${model}.`);
+    throw new Error(data?.error?.message || `Erro ao chamar Gemini ${model}.`);
   }
 
-  const texto = data?.candidates?.[0]?.content?.parts
-    ?.map((p) => p.text || "")
-    .join("\n")
-    .trim();
+  const text =
+    data?.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("")
+      .trim() || "";
 
-  if (!texto) {
-    throw new Error(`O modelo Gemini ${model} não retornou texto.`);
+  if (!text) {
+    throw new Error(`Gemini ${model} não retornou texto.`);
   }
 
-  return texto;
+  return text;
 }
-
-/* =========================================================
-   OPENAI
-========================================================= */
 
 async function callOpenAIText(apiKey, model, prompt) {
   const url = "https://api.openai.com/v1/chat/completions";
@@ -694,20 +928,18 @@ async function callOpenAIText(apiKey, model, prompt) {
     messages: [
       {
         role: "system",
-        content:
-          "Você é um assistente de escrita cristã, bíblica e editorial. Responda sempre em JSON válido, sem markdown e sem texto fora do JSON."
+        content: "Você é um pastor, teólogo, escritor cristão e editor de materiais bíblicos. Responda somente em JSON válido."
       },
       {
         role: "user",
         content: prompt
       }
     ],
-    temperature: 0.62,
-    top_p: 0.9,
+    temperature: 0.75,
+    max_tokens: 16000,
     response_format: {
       type: "json_object"
-    },
-    max_tokens: 14000
+    }
   };
 
   const resposta = await fetch(url, {
@@ -722,26 +954,28 @@ async function callOpenAIText(apiKey, model, prompt) {
   const data = await resposta.json().catch(() => null);
 
   if (!resposta.ok) {
-    throw new Error(data?.error?.message || `Erro no modelo OpenAI ${model}.`);
+    throw new Error(data?.error?.message || `Erro ao chamar OpenAI ${model}.`);
   }
 
-  const texto = data?.choices?.[0]?.message?.content?.trim();
+  const text = data?.choices?.[0]?.message?.content?.trim() || "";
 
-  if (!texto) {
-    throw new Error(`O modelo OpenAI ${model} não retornou texto.`);
+  if (!text) {
+    throw new Error(`OpenAI ${model} não retornou texto.`);
   }
 
-  return texto;
+  return text;
 }
 
 /* =========================================================
-   PARSER JSON
+   JSON E ERROS
 ========================================================= */
 
-function parseJson(texto) {
-  if (!texto) return null;
+function extrairJSON(texto) {
+  if (!texto || typeof texto !== "string") {
+    throw new Error("A IA não retornou texto para converter em JSON.");
+  }
 
-  let limpo = String(texto).trim();
+  let limpo = texto.trim();
 
   limpo = limpo
     .replace(/^```json/i, "")
@@ -751,27 +985,23 @@ function parseJson(texto) {
 
   try {
     return JSON.parse(limpo);
-  } catch (e) {
-    const inicio = limpo.indexOf("{");
-    const fim = limpo.lastIndexOf("}");
+  } catch (erroInicial) {
+    const primeiro = limpo.indexOf("{");
+    const ultimo = limpo.lastIndexOf("}");
 
-    if (inicio >= 0 && fim > inicio) {
-      const recorte = limpo.slice(inicio, fim + 1);
+    if (primeiro !== -1 && ultimo !== -1 && ultimo > primeiro) {
+      const recorte = limpo.slice(primeiro, ultimo + 1);
 
       try {
         return JSON.parse(recorte);
-      } catch (erro) {
-        return null;
+      } catch (erroRecorte) {
+        throw new Error("A IA respondeu, mas o JSON veio quebrado. Tente gerar novamente ou reduzir o tamanho do pedido.");
       }
     }
 
-    return null;
+    throw new Error("A IA não retornou JSON válido. Tente novamente.");
   }
 }
-
-/* =========================================================
-   LIMPEZA DE ERROS
-========================================================= */
 
 function limparMensagemErro(msg) {
   const texto = String(msg || "").toLowerCase();
@@ -783,7 +1013,7 @@ function limparMensagemErro(msg) {
     texto.includes("rate limit") ||
     texto.includes("insufficient_quota")
   ) {
-    return "A cota da IA acabou ou a API está sem crédito disponível. Aguarde a renovação da cota ou adicione crédito na Gemini/OpenAI. A revista continua sendo gerada por partes, mas precisa de cota disponível para continuar.";
+    return "A cota da IA acabou ou a API está sem crédito disponível. O sistema tentou Gemini e OpenAI/GPT, mas não conseguiu gerar agora.";
   }
 
   if (
@@ -795,8 +1025,12 @@ function limparMensagemErro(msg) {
     return "A chave da API está inválida ou não foi configurada corretamente na Vercel. Confira GEMINI_API_KEY e OPENAI_API_KEY.";
   }
 
+  if (texto.includes("maximum context") || texto.includes("max_tokens") || texto.includes("token")) {
+    return "O pedido ficou grande demais para a IA responder. Tente reduzir o tamanho ou gerar por partes.";
+  }
+
   if (texto.includes("json")) {
-    return "A IA respondeu fora do formato esperado. Tente gerar novamente ou reduza um pouco o tamanho do pedido.";
+    return "A IA respondeu fora do formato esperado. Tente gerar novamente.";
   }
 
   if (texto.includes("model") && texto.includes("not found")) {
