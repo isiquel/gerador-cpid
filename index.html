@@ -967,8 +967,14 @@
         margin:10mm;
       }
 
+      *{
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+      }
+
+      html,
       body{
-        background:#fff;
+        background:#fff !important;
       }
 
       .app-header,
@@ -1001,19 +1007,18 @@
         display:block;
       }
 
-      body.print-a3-livreto #printArea{
-        columns:2;
-        column-gap:14mm;
-      }
+      /*
+        IMPORTANTE:
+        Não usamos mais columns:2 no A3.
+        O columns estava espremendo capa e contracapa.
+        Para livreto real, escolha A3 paisagem e use a opção Livreto/Booklet
+        na impressora ou no leitor de PDF.
+      */
 
-      body.print-a3-livreto .page,
-      body.print-a3-livreto .cover-page,
-      body.print-a3-livreto .back-cover-page{
-        width:auto;
-        max-width:none;
-        break-inside:avoid;
-        page-break-inside:avoid;
-        margin:0 0 10mm;
+      body.print-a3-livreto #printArea{
+        columns:auto !important;
+        column-count:auto !important;
+        column-gap:0 !important;
       }
 
       .page,
@@ -1069,6 +1074,70 @@
       .text{
         orphans:3;
         widows:3;
+      }
+
+      .cover-page,
+      .back-cover-page{
+        width:100% !important;
+        max-width:none !important;
+        min-height:calc(100vh - 24mm) !important;
+        height:auto !important;
+        margin:0 !important;
+        padding:0 !important;
+        overflow:hidden !important;
+        background:#120e0a !important;
+        page-break-inside:avoid;
+        break-inside:avoid;
+      }
+
+      .cover-image{
+        display:block !important;
+        opacity:1 !important;
+        visibility:visible !important;
+        position:absolute !important;
+        inset:0 !important;
+        width:100% !important;
+        height:100% !important;
+        object-fit:cover !important;
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+      }
+
+      .cover-bg,
+      .cover-bg::before,
+      .cover-overlay,
+      .cover-frame,
+      .lesson-hero,
+      .daily-reading,
+      .memory-verse,
+      .summary-box,
+      .knowledge-box,
+      .teacher-help,
+      .personal-application,
+      .synopsis{
+        -webkit-print-color-adjust:exact !important;
+        print-color-adjust:exact !important;
+      }
+
+      .cover-content{
+        min-height:calc(100vh - 24mm) !important;
+      }
+
+      .cover-frame{
+        min-height:calc(100vh - 42mm) !important;
+      }
+
+      body.print-a3-livreto .cover-page,
+      body.print-a3-livreto .back-cover-page{
+        min-height:calc(100vh - 20mm) !important;
+      }
+
+      body.print-a3-livreto .cover-content{
+        min-height:calc(100vh - 20mm) !important;
+      }
+
+      body.print-a3-livreto .cover-frame{
+        min-height:calc(100vh - 38mm) !important;
       }
     }
   </style>
@@ -1340,7 +1409,7 @@
               <option value="a3-livreto">A3 paisagem — estilo livreto / encadernação</option>
             </select>
             <div class="chip-note">
-              Para livreto dobrável perfeito, use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
+              Para livreto dobrável perfeito, escolha A3 paisagem e use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
             </div>
           </div>
 
@@ -1801,6 +1870,8 @@
         data.imagem ||
         data.dataUrl ||
         data.data_url ||
+        data.imageDataUrl ||
+        data.image_data_url ||
         data.base64 ||
         data.output ||
         "";
@@ -3059,7 +3130,7 @@ Mateus 24.35:
       const hasImage = imageData?.ok && imageData?.image;
 
       const imageTag = hasImage
-        ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa da revista" />`
+        ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa da revista" loading="eager" decoding="sync" />`
         : "";
 
       const serie = base.theme && base.theme.toLowerCase().includes("bibliologia")
@@ -3470,7 +3541,48 @@ Mateus 24.35:
       }
     }
 
-    function salvarPDF(){
+    function esperarImagem(img,timeout = 8000){
+      return new Promise(resolve => {
+        if(!img){
+          resolve();
+          return;
+        }
+
+        if(img.complete && img.naturalWidth > 0){
+          resolve();
+          return;
+        }
+
+        let finalizado = false;
+
+        const concluir = () => {
+          if(finalizado) return;
+          finalizado = true;
+          resolve();
+        };
+
+        img.addEventListener("load",concluir,{ once:true });
+        img.addEventListener("error",concluir,{ once:true });
+
+        setTimeout(concluir,timeout);
+      });
+    }
+
+    async function esperarImagensDoPrint(){
+      const imagens = [...printArea.querySelectorAll("img")];
+
+      if(!imagens.length){
+        return;
+      }
+
+      setStatus("Preparando imagens da capa para impressão...","ok");
+
+      await Promise.all(imagens.map(img => esperarImagem(img,10000)));
+
+      await pause(600);
+    }
+
+    async function salvarPDF(){
       if(!currentHtml && !result.innerText.trim()){
         setStatus("Gere um material antes de salvar ou imprimir em PDF.","error");
         return;
@@ -3486,21 +3598,26 @@ Mateus 24.35:
 
       if(format === "a3-livreto"){
         document.body.classList.add("print-a3-livreto");
-        setStatus("Modo A3 paisagem estilo livreto ativado. Na tela de impressão, escolha A3 e paisagem.","ok");
+        setStatus("Modo A3 paisagem ativado. Na tela de impressão, escolha A3 e paisagem. Para livreto real, use a opção Livreto/Booklet da impressora.","ok");
       }else{
         document.body.classList.add("print-a4");
-        setStatus("Modo A4 normal ativado. Na tela de impressão, escolha A4 e retrato.","ok");
+        setStatus("Modo A4 normal ativado. Preparando imagens da capa...","ok");
       }
 
       printArea.innerHTML = result.innerHTML;
+
+      await pause(300);
+      await esperarImagensDoPrint();
+
+      setStatus("Tudo pronto. Abrindo a tela de impressão...","ok");
 
       setTimeout(() => {
         window.print();
 
         setTimeout(() => {
           document.body.classList.remove("print-a4","print-a3-livreto");
-        },800);
-      },200);
+        },1000);
+      },300);
     }
 
     function limparTudo(){
@@ -3590,7 +3707,7 @@ Mateus 24.35:
 
       if(type === "revista"){
         setValue("title","O Livro que Carregamos");
-        setValue("subtitle","A origem, formação, preservação e transmissão da Bíblia");
+        setValue("subtitle","A origem, formação, preservação e transmissão da Bíblia até os nossos dias");
         setValue("theme","Bibliologia: o que é a Bíblia, como foi formada, como chegou até nós e o privilégio de termos a Palavra de Deus em mãos.");
         setValue("biblicalBase","2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmo 119.105");
         setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
@@ -3675,3 +3792,4 @@ Explique os versículos com fidelidade ao contexto.
   </script>
 </body>
 </html>
+    
