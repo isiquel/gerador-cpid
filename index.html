@@ -1123,14 +1123,15 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Gerador de material cristão com foco em sermões, estudos e revista EBD mensal do professor ou do aluno.</p>
+      <p>Gerador de material cristão com foco em sermões, estudos e revista EBD mensal do professor, do aluno e livro de apoio.</p>
     </header>
 
     <div class="layout">
       <aside class="panel left-panel">
         <div class="top-note">
           <strong>Importante:</strong> na <strong>Revista EBD</strong>, o sistema trabalha no formato
-          <strong>mensal</strong>, com <strong>4 lições completas</strong>, correspondentes aos quatro domingos do mês.
+          <strong>mensal</strong>, com <strong>4 lições completas</strong>, e agora também pode gerar
+          <strong>Livro de Apoio para o Professor</strong> baseado no mesmo tema.
         </div>
 
         <div class="unlock-box">
@@ -1177,7 +1178,7 @@
             <div class="type-icon">📚</div>
             <div>
               <div class="type-name">Revista EBD</div>
-              <div class="type-desc">Revista do professor ou do aluno, mensal, com 4 lições.</div>
+              <div class="type-desc">Revista do professor, do aluno ou livro de apoio do professor.</div>
             </div>
           </button>
 
@@ -1193,7 +1194,7 @@
             <div class="type-icon">📕</div>
             <div>
               <div class="type-name">Livro</div>
-              <div class="type-desc">Livro cristão completo e estruturado.</div>
+              <div class="type-desc">Livro cristão simples e estruturado.</div>
             </div>
           </button>
 
@@ -1353,17 +1354,20 @@
           <div class="section-title">Opções da Revista EBD</div>
 
           <div class="top-note">
-            Aqui a revista é <strong>mensal</strong> e trabalha automaticamente com
-            <strong>4 lições completas</strong>. Não usa trimestre e não usa 13 lições.
-            Para outros meses, basta trocar o tema, o prompt e a direção das 4 lições.
+            Aqui você pode gerar:
+            <strong>Revista do professor</strong>,
+            <strong>Revista do aluno</strong> ou
+            <strong>Livro de apoio para o professor</strong>.
+            O livro de apoio aprofunda os temas da revista e serve como subsídio para o professor dominar o assunto.
           </div>
 
           <div class="grid-2">
             <div class="field">
-              <label for="revistaTipo">Tipo de revista</label>
+              <label for="revistaTipo">Tipo de material EBD</label>
               <select id="revistaTipo">
                 <option value="professor" selected>Revista do professor</option>
                 <option value="aluno">Revista do aluno</option>
+                <option value="apoio-professor">Livro de apoio para o professor</option>
               </select>
             </div>
 
@@ -1379,7 +1383,7 @@
           </div>
 
           <div class="field">
-            <label for="printFormat">Formato de impressão da revista</label>
+            <label for="printFormat">Formato de impressão</label>
             <select id="printFormat">
               <option value="a4" selected>A4 normal — PDF padrão</option>
               <option value="a3-livreto">A3 paisagem — estilo livreto / encadernação</option>
@@ -1416,13 +1420,9 @@
 
           <div class="field">
             <label for="revistaObservacao">Direção das 4 lições do mês</label>
-            <textarea id="revistaObservacao" placeholder="Ex:
-Lição 1: ...
-Lição 2: ...
-Lição 3: ...
-Lição 4: ..."></textarea>
+            <textarea id="revistaObservacao" placeholder="Ex: Lição 1: ...&#10;Lição 2: ...&#10;Lição 3: ...&#10;Lição 4: ..."></textarea>
             <div class="chip-note">
-              Para qualquer tema mensal, preencha aqui as 4 lições. O app seguirá essa direção.
+              Para revista, o app usa essas 4 lições. Para livro de apoio, ele aprofunda essas mesmas 4 lições em capítulos e subsídios.
             </div>
           </div>
         </div>
@@ -1557,7 +1557,7 @@ Lição 4: ..."></textarea>
       sermao: ["Tema", "Texto", "Tópicos", "Conclusão"],
       devocional: ["Tema", "Reflexão", "Aplicação", "Oração"],
       estudo: ["Contexto", "Explicação", "Aplicação", "Conclusão"],
-      revista: ["Apresentação", "Sumário", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa IA", "Contracapa"],
+      revista: ["Apresentação", "Sumário", "Lição/Cap. 1", "Lição/Cap. 2", "Lição/Cap. 3", "Lição/Cap. 4", "Capa IA", "Contracapa"],
       ebook: ["Capa", "Introdução", "Capítulos", "Conclusão"],
       livro: ["Capa", "Sumário", "Capítulos", "Fechamento"],
       curso: ["Apresentação", "Módulos", "Aulas", "Atividades"]
@@ -1631,7 +1631,7 @@ Lição 4: ..."></textarea>
         sermao:"Sermão",
         devocional:"Devocional",
         estudo:"Estudo Bíblico",
-        revista:"Revista EBD Mensal",
+        revista:"Revista EBD",
         ebook:"E-book",
         livro:"Livro",
         curso:"Curso"
@@ -1696,7 +1696,7 @@ Lição 4: ..."></textarea>
       btnPrompt.style.opacity = unlocked ? "1" : "0.55";
 
       if(unlocked){
-        lockedNote.textContent = "Recursos reservados liberados: Revista EBD mensal, E-book, Livro, Curso e Prompt automático.";
+        lockedNote.textContent = "Recursos reservados liberados: Revista EBD, Livro de Apoio, E-book, Livro, Curso e Prompt automático.";
         lockedNote.className = "status ok";
       }else{
         lockedNote.textContent = "Para liberar Revista EBD, E-book, Livro, Curso e Prompt automático, digite o código de acesso.";
@@ -1759,7 +1759,7 @@ Lição 4: ..."></textarea>
         sermao:"Mensagem bíblica para edificação da igreja.",
         devocional:"Reflexão para fortalecer a fé no dia a dia.",
         estudo:"Estudo fiel às Escrituras, com explicação e aplicação.",
-        revista:"Revista mensal com 4 lições completas para Escola Bíblica Dominical.",
+        revista:"Revista mensal ou livro de apoio para Escola Bíblica Dominical.",
         ebook:"Conteúdo cristão organizado em capítulos.",
         livro:"Uma obra cristã estruturada para ensino e edificação.",
         curso:"Formação bíblica organizada em módulos."
@@ -1775,9 +1775,13 @@ Lição 4: ..."></textarea>
       const parecePromptGrande =
         texto.length > 350 ||
         texto.toLowerCase().includes("crie uma revista") ||
+        texto.toLowerCase().includes("crie um livro") ||
+        texto.toLowerCase().includes("livro de apoio") ||
         texto.toLowerCase().includes("estrutura obrigatória") ||
         texto.toLowerCase().includes("cada lição deve") ||
         texto.toLowerCase().includes("a revista deve") ||
+        texto.toLowerCase().includes("o livro deve") ||
+        texto.toLowerCase().includes("capítulo 1") ||
         texto.toLowerCase().includes("lição 1") ||
         texto.toLowerCase().includes("lição 2") ||
         texto.toLowerCase().includes("lição 3") ||
@@ -2060,6 +2064,10 @@ Lição 4: ..."></textarea>
       const revistaObservacao = getValue("revistaObservacao") || "";
       const printFormat = getValue("printFormat") || "a4";
 
+      let label = "Revista do professor";
+      if(revistaTipo === "aluno") label = "Revista do aluno";
+      if(revistaTipo === "apoio-professor") label = "Livro de apoio para o professor";
+
       return {
         revistaTipo,
         revistaClasse,
@@ -2068,8 +2076,10 @@ Lição 4: ..."></textarea>
         revistaObservacao,
         printFormat,
         isTeacher:revistaTipo === "professor",
-        label:revistaTipo === "professor" ? "Revista do professor" : "Revista do aluno",
-        monthInfo:`${revistaMes} de ${revistaAno} • Revista mensal • 4 lições`
+        isStudent:revistaTipo === "aluno",
+        isSupportBook:revistaTipo === "apoio-professor",
+        label,
+        monthInfo:`${revistaMes} de ${revistaAno} • Material EBD`
       };
     }
 
@@ -2215,19 +2225,18 @@ Lição 4: ..."></textarea>
       return `
 Você é um comentarista de Escola Bíblica Dominical, teólogo pentecostal, escritor cristão e professor experiente.
 
-Crie conteúdo para uma REVISTA EBD MENSAL com 4 lições completas.
-Não é revista trimestral.
-Não use 13 lições.
-Não use estrutura de sermão.
+Crie conteúdo para material de EBD mensal.
+Se for revista, deve ter 4 lições completas.
+Se for livro de apoio do professor, deve aprofundar os temas das 4 lições em capítulos de subsídio, não em formato de aula rápida.
 
-DADOS DA REVISTA
+DADOS DO MATERIAL
 Título: ${base.title}
 Subtítulo: ${base.subtitle}
-Tema visível da revista: ${base.visibleTheme}
+Tema visível do material: ${base.visibleTheme}
 Prompt/direção completa do usuário: ${base.theme}
 Texto bíblico base geral: ${base.biblicalBase}
 Público-alvo: ${base.targetAudience}
-Tipo de revista: ${info.label}
+Tipo de material: ${info.label}
 Classe: ${info.revistaClasse}
 Mês/Ano: ${info.revistaMes} de ${info.revistaAno}
 Autor/comentarista: ${base.author}
@@ -2237,7 +2246,7 @@ Profundidade: ${base.depthLevel}
 Observações extras: ${base.extraNotes}
 Direção original das 4 lições: ${info.revistaObservacao}
 
-LIÇÕES DEFINIDAS PARA ESTE MÊS
+TEMAS DEFINIDOS PARA ESTE MÊS
 ${listaLicoes}
 
 REGRAS IMPORTANTES
@@ -2245,19 +2254,10 @@ REGRAS IMPORTANTES
 - Não citar CPAD como fonte do texto.
 - Produzir material original.
 - Linguagem bíblica, pastoral, pentecostal, teológica, didática e acessível.
-- A revista do professor deve ser mais robusta que a do aluno.
-- O conteúdo central da lição serve também à revista do aluno.
-- A revista do professor deve incluir mais subsídios, explicações, aplicações e respostas.
-- Cada lição precisa ter bastante conteúdo real e não resumos curtos.
-- Cada tópico deve ensinar a classe com profundidade.
-- Cada subtópico deve trazer explicação doutrinária, bíblica, histórica e aplicação.
-- Inserir referências bíblicas ao longo do conteúdo.
-- Na leitura bíblica em classe, escrever a referência e o texto bíblico da passagem, quando for possível.
-- Os quadros “Ampliando o Conhecimento”, “Auxílio Teológico” e “Auxílio ao Professor” devem ficar no final da lição, depois do Revisando o Conteúdo.
-- Cada lição deve ter auxílios próprios, relacionados ao tema daquela lição.
-- Use o prompt/direção completa apenas como orientação interna.
-- Não copie o prompt do usuário literalmente dentro da revista.
-- Quando precisar mencionar o tema no texto da revista, use somente o Tema visível da revista.
+- Usar o prompt completo apenas como orientação interna.
+- Nunca copiar o prompt do usuário dentro do conteúdo final.
+- Não escrever frases como “crie um livro”, “crie uma revista” ou “desenvolva esta parte com base no tema”.
+- Quando precisar mencionar o tema no texto, use somente o Tema visível do material.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
     }
@@ -2329,7 +2329,75 @@ Use HTML com:
 Não reproduza o prompt completo do usuário no texto final.
       `.trim();
     }
-        function promptLicaoProfessor(base,info,licoes,numero,dados){
+
+    function promptApresentacaoLivroApoio(base,info,licoes){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: APRESENTAÇÃO DO LIVRO DE APOIO AO PROFESSOR
+
+Crie a abertura de um LIVRO DE APOIO PARA O PROFESSOR DA EBD.
+Não é revista de lições.
+Não é aula rápida.
+É um livro de aprofundamento, bastidor e subsídio para o professor dominar o assunto.
+
+O texto deve conter:
+1. Capa textual interna do livro.
+2. Folha de rosto.
+3. Apresentação pastoral.
+4. Prefácio ao professor.
+5. Introdução geral do livro.
+6. Explicação de como o professor deve usar este livro junto com a revista mensal.
+
+Use o tema visível: ${base.visibleTheme}
+Use as 4 lições como base de aprofundamento:
+${licoes.map((l,i) => `Lição ${i + 1}: ${l.titulo}`).join("\n")}
+
+IMPORTANTE:
+- Não copie o prompt do usuário.
+- Não escreva “crie um livro”.
+- O conteúdo deve parecer livro pronto, não instrução.
+- Linguagem forte, editorial, pastoral e teológica.
+
+Use HTML com:
+<h1 class="page-title">
+<p class="subtitle">
+<div class="block">
+<div class="teacher-help">
+<div class="summary-box">
+      `.trim();
+    }
+
+    function promptSumarioLivroApoio(base,info,licoes){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: SUMÁRIO DO LIVRO DE APOIO AO PROFESSOR
+
+Crie um sumário de livro, não de revista.
+O livro deve aprofundar os temas da revista e preparar o professor para responder alunos com segurança.
+
+Monte um sumário robusto com:
+- Parte 1: Fundamentos do tema
+- Parte 2: Aprofundamento das 4 lições
+- Parte 3: Perguntas difíceis e respostas
+- Parte 4: Linha do tempo, glossário e sugestões didáticas
+- Conclusão pastoral
+
+Inclua capítulos ligados às 4 lições:
+${licoes.map((l,i) => `Capítulo baseado na Lição ${i + 1}: ${l.titulo}`).join("\n")}
+
+Use HTML com:
+<h1 class="page-title">
+<p class="subtitle">
+<div class="block">
+<ol class="list">
+<div class="knowledge-box">
+
+Não reproduza o prompt completo do usuário no texto final.
+      `.trim();
+    }
+    function promptLicaoProfessor(base,info,licoes,numero,dados){
       return `
 ${montarPromptBaseRevista(base,info,licoes)}
 
@@ -2357,31 +2425,20 @@ ESTRUTURA OBRIGATÓRIA:
 8. Introdução bem desenvolvida.
 9. Três tópicos principais.
 10. Cada tópico deve ter três subtópicos.
-11. Cada subtópico deve ter bastante conteúdo real:
-   - pelo menos 3 parágrafos explicativos;
-   - referências bíblicas ao longo do texto;
-   - explicação doutrinária;
-   - explicação histórica quando fizer sentido;
-   - aplicação cristã;
-   - sem ficar falando toda hora “o professor deve”.
+11. Cada subtópico deve ter bastante conteúdo real, com explicação bíblica, doutrinária, histórica quando necessário e aplicação cristã.
 12. Ao final de cada tópico, fazer uma Sinopse.
 13. Aplicação pessoal.
 14. Conclusão.
 15. Revisando o conteúdo com 5 perguntas e respostas.
 16. Depois do Revisando o conteúdo, incluir:
-   - Ampliando o conhecimento;
-   - Auxílio teológico;
-   - Auxílio ao professor.
+- Ampliando o conhecimento;
+- Auxílio teológico;
+- Auxílio ao professor.
 
 IMPORTANTE:
-- O corpo da lição precisa servir também como base da revista do aluno.
-- O diferencial da revista do professor está nos subsídios extras.
-- Não entregar conteúdo fraco ou resumido.
-- Não fazer subtópicos com poucas linhas.
-- Fazer conteúdo robusto e útil para uma aula poderosa.
-- Os auxílios finais devem ser específicos da lição ${numero}, não genéricos.
-- Use o prompt completo do usuário apenas como direção interna.
-- Não copie o prompt do usuário literalmente no conteúdo final.
+- Não copiar o prompt do usuário.
+- Não escrever “desenvolva esta parte”.
+- Não entregar conteúdo fraco.
 - Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
 
 Use HTML com:
@@ -2434,13 +2491,151 @@ ESTRUTURA OBRIGATÓRIA:
 13. Revisando o conteúdo com 5 perguntas sem respostas, com espaço em branco.
 
 IMPORTANTE:
-- O conteúdo central precisa ensinar o aluno.
-- Não usar os longos subsídios da revista do professor.
-- Use o prompt completo do usuário apenas como direção interna.
-- Não copie o prompt do usuário literalmente no conteúdo final.
+- Não copiar o prompt do usuário.
+- Não escrever “desenvolva esta parte”.
 - Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
-- Usar HTML interno.
 - Nas perguntas finais, deixar espaço de resposta com <div class="student-space">Resposta:</div>.
+      `.trim();
+    }
+
+    function promptCapituloLivroApoio(base,info,licoes,numero,dados){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: CAPÍTULO ${numero} DO LIVRO DE APOIO AO PROFESSOR
+
+Este material é um LIVRO DE APOIO PARA O PROFESSOR DA EBD.
+Não é revista.
+Não é lição de aluno.
+Não é sermão.
+Não é resumo.
+É um capítulo de aprofundamento para dar ao professor domínio do assunto.
+
+TEMA DO CAPÍTULO:
+${dados.titulo}
+
+FOCO:
+${dados.foco}
+
+OBJETIVO DO CAPÍTULO:
+Aprofundar o tema da lição ${numero}, dando ao professor conhecimento bíblico, teológico, histórico, doutrinário, didático e pastoral para ensinar com segurança e responder dúvidas dos alunos.
+
+ESTRUTURA OBRIGATÓRIA DO CAPÍTULO:
+1. Cabeçalho do capítulo.
+2. Introdução robusta.
+3. Fundamento bíblico do tema.
+4. Explicação teológica.
+5. Explicação histórica, quando necessário.
+6. Relação do tema com a vida da igreja.
+7. Como explicar este assunto em sala de aula.
+8. Perguntas que os alunos podem fazer.
+9. Respostas prontas para o professor.
+10. Erros comuns que o professor deve evitar.
+11. Pontos de atenção doutrinária.
+12. Aplicações práticas.
+13. Resumo final do capítulo.
+14. Frase de impacto para fixação.
+15. Perguntas para reflexão do professor.
+
+IMPORTANTE:
+- Escreva como livro, com texto corrido e profundo.
+- Não escreva como prompt.
+- Não copie o prompt do usuário.
+- Não escreva “desenvolva esta parte”.
+- Não escreva “crie um capítulo”.
+- Entregue o capítulo pronto.
+- O professor deve sentir que recebeu munição teológica e didática para ensinar.
+- Quando mencionar o tema geral, use somente: ${base.visibleTheme}
+
+Use HTML com:
+<div class="lesson-hero">
+<div class="block">
+<div class="knowledge-box">
+<div class="teacher-help">
+<div class="summary-box">
+<div class="personal-application">
+      `.trim();
+    }
+
+    function promptRespostasLivroApoio(base,info,licoes){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: CAPÍTULO ESPECIAL — RESPOSTAS NA PONTA DA LÍNGUA
+
+Crie um capítulo especial para o livro de apoio do professor chamado:
+
+"Respostas na ponta da língua"
+
+Objetivo:
+Dar ao professor respostas curtas, fortes, bíblicas, claras e seguras para perguntas que alunos podem fazer em sala.
+
+Crie pelo menos 30 perguntas e respostas.
+
+As perguntas devem estar ligadas ao tema geral:
+${base.visibleTheme}
+
+E também às 4 lições:
+${licoes.map((l,i) => `Lição ${i + 1}: ${l.titulo}`).join("\n")}
+
+Cada resposta deve:
+- ser bíblica;
+- ser clara;
+- ser pastoral;
+- ser direta;
+- não ser rasa;
+- ajudar o professor a responder com segurança;
+- conter referência bíblica quando possível.
+
+Use HTML com:
+<h1 class="page-title">
+<p class="subtitle">
+<div class="summary-box">
+<div class="question-answer">
+
+Não copie o prompt do usuário.
+Não escreva instruções.
+Entregue o capítulo pronto.
+      `.trim();
+    }
+
+    function promptApêndicesLivroApoio(base,info,licoes){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: APÊNDICES DO LIVRO DE APOIO AO PROFESSOR
+
+Crie os apêndices finais do livro.
+
+Deve conter:
+
+1. Linha do tempo didática do tema estudado.
+2. Glossário com termos importantes.
+3. Sugestões didáticas para o professor.
+4. Recursos para enriquecer a aula.
+5. Como transformar conhecimento em aplicação espiritual.
+6. Conclusão pastoral forte.
+
+Tema geral:
+${base.visibleTheme}
+
+Lições base:
+${licoes.map((l,i) => `Lição ${i + 1}: ${l.titulo}`).join("\n")}
+
+A linha do tempo deve ser organizada e didática.
+O glossário deve ter explicações claras.
+As sugestões didáticas devem ajudar o professor a ensinar melhor.
+
+Use HTML com:
+<h1 class="page-title">
+<div class="block">
+<div class="knowledge-box">
+<div class="teacher-help">
+<div class="summary-box">
+
+Não copie o prompt do usuário.
+Não escreva instruções.
+Entregue os apêndices prontos.
       `.trim();
     }
 
@@ -2452,14 +2647,13 @@ ETAPA: CONTRACAPA
 
 Crie uma contracapa editorial, elegante e pastoral.
 Ela deve conter:
-- sinopse da revista;
+- sinopse do material;
 - resumo do tema usando somente: ${base.visibleTheme};
-- importância das 4 lições;
+- importância das 4 lições ou capítulos;
 - convite ao estudo;
 - frase final de impacto.
 
-Se for revista do professor, pode mencionar apoio à preparação de aula.
-Se for revista do aluno, pode enfatizar crescimento espiritual e aprendizagem.
+Se for livro de apoio, enfatize que o material prepara o professor para ensinar com profundidade e responder aos alunos com segurança.
 
 Use HTML com:
 <h1 class="page-title">
@@ -2473,7 +2667,7 @@ Não reproduza o prompt completo do usuário no texto final.
 
     function promptCapaImagem(base,info){
       return `
-Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de revista cristã de Escola Bíblica Dominical.
+Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de material cristão de Escola Bíblica Dominical.
 NÃO escreva nenhum texto na imagem.
 NÃO coloque título, subtítulo, letras, palavras, logotipos, marcas, selos ou nomes.
 A imagem deve servir como fundo premium para o app aplicar os textos depois.
@@ -2484,11 +2678,11 @@ ${base.visibleTheme}
 COMPOSIÇÃO:
 - Elemento bíblico central coerente com o tema mensal.
 - Bíblia aberta, luz dourada, atmosfera reverente e espiritual.
-- Elementos visuais relacionados ao tema da revista.
+- Elementos visuais relacionados ao tema do material.
 - Visual cristão maduro, pastoral, teológico e editorial.
 - Fundo com profundidade em azul escuro, marrom, dourado e tons elegantes.
 - Espaço visual limpo no topo e no centro para o app inserir o título depois.
-- Estilo de capa de livreto/revista cristã premium, realista, cinematográfico, sofisticado e muito bonito.
+- Estilo de capa de livro/revista cristã premium, realista, cinematográfico, sofisticado e muito bonito.
 
 QUALIDADE:
 - Ultra profissional.
@@ -2509,7 +2703,7 @@ Subtítulo: ${base.subtitle}
 Tipo: ${info.label}
 Classe: ${info.revistaClasse}
 Mês/Ano: ${info.revistaMes} de ${info.revistaAno}
-Comentarista: ${base.author}
+Autor: ${base.author}
 Editora/Ministério: ${base.ministry}
 
 IMPORTANTE: gere apenas o fundo visual profissional, pois os textos serão aplicados pelo sistema.
@@ -2832,11 +3026,70 @@ Mateus 24.35:
       `;
     }
 
+    function fallbackCapituloLivroApoio(base,info,numero,dados){
+      return `
+        <div class="lesson-hero">
+          <div class="number">Capítulo ${numero} • Livro de apoio do professor</div>
+          <h1>${escapeHtml(dados.titulo)}</h1>
+          <div class="meta">Tema geral: ${escapeHtml(base.visibleTheme)} • Foco: ${escapeHtml(dados.foco)}</div>
+        </div>
+
+        <div class="block">
+          <h3>Introdução do Capítulo</h3>
+          ${paragraph(`Este capítulo aprofunda o tema "${dados.titulo}", oferecendo ao professor subsídios bíblicos, teológicos, históricos e didáticos para ensinar com segurança.`)}
+          ${paragraph("O professor da Escola Bíblica Dominical não precisa apenas repetir a lição. Ele precisa compreender o assunto por trás da lição, dominar os conceitos principais e saber responder perguntas que surgem em sala.")}
+          ${paragraph("Por isso, este capítulo foi organizado para funcionar como material de bastidor: aquilo que alimenta o professor antes de ele alimentar a classe.")}
+        </div>
+
+        <div class="knowledge-box">
+          <h4>Fundamento Bíblico</h4>
+          ${paragraph(`O assunto deve ser interpretado a partir da Escritura. O foco deste capítulo é ${dados.foco}. A Palavra de Deus fornece o fundamento seguro para que o professor ensine sem depender de opiniões soltas ou argumentos frágeis.`)}
+          ${paragraph(`O texto bíblico base indicado é ${dados.leituraClasse}. A partir dele, o professor deve observar o contexto, a mensagem central, a doutrina envolvida e a aplicação prática para a igreja.`)}
+        </div>
+
+        <div class="teacher-help">
+          <h4>Aprofundamento Teológico</h4>
+          ${paragraph(`A teologia ajuda o professor a organizar o ensino bíblico de forma coerente. No tema "${dados.titulo}", o professor deve perceber como essa verdade se conecta com a revelação de Deus, a vida da igreja e a formação espiritual dos alunos.`)}
+          ${paragraph("Um professor preparado não apenas apresenta informações; ele conduz os alunos a enxergarem o caráter de Deus, a centralidade de Cristo, a ação do Espírito Santo e a autoridade das Escrituras.")}
+          ${paragraph("Esse aprofundamento evita uma aula superficial e dá ao professor segurança para lidar com dúvidas, objeções e aplicações práticas.")}
+        </div>
+
+        <div class="block">
+          <h3>Como Explicar em Sala de Aula</h3>
+          ${paragraph("Comece apresentando o tema de forma simples. Depois, mostre o fundamento bíblico. Em seguida, desenvolva a explicação doutrinária e conclua com aplicações práticas.")}
+          ${paragraph("Use perguntas para envolver a classe. Pergunte o que os alunos já sabem, quais dúvidas possuem e como o tema se aplica à vida cristã diária.")}
+          ${paragraph("Evite transformar a aula em discurso cansativo. O bom professor une profundidade com clareza, conhecimento com sensibilidade pastoral e doutrina com aplicação.")}
+        </div>
+
+        <div class="summary-box">
+          <h4>Perguntas que Podem Surgir</h4>
+          <div class="question-answer">
+            <strong>1. Por que este assunto é importante para a igreja?</strong><br>
+            <strong>Resposta:</strong> Porque ele ajuda a igreja a compreender melhor a vontade de Deus e a viver de maneira mais fiel à Palavra.
+          </div>
+          <div class="question-answer">
+            <strong>2. Como explicar este tema para alunos simples?</strong><br>
+            <strong>Resposta:</strong> Comece com uma linguagem clara, use exemplos do cotidiano e sempre volte ao texto bíblico.
+          </div>
+          <div class="question-answer">
+            <strong>3. Qual erro o professor deve evitar?</strong><br>
+            <strong>Resposta:</strong> Evitar ensinar o tema apenas como informação, sem mostrar sua aplicação espiritual e prática.
+          </div>
+        </div>
+
+        <div class="personal-application">
+          <h4>Resumo Final do Capítulo</h4>
+          ${paragraph(`O professor que compreende "${dados.titulo}" ensina com mais segurança, responde com mais clareza e ajuda a classe a crescer em maturidade espiritual.`)}
+          ${paragraph("Frase de impacto: O professor que estuda em secreto ensina com autoridade em público.")}
+        </div>
+      `;
+    }
+
     function renderCover(base,info,imageData){
       const hasImage = imageData?.ok && imageData?.image;
 
       const imageTag = hasImage
-        ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa da revista" loading="eager" decoding="sync" />`
+        ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa do material" loading="eager" decoding="sync" />`
         : "";
 
       return `
@@ -2848,7 +3101,7 @@ Mateus 24.35:
           <div class="cover-content">
             <div class="cover-frame">
               <div class="cover-top">
-                <span class="cover-badge">Revista EBD Mensal</span>
+                <span class="cover-badge">${info.isSupportBook ? "Livro de Apoio EBD" : "Revista EBD Mensal"}</span>
                 <span class="cover-series">${escapeHtml(base.visibleTheme)}</span>
               </div>
 
@@ -2864,9 +3117,9 @@ Mateus 24.35:
               </div>
 
               <div class="cover-footer">
-                <p>Comentarista: <strong>${escapeHtml(base.author)}</strong></p>
+                <p>Autor/Comentarista: <strong>${escapeHtml(base.author)}</strong></p>
                 <p>${escapeHtml(base.ministry)}</p>
-                <p class="cover-bottom-note">Revista mensal • 4 lições completas</p>
+                <p class="cover-bottom-note">${info.isSupportBook ? "Subsídio de aprofundamento para professores" : "Revista mensal • 4 lições completas"}</p>
               </div>
             </div>
           </div>
@@ -2887,8 +3140,8 @@ Mateus 24.35:
               </div>
 
               <div class="cover-main">
-                <h1 class="cover-title">Que a Palavra produza fruto</h1>
-                <p class="cover-subtitle">Material preparado para ensino, edificação, reflexão e fortalecimento da fé cristã.</p>
+                <h1 class="cover-title">${info.isSupportBook ? "Preparado para ensinar com profundidade" : "Que a Palavra produza fruto"}</h1>
+                <p class="cover-subtitle">${info.isSupportBook ? "Um material de bastidor para o professor dominar o assunto, responder dúvidas e conduzir a classe com segurança." : "Material preparado para ensino, edificação, reflexão e fortalecimento da fé cristã."}</p>
               </div>
 
               <div class="cover-footer">
@@ -2902,9 +3155,196 @@ Mateus 24.35:
       `;
     }
 
+    async function generateSupportBookAsync(base,info,licoes){
+      let html = `<div class="doc">`;
+
+      setStep(0,"Gerando apresentação do livro de apoio...");
+      let apresentacao = await chamarTextoIA(promptApresentacaoLivroApoio(base,info,licoes),"Apresentação do livro de apoio");
+      apresentacao = limparMarkdownHtml(apresentacao);
+
+      if(!apresentacao){
+        apresentacao = `
+          <h1 class="page-title">${escapeHtml(base.title)}</h1>
+          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+
+          <div class="block">
+            <h3>Apresentação</h3>
+            ${paragraph(`Este livro de apoio foi preparado para aprofundar o tema "${base.visibleTheme}", oferecendo ao professor da Escola Bíblica Dominical subsídios bíblicos, teológicos, históricos e didáticos.`)}
+            ${paragraph("A revista mensal apresenta as lições para a classe. Este livro vai além: ele prepara o professor nos bastidores, amplia os assuntos e oferece respostas para dúvidas que podem surgir em sala.")}
+            ${paragraph("O objetivo é formar professores mais seguros, mais bíblicos, mais profundos e mais aptos para ensinar com clareza e autoridade espiritual.")}
+          </div>
+
+          <div class="teacher-help">
+            <h4>Como usar este livro</h4>
+            ${paragraph("Leia cada capítulo antes de preparar a aula correspondente. Observe os fundamentos bíblicos, as explicações teológicas, as perguntas possíveis e as sugestões didáticas.")}
+            ${paragraph("Use este material como apoio, não como substituto da Bíblia. A Palavra de Deus continua sendo a autoridade central da aula.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(apresentacao,"intro-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(700);
+
+      setStep(1,"Gerando sumário do livro de apoio...");
+      let sumario = await chamarTextoIA(promptSumarioLivroApoio(base,info,licoes),"Sumário do livro de apoio");
+      sumario = limparMarkdownHtml(sumario);
+
+      if(!sumario){
+        sumario = `
+          <h1 class="page-title">Sumário</h1>
+          <p class="subtitle">${escapeHtml(base.title)} — Livro de apoio para professores</p>
+
+          <div class="block">
+            <h3>Partes do Livro</h3>
+            ${orderedList([
+              "Apresentação e orientação ao professor",
+              ...licoes.map((l,i) => `Capítulo ${i + 1} — Aprofundamento da Lição ${i + 1}: ${l.titulo}`),
+              "Capítulo Especial — Respostas na ponta da língua",
+              "Apêndices — Linha do tempo, glossário e sugestões didáticas",
+              "Conclusão pastoral"
+            ])}
+          </div>
+
+          <div class="knowledge-box">
+            <h4>Propósito do Livro</h4>
+            ${paragraph("Este livro existe para dar ao professor mais conhecimento do que cabe na revista. Ele aprofunda os temas, organiza conceitos e prepara respostas para perguntas dos alunos.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(sumario,"summary-page");
+      renderGenerated(html + `</div>`);
+
+      for(let i = 0; i < 4; i++){
+        const numero = i + 1;
+        const dados = licoes[i];
+
+        await pause(900);
+        setStep(i + 2,`Gerando capítulo ${numero} do livro de apoio...`);
+
+        let capitulo = await chamarTextoIA(promptCapituloLivroApoio(base,info,licoes,numero,dados),`Capítulo ${numero} do livro de apoio`);
+        capitulo = limparMarkdownHtml(capitulo);
+
+        if(!capitulo){
+          capitulo = fallbackCapituloLivroApoio(base,info,numero,dados);
+        }
+
+        html += renderPage(capitulo,"lesson-page");
+        renderGenerated(html + `</div>`);
+      }
+
+      await pause(900);
+      setStep(6,"Gerando capa profissional do livro de apoio...");
+
+      const imagePrompt = promptCapaImagem(base,info);
+      const imageData = await chamarImagemIA(imagePrompt,{
+        etapa:"Capa do livro de apoio",
+        tipo:"livro-apoio-ebd"
+      });
+
+      html += renderCover(base,info,imageData);
+      renderGenerated(html + `</div>`);
+
+      await pause(700);
+
+      setStep(7,"Gerando respostas, apêndices e contracapa...");
+
+      let respostas = await chamarTextoIA(promptRespostasLivroApoio(base,info,licoes),"Respostas na ponta da língua");
+      respostas = limparMarkdownHtml(respostas);
+
+      if(!respostas){
+        respostas = `
+          <h1 class="page-title">Respostas na Ponta da Língua</h1>
+          <p class="subtitle">Perguntas comuns dos alunos e respostas para o professor</p>
+
+          <div class="summary-box">
+            ${Array.from({length:10}).map((_,i) => `
+              <div class="question-answer">
+                <strong>${i + 1}. Como explicar este tema com clareza?</strong><br>
+                <strong>Resposta:</strong> Explique a partir da Bíblia, use exemplos simples, evite especulações e conduza a classe à aplicação prática.
+              </div>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      html += renderPage(respostas,"support-qa-page");
+
+      let apendices = await chamarTextoIA(promptApêndicesLivroApoio(base,info,licoes),"Apêndices do livro de apoio");
+      apendices = limparMarkdownHtml(apendices);
+
+      if(!apendices){
+        apendices = `
+          <h1 class="page-title">Apêndices</h1>
+          <p class="subtitle">Linha do tempo, glossário e sugestões didáticas</p>
+
+          <div class="knowledge-box">
+            <h4>Linha do Tempo Didática</h4>
+            ${orderedList([
+              "Revelação de Deus",
+              "Registro da Palavra",
+              "Preservação da mensagem",
+              "Transmissão ao povo de Deus",
+              "Ensino na comunidade da fé",
+              "Aplicação à vida cristã"
+            ])}
+          </div>
+
+          <div class="teacher-help">
+            <h4>Glossário Básico</h4>
+            ${unorderedList([
+              "Revelação: ato de Deus se fazer conhecido.",
+              "Inspiração: ação do Espírito Santo conduzindo o registro da Palavra.",
+              "Doutrina: ensino bíblico que orienta a fé e a prática.",
+              "Aplicação: caminho pelo qual a verdade alcança a vida diária.",
+              "Didática: forma de ensinar com clareza e propósito."
+            ])}
+          </div>
+
+          <div class="summary-box">
+            <h4>Conclusão Pastoral</h4>
+            ${paragraph("O professor que estuda com profundidade ensina com mais segurança. O conhecimento bíblico, quando unido à oração e à dependência do Espírito Santo, forma aulas vivas, claras e transformadoras.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(apendices,"appendix-page");
+
+      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa do livro de apoio");
+      contracapa = limparMarkdownHtml(contracapa);
+
+      if(!contracapa){
+        contracapa = `
+          <h1 class="page-title">Contracapa</h1>
+          <p class="subtitle">${escapeHtml(base.title)}</p>
+
+          <div class="summary-box">
+            <h4>Sinopse</h4>
+            ${paragraph(`Este livro de apoio aprofunda o tema "${base.visibleTheme}", oferecendo ao professor subsídios bíblicos, teológicos, históricos e didáticos para ensinar com segurança.`)}
+            ${paragraph("Mais do que um complemento, este material é uma ferramenta de preparo. Ele ajuda o professor a compreender melhor os temas da revista, responder perguntas dos alunos e conduzir a aula com clareza.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(contracapa,"back-text-page");
+      html += renderBackCover(base,info);
+      html += `</div>`;
+
+      renderGenerated(html);
+      finishSteps("Livro de apoio para o professor gerado com profundidade e capa profissional.");
+    }
+
     async function generateMagazineAsync(base){
       const info = montarInfoRevista(base);
       const licoes = dadosLicoesMensais(base,info);
+
+      if(info.isSupportBook){
+        await generateSupportBookAsync(base,info,licoes);
+        return;
+      }
+
       let html = `<div class="doc">`;
 
       setStep(0,"Gerando apresentação da revista...");
@@ -2919,7 +3359,7 @@ Mateus 24.35:
           <div class="block">
             <h3>Apresentação da Revista</h3>
             ${paragraph("Nesta revista mensal, estudaremos " + base.visibleTheme + ". O objetivo é conduzir a classe a compreender o tema à luz da Palavra de Deus, com profundidade bíblica, aplicação pastoral e compromisso com a prática cristã.")}
-            ${paragraph("A Escola Bíblica Dominical é um instrumento precioso para formar discípulos maduros, firmes na doutrina e sensíveis à direção do Espírito Santo. Por isso, cada lição foi organizada para ensinar, edificar e conduzir à obediência.")}
+            ${paragraph("A Escola Bíblica Dominical é um instrumento precioso para formar discípulos maduros, firmes na doutrina e sensíveis à direção do Espírito Santo.")}
             ${paragraph("Ao longo das quatro lições, caminharemos de forma progressiva, observando fundamentos bíblicos, propósito espiritual, desafios práticos e aplicações para a vida cristã.")}
           </div>
 
@@ -2927,7 +3367,7 @@ Mateus 24.35:
             info.isTeacher
               ? `<div class="teacher-help">
                   <h4>Orientação ao Professor</h4>
-                  ${paragraph("Professor, prepare cada aula com oração, leitura atenta e pesquisa. Use a revista como instrumento de ensino, mas mantenha a Bíblia aberta como autoridade central. Estimule a classe a participar e aplique cada verdade à vida cristã diária.")}
+                  ${paragraph("Professor, prepare cada aula com oração, leitura atenta e pesquisa. Use a revista como instrumento de ensino, mas mantenha a Bíblia aberta como autoridade central.")}
                 </div>`
               : ""
           }
@@ -2965,7 +3405,7 @@ Mateus 24.35:
 
           <div class="knowledge-box">
             <h4>Estrutura Pedagógica</h4>
-            ${paragraph("Cada lição apresenta texto áureo, verdade prática, leitura bíblica em classe, leitura diária, objetivos, plano de aula, introdução, três tópicos, subtópicos, sinopse, aplicação, conclusão e revisão. Na revista do professor, os auxílios teológicos e didáticos ficam no final de cada lição para apoiar a preparação da aula.")}
+            ${paragraph("Cada lição apresenta texto áureo, verdade prática, leitura bíblica em classe, leitura diária, objetivos, plano de aula, introdução, três tópicos, subtópicos, sinopse, aplicação, conclusão e revisão.")}
           </div>
         `;
       }
@@ -3423,7 +3863,7 @@ Mateus 24.35:
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Quero conteúdo robusto, profundo, teológico, com referências bíblicas, leitura bíblica em classe com texto completo, revista do professor com subsídios no final da lição e respostas. A capa deve ter arte profissional gerada por IA sem texto, e o app deve aplicar os textos por cima.");
+        setValue("extraNotes","Quero conteúdo robusto, profundo, teológico, com referências bíblicas, leitura bíblica em classe com texto completo, revista do professor com subsídios no final da lição e respostas. Se escolher Livro de apoio para o professor, quero aprofundamento, perguntas difíceis, respostas na ponta da língua, glossário e linha do tempo.");
       }
 
       if(type === "sermao"){
