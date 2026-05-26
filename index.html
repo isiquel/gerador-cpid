@@ -816,102 +816,57 @@
       background-repeat:no-repeat!important;
     }
 
-    .print-area{
-      display:none;
+    #pdfCloneArea{
+      position:fixed;
+      left:-99999px;
+      top:0;
+      width:794px;
+      background:#ffffff;
+      color:#222;
+      z-index:-9999;
+      opacity:1;
+      pointer-events:none;
     }
 
-    .gerando-pdf #resultado{
-      background:#fff!important;
-      border:none!important;
-      padding:0!important;
-      overflow:visible!important;
-    }
-
-    .gerando-pdf .doc{
+    #pdfCloneArea .doc{
       max-width:100%!important;
       width:100%!important;
       display:block!important;
+      margin:0!important;
+      background:#ffffff!important;
     }
 
-    .gerando-pdf .pagina{
+    #pdfCloneArea .pagina{
       box-shadow:none!important;
       border-radius:0!important;
       border:none!important;
       margin:0!important;
+      width:794px!important;
+      min-height:1122px!important;
+      background:#ffffff;
       break-after:page;
       page-break-after:always;
-      break-inside:auto;
-      page-break-inside:auto;
+      overflow:hidden;
     }
 
-    .gerando-pdf .pagina:last-child{
+    #pdfCloneArea .pagina:last-child{
       break-after:auto;
       page-break-after:auto;
     }
 
-    .gerando-pdf .pagina-interna{
-      padding:16mm 14mm!important;
+    #pdfCloneArea .pagina-interna{
+      padding:52px 48px!important;
     }
 
-    .gerando-pdf .titulo-grande{
-      font-size:25px!important;
-    }
-
-    .gerando-pdf .subtitulo{
-      font-size:15px!important;
-    }
-
-    .gerando-pdf .texto,
-    .gerando-pdf p{
-      font-size:13.5px!important;
-      line-height:1.5!important;
-    }
-
-    .gerando-pdf .bloco,
-    .gerando-pdf .topico-revista{
-      padding:10px 12px!important;
-      margin-top:9px!important;
-      break-inside:avoid;
-      page-break-inside:avoid;
-    }
-
-    .gerando-pdf .bloco h3,
-    .gerando-pdf .topico-revista h3{
-      font-size:16.5px!important;
-    }
-
-    .gerando-pdf .subtopico-revista{
-      padding:9px 11px!important;
-      margin-top:8px!important;
-      break-inside:avoid;
-      page-break-inside:avoid;
-    }
-
-    .gerando-pdf .subtopico-revista h4{
-      font-size:15.5px!important;
-    }
-
-    .gerando-pdf .referencia{
-      font-size:12.5px!important;
-    }
-
-    .gerando-pdf .lista{
-      font-size:13.5px!important;
-      line-height:1.45!important;
-    }
-
-    .gerando-pdf .capa,
-    .gerando-pdf .contracapa{
-      width:100%!important;
-      min-height:277mm!important;
-      height:277mm!important;
+    #pdfCloneArea .capa,
+    #pdfCloneArea .contracapa{
+      width:794px!important;
+      min-height:1122px!important;
+      height:1122px!important;
       border-radius:0!important;
-      break-after:page;
-      page-break-after:always;
-    }
-
-    .gerando-pdf .capa-box{
-      min-height:245mm!important;
+      color:#fff!important;
+      -webkit-print-color-adjust:exact!important;
+      print-color-adjust:exact!important;
     }
 
     @media print{
@@ -925,102 +880,6 @@
         margin:0!important;
         padding:0!important;
         background:#fff!important;
-      }
-
-      body > header,
-      body > main{
-        display:none!important;
-      }
-
-      .print-area{
-        display:block!important;
-        width:100%!important;
-        background:#fff!important;
-      }
-
-      .print-area .doc{
-        width:100%!important;
-        max-width:100%!important;
-        display:block!important;
-      }
-
-      .print-area .pagina{
-        width:210mm!important;
-        min-height:297mm!important;
-        margin:0!important;
-        padding:0!important;
-        border:none!important;
-        box-shadow:none!important;
-        border-radius:0!important;
-        background:#fff!important;
-        overflow:hidden!important;
-        break-after:page!important;
-        page-break-after:always!important;
-      }
-
-      .print-area .pagina:last-child{
-        break-after:auto!important;
-        page-break-after:auto!important;
-      }
-
-      .print-area .pagina-interna{
-        padding:16mm 14mm!important;
-      }
-
-      .print-area .capa,
-      .print-area .contracapa{
-        min-height:297mm!important;
-        height:297mm!important;
-        color:#fff!important;
-        -webkit-print-color-adjust:exact!important;
-        print-color-adjust:exact!important;
-      }
-
-      .print-area .capa-box{
-        min-height:260mm!important;
-      }
-
-      .print-area .titulo-grande{
-        font-size:25px!important;
-      }
-
-      .print-area .subtitulo{
-        font-size:15px!important;
-      }
-
-      .print-area .texto,
-      .print-area p{
-        font-size:13.5px!important;
-        line-height:1.5!important;
-      }
-
-      .print-area .bloco,
-      .print-area .topico-revista{
-        padding:10px 12px!important;
-        margin-top:9px!important;
-        break-inside:avoid!important;
-        page-break-inside:avoid!important;
-      }
-
-      .print-area .bloco h3,
-      .print-area .topico-revista h3{
-        font-size:16.5px!important;
-      }
-
-      .print-area .subtopico-revista{
-        padding:9px 11px!important;
-        margin-top:8px!important;
-        break-inside:avoid!important;
-        page-break-inside:avoid!important;
-      }
-
-      .print-area .subtopico-revista h4{
-        font-size:15.5px!important;
-      }
-
-      .print-area .lista{
-        font-size:13.5px!important;
-        line-height:1.45!important;
       }
     }
 
@@ -1424,9 +1283,9 @@
       </div>
     </section>
   </main>
+    <div id="pdfCloneArea"></div>
 
-  <div id="printArea" class="print-area"></div>
-    <script>
+  <script>
     let ultimoMaterial = null;
     let editando = false;
 
@@ -1453,7 +1312,7 @@
         texto.includes("rate limit") ||
         texto.includes("insufficient_quota")
       ){
-        return "A cota da IA acabou ou a API está sem crédito disponível. Aguarde a renovação da cota ou adicione crédito na Gemini/OpenAI. A geração por partes continua funcionando, mas precisa de cota disponível para continuar.";
+        return "A cota da IA acabou ou a API está sem crédito disponível. Aguarde a renovação da cota ou adicione crédito na Gemini/OpenAI.";
       }
 
       if(
@@ -2139,8 +1998,7 @@
         await gerarMaterialDireto(dados);
       }
     }
-
-    function criarCapaPadrao(dados){
+        function criarCapaPadrao(dados){
       return {
         type:"revistaCover",
         title:dados.title,
@@ -2735,35 +2593,79 @@
       }
     }
 
-    function esperarFundosCarregarem(){
-      return new Promise(resolve => setTimeout(resolve, 900));
+    function esperar(ms){
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function esperarImagensDoElemento(elemento){
+      if(!elemento) return;
+
+      const imagens = Array.from(elemento.querySelectorAll("img"));
+
+      await Promise.all(imagens.map(img => {
+        if(img.complete) return Promise.resolve();
+
+        return new Promise(resolve => {
+          img.onload = resolve;
+          img.onerror = resolve;
+          setTimeout(resolve, 2500);
+        });
+      }));
+
+      await esperar(700);
+    }
+
+    function prepararHtmlParaPDF(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = html;
+
+      const placeholder = temp.querySelector(".placeholder");
+      if(placeholder){
+        placeholder.remove();
+      }
+
+      temp.querySelectorAll("[contenteditable]").forEach(item => {
+        item.removeAttribute("contenteditable");
+      });
+
+      return temp.innerHTML;
     }
 
     async function salvarPDF(){
-      if(!el("resultado").innerHTML.trim() || el("resultado").innerText.includes("Seu material aparecerá aqui")){
+      const resultado = el("resultado");
+      const pdfCloneArea = el("pdfCloneArea");
+
+      if(!resultado || !pdfCloneArea){
+        setStatus("Área de PDF não encontrada no arquivo.", "erro");
+        return;
+      }
+
+      const temConteudo = resultado.querySelector(".doc") || resultado.querySelector(".pagina");
+
+      if(!temConteudo || resultado.innerText.includes("Seu material aparecerá aqui")){
         setStatus("Gere um material antes de salvar em PDF.", "erro");
         return;
       }
 
       finalizarEdicao(false);
-      setStatus("Preparando PDF...");
-      setProgresso(95);
+
+      setStatus("Preparando PDF somente com o conteúdo gerado...");
+      setProgresso(92);
 
       try{
-        const printArea = el("printArea");
-        printArea.innerHTML = el("resultado").innerHTML;
+        const htmlLimpo = prepararHtmlParaPDF(resultado.innerHTML);
 
-        printArea.style.display = "block";
-        printArea.style.position = "fixed";
-        printArea.style.left = "-9999px";
-        printArea.style.top = "0";
-        printArea.style.width = "794px";
-        printArea.style.background = "#fff";
-        printArea.style.zIndex = "-1";
+        pdfCloneArea.innerHTML = htmlLimpo;
+        pdfCloneArea.style.display = "block";
+        pdfCloneArea.style.visibility = "visible";
 
-        document.body.classList.add("gerando-pdf");
+        await esperarImagensDoElemento(pdfCloneArea);
 
-        await esperarFundosCarregarem();
+        const textoPdf = (pdfCloneArea.innerText || "").trim();
+
+        if(!textoPdf){
+          throw new Error("O conteúdo do PDF ficou vazio antes da conversão. Gere novamente o material e tente salvar outra vez.");
+        }
 
         const nomeArquivo = (valor("title") || "material-cristao")
           .toLowerCase()
@@ -2787,7 +2689,8 @@
             logging:false,
             scrollX:0,
             scrollY:0,
-            windowWidth:794
+            windowWidth:794,
+            width:794
           },
           jsPDF:{
             unit:"pt",
@@ -2795,21 +2698,22 @@
             orientation:"portrait"
           },
           pagebreak:{
-            mode:["css","legacy"]
+            mode:["css","legacy"],
+            before:".quebra-pagina"
           }
         };
 
-        await html2pdf().set(opt).from(printArea).save();
+        await html2pdf().set(opt).from(pdfCloneArea).save();
 
-        document.body.classList.remove("gerando-pdf");
-        printArea.innerHTML = "";
-        printArea.style.display = "none";
+        pdfCloneArea.innerHTML = "";
+        pdfCloneArea.style.display = "none";
 
         setProgresso(100);
-        setStatus("PDF baixado com sucesso.", "ok");
+        setStatus("PDF baixado com sucesso, somente com o conteúdo gerado.", "ok");
       }catch(erro){
-        document.body.classList.remove("gerando-pdf");
-        if(el("printArea")) el("printArea").style.display = "none";
+        pdfCloneArea.innerHTML = "";
+        pdfCloneArea.style.display = "none";
+
         setStatus(escapeHtml(erro.message || "Erro ao salvar PDF."), "erro");
       }
     }
@@ -2900,12 +2804,10 @@
         el("btnPrompt").innerText = "Gerar prompt automático";
       }
 
-      if(el("printArea")){
-        el("printArea").innerHTML = "";
-        el("printArea").style.display = "none";
+      if(el("pdfCloneArea")){
+        el("pdfCloneArea").innerHTML = "";
+        el("pdfCloneArea").style.display = "none";
       }
-
-      document.body.classList.remove("gerando-pdf");
 
       setProgresso(0);
       setEtapas(null);
