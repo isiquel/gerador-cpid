@@ -1007,14 +1007,6 @@
         display:block;
       }
 
-      /*
-        IMPORTANTE:
-        Não usamos mais columns:2 no A3.
-        O columns estava espremendo capa e contracapa.
-        Para livreto real, escolha A3 paisagem e use a opção Livreto/Booklet
-        na impressora ou no leitor de PDF.
-      */
-
       body.print-a3-livreto #printArea{
         columns:auto !important;
         column-count:auto !important;
@@ -1786,14 +1778,51 @@
       return subtitles[type] || "Material gerado pelo VERBO IA.";
     }
 
+    function temaVisivelRevista(theme,title = ""){
+      const texto = String(theme || "").trim();
+      const titulo = String(title || "").trim();
+
+      const parecePromptGrande =
+        texto.length > 350 ||
+        texto.toLowerCase().includes("crie uma revista") ||
+        texto.toLowerCase().includes("estrutura obrigatória") ||
+        texto.toLowerCase().includes("cada lição deve") ||
+        texto.toLowerCase().includes("a revista deve") ||
+        texto.toLowerCase().includes("lição 1") ||
+        texto.toLowerCase().includes("lição 2") ||
+        texto.toLowerCase().includes("lição 3") ||
+        texto.toLowerCase().includes("lição 4");
+
+      if(parecePromptGrande){
+        if(titulo.toLowerCase().includes("livro que carregamos")){
+          return "Bibliologia: O Livro que Carregamos — a origem, formação, preservação e transmissão da Bíblia até os nossos dias";
+        }
+
+        return "Bibliologia: a origem, formação, preservação e transmissão da Bíblia até os nossos dias";
+      }
+
+      if(texto){
+        return texto;
+      }
+
+      if(titulo.toLowerCase().includes("livro que carregamos")){
+        return "Bibliologia: O Livro que Carregamos — a origem, formação, preservação e transmissão da Bíblia até os nossos dias";
+      }
+
+      return "Bibliologia: a doutrina das Escrituras e o valor da Palavra de Deus";
+    }
+
     function buildBase(){
       const type = getValue("contentType") || currentType;
+      const title = getValue("title") || defaultTitle(type);
+      const theme = getValue("theme") || "Tema não informado";
 
       return {
         type,
-        title:getValue("title") || defaultTitle(type),
+        title,
         subtitle:getValue("subtitle") || defaultSubtitle(type),
-        theme:getValue("theme") || "Tema não informado",
+        theme,
+        visibleTheme:type === "revista" ? temaVisivelRevista(theme,title) : theme,
         biblicalBase:getValue("biblicalBase") || "Texto bíblico a definir",
         targetAudience:getValue("targetAudience") || "Igreja em geral",
         tone:getValue("tone") || "bíblico, pastoral, didático e pentecostal",
@@ -2049,7 +2078,8 @@ Não use estrutura de sermão.
 DADOS DA REVISTA
 Título: ${base.title}
 Subtítulo: ${base.subtitle}
-Tema mensal: ${base.theme}
+Tema visível da revista: ${base.visibleTheme}
+Prompt/direção completa do usuário: ${base.theme}
 Texto bíblico base geral: ${base.biblicalBase}
 Público-alvo: ${base.targetAudience}
 Tipo de revista: ${info.label}
@@ -2077,6 +2107,9 @@ REGRAS IMPORTANTES
 - Na leitura bíblica em classe, escrever a referência e o texto bíblico da passagem.
 - Os quadros “Ampliando o Conhecimento”, “Auxílio Teológico” e “Auxílio ao Professor” devem ficar no final da lição, depois do Revisando o Conteúdo.
 - Cada lição deve ter auxílios próprios, relacionados ao tema daquela lição.
+- Use o prompt/direção completa apenas como orientação interna.
+- Não copie o prompt do usuário literalmente dentro da revista.
+- Quando precisar mencionar o tema no texto da revista, use somente o Tema visível da revista.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
     }
@@ -2090,7 +2123,7 @@ ETAPA: APRESENTAÇÃO DA REVISTA
 Crie uma apresentação pastoral e editorial para a revista.
 Deve conter:
 1. Saudação ao professor ou ao aluno.
-2. Apresentação do tema mensal.
+2. Apresentação do tema mensal usando somente este tema visível: ${base.visibleTheme}
 3. Importância espiritual e doutrinária do tema.
 4. Objetivo geral da revista.
 5. Orientação de como aproveitar as 4 lições do mês.
@@ -2109,6 +2142,7 @@ Use HTML com:
 <div class="summary-box">
 
 Quero uma apresentação forte e bem desenvolvida, não resumida.
+Não reproduza o prompt completo do usuário no texto final.
       `.trim();
     }
 
@@ -2119,6 +2153,8 @@ ${montarPromptBaseRevista(base,info)}
 ETAPA: SUMÁRIO DA REVISTA
 
 Monte um sumário editorial da revista mensal com 4 lições.
+
+Tema visível para aparecer no sumário: ${base.visibleTheme}
 
 Se o tema for Bibliologia ou relacionado à Bíblia, use esta linha:
 - Lição 1: O que é a Bíblia?
@@ -2144,10 +2180,11 @@ Use HTML com:
 <div class="block">
 <ol class="list">
 <div class="knowledge-box">
+
+Não reproduza o prompt completo do usuário no texto final.
       `.trim();
     }
-
-    function promptLicaoProfessor(base,info,numero,dados){
+        function promptLicaoProfessor(base,info,numero,dados){
       return `
 ${montarPromptBaseRevista(base,info)}
 
@@ -2198,6 +2235,9 @@ IMPORTANTE:
 - Não fazer subtópicos com poucas linhas.
 - Fazer conteúdo robusto e útil para uma aula poderosa.
 - Os auxílios finais devem ser específicos da lição ${numero}, não genéricos.
+- Use o prompt completo do usuário apenas como direção interna.
+- Não copie o prompt do usuário literalmente no conteúdo final.
+- Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
 
 Use HTML com:
 <div class="lesson-hero">
@@ -2251,6 +2291,9 @@ ESTRUTURA OBRIGATÓRIA:
 IMPORTANTE:
 - O conteúdo central precisa ensinar o aluno.
 - Não usar os longos subsídios da revista do professor.
+- Use o prompt completo do usuário apenas como direção interna.
+- Não copie o prompt do usuário literalmente no conteúdo final.
+- Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
 - Usar HTML interno.
 - Nas perguntas finais, deixar espaço de resposta com <div class="student-space">Resposta:</div>.
       `.trim();
@@ -2265,7 +2308,7 @@ ETAPA: CONTRACAPA
 Crie uma contracapa editorial, elegante e pastoral.
 Ela deve conter:
 - sinopse da revista;
-- resumo do tema;
+- resumo do tema usando somente: ${base.visibleTheme};
 - importância das 4 lições;
 - convite ao estudo;
 - frase final de impacto.
@@ -2278,6 +2321,8 @@ Use HTML com:
 <p class="subtitle">
 <div class="summary-box">
 <div class="block">
+
+Não reproduza o prompt completo do usuário no texto final.
       `.trim();
     }
 
@@ -2289,7 +2334,7 @@ NÃO coloque título, subtítulo, letras, palavras, logotipos, marcas, selos ou 
 A imagem deve servir como fundo premium para o app aplicar os textos depois.
 
 TEMA VISUAL:
-Bibliologia: a origem, formação, preservação e transmissão da Bíblia.
+${base.visibleTheme}
 
 COMPOSIÇÃO:
 - Uma Bíblia aberta no centro, vista de forma dramática e realista.
@@ -2384,7 +2429,8 @@ IMPORTANTE: gere apenas o fundo visual profissional, pois os textos serão aplic
         monthInfo:`${revistaMes} de ${revistaAno} • Revista mensal • 4 lições`
       };
     }
-        function scriptureText(ref){
+
+    function scriptureText(ref){
       const key = String(ref || "").trim();
 
       const textos = {
@@ -2501,8 +2547,7 @@ Mateus 24.35:
                 ps: [
                   "A Bíblia não deve ser tratada apenas como um documento religioso antigo, nem como uma coleção de pensamentos piedosos produzidos pela espiritualidade humana. Sua origem está em Deus. Quando Paulo afirma que “toda Escritura é divinamente inspirada” (2Tm 3.16), ele estabelece que a fonte última da Escritura não é o homem, mas o próprio Senhor. A Bíblia nasce da iniciativa divina de revelar sua vontade ao ser humano.",
                   "A expressão “divinamente inspirada” aponta para a ação de Deus na comunicação da sua Palavra. Isso significa que as Escrituras carregam autoridade porque procedem do Deus que fala. A autoridade da Bíblia não depende da aceitação da cultura, da aprovação de instituições humanas ou da opinião de uma geração. Ela é Palavra de Deus porque Deus é sua fonte.",
-                  "Essa verdade protege a igreja de dois perigos: reduzir a Bíblia a literatura religiosa comum ou submetê-la às preferências humanas. A Escritura julga a igreja; a igreja não julga a Escritura. Por isso, todo ensino, toda prática, toda experiência espiritual e toda tradição precisam ser avaliados à luz da Palavra de Deus (Is 8.20; At 17.11).",
-                  "Na aula, esta verdade deve levar a classe à reverência. Ter uma Bíblia em mãos é ter acesso ao testemunho escrito da revelação de Deus. Isso exige leitura humilde, obediência sincera e compromisso com a verdade revelada."
+                  "Essa verdade protege a igreja de dois perigos: reduzir a Bíblia a literatura religiosa comum ou submetê-la às preferências humanas. A Escritura julga a igreja; a igreja não julga a Escritura. Por isso, todo ensino, toda prática, toda experiência espiritual e toda tradição precisam ser avaliados à luz da Palavra de Deus (Is 8.20; At 17.11)."
                 ]
               },
               {
@@ -2510,8 +2555,7 @@ Mateus 24.35:
                 ps: [
                   "A inspiração bíblica não significa que Deus simplesmente ofereceu ideias gerais aos escritores e deixou que eles registrassem como quisessem. Também não significa que os autores humanos escreveram em transe, sem consciência ou participação. A doutrina bíblica da inspiração ensina que Deus usou homens reais, com personalidade, vocabulário, cultura e contexto, preservando, ao mesmo tempo, a fidelidade da mensagem revelada.",
                   "Pedro ensina que “homens santos de Deus falaram inspirados pelo Espírito Santo” (2Pe 1.21). O verbo usado comunica a ideia de serem conduzidos, movidos ou impulsionados pelo Espírito. Assim como um barco é conduzido pelo vento sem deixar de ser um barco real, os autores bíblicos escreveram de modo humano, mas debaixo da direção soberana de Deus.",
-                  "Esse ensino explica por que encontramos estilos diferentes na Bíblia. Moisés não escreve como Davi; Isaías não escreve como Amós; Paulo não escreve como João. Mesmo assim, a mensagem bíblica possui unidade espiritual e doutrinária. A diversidade dos instrumentos humanos não compromete a unidade da revelação divina.",
-                  "Para a igreja, isso é fundamental. A Bíblia não é produto de mera genialidade humana. Ela é Palavra inspirada, confiável e suficiente para ensinar, corrigir, instruir e preparar o povo de Deus para toda boa obra (2Tm 3.16,17)."
+                  "Esse ensino explica por que encontramos estilos diferentes na Bíblia. Moisés não escreve como Davi; Isaías não escreve como Amós; Paulo não escreve como João. Mesmo assim, a mensagem bíblica possui unidade espiritual e doutrinária. A diversidade dos instrumentos humanos não compromete a unidade da revelação divina."
                 ]
               },
               {
@@ -2519,8 +2563,7 @@ Mateus 24.35:
                 ps: [
                   "A Bíblia é regra de fé porque define aquilo que o cristão deve crer. Doutrina não nasce do gosto pessoal, da tradição isolada, da emoção do momento ou de supostas revelações que contradizem o texto sagrado. A fé cristã é edificada sobre a verdade revelada por Deus nas Escrituras (Ef 2.20; Jd 3).",
                   "A Bíblia também é regra de prática porque orienta a maneira como o cristão deve viver. Ela não apenas informa a mente, mas também disciplina a vontade, corrige os caminhos e confronta o pecado. Hebreus 4.12 declara que a Palavra é viva e eficaz, apta para discernir os pensamentos e intenções do coração.",
-                  "Quando a igreja abandona a suficiência das Escrituras, torna-se vulnerável a modismos espirituais, manipulações emocionais e doutrinas sem fundamento. Mas quando a Palavra ocupa o centro da vida cristã, a igreja cresce em maturidade, discernimento e santidade.",
-                  "A aplicação é direta: a Bíblia deve governar a pregação, o ensino, a liturgia, a ética, a família, a liderança e a vida devocional. Onde a Escritura fala, o cristão se submete; onde ela corrige, o cristão se arrepende; onde ela promete, o cristão confia."
+                  "Quando a Palavra ocupa o centro da vida cristã, a igreja cresce em maturidade, discernimento e santidade. A aplicação é direta: a Bíblia deve governar a pregação, o ensino, a ética, a família, a liderança e a vida devocional."
                 ]
               }
             ],
@@ -2533,27 +2576,24 @@ Mateus 24.35:
                 titulo: "Deus se fez conhecido",
                 ps: [
                   "O ser humano não teria condições de conhecer Deus corretamente se o próprio Deus não se revelasse. A criação revela sua existência, seu poder e sua glória (Sl 19.1; Rm 1.20), mas é nas Escrituras que Deus revela com clareza seu caráter, sua vontade, sua santidade, sua justiça e seu plano de salvação.",
-                  "A Bíblia mostra que Deus fala. Desde o princípio, o Senhor se comunica com o homem (Gn 1.28; Gn 2.16,17). Depois, falou pelos profetas, por meio de visões, sonhos, oráculos, leis, promessas e advertências. No centro de toda revelação, está Cristo, a expressão plena da vontade divina (Hb 1.1-3).",
-                  "A revelação bíblica não é fruto da tentativa humana de subir até Deus, mas da decisão graciosa de Deus de descer até o homem. Por isso, a Escritura deve ser recebida com gratidão e temor. Deus não ficou em silêncio; ele falou de maneira suficiente para que conheçamos o caminho da salvação e a vida que lhe agrada.",
-                  "Sem a Palavra, o homem interpreta Deus a partir de suas próprias ideias. Com a Palavra, o homem é corrigido por Deus e conduzido à verdade. A Escritura liberta a fé da imaginação humana e a firma na revelação divina."
+                  "A Bíblia mostra que Deus fala. Desde o princípio, o Senhor se comunica com o homem. Depois, falou pelos profetas, por meio de visões, sonhos, leis, promessas e advertências. No centro de toda revelação, está Cristo, a expressão plena da vontade divina (Hb 1.1-3).",
+                  "A revelação bíblica não é fruto da tentativa humana de subir até Deus, mas da decisão graciosa de Deus de descer até o homem. Deus não ficou em silêncio; ele falou de maneira suficiente para que conheçamos o caminho da salvação e a vida que lhe agrada."
                 ]
               },
               {
                 titulo: "Cristo no centro da revelação",
                 ps: [
-                  "A Bíblia possui muitos livros, gêneros literários e contextos históricos, mas sua mensagem central converge para o plano redentor de Deus em Cristo. Jesus afirmou que a Lei de Moisés, os Profetas e os Salmos falavam a respeito dele (Lc 24.44). Isso mostra que a unidade das Escrituras não está apenas em seus temas, mas no próprio Cristo.",
+                  "A Bíblia possui muitos livros, gêneros literários e contextos históricos, mas sua mensagem central converge para o plano redentor de Deus em Cristo. Jesus afirmou que a Lei de Moisés, os Profetas e os Salmos falavam a respeito dele (Lc 24.44).",
                   "No Antigo Testamento, Cristo é anunciado em promessas, alianças, figuras, sombras, sacrifícios e profecias. No Novo Testamento, ele é revelado como o Verbo encarnado, o Cordeiro de Deus, o Mediador da nova aliança, o Senhor ressurreto e o Rei que voltará.",
-                  "Ler a Bíblia cristocentricamente não significa forçar Cristo em cada detalhe do texto, mas reconhecer que toda a história bíblica caminha para a redenção consumada nele. A criação, a queda, as alianças, a lei, os profetas, os salmos, os evangelhos e as epístolas encontram coerência no propósito redentor de Deus.",
-                  "Isso dá profundidade ao estudo bíblico. A Bíblia não é apenas um manual moral; ela é a narrativa da salvação. Seu objetivo não é apenas formar pessoas bem-comportadas, mas conduzir pecadores ao conhecimento de Deus por meio de Jesus Cristo (Jo 5.39; 20.31)."
+                  "Ler a Bíblia cristocentricamente não significa forçar Cristo em cada detalhe do texto, mas reconhecer que toda a história bíblica caminha para a redenção consumada nele."
                 ]
               },
               {
                 titulo: "A Palavra ilumina o caminho",
                 ps: [
-                  "O Salmo 119.105 declara: “Lâmpada para os meus pés é tua palavra e luz, para o meu caminho”. A figura é simples e poderosa. A Palavra ilumina os passos imediatos e também aponta a direção da caminhada. Ela guia decisões, corrige desvios e fortalece o crente diante das incertezas da vida.",
-                  "Em um mundo marcado por confusão moral e espiritual, a Escritura oferece direção segura. Ela revela o que é santo e o que é pecado, o que agrada a Deus e o que desonra seu nome. Por isso, o cristão não deve ser guiado apenas por sentimentos, pressões sociais ou opiniões populares.",
-                  "A luz da Palavra também protege contra enganos espirituais. Muitas vozes disputam a atenção da igreja, mas nem toda voz procede de Deus. A Escritura é o critério pelo qual discernimos doutrinas, profecias, ensinos e práticas (1Jo 4.1; Gl 1.8).",
-                  "A aplicação para a classe é clara: quem deseja caminhar com segurança precisa andar à luz da Palavra. A Bíblia não elimina todos os desafios da jornada, mas ilumina o caminho para que o crente não ande em trevas."
+                  "O Salmo 119.105 declara: “Lâmpada para os meus pés é tua palavra e luz, para o meu caminho”. A Palavra ilumina os passos imediatos e também aponta a direção da caminhada. Ela guia decisões, corrige desvios e fortalece o crente diante das incertezas da vida.",
+                  "Em um mundo marcado por confusão moral e espiritual, a Escritura oferece direção segura. Ela revela o que é santo e o que é pecado, o que agrada a Deus e o que desonra seu nome.",
+                  "A luz da Palavra também protege contra enganos espirituais. A Escritura é o critério pelo qual discernimos doutrinas, profecias, ensinos e práticas."
                 ]
               }
             ],
@@ -2565,27 +2605,24 @@ Mateus 24.35:
               {
                 titulo: "Ela confronta o pecado",
                 ps: [
-                  "A Palavra de Deus não apenas consola; ela também confronta. Ela revela a santidade de Deus e expõe a realidade do pecado no coração humano. Quando a Escritura é lida com temor, o homem passa a enxergar sua condição diante do Senhor e percebe a necessidade de arrependimento.",
-                  "Jesus orou: “Santifica-os na verdade; a tua palavra é a verdade” (Jo 17.17). A santificação cristã está profundamente ligada à ação da Palavra. A Bíblia corrige pensamentos, desejos, atitudes e práticas que não correspondem à vontade de Deus.",
-                  "Esse confronto não tem o objetivo de destruir, mas de restaurar. A mesma Palavra que fere o orgulho humano também cura o coração arrependido. Ela denuncia o pecado para conduzir o pecador à graça, ao perdão e à transformação em Cristo.",
-                  "Na vida da igreja, uma pregação e um ensino que evitam confrontar o pecado produzem crentes superficiais. Mas onde a Palavra é ensinada com fidelidade, o Espírito Santo trabalha convencendo, corrigindo e santificando o povo de Deus."
+                  "A Palavra de Deus não apenas consola; ela também confronta. Ela revela a santidade de Deus e expõe a realidade do pecado no coração humano.",
+                  "Jesus orou: “Santifica-os na verdade; a tua palavra é a verdade” (Jo 17.17). A santificação cristã está profundamente ligada à ação da Palavra.",
+                  "Esse confronto não tem o objetivo de destruir, mas de restaurar. A mesma Palavra que fere o orgulho humano também cura o coração arrependido."
                 ]
               },
               {
                 titulo: "Ela fortalece a fé",
                 ps: [
-                  "A fé cristã não se fortalece no vazio. Ela é alimentada pela Palavra de Deus. Romanos 10.17 ensina que a fé vem pelo ouvir, e o ouvir pela Palavra de Deus. Quanto mais o cristão se expõe às Escrituras com humildade e obediência, mais sua fé se torna madura e firme.",
-                  "Romanos 15.4 afirma que tudo o que antes foi escrito, para nosso ensino foi escrito, para que, pela paciência e consolação das Escrituras, tenhamos esperança. Isso significa que a Bíblia sustenta o crente em tempos de espera, dor, perseguição e incerteza.",
-                  "As promessas de Deus, os exemplos dos servos fiéis, as advertências contra a incredulidade e a revelação do caráter divino fortalecem a confiança do cristão. A Bíblia mostra que Deus é fiel, governa a história e cumpre sua Palavra.",
-                  "Uma fé desconectada da Escritura facilmente se torna emocionalismo. Mas a fé alimentada pela Palavra aprende a confiar mesmo quando as circunstâncias não são favoráveis."
+                  "A fé cristã não se fortalece no vazio. Ela é alimentada pela Palavra de Deus. Romanos 10.17 ensina que a fé vem pelo ouvir, e o ouvir pela Palavra de Deus.",
+                  "Romanos 15.4 afirma que tudo o que antes foi escrito, para nosso ensino foi escrito, para que, pela paciência e consolação das Escrituras, tenhamos esperança.",
+                  "As promessas de Deus, os exemplos dos servos fiéis, as advertências contra a incredulidade e a revelação do caráter divino fortalecem a confiança do cristão."
                 ]
               },
               {
                 titulo: "Ela prepara para toda boa obra",
                 ps: [
-                  "Segundo 2 Timóteo 3.17, a finalidade da Escritura é tornar o homem de Deus perfeito e perfeitamente instruído para toda boa obra. A Palavra forma caráter, corrige a conduta e capacita o cristão para servir ao Senhor com maturidade.",
-                  "O ensino bíblico não termina na informação. Ele visa formação. Deus usa a Escritura para moldar pensamentos, afetos, prioridades e atitudes. O crente instruído pela Palavra se torna mais preparado para servir na família, na igreja e no mundo.",
-                  "Toda boa obra precisa estar fundamentada na vontade de Deus. Ativismo sem Palavra pode gerar cansaço, orgulho ou confusão. Mas serviço enraizado na Escritura produz fruto saudável, pois nasce da obediência e da comunhão com Deus.",
+                  "Segundo 2 Timóteo 3.17, a finalidade da Escritura é tornar o homem de Deus perfeito e perfeitamente instruído para toda boa obra.",
+                  "O ensino bíblico não termina na informação. Ele visa formação. Deus usa a Escritura para moldar pensamentos, afetos, prioridades e atitudes.",
                   "Assim, a Bíblia transforma a vida porque corrige o caminho, fortalece a fé e equipa o crente para viver de modo digno do evangelho."
                 ]
               }
@@ -2600,27 +2637,24 @@ Mateus 24.35:
               {
                 titulo: "Homens chamados por Deus",
                 ps: [
-                  "A formação da Bíblia envolveu homens reais, vivendo em épocas, culturas e contextos diferentes. Entre os autores bíblicos encontramos profetas, reis, sacerdotes, pastores, pescadores, médicos, apóstolos e líderes levantados por Deus. Essa variedade mostra que Deus fala dentro da história humana, sem deixar de governá-la.",
-                  "Moisés escreveu palavras da lei (Êx 24.4), Jeremias recebeu ordem para escrever em um rolo (Jr 36.2), Lucas investigou cuidadosamente os fatos relacionados a Cristo (Lc 1.1-4), e Paulo escreveu cartas às igrejas tratando de doutrina, ética e vida comunitária. Cada autor participou conscientemente do processo de escrita.",
-                  "A participação humana não diminui a autoridade divina da Escritura. Pelo contrário, demonstra a sabedoria de Deus em comunicar sua Palavra por meio de linguagem compreensível, situações concretas e experiências reais. A Bíblia não caiu pronta do céu; Deus a entregou na história.",
-                  "Isso ajuda a classe a compreender que a Escritura possui profundidade histórica e espiritual. Ela é divina em sua origem e humana em sua forma de comunicação, sem deixar de ser Palavra de Deus."
+                  "A formação da Bíblia envolveu homens reais, vivendo em épocas, culturas e contextos diferentes. Entre os autores bíblicos encontramos profetas, reis, sacerdotes, pastores, pescadores, médicos, apóstolos e líderes levantados por Deus.",
+                  "Moisés escreveu palavras da lei (Êx 24.4), Jeremias recebeu ordem para escrever em um rolo (Jr 36.2), Lucas investigou cuidadosamente os fatos relacionados a Cristo (Lc 1.1-4), e Paulo escreveu cartas às igrejas.",
+                  "A participação humana não diminui a autoridade divina da Escritura. Pelo contrário, demonstra a sabedoria de Deus em comunicar sua Palavra por meio de linguagem compreensível, situações concretas e experiências reais."
                 ]
               },
               {
                 titulo: "Unidade em meio à diversidade",
                 ps: [
-                  "A Bíblia foi escrita ao longo de muitos séculos, em diferentes lugares e por diversos autores. Mesmo assim, apresenta unidade impressionante em sua mensagem central. Da criação à consumação, a Escritura revela o Deus santo que redime pecadores e conduz a história para o cumprimento de seu propósito.",
-                  "A diversidade literária é notável: há narrativa histórica, poesia, sabedoria, profecia, evangelhos, cartas e literatura apocalíptica. Cada gênero exige leitura cuidadosa, respeitando sua forma de comunicação. Um salmo não deve ser lido exatamente como uma carta apostólica, e uma profecia não deve ser tratada como simples narrativa.",
-                  "Apesar dessa diversidade, a Bíblia não é um conjunto desconexo de textos religiosos. Ela possui coerência porque o mesmo Deus que inspirou a Escritura governa a história da redenção. A promessa feita em Gênesis encontra desenvolvimento nas alianças, nos profetas e cumprimento em Cristo.",
-                  "Esse ponto é importante para o professor: ensinar a Bíblia exige perceber o texto específico e também o conjunto da revelação. O aluno precisa aprender a ler a parte sem perder o todo."
+                  "A Bíblia foi escrita ao longo de muitos séculos, em diferentes lugares e por diversos autores. Mesmo assim, apresenta unidade impressionante em sua mensagem central.",
+                  "A diversidade literária é notável: há narrativa histórica, poesia, sabedoria, profecia, evangelhos, cartas e literatura apocalíptica. Cada gênero exige leitura cuidadosa.",
+                  "Apesar dessa diversidade, a Bíblia não é um conjunto desconexo de textos religiosos. Ela possui coerência porque o mesmo Deus que inspirou a Escritura governa a história da redenção."
                 ]
               },
               {
                 titulo: "A ação soberana do Espírito",
                 ps: [
-                  "A inspiração das Escrituras é obra do Espírito Santo. Pedro afirma que homens santos falaram inspirados pelo Espírito (2Pe 1.21). Isso significa que a mensagem bíblica não foi produzida pela vontade humana, mas pela ação soberana de Deus sobre os instrumentos que escolheu.",
-                  "O Espírito Santo não apenas inspirou a Escritura; ele também ilumina o coração do crente para compreendê-la corretamente. Essa iluminação não substitui o estudo, mas torna o estudo espiritualmente frutífero. É possível conhecer dados bíblicos e ainda assim permanecer sem submissão ao Deus da Bíblia.",
-                  "A ação do Espírito preserva a igreja de dois extremos: de um lado, o racionalismo frio que trata a Bíblia como mero objeto acadêmico; de outro, o espiritualismo desordenado que despreza o texto escrito em nome de experiências subjetivas.",
+                  "A inspiração das Escrituras é obra do Espírito Santo. Pedro afirma que homens santos falaram inspirados pelo Espírito (2Pe 1.21).",
+                  "O Espírito Santo não apenas inspirou a Escritura; ele também ilumina o coração do crente para compreendê-la corretamente.",
                   "A verdadeira espiritualidade valoriza a Palavra inspirada. O mesmo Espírito que inspirou as Escrituras conduz o povo de Deus a amá-las, estudá-las e obedecê-las."
                 ]
               }
@@ -2633,28 +2667,25 @@ Mateus 24.35:
               {
                 titulo: "Rolos antigos",
                 ps: [
-                  "Antes de a Bíblia chegar ao formato de livro encadernado, muitos textos eram preservados em rolos. Esses rolos eram feitos de materiais próprios da época e exigiam cuidado no manuseio, na leitura e na conservação. A leitura pública das Escrituras era uma prática central na vida do povo de Deus.",
-                  "Em Lucas 4.17, Jesus recebeu o livro do profeta Isaías na sinagoga, abriu o rolo e leu a passagem que anunciava sua missão. Esse episódio mostra que as Escrituras eram lidas em ambiente comunitário e reconhecidas como Palavra de Deus para o povo.",
-                  "Os rolos também indicam que a forma física da Bíblia mudou ao longo do tempo. A mensagem divina permaneceu, mas os suportes materiais variaram conforme os recursos disponíveis. Deus preservou sua Palavra em meio às condições históricas reais.",
-                  "Esse dado ajuda a igreja a valorizar o privilégio de ter hoje a Bíblia em formato acessível, impressa ou digital. O que para muitos hoje é comum, em outros tempos exigia grande esforço de preservação e transmissão."
+                  "Antes de a Bíblia chegar ao formato de livro encadernado, muitos textos eram preservados em rolos. Esses rolos exigiam cuidado no manuseio, na leitura e na conservação.",
+                  "Em Lucas 4.17, Jesus recebeu o livro do profeta Isaías na sinagoga, abriu o rolo e leu a passagem que anunciava sua missão.",
+                  "Os rolos indicam que a forma física da Bíblia mudou ao longo do tempo. A mensagem divina permaneceu, mas os suportes materiais variaram conforme os recursos disponíveis."
                 ]
               },
               {
                 titulo: "Papiro e pergaminho",
                 ps: [
-                  "O papiro era produzido a partir de uma planta comum na região do Egito e foi amplamente utilizado no mundo antigo. Era mais acessível, mas também mais frágil. Muitos documentos antigos foram registrados nesse tipo de material, especialmente em ambientes onde o clima favorecia sua conservação.",
-                  "O pergaminho, feito de pele preparada de animais, tornou-se um material mais resistente. Por sua durabilidade, passou a ser usado em cópias importantes. Quando Paulo pede a Timóteo que leve os livros e especialmente os pergaminhos (2Tm 4.13), temos uma janela para a realidade dos materiais escritos no mundo antigo.",
-                  "Esses materiais mostram que a transmissão bíblica ocorreu em condições históricas concretas. Deus não preservou sua Palavra ignorando a história, mas agindo dentro dela. A providência divina não elimina meios humanos; ela os governa.",
-                  "Ao ensinar esse ponto, é importante destacar que a Bíblia não é um mito solto no tempo. Ela chegou até nós por meio de registros, cópias, comunidades de fé e preservação cuidadosa."
+                  "O papiro era produzido a partir de uma planta comum na região do Egito e foi amplamente utilizado no mundo antigo. Era mais acessível, mas também mais frágil.",
+                  "O pergaminho, feito de pele preparada de animais, tornou-se um material mais resistente. Por sua durabilidade, passou a ser usado em cópias importantes.",
+                  "Esses materiais mostram que a transmissão bíblica ocorreu em condições históricas concretas. Deus não preservou sua Palavra ignorando a história, mas agindo dentro dela."
                 ]
               },
               {
                 titulo: "Manuscritos preservados",
                 ps: [
-                  "Antes da invenção da imprensa, as Escrituras eram copiadas manualmente. Esse processo exigia atenção, disciplina e reverência. Copistas dedicavam tempo para preservar os textos sagrados e transmiti-los às gerações seguintes.",
-                  "É verdade que o processo de cópia envolveu variações textuais em manuscritos, como acontece com documentos antigos copiados à mão. Porém, isso não destrói a confiabilidade da Bíblia. A abundância de manuscritos e o trabalho de comparação textual ajudam a confirmar a preservação da mensagem bíblica.",
-                  "A fé cristã não depende de ignorar a história, mas de reconhecer a providência de Deus atuando nela. O Senhor preservou sua Palavra de modo suficiente para que sua igreja conheça com segurança a mensagem da salvação.",
-                  "Esse ponto deve fortalecer a confiança da classe. A Bíblia que temos hoje não surgiu por acaso; ela atravessou séculos, línguas, perseguições, cópias, traduções e continua proclamando a verdade de Deus."
+                  "Antes da invenção da imprensa, as Escrituras eram copiadas manualmente. Esse processo exigia atenção, disciplina e reverência.",
+                  "É verdade que o processo de cópia envolveu variações textuais em manuscritos, como acontece com documentos antigos copiados à mão. Porém, isso não destrói a confiabilidade da Bíblia.",
+                  "A Bíblia que temos hoje não surgiu por acaso; ela atravessou séculos, línguas, perseguições, cópias, traduções e continua proclamando a verdade de Deus."
                 ]
               }
             ],
@@ -2666,28 +2697,25 @@ Mateus 24.35:
               {
                 titulo: "Antigo e Novo Testamento",
                 ps: [
-                  "A Bíblia cristã é formada por Antigo e Novo Testamento. O Antigo Testamento registra a criação, a queda, as promessas, as alianças, a lei, a história de Israel, os escritos sapienciais e a voz dos profetas. O Novo Testamento revela o cumprimento em Cristo e a expansão do evangelho.",
-                  "A palavra “testamento” está ligada à ideia de aliança. Assim, a estrutura da Bíblia revela o Deus que se relaciona com seu povo por meio de alianças e conduz a história para a redenção. A antiga aliança preparava; a nova aliança revela o cumprimento em Jesus.",
-                  "Essa divisão não significa oposição entre as partes. O Novo Testamento não descarta o Antigo; ele o cumpre e o interpreta à luz de Cristo. Jesus mesmo afirmou que não veio destruir a Lei ou os Profetas, mas cumprir (Mt 5.17).",
-                  "O professor deve mostrar que a Bíblia inteira forma uma unidade redentiva. Conhecer sua estrutura ajuda o aluno a ler cada livro dentro do grande plano de Deus."
+                  "A Bíblia cristã é formada por Antigo e Novo Testamento. O Antigo Testamento registra a criação, a queda, as promessas, as alianças, a lei, a história de Israel, os escritos sapienciais e a voz dos profetas.",
+                  "A palavra “testamento” está ligada à ideia de aliança. Assim, a estrutura da Bíblia revela o Deus que se relaciona com seu povo por meio de alianças.",
+                  "O Novo Testamento não descarta o Antigo; ele o cumpre e o interpreta à luz de Cristo. Jesus afirmou que não veio destruir a Lei ou os Profetas, mas cumprir (Mt 5.17)."
                 ]
               },
               {
                 titulo: "Livros reconhecidos pelo povo de Deus",
                 ps: [
-                  "Os livros bíblicos foram reconhecidos pelo povo de Deus por sua autoridade espiritual, coerência doutrinária e uso entre a comunidade da fé. A igreja não transformou livros comuns em Palavra de Deus; ela reconheceu os escritos que traziam autoridade divina.",
-                  "No caso do Antigo Testamento, Jesus e os apóstolos reconheceram a autoridade das Escrituras de Israel. No Novo Testamento, os escritos apostólicos passaram a circular entre as igrejas e a ser recebidos como instrução autorizada para a fé cristã (Cl 4.16; 2Pe 3.15,16).",
-                  "O processo de reconhecimento do cânon envolve história, discernimento e providência. Deus não apenas inspirou sua Palavra; ele também conduziu seu povo a reconhecer os escritos inspirados.",
-                  "Esse ensino ajuda a classe a entender que a Bíblia não é uma coleção arbitrária. Ela foi recebida, preservada e confessada pela comunidade da fé como Escritura Sagrada."
+                  "Os livros bíblicos foram reconhecidos pelo povo de Deus por sua autoridade espiritual, coerência doutrinária e uso entre a comunidade da fé.",
+                  "A igreja não transformou livros comuns em Palavra de Deus; ela reconheceu os escritos que traziam autoridade divina.",
+                  "Deus não apenas inspirou sua Palavra; ele também conduziu seu povo a reconhecer os escritos inspirados."
                 ]
               },
               {
                 titulo: "Uma biblioteca sagrada",
                 ps: [
-                  "A palavra Bíblia vem de uma ideia relacionada a livros. A Bíblia é, em certo sentido, uma biblioteca sagrada: reúne livros históricos, poéticos, proféticos, evangelhos, cartas e literatura apocalíptica. Essa riqueza literária exige leitura cuidadosa.",
-                  "Cada livro contribui para o conjunto da revelação. Gênesis apresenta fundamentos; Êxodo revela redenção e aliança; os Salmos expressam oração e adoração; os profetas chamam ao arrependimento e anunciam esperança; os evangelhos proclamam Cristo; as epístolas instruem a igreja.",
-                  "A variedade da Bíblia não enfraquece sua unidade. Pelo contrário, mostra a sabedoria de Deus em comunicar sua verdade de muitas formas, alcançando a mente, o coração, a memória, a consciência e a esperança do seu povo.",
-                  "Estudar a Bíblia como biblioteca sagrada ajuda o aluno a valorizar cada livro e a perceber que toda a Escritura é proveitosa para a edificação da vida cristã."
+                  "A Bíblia é, em certo sentido, uma biblioteca sagrada: reúne livros históricos, poéticos, proféticos, evangelhos, cartas e literatura apocalíptica.",
+                  "Cada livro contribui para o conjunto da revelação. Gênesis apresenta fundamentos; Êxodo revela redenção e aliança; os Salmos expressam oração e adoração; os evangelhos proclamam Cristo; as epístolas instruem a igreja.",
+                  "A variedade da Bíblia mostra a sabedoria de Deus em comunicar sua verdade de muitas formas, alcançando a mente, o coração, a memória, a consciência e a esperança do seu povo."
                 ]
               }
             ],
@@ -2701,28 +2729,25 @@ Mateus 24.35:
               {
                 titulo: "Cópias feitas à mão",
                 ps: [
-                  "Durante séculos, antes da imprensa, os textos bíblicos foram transmitidos por meio de cópias manuscritas. Esse processo exigia trabalho paciente e cuidadoso. A preservação da Palavra envolveu pessoas que dedicaram tempo e habilidade para copiar, guardar e transmitir os textos sagrados.",
-                  "Esse fato mostra que Deus usa meios humanos em seus propósitos. Assim como usou autores humanos na inspiração, também usou copistas, comunidades e leitores na transmissão. A providência divina não dispensa responsabilidade humana; ela a orienta.",
-                  "O reconhecimento desse processo não deve diminuir nossa confiança na Bíblia. Pelo contrário, mostra que a Palavra atravessou a história real, enfrentando limitações materiais, perseguições e mudanças culturais, sem perder sua mensagem central.",
-                  "A igreja deve olhar para essa história com gratidão. Muitos crentes hoje têm acesso fácil à Bíblia porque gerações anteriores preservaram, copiaram, traduziram e ensinaram as Escrituras."
+                  "Durante séculos, antes da imprensa, os textos bíblicos foram transmitidos por meio de cópias manuscritas. Esse processo exigia trabalho paciente e cuidadoso.",
+                  "Esse fato mostra que Deus usa meios humanos em seus propósitos. Assim como usou autores humanos na inspiração, também usou copistas, comunidades e leitores na transmissão.",
+                  "A Palavra atravessou a história real, enfrentando limitações materiais, perseguições e mudanças culturais, sem perder sua mensagem central."
                 ]
               },
               {
                 titulo: "Comunidades preservadoras",
                 ps: [
-                  "A transmissão bíblica não foi obra de indivíduos isolados apenas. Comunidades de fé leram, guardaram, ensinaram e preservaram as Escrituras. No Antigo Testamento, a leitura pública da lei fazia parte da vida do povo (Ne 8.1-8). No Novo Testamento, cartas apostólicas circulavam entre igrejas (Cl 4.16).",
-                  "A preservação comunitária mostra que a Palavra sempre esteve ligada à vida do povo de Deus. A Bíblia foi lida em culto, ensinada às famílias, memorizada, copiada, comentada e proclamada.",
-                  "Isso também revela a importância da Escola Bíblica Dominical. A EBD participa dessa longa história de transmissão do ensino bíblico. Quando a igreja ensina a Palavra com fidelidade, ela coopera para que a próxima geração conheça o Senhor.",
-                  "A classe deve perceber que receber a Palavra implica também transmiti-la. Quem aprende as Escrituras tem responsabilidade de ensiná-las aos filhos, aos novos convertidos e à comunidade da fé."
+                  "A transmissão bíblica não foi obra de indivíduos isolados apenas. Comunidades de fé leram, guardaram, ensinaram e preservaram as Escrituras.",
+                  "No Antigo Testamento, a leitura pública da lei fazia parte da vida do povo (Ne 8.1-8). No Novo Testamento, cartas apostólicas circulavam entre igrejas (Cl 4.16).",
+                  "A Escola Bíblica Dominical participa dessa longa história de transmissão do ensino bíblico. Quando a igreja ensina a Palavra com fidelidade, coopera para que a próxima geração conheça o Senhor."
                 ]
               },
               {
                 titulo: "A providência de Deus",
                 ps: [
-                  "A preservação da Bíblia é mais do que um fato histórico; é também expressão da providência de Deus. Isaías 40.8 declara que a Palavra do nosso Deus subsiste eternamente. Jesus afirmou que suas palavras não passarão (Mt 24.35).",
-                  "Ao longo dos séculos, impérios caíram, línguas mudaram, perseguições se levantaram e culturas se transformaram, mas a Palavra permaneceu. Essa permanência não pode ser explicada apenas por capacidade humana. Deus preservou sua mensagem para seu povo.",
-                  "A providência divina não significa ausência de processos históricos. Significa que Deus governa esses processos. Manuscritos, traduções, concílios, comunidades, impressões e missões foram instrumentos dentro do cuidado soberano do Senhor.",
-                  "Essa verdade deve gerar confiança. A Bíblia que temos em mãos não é acidente da história; é testemunho da fidelidade do Deus que fala e preserva sua Palavra."
+                  "A preservação da Bíblia é mais do que um fato histórico; é também expressão da providência de Deus. Isaías 40.8 declara que a Palavra do nosso Deus subsiste eternamente.",
+                  "Ao longo dos séculos, impérios caíram, línguas mudaram, perseguições se levantaram e culturas se transformaram, mas a Palavra permaneceu.",
+                  "A Bíblia que temos em mãos não é acidente da história; é testemunho da fidelidade do Deus que fala e preserva sua Palavra."
                 ]
               }
             ],
@@ -2734,28 +2759,25 @@ Mateus 24.35:
               {
                 titulo: "Da língua original aos povos",
                 ps: [
-                  "O Antigo Testamento foi escrito principalmente em hebraico, com algumas partes em aramaico. O Novo Testamento foi escrito em grego, língua amplamente usada no mundo mediterrâneo do primeiro século. Isso mostra que Deus comunicou sua Palavra em línguas humanas reais.",
-                  "Com o passar do tempo, a tradução tornou-se necessária para que diferentes povos tivessem acesso à mensagem bíblica. Traduzir a Bíblia não é diminuir sua autoridade; é tornar sua mensagem compreensível em outra língua.",
-                  "Desde cedo, a história da fé bíblica esteve ligada à tradução e explicação. Neemias 8.8 mostra que o povo precisava ouvir a leitura e compreender o sentido. A Palavra deve ser não apenas lida, mas entendida.",
+                  "O Antigo Testamento foi escrito principalmente em hebraico, com algumas partes em aramaico. O Novo Testamento foi escrito em grego.",
+                  "Com o passar do tempo, a tradução tornou-se necessária para que diferentes povos tivessem acesso à mensagem bíblica.",
                   "A tradução da Bíblia para a língua do povo é uma bênção espiritual. Ela permite evangelização, discipulado, ensino, culto doméstico, leitura devocional e formação doutrinária."
                 ]
               },
               {
                 titulo: "A importância da tradução",
                 ps: [
-                  "A tradução bíblica aproxima a mensagem de Deus do coração das pessoas. Quando o povo escuta a Palavra em sua própria língua, a compreensão se torna mais clara e a resposta de fé se torna mais consciente.",
-                  "No dia de Pentecostes, pessoas de várias nações ouviram as grandezas de Deus em suas próprias línguas (At 2.6-11). Esse episódio mostra o valor missionário da comunicação compreensível. O evangelho não é uma mensagem para ficar presa a uma cultura; é boa notícia para todos os povos.",
-                  "A história das traduções bíblicas revela coragem, trabalho e, muitas vezes, sofrimento. Muitos homens e mulheres contribuíram para que a Escritura chegasse ao povo comum. Isso deve despertar gratidão e responsabilidade.",
+                  "A tradução bíblica aproxima a mensagem de Deus do coração das pessoas. Quando o povo escuta a Palavra em sua própria língua, a compreensão se torna mais clara.",
+                  "No dia de Pentecostes, pessoas de várias nações ouviram as grandezas de Deus em suas próprias línguas (At 2.6-11).",
                   "Ter a Bíblia em português é um privilégio imenso. Mas privilégio sem uso se torna negligência. Quem tem acesso à Palavra deve lê-la, estudá-la e obedecê-la."
                 ]
               },
               {
                 titulo: "O avanço da impressão",
                 ps: [
-                  "A invenção e expansão da imprensa transformaram profundamente a circulação da Bíblia. Antes, cada cópia exigia trabalho manual. Com a impressão, tornou-se possível multiplicar exemplares em escala muito maior.",
-                  "Esse avanço permitiu que mais pessoas tivessem contato direto com as Escrituras. A leitura bíblica deixou de depender apenas de poucos exemplares disponíveis em espaços específicos e passou a alcançar lares, escolas, igrejas e missionários.",
-                  "A impressão não substituiu a necessidade de ensino. Ter uma Bíblia impressa não significa automaticamente compreendê-la corretamente. Por isso, a igreja precisa de professores, pastores e líderes comprometidos com a boa interpretação.",
-                  "Hoje, além da Bíblia impressa, há acesso digital em celulares, computadores e aplicativos. Essa abundância aumenta nossa responsabilidade. Nunca tivemos tanto acesso e, ao mesmo tempo, nunca foi tão necessário cultivar reverência e disciplina na leitura."
+                  "A invenção e expansão da imprensa transformaram profundamente a circulação da Bíblia. Antes, cada cópia exigia trabalho manual.",
+                  "Com a impressão, tornou-se possível multiplicar exemplares em escala muito maior, alcançando lares, escolas, igrejas e missionários.",
+                  "Hoje, além da Bíblia impressa, há acesso digital em celulares, computadores e aplicativos. Essa abundância aumenta nossa responsabilidade."
                 ]
               }
             ],
@@ -2767,27 +2789,24 @@ Mateus 24.35:
               {
                 titulo: "Nem sempre foi assim",
                 ps: [
-                  "A Bíblia nem sempre esteve organizada em capítulos e versículos como conhecemos hoje. Os textos bíblicos originalmente circularam em rolos, manuscritos e coleções sem a divisão moderna que facilita a localização de passagens.",
-                  "Isso significa que capítulos e versículos são ferramentas úteis, mas não fazem parte da inspiração original do texto. Eles ajudam na leitura, memorização, ensino e referência, mas não devem substituir a leitura do contexto.",
-                  "Muitos erros de interpretação acontecem quando um versículo é isolado de seu parágrafo, de seu livro ou do conjunto da Escritura. A divisão em versículos facilita a localização, mas o sentido deve ser buscado no contexto.",
-                  "O professor deve ensinar a classe a valorizar capítulos e versículos como recursos, sem perder a visão da mensagem completa do texto."
+                  "A Bíblia nem sempre esteve organizada em capítulos e versículos como conhecemos hoje. Os textos bíblicos originalmente circularam em rolos, manuscritos e coleções sem a divisão moderna.",
+                  "Capítulos e versículos são ferramentas úteis, mas não fazem parte da inspiração original do texto. Eles ajudam na leitura, memorização, ensino e referência.",
+                  "Muitos erros de interpretação acontecem quando um versículo é isolado de seu parágrafo, de seu livro ou do conjunto da Escritura."
                 ]
               },
               {
                 titulo: "A divisão em capítulos",
                 ps: [
-                  "A divisão da Bíblia em capítulos é tradicionalmente associada a Stephen Langton, no século XIII. Essa organização facilitou o estudo, a consulta e o ensino das Escrituras, especialmente em ambiente acadêmico e eclesiástico.",
-                  "Antes dessa divisão, localizar uma passagem exigia outros métodos de referência. Com os capítulos, tornou-se mais simples orientar a leitura pública, preparar estudos e citar textos de forma padronizada.",
-                  "É importante lembrar que a divisão em capítulos nem sempre acompanha perfeitamente o fluxo do argumento bíblico. Às vezes, um pensamento começa no capítulo anterior ou continua no seguinte. Por isso, a leitura contextual continua indispensável.",
-                  "Essa informação ajuda os alunos a compreenderem que a Bíblia tem uma história de organização. O texto inspirado é divino; a organização em capítulos é uma ferramenta histórica útil."
+                  "A divisão da Bíblia em capítulos é tradicionalmente associada a Stephen Langton, no século XIII. Essa organização facilitou o estudo, a consulta e o ensino das Escrituras.",
+                  "Com os capítulos, tornou-se mais simples orientar a leitura pública, preparar estudos e citar textos de forma padronizada.",
+                  "É importante lembrar que a divisão em capítulos nem sempre acompanha perfeitamente o fluxo do argumento bíblico. Por isso, a leitura contextual continua indispensável."
                 ]
               },
               {
                 titulo: "A divisão em versículos",
                 ps: [
-                  "A divisão em versículos no Novo Testamento foi popularizada por Robert Estienne, também conhecido como Stephanus, no século XVI. Com o tempo, essa forma de divisão tornou-se padrão nas Bíblias impressas.",
-                  "Os versículos ajudaram profundamente na memorização, no ensino, na pregação e na comparação de textos. Eles permitem que a igreja localize passagens com rapidez e compartilhe referências de maneira precisa.",
-                  "Entretanto, assim como os capítulos, os versículos são ferramentas de estudo. O sentido de um versículo precisa ser compreendido dentro da frase, do parágrafo, do livro e da teologia bíblica como um todo.",
+                  "A divisão em versículos no Novo Testamento foi popularizada por Robert Estienne, também conhecido como Stephanus, no século XVI.",
+                  "Os versículos ajudaram profundamente na memorização, no ensino, na pregação e na comparação de textos.",
                   "A igreja deve agradecer por esse recurso, mas também aprender a usá-lo bem. Citar versículos é importante; interpretá-los corretamente é indispensável."
                 ]
               }
@@ -2802,28 +2821,25 @@ Mateus 24.35:
               {
                 titulo: "Uma bênção nem sempre acessível",
                 ps: [
-                  "Hoje muitos cristãos possuem mais de uma Bíblia em casa, além de acesso digital em celulares e computadores. Porém, esse acesso amplo nem sempre existiu. Durante longos períodos da história, possuir ou consultar as Escrituras era difícil, caro e, em alguns contextos, até perigoso.",
-                  "Esse fato deve produzir gratidão. A familiaridade com a Bíblia não pode gerar desprezo. O que para nós parece comum foi, para muitos antes de nós, objeto de intenso desejo, sacrifício e perseverança.",
-                  "O Salmo 119 revela o amor do salmista pela Palavra. Ele não a trata como peso, mas como prazer, consolo, sabedoria e direção. A pergunta que a lição levanta é: temos valorizado a Palavra que Deus colocou em nossas mãos?",
+                  "Hoje muitos cristãos possuem mais de uma Bíblia em casa, além de acesso digital em celulares e computadores. Porém, esse acesso amplo nem sempre existiu.",
+                  "Durante longos períodos da história, possuir ou consultar as Escrituras era difícil, caro e, em alguns contextos, até perigoso.",
                   "Possuir a Bíblia é privilégio; negligenciá-la é incoerência espiritual. Quem tem acesso à Palavra deve fazer dela alimento diário para a alma."
                 ]
               },
               {
                 titulo: "A Bíblia em nossa língua",
                 ps: [
-                  "Ter a Bíblia traduzida em uma língua que compreendemos é uma bênção incalculável. A fé cristã não deve depender de uma elite que monopoliza o texto sagrado. Deus permitiu que sua Palavra chegasse aos povos em línguas compreensíveis.",
+                  "Ter a Bíblia traduzida em uma língua que compreendemos é uma bênção incalculável. Deus permitiu que sua Palavra chegasse aos povos em línguas compreensíveis.",
                   "Quando a Escritura está na língua do povo, a família pode ler, a igreja pode ensinar, o novo convertido pode aprender, a criança pode memorizar e o evangelho pode ser anunciado com clareza.",
-                  "Essa acessibilidade aumenta a responsabilidade. O problema de muitos cristãos hoje não é falta de Bíblia, mas falta de disciplina, reverência e fome pela Palavra. Há abundância de acesso, mas muitas vezes pobreza de meditação.",
-                  "A aplicação é direta: precisamos redescobrir o valor da leitura bíblica pessoal, familiar e congregacional. A Bíblia em nossa língua é um convite diário à comunhão com Deus."
+                  "O problema de muitos cristãos hoje não é falta de Bíblia, mas falta de disciplina, reverência e fome pela Palavra."
                 ]
               },
               {
                 titulo: "Responsabilidade diante do privilégio",
                 ps: [
-                  "Jesus ensinou que a quem muito é dado, muito será cobrado (Lc 12.48). O acesso à Bíblia é uma dádiva que traz responsabilidade espiritual. Quem possui a Palavra deve responder a ela com fé, obediência e perseverança.",
-                  "Tiago 1.22 adverte que devemos ser cumpridores da Palavra, e não somente ouvintes. O perigo não é apenas desconhecer a Bíblia, mas conhecê-la sem praticá-la. Conhecimento sem obediência pode produzir orgulho religioso.",
-                  "A Bíblia deve moldar nossas decisões, relacionamentos, prioridades, palavras e atitudes. Ela precisa sair da estante e governar a vida. Uma Palavra aberta diante dos olhos deve produzir um coração aberto diante de Deus.",
-                  "O privilégio de ter a Bíblia em mãos deve gerar compromisso com leitura, estudo, memorização, ensino e prática."
+                  "Jesus ensinou que a quem muito é dado, muito será cobrado (Lc 12.48). O acesso à Bíblia é uma dádiva que traz responsabilidade espiritual.",
+                  "Tiago 1.22 adverte que devemos ser cumpridores da Palavra, e não somente ouvintes.",
+                  "A Bíblia deve moldar nossas decisões, relacionamentos, prioridades, palavras e atitudes. Ela precisa sair da estante e governar a vida."
                 ]
               }
             ],
@@ -2835,28 +2851,25 @@ Mateus 24.35:
               {
                 titulo: "Leitura constante",
                 ps: [
-                  "Josué 1.8 ensina que o livro da lei deveria estar continuamente diante do servo de Deus. A meditação dia e noite revela constância, disciplina e dependência. O povo de Deus não pode viver de contato ocasional com a Palavra.",
-                  "A leitura bíblica constante forma a mente cristã. Em um mundo que molda pensamentos por meio de imagens, opiniões e pressões, a Escritura renova o entendimento e alinha o coração à vontade de Deus (Rm 12.2).",
-                  "Ler a Bíblia não é apenas cumprir uma obrigação religiosa. É ouvir Deus, conhecer sua vontade, discernir caminhos e alimentar a fé. A negligência da leitura enfraquece a vida espiritual.",
-                  "Cada aluno deve ser encorajado a desenvolver uma rotina realista de leitura, começando com fidelidade e crescendo em profundidade."
+                  "Josué 1.8 ensina que o livro da lei deveria estar continuamente diante do servo de Deus. A meditação dia e noite revela constância, disciplina e dependência.",
+                  "A leitura bíblica constante forma a mente cristã. Em um mundo que molda pensamentos por meio de imagens, opiniões e pressões, a Escritura renova o entendimento.",
+                  "Ler a Bíblia não é apenas cumprir uma obrigação religiosa. É ouvir Deus, conhecer sua vontade, discernir caminhos e alimentar a fé."
                 ]
               },
               {
                 titulo: "Estudo com reverência",
                 ps: [
                   "Estudar a Bíblia exige mais do que curiosidade. Exige reverência. A Escritura é Palavra de Deus, e por isso deve ser abordada com humildade, oração e disposição para obedecer.",
-                  "O estudo bíblico responsável considera contexto histórico, gênero literário, destinatários, propósito do livro e harmonia com toda a Escritura. Isso evita interpretações apressadas e aplicações indevidas.",
-                  "Neemias 8.8 mostra que o povo ouviu a leitura da lei e recebeu explicação do sentido. Esse princípio continua válido: a Palavra precisa ser lida e explicada para que seja compreendida corretamente.",
-                  "A Escola Bíblica Dominical cumpre papel precioso nesse processo. Ela ajuda a igreja a estudar a Bíblia de maneira organizada, comunitária e aplicada."
+                  "O estudo bíblico responsável considera contexto histórico, gênero literário, destinatários, propósito do livro e harmonia com toda a Escritura.",
+                  "Neemias 8.8 mostra que o povo ouviu a leitura da lei e recebeu explicação do sentido. Esse princípio continua válido."
                 ]
               },
               {
                 titulo: "Ensino na igreja e no lar",
                 ps: [
-                  "Deuteronômio 6.6,7 mostra que a Palavra deveria estar no coração e ser ensinada aos filhos. O ensino bíblico não pertence apenas ao templo; ele deve alcançar a casa, a mesa, o caminho e a rotina da família.",
-                  "A igreja tem responsabilidade de ensinar a Palavra com fidelidade. Pastores, professores e líderes devem preparar o povo para conhecer a verdade, discernir o erro e viver em obediência.",
-                  "O lar também precisa ser ambiente de formação bíblica. Pais e responsáveis não podem terceirizar completamente a formação espiritual dos filhos. A igreja auxilia, mas a família também ensina.",
-                  "Quando igreja e lar valorizam a Escritura, a próxima geração recebe fundamento sólido para permanecer fiel em tempos difíceis."
+                  "Deuteronômio 6.6,7 mostra que a Palavra deveria estar no coração e ser ensinada aos filhos.",
+                  "A igreja tem responsabilidade de ensinar a Palavra com fidelidade. Pastores, professores e líderes devem preparar o povo para conhecer a verdade.",
+                  "O lar também precisa ser ambiente de formação bíblica. Quando igreja e lar valorizam a Escritura, a próxima geração recebe fundamento sólido."
                 ]
               }
             ],
@@ -2868,28 +2881,25 @@ Mateus 24.35:
               {
                 titulo: "Praticantes da Palavra",
                 ps: [
-                  "Tiago 1.22 ensina que não basta ouvir a Palavra; é necessário praticá-la. A Bíblia não foi dada para produzir apenas informação religiosa, mas transformação concreta na vida do crente.",
-                  "O ouvinte esquecido é aquele que se expõe à Palavra, mas não permite que ela governe suas atitudes. Ele escuta, concorda, emociona-se, mas não obedece. A verdadeira fé se revela em submissão prática.",
-                  "Obedecer à Bíblia envolve decisões diárias: perdoar, fugir do pecado, falar a verdade, amar o próximo, honrar a família, servir à igreja, buscar santidade e confiar em Deus.",
-                  "A classe deve ser chamada a avaliar se seu conhecimento bíblico tem se transformado em vida obediente."
+                  "Tiago 1.22 ensina que não basta ouvir a Palavra; é necessário praticá-la. A Bíblia não foi dada para produzir apenas informação religiosa, mas transformação concreta.",
+                  "O ouvinte esquecido é aquele que se expõe à Palavra, mas não permite que ela governe suas atitudes.",
+                  "Obedecer à Bíblia envolve decisões diárias: perdoar, fugir do pecado, falar a verdade, amar o próximo, honrar a família, servir à igreja, buscar santidade e confiar em Deus."
                 ]
               },
               {
                 titulo: "Luz para as decisões",
                 ps: [
-                  "O Salmo 119.105 apresenta a Palavra como lâmpada e luz. Essa imagem revela direção. O cristão enfrenta decisões familiares, financeiras, ministeriais, profissionais e morais que precisam ser iluminadas pela Escritura.",
-                  "A Bíblia nem sempre oferece o nome específico de cada decisão contemporânea, mas oferece princípios suficientes para orientar a vida. Ela revela o caráter de Deus, o valor da santidade, a prioridade do Reino e o caminho da sabedoria.",
-                  "Quando o crente toma decisões sem consultar a Palavra, torna-se vulnerável à pressa, ao desejo, à pressão e ao engano. Mas quando submete suas escolhas à Escritura, caminha com mais segurança.",
-                  "A obediência bíblica não empobrece a vida; ela protege, orienta e conduz o cristão a frutos duradouros."
+                  "O Salmo 119.105 apresenta a Palavra como lâmpada e luz. Essa imagem revela direção.",
+                  "A Bíblia nem sempre oferece o nome específico de cada decisão contemporânea, mas oferece princípios suficientes para orientar a vida.",
+                  "Quando o crente submete suas escolhas à Escritura, caminha com mais segurança."
                 ]
               },
               {
                 titulo: "Viver para a glória de Deus",
                 ps: [
-                  "O objetivo final do estudo bíblico é glorificar a Deus. Conhecer a Bíblia sem amar o Deus da Bíblia é uma tragédia espiritual. A Palavra nos conduz à adoração, à obediência e ao serviço.",
-                  "Paulo ensina que tudo deve ser feito para a glória de Deus (1Co 10.31). Isso inclui a maneira como lemos, interpretamos, ensinamos e praticamos as Escrituras. A Bíblia não deve ser usada para orgulho, disputa ou autopromoção.",
-                  "Uma igreja que ama a Palavra deve demonstrar esse amor em santidade, unidade, missão, generosidade e fidelidade. A doutrina bíblica saudável sempre produz frutos espirituais saudáveis.",
-                  "O privilégio de ter a Bíblia em mãos encontra seu verdadeiro sentido quando a Palavra se torna vida em nós."
+                  "O objetivo final do estudo bíblico é glorificar a Deus. Conhecer a Bíblia sem amar o Deus da Bíblia é uma tragédia espiritual.",
+                  "Paulo ensina que tudo deve ser feito para a glória de Deus (1Co 10.31). Isso inclui a maneira como lemos, interpretamos, ensinamos e praticamos as Escrituras.",
+                  "Uma igreja que ama a Palavra deve demonstrar esse amor em santidade, unidade, missão, generosidade e fidelidade."
                 ]
               }
             ],
@@ -2905,81 +2915,69 @@ Mateus 24.35:
       const data = {
         1: {
           conhecimento: [
-            "A Bibliologia começa pela pergunta mais fundamental: o que é a Bíblia? Antes de discutir manuscritos, traduções ou divisões em capítulos, é necessário compreender sua natureza. A Bíblia é Escritura Sagrada porque procede de Deus e comunica sua vontade de forma autoritativa.",
-            "A doutrina da revelação ensina que Deus decidiu se fazer conhecido. A criação revela sua existência e poder, mas a Escritura revela sua vontade salvadora com clareza. Por isso, a Bíblia ocupa lugar central na fé cristã.",
-            "A inspiração das Escrituras indica que Deus supervisionou o registro da sua Palavra. Isso não anulou os autores humanos, mas garantiu que a mensagem comunicada fosse fiel ao propósito divino.",
-            "Também é importante destacar a suficiência das Escrituras. A Bíblia é suficiente como regra de fé e prática, conduzindo o homem à salvação, à santidade e ao serviço fiel."
+            "A Bibliologia começa pela pergunta mais fundamental: o que é a Bíblia? Antes de discutir manuscritos, traduções ou divisões em capítulos, é necessário compreender sua natureza.",
+            "A doutrina da revelação ensina que Deus decidiu se fazer conhecido. A criação revela sua existência e poder, mas a Escritura revela sua vontade salvadora com clareza.",
+            "A inspiração das Escrituras indica que Deus supervisionou o registro da sua Palavra. Isso não anulou os autores humanos, mas garantiu que a mensagem comunicada fosse fiel ao propósito divino."
           ],
           teologico: [
-            "A inspiração das Escrituras é verbal e plenária: verbal porque envolve as palavras usadas no texto bíblico; plenária porque alcança toda a Escritura. Isso sustenta a confiança cristã na autoridade da Bíblia.",
+            "A inspiração das Escrituras é verbal e plenária: verbal porque envolve as palavras usadas no texto bíblico; plenária porque alcança toda a Escritura.",
             "A autoridade bíblica decorre de sua origem divina. A igreja não concede autoridade à Escritura; ela reconhece a autoridade que a Escritura já possui por proceder de Deus.",
-            "A Escritura possui função doutrinária, corretiva e formativa. Segundo 2 Timóteo 3.16, ela ensina, redargui, corrige e instrui em justiça.",
-            "A Palavra é viva e eficaz porque o Deus que a inspirou continua falando por meio dela ao coração do seu povo, aplicando sua verdade pelo Espírito Santo."
+            "A Escritura possui função doutrinária, corretiva e formativa. Segundo 2 Timóteo 3.16, ela ensina, redargui, corrige e instrui em justiça."
           ],
           professor: [
-            "Nesta lição, conduza a classe a perceber que a Bíblia não é apenas importante; ela é indispensável. Toda doutrina cristã saudável depende da autoridade das Escrituras.",
+            "Nesta lição, conduza a classe a perceber que a Bíblia não é apenas importante; ela é indispensável.",
             "Use perguntas introdutórias: O que diferencia a Bíblia de outros livros religiosos? Por que podemos confiar nela? Que lugar ela ocupa em nossas decisões?",
-            "Evite transformar a aula em debate abstrato. Mostre a ligação entre inspiração, autoridade e vida diária. A Bíblia deve governar o que cremos e como vivemos.",
             "Finalize a aula levando a classe a um compromisso prático: ler a Bíblia com reverência, estudá-la com seriedade e obedecê-la com fidelidade."
           ]
         },
         2: {
           conhecimento: [
-            "A formação da Bíblia envolve inspiração divina e participação humana. Deus usou autores reais, contextos históricos, idiomas específicos e materiais disponíveis em cada época para registrar sua Palavra.",
-            "Os livros bíblicos foram escritos em hebraico, aramaico e grego. Esses idiomas revelam que a Palavra de Deus entrou na história humana de maneira concreta, compreensível e situada.",
-            "Antes do formato de livro impresso, muitos textos circularam em rolos, papiros e pergaminhos. Esses suportes materiais ajudaram na preservação e transmissão dos escritos sagrados.",
-            "A formação do conjunto bíblico também envolve o reconhecimento dos livros inspirados. O povo de Deus não criou a autoridade da Bíblia; reconheceu os escritos que possuíam autoridade divina."
+            "A formação da Bíblia envolve inspiração divina e participação humana. Deus usou autores reais, contextos históricos, idiomas específicos e materiais disponíveis em cada época.",
+            "Os livros bíblicos foram escritos em hebraico, aramaico e grego. Esses idiomas revelam que a Palavra de Deus entrou na história humana de maneira concreta.",
+            "Antes do formato de livro impresso, muitos textos circularam em rolos, papiros e pergaminhos."
           ],
           teologico: [
-            "A doutrina do cânon bíblico trata do conjunto dos livros reconhecidos como Escritura Sagrada. O cânon não é uma lista arbitrária, mas o reconhecimento da Palavra inspirada.",
-            "A diversidade de autores e gêneros literários não compromete a unidade da Bíblia. A unidade se explica pelo Deus que inspirou os textos e conduz a história da redenção.",
-            "O Antigo e o Novo Testamento formam uma unidade teológica. O Antigo prepara e anuncia; o Novo revela o cumprimento em Cristo.",
-            "A formação da Bíblia mostra que Deus age na história sem deixar de ser soberano sobre ela. Ele usa meios humanos sem perder o controle da mensagem."
+            "A doutrina do cânon bíblico trata do conjunto dos livros reconhecidos como Escritura Sagrada.",
+            "A diversidade de autores e gêneros literários não compromete a unidade da Bíblia. A unidade se explica pelo Deus que inspirou os textos.",
+            "O Antigo e o Novo Testamento formam uma unidade teológica. O Antigo prepara e anuncia; o Novo revela o cumprimento em Cristo."
           ],
           professor: [
-            "Nesta lição, use recursos visuais sempre que possível: imagens de rolos, papiros, pergaminhos, manuscritos e Bíblias antigas. Isso ajuda os alunos a enxergarem o processo histórico.",
-            "Explique que a Bíblia não caiu pronta do céu em formato impresso. Deus usou pessoas, línguas, contextos e materiais, sem que isso diminuísse sua autoridade.",
-            "Mostre a diferença entre inspiração e canonização. Inspiração se refere à origem divina do texto; canonização se refere ao reconhecimento dos livros inspirados.",
-            "Conduza a classe à gratidão: se hoje temos a Bíblia em mãos, isso envolve séculos de preservação, transmissão e cuidado providencial de Deus."
+            "Nesta lição, use recursos visuais sempre que possível: imagens de rolos, papiros, pergaminhos, manuscritos e Bíblias antigas.",
+            "Explique que a Bíblia não caiu pronta do céu em formato impresso. Deus usou pessoas, línguas, contextos e materiais.",
+            "Mostre a diferença entre inspiração e canonização. Inspiração se refere à origem divina do texto; canonização se refere ao reconhecimento dos livros inspirados."
           ]
         },
         3: {
           conhecimento: [
-            "A transmissão da Bíblia envolve o caminho histórico pelo qual os textos sagrados chegaram até nós. Esse caminho inclui cópias manuscritas, comunidades preservadoras, traduções, impressão e distribuição.",
-            "A preservação das Escrituras não deve ser entendida como ausência de história, mas como providência divina atuando dentro da história. Deus preservou sua Palavra por meio de instrumentos humanos.",
-            "A tradução bíblica permitiu que diferentes povos tivessem acesso à Palavra em sua própria língua. Isso revela a dimensão missionária da Escritura.",
-            "A divisão em capítulos e versículos surgiu posteriormente para facilitar leitura, estudo e localização dos textos. Esses recursos são úteis, mas não substituem a leitura contextual."
+            "A transmissão da Bíblia envolve o caminho histórico pelo qual os textos sagrados chegaram até nós.",
+            "Esse caminho inclui cópias manuscritas, comunidades preservadoras, traduções, impressão e distribuição.",
+            "A divisão em capítulos e versículos surgiu posteriormente para facilitar leitura, estudo e localização dos textos."
           ],
           teologico: [
             "A preservação da Palavra está ligada à fidelidade de Deus. Isaías 40.8 e Mateus 24.35 afirmam que a Palavra do Senhor permanece.",
-            "A existência de manuscritos e variantes textuais não deve assustar a igreja. O estudo textual mostra a seriedade com que os textos foram preservados e comparados.",
-            "Tradução não é perda de autoridade, desde que seja feita com fidelidade ao texto. A Palavra traduzida comunica a verdade divina ao povo em sua língua.",
+            "A existência de manuscritos e variantes textuais não deve assustar a igreja. O estudo textual mostra a seriedade com que os textos foram preservados.",
             "Capítulos e versículos são instrumentos de organização. A autoridade está no texto inspirado, não nas divisões editoriais posteriores."
           ],
           professor: [
-            "Nesta lição, ajude os alunos a perceberem que a Bíblia passou por um longo processo histórico até chegar ao formato atual. Isso deve gerar admiração e gratidão.",
-            "Explique com simplicidade o que são manuscritos, cópias, traduções e divisões posteriores. Evite linguagem técnica demais, mas não empobreça o conteúdo.",
-            "Mostre que capítulos e versículos são úteis, mas a interpretação precisa respeitar o contexto. Incentive a classe a ler parágrafos e capítulos inteiros.",
-            "Finalize destacando a providência de Deus: a Bíblia chegou até nós porque Deus preservou sua Palavra para alimentar, corrigir e guiar sua igreja."
+            "Nesta lição, ajude os alunos a perceberem que a Bíblia passou por um longo processo histórico até chegar ao formato atual.",
+            "Explique com simplicidade o que são manuscritos, cópias, traduções e divisões posteriores.",
+            "Finalize destacando a providência de Deus: a Bíblia chegou até nós porque Deus preservou sua Palavra."
           ]
         },
         4: {
           conhecimento: [
-            "O privilégio de ter a Bíblia em mãos precisa ser visto à luz da história. Muitos cristãos ao longo dos séculos desejaram ter acesso às Escrituras de modo livre, compreensível e pessoal.",
-            "A Bíblia em nossa língua é uma bênção espiritual. Ela permite leitura pessoal, culto doméstico, ensino na igreja, evangelização, discipulado e formação doutrinária.",
-            "O acesso abundante às Escrituras aumenta nossa responsabilidade. Ter muitas Bíblias e pouco compromisso com a leitura revela um problema espiritual profundo.",
-            "A Palavra deve ser lida, estudada, ensinada e obedecida. O verdadeiro valor dado à Bíblia aparece quando sua mensagem governa a vida."
+            "O privilégio de ter a Bíblia em mãos precisa ser visto à luz da história.",
+            "A Bíblia em nossa língua é uma bênção espiritual. Ela permite leitura pessoal, culto doméstico, ensino na igreja, evangelização e discipulado.",
+            "O acesso abundante às Escrituras aumenta nossa responsabilidade."
           ],
           teologico: [
             "A obediência à Palavra é sinal de fé verdadeira. Tiago 1.22 ensina que ouvir sem praticar gera engano espiritual.",
             "A Escritura é meio de santificação. Jesus declarou em João 17.17 que a Palavra de Deus é a verdade pela qual o povo é santificado.",
-            "A leitura bíblica constante forma discernimento espiritual. O cristão aprende a distinguir verdade e erro, santidade e pecado, sabedoria e engano.",
-            "O alvo final do estudo bíblico é a glória de Deus. Conhecer a Bíblia sem obedecer ao Deus da Bíblia é uma contradição espiritual."
+            "O alvo final do estudo bíblico é a glória de Deus."
           ],
           professor: [
-            "Nesta lição, leve a classe a refletir sobre privilégio e responsabilidade. Pergunte: temos valorizado a Bíblia que possuímos?",
+            "Nesta lição, leve a classe a refletir sobre privilégio e responsabilidade.",
             "Estimule compromissos práticos: leitura diária, estudo em família, participação fiel na EBD e memorização de textos bíblicos.",
-            "Mostre que a Bíblia não deve ser usada apenas em cultos ou momentos de crise. Ela deve orientar a vida cotidiana.",
             "Finalize com aplicação pastoral: a melhor forma de honrar a Bíblia é obedecer à voz de Deus revelada nela."
           ]
         }
@@ -3096,9 +3094,8 @@ Mateus 24.35:
 
         <div class="block">
           <h3>Introdução</h3>
-          ${paragraph("Esta lição aborda " + dados.foco + ". O assunto é essencial para uma igreja que deseja crescer com firmeza doutrinária, maturidade espiritual e fidelidade à Palavra de Deus.")}
+          ${paragraph("Esta lição integra o tema " + base.visibleTheme + ". O assunto é essencial para uma igreja que deseja crescer com firmeza doutrinária, maturidade espiritual e fidelidade à Palavra de Deus.")}
           ${paragraph("Em uma geração marcada por opiniões rápidas, relativismo moral e muitas vozes religiosas, a igreja precisa retornar continuamente às Escrituras. A Bíblia não é um acessório da fé cristã; ela é o fundamento escrito pelo qual conhecemos Deus, compreendemos o evangelho e discernimos a verdade.")}
-          ${paragraph("Ao estudar esta lição, a classe deve perceber que a Bíblia não chegou até nós de forma comum. Há um testemunho de inspiração, preservação, transmissão e providência divina. A Palavra atravessou séculos, culturas, línguas, cópias e traduções para que hoje pudéssemos ouvi-la em nossa própria língua.")}
           ${paragraph("O objetivo não é apenas acumular informações históricas, mas formar reverência. Conhecer a história e a doutrina das Escrituras deve produzir amor pela Palavra, gratidão a Deus e compromisso com a obediência.")}
         </div>
 
@@ -3133,7 +3130,7 @@ Mateus 24.35:
         ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa da revista" loading="eager" decoding="sync" />`
         : "";
 
-      const serie = base.theme && base.theme.toLowerCase().includes("bibliologia")
+      const serie = base.visibleTheme && base.visibleTheme.toLowerCase().includes("bibliologia")
         ? "Bibliologia"
         : "Escola Bíblica Dominical";
 
@@ -3216,7 +3213,7 @@ Mateus 24.35:
 
           <div class="block">
             <h3>Apresentação da Revista</h3>
-            ${paragraph("Nesta revista mensal, estudaremos " + base.theme + ". O objetivo é conduzir a classe a compreender a Bíblia como Palavra de Deus, conhecer sua formação, reconhecer sua preservação e valorizar o privilégio de ter as Escrituras em mãos.")}
+            ${paragraph("Nesta revista mensal, estudaremos " + base.visibleTheme + ". O objetivo é conduzir a classe a compreender a Bíblia como Palavra de Deus, conhecer sua formação, reconhecer sua preservação e valorizar o privilégio de ter as Escrituras em mãos.")}
             ${paragraph("A Bibliologia é uma doutrina fundamental, pois todo ensino cristão depende da autoridade da Escritura. Uma igreja que não compreende o valor da Bíblia fica vulnerável a falsos ensinos, experiências sem discernimento e práticas sem fundamento.")}
             ${paragraph("Ao longo das quatro lições, caminharemos da doutrina da inspiração até o privilégio da leitura e obediência. O estudo não será apenas histórico, mas espiritual, pastoral e prático.")}
           </div>
@@ -3253,7 +3250,7 @@ Mateus 24.35:
 
           <div class="block">
             <h3>Visão Geral do Mês</h3>
-            ${paragraph("Neste mês, estudaremos Bibliologia, a doutrina das Escrituras. O objetivo é compreender o que é a Bíblia, como ela foi formada, como chegou até nós e por que devemos valorizá-la como Palavra de Deus.")}
+            ${paragraph("Neste mês, estudaremos " + base.visibleTheme + ". O objetivo é compreender o que é a Bíblia, como ela foi formada, como chegou até nós e por que devemos valorizá-la como Palavra de Deus.")}
           </div>
 
           <div class="block">
@@ -3318,7 +3315,7 @@ Mateus 24.35:
 
           <div class="summary-box">
             <h4>Sinopse</h4>
-            ${paragraph("Esta revista conduz a classe ao estudo da Bíblia como Palavra de Deus, mostrando sua inspiração, composição, preservação, transmissão e o privilégio de termos hoje as Escrituras em mãos.")}
+            ${paragraph("Esta revista conduz a classe ao estudo de " + base.visibleTheme + ", mostrando a inspiração, composição, preservação, transmissão e o privilégio de termos hoje as Escrituras em mãos.")}
             ${paragraph("Ao longo das quatro lições, o aluno será levado a compreender que a Bíblia não é apenas um livro antigo, mas a revelação divina preservada por Deus para orientar a fé, a doutrina, a conduta e a esperança da igreja.")}
           </div>
 
@@ -3708,8 +3705,8 @@ Mateus 24.35:
       if(type === "revista"){
         setValue("title","O Livro que Carregamos");
         setValue("subtitle","A origem, formação, preservação e transmissão da Bíblia até os nossos dias");
-        setValue("theme","Bibliologia: o que é a Bíblia, como foi formada, como chegou até nós e o privilégio de termos a Palavra de Deus em mãos.");
-        setValue("biblicalBase","2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmo 119.105");
+        setValue("theme","Bibliologia: O Livro que Carregamos — a origem, formação, preservação e transmissão da Bíblia até os nossos dias.");
+        setValue("biblicalBase","2 Timóteo 3.16-17; 2 Pedro 1.20-21; Isaías 40.8; Mateus 24.35; Salmo 119.105");
         setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
         setValue("tone","bíblico, pastoral, pentecostal, teológico, didático e acessível");
         setValue("author","Isiquel Rodrigues");
@@ -3792,4 +3789,3 @@ Explique os versículos com fidelidade ao contexto.
   </script>
 </body>
 </html>
-    
