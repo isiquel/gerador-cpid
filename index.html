@@ -507,6 +507,9 @@
         radial-gradient(circle at 50% 18%, rgba(255,226,146,.82), transparent 17%),
         radial-gradient(circle at 50% 38%, rgba(255,221,138,.36), transparent 37%),
         linear-gradient(145deg,#140d08 0%,#29170c 34%,#6c421f 70%,#b68438 100%);
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
     }
 
     .capa::before{
@@ -664,6 +667,28 @@
       box-shadow:0 30px 80px rgba(0,0,0,.32);
     }
 
+    .capa.com-imagem-ia{
+      background-size:cover!important;
+      background-position:center!important;
+      background-repeat:no-repeat!important;
+    }
+
+    .capa.com-imagem-ia .capa-ilustracao,
+    .capa.com-imagem-ia .luz-capa{
+      display:none!important;
+    }
+
+    .capa.com-imagem-ia::after{
+      background:
+        linear-gradient(180deg,rgba(0,0,0,.48),rgba(0,0,0,.20) 45%,rgba(0,0,0,.55)),
+        linear-gradient(90deg,rgba(0,0,0,.55),transparent 23%,transparent 77%,rgba(0,0,0,.55))!important;
+    }
+
+    .capa.com-imagem-ia .capa-box{
+      background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.18)),rgba(0,0,0,.24)!important;
+      backdrop-filter:blur(1px);
+    }
+
     .capa-topo{
       width:100%;
       display:flex;
@@ -713,6 +738,10 @@
       padding-bottom:20px;
     }
 
+    .capa.com-imagem-ia .capa-miolo{
+      padding-top:300px;
+    }
+
     .capa h1{
       margin:0 auto 18px;
       font-size:58px;
@@ -721,7 +750,7 @@
       letter-spacing:1px;
       text-transform:uppercase;
       color:#fff7de;
-      text-shadow:0 8px 24px rgba(0,0,0,.55);
+      text-shadow:0 8px 24px rgba(0,0,0,.72);
     }
 
     .capa h2{
@@ -731,7 +760,7 @@
       line-height:1.45;
       font-weight:600;
       color:#f8e4b6;
-      text-shadow:0 5px 16px rgba(0,0,0,.5);
+      text-shadow:0 5px 16px rgba(0,0,0,.68);
     }
 
     .ornamento{
@@ -747,7 +776,7 @@
       color:#f7e6bd;
       font-size:16px;
       line-height:1.5;
-      text-shadow:0 4px 14px rgba(0,0,0,.55);
+      text-shadow:0 4px 14px rgba(0,0,0,.65);
       padding-top:14px;
     }
 
@@ -770,6 +799,9 @@
       overflow:hidden;
       padding:70px;
       border:none;
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
     }
 
     .contracapa::before{
@@ -778,12 +810,28 @@
       inset:28px;
       border:1px solid rgba(243,213,138,.55);
       border-radius:28px;
+      z-index:1;
+    }
+
+    .contracapa::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(180deg,rgba(0,0,0,.42),rgba(0,0,0,.18),rgba(0,0,0,.52));
+      z-index:0;
+      pointer-events:none;
+    }
+
+    .contracapa > div{
+      position:relative;
+      z-index:2;
     }
 
     .contracapa h1{
       color:#fff7de;
       font-size:38px;
       margin-bottom:18px;
+      text-shadow:0 6px 18px rgba(0,0,0,.7);
     }
 
     .contracapa p{
@@ -791,21 +839,7 @@
       font-size:20px;
       max-width:650px;
       line-height:1.7;
-    }
-
-    .capa.com-imagem-ia{
-      background-size:cover!important;
-      background-position:center!important;
-      background-repeat:no-repeat!important;
-    }
-
-    .capa.com-imagem-ia .capa-ilustracao{
-      display:none!important;
-    }
-
-    .capa.com-imagem-ia .capa-box{
-      background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,.16)),rgba(0,0,0,.22);
-      backdrop-filter:blur(1px);
+      text-shadow:0 5px 16px rgba(0,0,0,.7);
     }
 
     .contracapa.com-imagem-ia{
@@ -1126,7 +1160,8 @@
         display:none;
       }
 
-      .capa-miolo{
+      .capa-miolo,
+      .capa.com-imagem-ia .capa-miolo{
         padding-top:190px;
         padding-bottom:10px;
       }
@@ -1853,7 +1888,11 @@
         cover:null,
         backCover:null,
         coverImageUrl:"",
-        backCoverImageUrl:""
+        backCoverImageUrl:"",
+        coverProvider:"",
+        backCoverProvider:"",
+        coverError:"",
+        backCoverError:""
       };
 
       ultimoMaterial = revista;
@@ -1885,7 +1924,24 @@
           presentationToTeacher:revista.presentationToTeacher,
           magazineOverview:revista.magazineOverview,
           generalTeacherGuidance:revista.generalTeacherGuidance,
-          instrucoesExtras:"Gere somente esta lição. Não gere a revista inteira. Cada tópico e subtópico precisa ter referência bíblica coerente. Inclua Palavra ao professor, Panorama da lição, Auxílio bibliológico, materiais reais para aprofundamento e Revisando o conteúdo."
+          instrucoesExtras:`
+Gere somente esta lição. Não gere a revista inteira.
+
+A LIÇÃO PRECISA SER DIGNA DE REVISTA DO PROFESSOR.
+
+Obrigatório:
+- A leitura bíblica em classe deve vir com as referências E os versículos por extenso.
+- O campo bibleReading deve conter texto bíblico completo, não apenas referências.
+- Cada tópico precisa ter desenvolvimento robusto, com explicação bíblica, doutrinária e pastoral.
+- Cada subtópico precisa ter no mínimo 2 parágrafos bem desenvolvidos.
+- Cada subtópico precisa explicar a referência bíblica usada.
+- Inclua orientação prática para o professor conduzir a aula.
+- Não faça comentários curtos.
+- Não faça subtópicos rasos.
+- Não use frases genéricas.
+- Inclua Palavra ao professor, Panorama da lição, Auxílio bibliológico, subsídio histórico, apoio doutrinário, materiais reais para aprofundamento e Revisando o conteúdo.
+- Use linguagem adulta, profunda, pastoral, reverente e didática.
+`
         });
 
         const lesson = lessonResp.material || lessonResp;
@@ -1899,7 +1955,7 @@
         setProgresso(10 + Math.round(i * 62 / 4));
       }
 
-      setStatus("Gerando capa profissional da revista...");
+      setStatus("Gerando textos editoriais da capa profissional da revista...");
       setEtapas("Capa profissional", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4"]);
       setProgresso(78);
 
@@ -1923,21 +1979,31 @@
 
       if(valor("coverMode") === "com-capa"){
         try{
-          setStatus("Gerando imagem da capa profissional...");
+          setStatus("Gerando imagem profissional da capa com IA...");
           const imgResp = await postJSON("/api/capa", {
             ...dados,
             tipoImagem:"front",
             lessonTitles:titulos,
-            title:revista.title,
-            subtitle:revista.subtitle,
-            theme:dados.theme
+            title:revista.cover?.title || revista.title,
+            subtitle:revista.cover?.subtitle || revista.subtitle,
+            theme:dados.theme,
+            visualTheme:revista.cover?.visualTheme || ""
           });
 
           revista.coverImageUrl = imgResp.imageDataUrl || "";
+          revista.coverProvider = imgResp.provider || "";
+          revista.coverError = "";
+
           ultimoMaterial = revista;
           renderizarMaterial(revista);
+
+          if(revista.coverProvider){
+            setStatus(`Imagem profissional da capa gerada por ${escapeHtml(revista.coverProvider)}.`, "ok");
+          }
         }catch(e){
+          revista.coverError = e?.message || "A imagem da capa não foi gerada.";
           console.warn("Imagem da capa não gerada:", e);
+          setStatus(`A revista foi gerada, mas a imagem da capa falhou: ${escapeHtml(limparErroApi(revista.coverError))}`, "erro");
         }
       }
 
@@ -1965,27 +2031,38 @@
 
       if(valor("coverMode") === "com-capa"){
         try{
-          setStatus("Gerando imagem da contracapa profissional...");
+          setStatus("Gerando imagem profissional da contracapa com IA...");
           const imgBackResp = await postJSON("/api/capa", {
             ...dados,
             tipoImagem:"back",
             lessonTitles:titulos,
-            title:revista.title,
-            subtitle:revista.subtitle,
-            theme:dados.theme
+            title:revista.backCover?.title || revista.title,
+            subtitle:revista.backCover?.subtitle || revista.subtitle,
+            theme:dados.theme,
+            visualTheme:revista.backCover?.visualTheme || ""
           });
 
           revista.backCoverImageUrl = imgBackResp.imageDataUrl || "";
+          revista.backCoverProvider = imgBackResp.provider || "";
+          revista.backCoverError = "";
+
           ultimoMaterial = revista;
           renderizarMaterial(revista);
         }catch(e){
+          revista.backCoverError = e?.message || "A imagem da contracapa não foi gerada.";
           console.warn("Imagem da contracapa não gerada:", e);
+          setStatus(`A contracapa textual foi gerada, mas a imagem da contracapa falhou: ${escapeHtml(limparErroApi(revista.backCoverError))}`, "erro");
         }
       }
 
       setProgresso(100);
       setEtapas("Contracapa", ["Revista", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa profissional", "Contracapa"]);
-      setStatus("Revista gerada por partes com sucesso, com apresentação ao professor, quatro lições, capa e contracapa.", "ok");
+
+      if(revista.coverImageUrl){
+        setStatus("Revista gerada com sucesso, incluindo capa profissional com imagem de IA.", "ok");
+      }else{
+        setStatus("Revista gerada com sucesso, mas sem imagem profissional de capa. Veja se a API de imagem tem cota/crédito e se API/capa.js está correto.", "erro");
+      }
     }
 
     async function gerarLivroPorPartes(dados){
@@ -2164,6 +2241,7 @@
               <div class="capa-rodape">
                 <p>${escapeHtml(ministry)}</p>
                 <p>${escapeHtml(autor)}</p>
+                ${m.coverProvider ? `<p style="font-size:11px;opacity:.65;">Imagem: ${escapeHtml(m.coverProvider)}</p>` : ""}
               </div>
             </div>
           </section>
@@ -2226,9 +2304,57 @@
             <div style="height:28px;"></div>
             <p>${escapeHtml(ministry)}</p>
             <p>${escapeHtml(autor)}</p>
+            ${m.backCoverProvider ? `<p style="font-size:11px;opacity:.65;">Imagem: ${escapeHtml(m.backCoverProvider)}</p>` : ""}
           </div>
         </section>
       `;
+    }
+
+    function renderLeituraBiblica(bibleReading){
+      if(!bibleReading) return "";
+
+      if(typeof bibleReading === "string"){
+        return `
+          <div class="bloco">
+            <h3>Leitura bíblica em classe</h3>
+            ${divTexto(bibleReading)}
+          </div>
+        `;
+      }
+
+      if(Array.isArray(bibleReading)){
+        return `
+          <div class="bloco">
+            <h3>Leitura bíblica em classe</h3>
+            ${bibleReading.map(item => {
+              if(typeof item === "string"){
+                return `<div class="subtopico-revista">${divTexto(item)}</div>`;
+              }
+
+              const ref = item.reference || item.referencia || item.texto || item.ref || "";
+              const texto = item.text || item.verses || item.versiculos || item.conteudo || "";
+
+              return `
+                <div class="subtopico-revista">
+                  ${ref ? `<h4>${escapeHtml(ref)}</h4>` : ""}
+                  ${texto ? divTexto(texto) : renderValor(item)}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      if(typeof bibleReading === "object"){
+        return `
+          <div class="bloco">
+            <h3>Leitura bíblica em classe</h3>
+            ${renderValor(bibleReading)}
+          </div>
+        `;
+      }
+
+      return "";
     }
 
     function renderRevista(m){
@@ -2238,6 +2364,17 @@
       let html = `
         <article class="doc">
           ${capaMaterial(m, "REVISTA MENSAL")}
+
+          ${m.coverError ? `
+            <section class="pagina">
+              <div class="pagina-interna">
+                <div class="bloco box-wine">
+                  <h3>Aviso sobre a imagem da capa</h3>
+                  <div class="texto">${escapeHtml(m.coverError)}</div>
+                </div>
+              </div>
+            </section>
+          ` : ""}
 
           <section class="pagina">
             <div class="pagina-interna">
@@ -2292,7 +2429,7 @@
 
               ${l.goldenText ? `<div class="bloco"><h3>Texto áureo</h3>${divTexto(l.goldenText)}</div>` : ""}
               ${l.practicalTruth ? `<div class="bloco"><h3>Verdade prática</h3>${divTexto(l.practicalTruth)}</div>` : ""}
-              ${l.bibleReading ? `<div class="bloco"><h3>Leitura bíblica em classe</h3>${divTexto(l.bibleReading)}</div>` : ""}
+              ${renderLeituraBiblica(l.bibleReading)}
 
               ${Array.isArray(l.objectives) && l.objectives.length ? `
                 <div class="bloco">
@@ -2824,7 +2961,11 @@
 
 A revista deve ensinar sobre a Bíblia como Palavra de Deus, sua origem divina, sua inspiração, sua autoridade, sua formação, sua preservação e a responsabilidade espiritual da Igreja diante das Escrituras.
 
-A revista deve ter conteúdo profundo, bíblico, doutrinário, pastoral, didático, reverente e fiel ao pentecostalismo clássico.
+A revista precisa ter nível de revista do professor, com conteúdo robusto, profundo, bíblico, doutrinário, pastoral, didático, reverente e fiel ao pentecostalismo clássico.
+
+Cada lição deve ter leitura bíblica em classe com as referências e os versículos por extenso.
+
+Cada tópico e subtópico deve ser bem desenvolvido, com explicação bíblica, doutrinária e pastoral. Os subtópicos não podem ser curtos. Cada subtópico deve ter no mínimo 2 parágrafos.
 
 Lição 1 — A Bíblia: A Palavra de Deus Escrita aos Homens.
 Lição 2 — A Inspiração das Escrituras.
