@@ -11,7 +11,7 @@
       --marrom-escuro: #2b170c;
       --marrom-medio: #7a4f2f;
       --dourado: #c79b58;
-      --dourado-claro: #f3d58a;
+      --dourado-claro: #f4d78e;
       --bege: #f8f2ea;
       --bege-2: #eee2d4;
       --branco: #ffffff;
@@ -388,7 +388,7 @@
       height: 100%;
       width: 0%;
       background: linear-gradient(90deg, var(--marrom), var(--dourado));
-      transition: width 0.25s ease;
+      transition: width 0.35s ease;
     }
 
     .steps {
@@ -480,6 +480,43 @@
       padding: 42px 48px;
     }
 
+    .page-title {
+      margin: 0 0 14px;
+      color: var(--marrom);
+      font-size: 36px;
+      line-height: 1.18;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .text {
+      font-size: 19px;
+      line-height: 1.85;
+      color: #302b26;
+      white-space: pre-line;
+    }
+
+    .block,
+    .lesson-block {
+      margin-top: 24px;
+      padding: 24px;
+      border: 1px solid #e6d8c7;
+      border-radius: 18px;
+      background: #fffdf9;
+    }
+
+    .block h3,
+    .lesson-block h3 {
+      margin: 0 0 12px;
+      color: var(--marrom);
+      font-size: 24px;
+    }
+
     .cover,
     .back-cover {
       min-height: 1040px;
@@ -531,7 +568,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
-      opacity: 0.82;
+      opacity: 0.84;
       background:
         radial-gradient(circle at 50% 23%, rgba(255, 240, 180, 0.9), transparent 14%),
         radial-gradient(circle at 50% 43%, rgba(255, 218, 120, 0.35), transparent 28%),
@@ -642,13 +679,6 @@
       margin: 6px 0;
     }
 
-    .page-title {
-      margin: 0 0 14px;
-      color: var(--marrom);
-      font-size: 36px;
-      line-height: 1.18;
-    }
-
     .lesson-hero {
       background: linear-gradient(135deg, #1f3e63, #5f6f86);
       color: #fff;
@@ -699,36 +729,6 @@
       opacity: 0.92;
     }
 
-    .subtitle {
-      color: var(--muted);
-      font-size: 20px;
-      line-height: 1.5;
-      margin-bottom: 22px;
-    }
-
-    .text {
-      font-size: 19px;
-      line-height: 1.8;
-      color: #302b26;
-      white-space: pre-line;
-    }
-
-    .block,
-    .lesson-block {
-      margin-top: 24px;
-      padding: 24px;
-      border: 1px solid #e6d8c7;
-      border-radius: 18px;
-      background: #fffdf9;
-    }
-
-    .block h3,
-    .lesson-block h3 {
-      margin: 0 0 12px;
-      color: var(--marrom);
-      font-size: 24px;
-    }
-
     .lesson-topic {
       margin-top: 26px;
       padding: 24px;
@@ -748,7 +748,7 @@
 
     .subtopic {
       margin-top: 18px;
-      padding: 16px;
+      padding: 18px;
       border-radius: 14px;
       background: #fffdf9;
       border-left: 5px solid var(--dourado);
@@ -895,17 +895,6 @@
       letter-spacing: 0.5px;
     }
 
-    .student-space {
-      min-height: 90px;
-      border: 1px dashed #cdbda7;
-      background: #fff;
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 10px;
-      color: #8a7660;
-      font-size: 15px;
-    }
-
     .personal-application {
       margin-top: 18px;
       padding: 18px;
@@ -957,6 +946,23 @@
       letter-spacing: 0.5px;
     }
 
+    .ai-command-box {
+      margin-top: 18px;
+      padding: 18px;
+      background: #eef8f0;
+      border: 1px solid #9ac8a6;
+      border-left: 7px solid var(--verde);
+      border-radius: 14px;
+    }
+
+    .ai-command-box h4 {
+      margin: 0 0 8px;
+      color: var(--verde);
+      font-size: 19px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .list {
       padding-left: 24px;
       font-size: 18px;
@@ -975,6 +981,17 @@
 
     .question-answer strong {
       color: var(--marrom);
+    }
+
+    .student-space {
+      min-height: 90px;
+      border: 1px dashed #cdbda7;
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 10px;
+      color: #8a7660;
+      font-size: 15px;
     }
 
     #printArea {
@@ -1064,21 +1081,6 @@
 
       #printArea .page-title {
         font-size: 24px !important;
-        line-height: 1.18 !important;
-      }
-
-      #printArea .lesson-hero {
-        padding: 12mm !important;
-        border-radius: 0 !important;
-      }
-
-      #printArea .lesson-hero h1 {
-        font-size: 25px !important;
-      }
-
-      #printArea .subtitle {
-        font-size: 15px !important;
-        line-height: 1.45 !important;
       }
 
       #printArea .text,
@@ -1097,46 +1099,12 @@
       #printArea .personal-application,
       #printArea .summary-box,
       #printArea .knowledge-box,
-      #printArea .synopsis {
+      #printArea .synopsis,
+      #printArea .ai-command-box {
         padding: 9px 11px !important;
         margin-top: 8px !important;
         break-inside: avoid !important;
         page-break-inside: avoid !important;
-      }
-
-      #printArea .block h3,
-      #printArea .lesson-block h3,
-      #printArea .lesson-topic h3,
-      #printArea .memory-verse h3 {
-        font-size: 16px !important;
-      }
-
-      #printArea .subtopic h4,
-      #printArea .teacher-help h4,
-      #printArea .personal-application h4,
-      #printArea .summary-box h4,
-      #printArea .knowledge-box h4,
-      #printArea .synopsis h4 {
-        font-size: 15px !important;
-      }
-
-      #printArea .list {
-        font-size: 13px !important;
-        line-height: 1.45 !important;
-      }
-
-      #printArea .daily-reading h3 {
-        font-size: 15px !important;
-        padding: 8px !important;
-      }
-
-      #printArea .daily-item {
-        padding: 7px !important;
-      }
-
-      #printArea .daily-item strong,
-      #printArea .daily-item span {
-        font-size: 12px !important;
       }
     }
 
@@ -1453,19 +1421,18 @@
           <div>
             <label for="depthLevel">Profundidade</label>
             <select id="depthLevel" autocomplete="off">
-              <option value="simples">Simples</option>
               <option value="profundo" selected>Profundo</option>
               <option value="muito profundo">Muito profundo</option>
-              <option value="pastoral e profundo">Pastoral e profundo</option>
               <option value="teológico e didático">Teológico e didático</option>
+              <option value="professor avançado">Professor avançado</option>
             </select>
           </div>
 
           <div>
             <label for="coverMode">Capa</label>
             <select id="coverMode" autocomplete="off">
-              <option value="sem-capa" selected>Sem capa</option>
-              <option value="com-capa">Com capa profissional</option>
+              <option value="sem-capa">Sem capa</option>
+              <option value="com-capa" selected>Com capa profissional</option>
             </select>
           </div>
         </div>
@@ -1512,12 +1479,12 @@
             <h3>Opções da Revista EBD Mensal</h3>
             <p>
               A Revista EBD é sempre mensal, com 4 lições completas.
-              Não usa trimestre, não usa 13 lições e não gera apenas uma lição.
+              A geração segue por etapas e usa IA para aprofundar cada parte.
             </p>
 
             <div class="monthly-info">
-              <strong>Formato fixo da revista:</strong>
-              Capa profissional → Expediente → Apresentação → Sumário → Lição 1 → Lição 2 → Lição 3 → Lição 4 → Fechamento → Contracapa.
+              <strong>Ordem correta da construção:</strong>
+              Apresentação → Sumário → Lição 1 → Lição 2 → Lição 3 → Lição 4 → Capa IA → Contracapa.
             </div>
 
             <div class="field-row">
@@ -1578,7 +1545,7 @@
             <textarea
               id="revistaObservacao"
               autocomplete="off"
-              placeholder="Ex: lição 1 sobre fundamento da fé, lição 2 sobre defesa da fé, lição 3 sobre falsos ensinos, lição 4 sobre permanecer firme..."
+              placeholder="Ex: Lição 1: O que é a Bíblia? Lição 2: Como a Bíblia foi formada? Lição 3: Como chegou até nós? Lição 4: O privilégio de ter a Bíblia em mãos..."
             ></textarea>
           </div>
         </div>
@@ -1772,12 +1739,13 @@
     let currentHtml = "";
     let currentText = "";
     let currentType = "sermao";
+    let isGenerating = false;
 
     const stepsByType = {
       sermao: ["Tema", "Texto bíblico", "Tópicos", "Aplicação", "Conclusão"],
       devocional: ["Tema", "Reflexão", "Aplicação", "Oração"],
       estudo: ["Contexto", "Explicação", "Tópicos", "Perguntas", "Conclusão"],
-      revista: ["Capa", "Expediente", "Apresentação", "Sumário", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Fechamento", "Contracapa"],
+      revista: ["Apresentação", "Sumário", "Lição 1", "Lição 2", "Lição 3", "Lição 4", "Capa IA", "Contracapa"],
       ebook: ["Capa", "Introdução", "Capítulos", "Conclusão"],
       livro: ["Capa", "Sumário", "Capítulos", "Fechamento"],
       curso: ["Apresentação", "Módulos", "Aulas", "Atividades"]
@@ -1790,15 +1758,12 @@
 
     function setStatus(message, type = "") {
       statusBox.className = "status";
-      if (type) {
-        statusBox.classList.add(type);
-      }
+      if (type) statusBox.classList.add(type);
       statusBox.textContent = message;
     }
 
     function isAdminUnlocked() {
-      const code = getValue("adminCode");
-      return ADMIN_CODES.includes(code);
+      return ADMIN_CODES.includes(getValue("adminCode"));
     }
 
     function isReservedType(type) {
@@ -1809,21 +1774,40 @@
       return isAdminUnlocked();
     }
 
+    function escapeHtml(text) {
+      return String(text || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function paragraph(text) {
+      return `<p class="text">${escapeHtml(text)}</p>`;
+    }
+
+    function unorderedList(items) {
+      return `<ul class="list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+    }
+
+    function orderedList(items) {
+      return `<ol class="list">${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`;
+    }
+
+    function roman(number) {
+      const values = ["I", "II", "III", "IV", "V", "VI"];
+      return values[number - 1] || String(number);
+    }
+
     function updateReservedState() {
       const unlocked = isAdminUnlocked();
 
       typeButtons.forEach((button) => {
         const reserved = button.dataset.reserved === "true";
-
-        if (reserved && !unlocked) {
-          button.disabled = true;
-          button.style.opacity = "0.55";
-          button.style.cursor = "not-allowed";
-        } else {
-          button.disabled = false;
-          button.style.opacity = "1";
-          button.style.cursor = "pointer";
-        }
+        button.disabled = reserved && !unlocked;
+        button.style.opacity = reserved && !unlocked ? "0.55" : "1";
+        button.style.cursor = reserved && !unlocked ? "not-allowed" : "pointer";
       });
 
       btnPrompt.disabled = !unlocked;
@@ -1845,11 +1829,9 @@
         if (isReservedType(currentType)) {
           currentType = "sermao";
           contentTypeInput.value = "sermao";
-
-          typeButtons.forEach((button) => {
+          typeButtons.forEach(button => {
             button.classList.toggle("active", button.dataset.type === "sermao");
           });
-
           hideDynamicFields();
           sermaoFields.classList.remove("hidden");
           updateSteps("sermao");
@@ -1880,26 +1862,14 @@
 
       hideDynamicFields();
 
-      if (type === "sermao") {
-        sermaoFields.classList.remove("hidden");
-      }
-
+      if (type === "sermao") sermaoFields.classList.remove("hidden");
       if (type === "revista") {
         revistaFields.classList.remove("hidden");
         document.getElementById("coverMode").value = "com-capa";
       }
-
-      if (type === "estudo") {
-        estudoFields.classList.remove("hidden");
-      }
-
-      if (type === "devocional") {
-        devocionalFields.classList.remove("hidden");
-      }
-
-      if (["ebook", "livro", "curso"].includes(type)) {
-        bookFields.classList.remove("hidden");
-      }
+      if (type === "estudo") estudoFields.classList.remove("hidden");
+      if (type === "devocional") devocionalFields.classList.remove("hidden");
+      if (["ebook", "livro", "curso"].includes(type)) bookFields.classList.remove("hidden");
 
       updateSteps(type);
       setStatus("Modo selecionado: " + getTypeLabel(type) + ".", "ok");
@@ -1915,7 +1885,6 @@
         livro: "Livro",
         curso: "Curso"
       };
-
       return labels[type] || "Material";
     }
 
@@ -1928,56 +1897,28 @@
       progressBar.style.width = "0%";
     }
 
-    function simulateProgress() {
+    function setStep(index, message) {
       const steps = [...stepsBox.querySelectorAll(".step")];
-      progressBar.style.width = "0%";
+      steps.forEach((step, i) => {
+        step.classList.remove("active");
+        if (i < index) step.classList.add("done");
+        if (i === index) step.classList.add("active");
+      });
 
+      const percent = steps.length ? Math.round(((index + 1) / steps.length) * 100) : 0;
+      progressBar.style.width = percent + "%";
+
+      if (message) setStatus(message);
+    }
+
+    function finishSteps(message) {
+      const steps = [...stepsBox.querySelectorAll(".step")];
       steps.forEach((step) => {
-        step.classList.remove("active", "done");
+        step.classList.remove("active");
+        step.classList.add("done");
       });
-
-      steps.forEach((step, index) => {
-        setTimeout(() => {
-          steps.forEach((item) => item.classList.remove("active"));
-
-          step.classList.add("active");
-
-          if (index > 0) {
-            steps[index - 1].classList.add("done");
-          }
-
-          const percent = Math.round(((index + 1) / steps.length) * 100);
-          progressBar.style.width = percent + "%";
-
-          if (index === steps.length - 1) {
-            setTimeout(() => {
-              step.classList.remove("active");
-              step.classList.add("done");
-            }, 160);
-          }
-        }, index * 420);
-      });
-    }
-
-    function escapeHtml(text) {
-      return String(text || "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function paragraph(text) {
-      return `<p class="text">${escapeHtml(text)}</p>`;
-    }
-
-    function unorderedList(items) {
-      return `<ul class="list">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
-    }
-
-    function orderedList(items) {
-      return `<ol class="list">${items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`;
+      progressBar.style.width = "100%";
+      if (message) setStatus(message, "ok");
     }
 
     function buildBase() {
@@ -2020,7 +1961,6 @@
         livro: "Livro Cristão",
         curso: "Curso Bíblico"
       };
-
       return labels[type] || "Material Cristão";
     }
 
@@ -2034,14 +1974,21 @@
         livro: "Uma obra cristã estruturada para ensino e edificação.",
         curso: "Formação bíblica organizada em módulos e aulas."
       };
-
       return subtitles[type] || "Material gerado pelo VERBO IA.";
     }
 
-    function renderCover(base, label, monthInfo = "") {
-      if (base.coverMode !== "com-capa") {
-        return "";
-      }
+    function renderPage(inner) {
+      return `
+        <section class="page">
+          <div class="page-inner">
+            ${inner}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCover(base, label, monthInfo = "", imagePrompt = "") {
+      if (base.coverMode !== "com-capa") return "";
 
       return `
         <section class="page cover">
@@ -2065,13 +2012,20 @@
             </div>
           </div>
         </section>
+
+        ${imagePrompt ? renderPage(`
+          <h1 class="page-title">Comando para gerar capa com IA</h1>
+          <p class="subtitle">Use este comando no Gemini Image ou ChatGPT Image para criar a capa visual.</p>
+          <div class="ai-command-box">
+            <h4>Prompt de imagem</h4>
+            ${paragraph(imagePrompt)}
+          </div>
+        `) : ""}
       `;
     }
 
     function renderBackCover(base, monthInfo = "") {
-      if (base.coverMode !== "com-capa") {
-        return "";
-      }
+      if (base.coverMode !== "com-capa") return "";
 
       return `
         <section class="page back-cover">
@@ -2099,6 +2053,893 @@
       `;
     }
 
+    async function chamarIA(prompt, etapa = "Geração") {
+      const payload = {
+        prompt,
+        etapa,
+        tipo: currentType,
+        formato: "html",
+        sistema: "VERBO IA"
+      };
+
+      const possibleGlobalFunctions = [
+        "gerarComGemini",
+        "gerarComChatGPT",
+        "callGemini",
+        "callOpenAI",
+        "gerarTextoIA",
+        "generateWithAI",
+        "gerarConteudo"
+      ];
+
+      for (const fnName of possibleGlobalFunctions) {
+        try {
+          if (typeof window[fnName] === "function") {
+            const response = await window[fnName](prompt, payload);
+            if (response) return normalizeAIResponse(response);
+          }
+        } catch (error) {
+          console.warn("Falha na função IA:", fnName, error);
+        }
+      }
+
+      const endpoints = [
+        "/api/gerar",
+        "/api/prompt",
+        "/api/gemini",
+        "/api/chatgpt",
+        "/api/gerar.js",
+        "/api/prompt.js"
+      ];
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) continue;
+
+          const contentType = response.headers.get("content-type") || "";
+
+          if (contentType.includes("application/json")) {
+            const data = await response.json();
+            const normalized = normalizeAIResponse(data);
+            if (normalized) return normalized;
+          }
+
+          const text = await response.text();
+          if (text && text.trim()) return text.trim();
+        } catch (error) {
+          console.warn("Endpoint IA indisponível:", endpoint, error);
+        }
+      }
+
+      return "";
+    }
+
+    function normalizeAIResponse(response) {
+      if (!response) return "";
+
+      if (typeof response === "string") return response.trim();
+
+      if (response.html) return String(response.html).trim();
+      if (response.texto) return String(response.texto).trim();
+      if (response.text) return String(response.text).trim();
+      if (response.content) return String(response.content).trim();
+      if (response.resultado) return String(response.resultado).trim();
+      if (response.output) return String(response.output).trim();
+
+      if (response.candidates && response.candidates[0]) {
+        const candidate = response.candidates[0];
+        if (candidate.content && candidate.content.parts) {
+          return candidate.content.parts.map(part => part.text || "").join("\n").trim();
+        }
+      }
+
+      if (response.choices && response.choices[0]) {
+        const choice = response.choices[0];
+        if (choice.message && choice.message.content) return choice.message.content.trim();
+        if (choice.text) return choice.text.trim();
+      }
+
+      return "";
+    }
+
+    function limparMarkdownHtml(text) {
+      return String(text || "")
+        .replace(/^```html\s*/i, "")
+        .replace(/^```\s*/i, "")
+        .replace(/```$/i, "")
+        .trim();
+    }
+
+    function montarPromptBaseRevista(base, info) {
+      return `
+Você é um comentarista de Escola Bíblica Dominical, teólogo pentecostal, editor cristão e professor experiente.
+
+Crie conteúdo para uma REVISTA EBD MENSAL, não trimestral.
+
+DADOS DA REVISTA:
+Título: ${base.title}
+Subtítulo: ${base.subtitle}
+Tema mensal: ${base.theme}
+Texto bíblico base geral: ${base.biblicalBase}
+Público-alvo: ${base.targetAudience}
+Tipo: ${info.label}
+Classe: ${info.revistaClasse}
+Mês/Ano: ${info.revistaMes} de ${info.revistaAno}
+Autor/comentarista: ${base.author}
+Editora/ministério: ${base.ministry}
+Tom: ${base.tone}
+Profundidade: ${base.depthLevel}
+Observações: ${base.extraNotes}
+Direção das 4 lições: ${info.revistaObservacao}
+
+REGRAS GERAIS:
+- Não copie conteúdo de nenhuma editora.
+- Não cite CPAD como se fosse fonte do material.
+- Não use estrutura de sermão.
+- Não use apelo de sermão.
+- Escreva como revista EBD do professor.
+- Use linguagem bíblica, pastoral, pentecostal, teológica, didática e acessível.
+- Seja profundo, robusto e explicativo.
+- Traga referências bíblicas dentro das explicações.
+- Explique termos históricos e teológicos com clareza.
+- Cada tópico precisa ter peso de aula, não resumo fraco.
+- Entregue somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+      `.trim();
+    }
+
+    function promptApresentacaoRevista(base, info) {
+      return `
+${montarPromptBaseRevista(base, info)}
+
+ETAPA: APRESENTAÇÃO DA REVISTA.
+
+Crie uma apresentação pastoral ao professor da EBD com profundidade.
+Deve conter:
+1. Título "Prezado(a) Professor(a)"
+2. Apresentação do tema mensal.
+3. Importância do assunto para a igreja.
+4. Orientação espiritual ao professor.
+5. Orientação didática para conduzir a classe.
+6. Uma palavra final de encorajamento.
+
+Use HTML com:
+<h1 class="page-title">
+<p class="subtitle">
+<div class="block">
+<div class="teacher-help">
+<div class="summary-box">
+
+Faça uma apresentação robusta, com pelo menos 8 parágrafos bem desenvolvidos.
+      `.trim();
+    }
+
+    function promptSumarioRevista(base, info) {
+      return `
+${montarPromptBaseRevista(base, info)}
+
+ETAPA: SUMÁRIO DA REVISTA.
+
+Crie um sumário editorial para uma revista EBD mensal com 4 lições.
+O tema é Bibliologia, se o usuário mencionou Bíblia, Escrituras, preservação, composição ou Bibliologia.
+
+Organize:
+Lição 1: O que é a Bíblia?
+Lição 2: Como a Bíblia foi formada?
+Lição 3: Como a Bíblia chegou até nós?
+Lição 4: O privilégio de ter a Bíblia em mãos.
+
+Para cada lição, inclua:
+- Título
+- Texto bíblico principal
+- Objetivo resumido
+- Breve descrição editorial
+
+Use HTML com:
+<h1 class="page-title">
+<p class="subtitle">
+<div class="block">
+<ol class="list">
+<div class="knowledge-box">
+      `.trim();
+    }
+
+    function promptLicaoProfessor(base, info, numero, dados) {
+      return `
+${montarPromptBaseRevista(base, info)}
+
+ETAPA: LIÇÃO ${numero} COMPLETA DA REVISTA DO PROFESSOR.
+
+DADOS DA LIÇÃO:
+Número: ${numero}
+Título: ${dados.titulo}
+Foco: ${dados.foco}
+Texto áureo sugerido: ${dados.textoAureo}
+Verdade prática sugerida: ${dados.verdadePratica}
+Leitura bíblica em classe: ${dados.leituraClasse}
+Palavra-chave: ${dados.palavraChave}
+
+Crie uma LIÇÃO COMPLETA, ROBUSTA, PROFUNDA E TEOLÓGICA para revista EBD do professor.
+
+A lição deve conter obrigatoriamente:
+
+1. Cabeçalho visual:
+<div class="lesson-hero">
+  <div class="number">Lição ${numero}</div>
+  <h1>...</h1>
+  <div class="meta">...</div>
+</div>
+
+2. Texto áureo:
+<div class="memory-verse"><h3>Texto Áureo</h3>...</div>
+Inclua o versículo escrito e a referência.
+
+3. Verdade prática:
+<div class="block"><h3>Verdade Prática</h3>...</div>
+
+4. Leitura bíblica em classe:
+Escreva o texto bíblico completo ou explique a leitura com referências.
+
+5. Leitura diária:
+Use <div class="daily-reading"> com segunda a sábado.
+
+6. Objetivos:
+Três objetivos claros.
+
+7. Plano de aula:
+Com introdução, motivação, método, desenvolvimento e fechamento.
+
+8. Introdução:
+Pelo menos 5 parágrafos robustos.
+
+9. Três tópicos principais:
+Cada tópico deve ter:
+- Título em algarismo romano.
+- Três subtópicos numerados.
+- Cada subtópico deve ter conteúdo robusto, com 3 a 5 parágrafos.
+- Referências bíblicas explicadas.
+- Aplicação para o professor ensinar a classe.
+- Uma sinopse ao final.
+
+Modelo:
+<div class="lesson-topic">
+<h3>I. TÍTULO DO TÓPICO</h3>
+<div class="subtopic">
+<h4>1. Subtópico</h4>
+<p class="text">...</p>
+</div>
+...
+<div class="synopsis"><h4>Sinopse I</h4>...</div>
+</div>
+
+10. Ampliando o conhecimento:
+Conteúdo histórico, teológico, cultural ou doutrinário. Pelo menos 4 parágrafos.
+
+11. Auxílio teológico:
+Aprofundamento doutrinário. Pelo menos 4 parágrafos.
+
+12. Auxílio ao professor:
+Orientações práticas de aula. Pelo menos 4 parágrafos.
+
+13. Aplicação pessoal:
+Aplicação espiritual e pastoral. Pelo menos 3 parágrafos.
+
+14. Conclusão:
+Conclusão forte, didática e pastoral. Pelo menos 4 parágrafos.
+
+15. Revisando o conteúdo:
+5 perguntas com respostas, pois é revista do professor.
+
+IMPORTANTE:
+- Não entregue conteúdo curto.
+- Não faça frases genéricas.
+- Não escreva só 2 ou 3 linhas por subtópico.
+- Cada subtópico precisa municiar o professor com conteúdo real.
+- Use referências bíblicas como 2Tm 3.16,17; 2Pe 1.20,21; Sl 119.105; Is 40.8; Mt 24.35; Hb 4.12; Jo 17.17, quando fizer sentido.
+- Entregue somente HTML interno.
+      `.trim();
+    }
+
+    function promptLicaoAluno(base, info, numero, dados) {
+      return `
+${montarPromptBaseRevista(base, info)}
+
+ETAPA: LIÇÃO ${numero} COMPLETA DA REVISTA DO ALUNO.
+
+DADOS DA LIÇÃO:
+Número: ${numero}
+Título: ${dados.titulo}
+Foco: ${dados.foco}
+Texto áureo sugerido: ${dados.textoAureo}
+Verdade prática sugerida: ${dados.verdadePratica}
+Leitura bíblica em classe: ${dados.leituraClasse}
+Palavra-chave: ${dados.palavraChave}
+
+Crie uma LIÇÃO COMPLETA para revista EBD do aluno.
+Pode ser profunda, mas mais direta que a do professor.
+
+Estrutura obrigatória:
+- Cabeçalho visual.
+- Texto para memorizar.
+- Verdade prática.
+- Leitura bíblica em classe.
+- Leitura diária.
+- Introdução.
+- Três tópicos principais.
+- Três subtópicos por tópico.
+- Sinopse de cada tópico.
+- Aplicação pessoal.
+- Conclusão.
+- Revisando o conteúdo com perguntas SEM respostas, com espaço em branco.
+
+Use HTML interno e campos <div class="student-space">Resposta:</div> nas perguntas.
+      `.trim();
+    }
+
+    function promptCapaIA(base, info) {
+      return `
+Crie uma capa profissional de revista de Escola Bíblica Dominical.
+
+TEMA DA REVISTA:
+${base.title}
+
+SUBTÍTULO:
+${base.subtitle}
+
+TIPO:
+${info.label}
+
+CLASSE:
+${info.revistaClasse}
+
+MÊS:
+${info.revistaMes} de ${info.revistaAno}
+
+COMENTARISTA:
+${base.author}
+
+EDITORA/MINISTÉRIO:
+${base.ministry}
+
+CONCEITO VISUAL:
+Uma Bíblia aberta iluminada por luz celestial, rolos antigos, papiros, pergaminhos, manuscritos hebraicos e gregos ao fundo, transição visual entre Escrituras antigas e Bíblia impressa atual. Atmosfera reverente, teológica, editorial cristã, tons dourados, marrons, azul profundo e luz quente. A imagem deve comunicar preservação divina, inspiração das Escrituras e o privilégio de ter a Bíblia em mãos.
+
+ESTILO:
+Capa editorial profissional, realista, alta qualidade, composição vertical, parecida com revista bíblica impressa, tipografia elegante, espaço para título grande no topo, selo "Professor" ou "Aluno", classe adultos, mês e ano.
+
+Não colocar logotipo de editoras conhecidas.
+Não copiar capa existente.
+      `.trim();
+    }
+
+    function promptContracapa(base, info) {
+      return `
+${montarPromptBaseRevista(base, info)}
+
+ETAPA: CONTRACAPA.
+
+Crie uma contracapa pastoral para a revista.
+Deve conter:
+- Sinopse da revista.
+- Importância do tema.
+- Convite ao estudo.
+- Palavra final ao professor/aluno.
+- Frase forte de impacto.
+
+Use HTML interno:
+<h1 class="page-title">
+<p class="subtitle">
+<div class="summary-box">
+<div class="block">
+
+Conteúdo robusto, pastoral e elegante.
+      `.trim();
+    }
+
+    function dadosLicoesBibliologia() {
+      return [
+        {
+          titulo: "O Que é a Bíblia?",
+          foco: "a natureza da Bíblia como Palavra de Deus, inspirada pelo Espírito Santo e regra de fé e prática",
+          textoAureo: "Toda a Escritura é divinamente inspirada, e proveitosa para ensinar, para redarguir, para corrigir, para instruir em justiça. 2 Timóteo 3.16",
+          verdadePratica: "A Bíblia é a Palavra de Deus revelada aos homens e deve governar a fé, a conduta e a esperança do cristão.",
+          leituraClasse: "2 Timóteo 3.14-17",
+          palavraChave: "Inspiração"
+        },
+        {
+          titulo: "Como a Bíblia Foi Formada?",
+          foco: "o processo de composição das Escrituras, seus autores humanos, inspiração divina, rolos, papiros e pergaminhos",
+          textoAureo: "Porque a profecia nunca foi produzida por vontade de homem algum, mas os homens santos de Deus falaram inspirados pelo Espírito Santo. 2 Pedro 1.21",
+          verdadePratica: "Deus usou homens, épocas, idiomas e circunstâncias diferentes para comunicar uma única mensagem fiel e verdadeira.",
+          leituraClasse: "2 Pedro 1.16-21",
+          palavraChave: "Composição"
+        },
+        {
+          titulo: "Como a Bíblia Chegou Até Nós?",
+          foco: "a transmissão, preservação, cópias manuscritas, traduções, capítulos, versículos e o cuidado de Deus com sua Palavra",
+          textoAureo: "Seca-se a erva, e caem as flores, mas a palavra de nosso Deus subsiste eternamente. Isaías 40.8",
+          verdadePratica: "Deus preservou sua Palavra através da história para que hoje pudéssemos conhecê-la, estudá-la e obedecê-la.",
+          leituraClasse: "Isaías 40.6-8; Mateus 24.35",
+          palavraChave: "Preservação"
+        },
+        {
+          titulo: "O Privilégio de Ter a Bíblia em Mãos",
+          foco: "a bênção de possuir a Bíblia impressa, acessível, organizada e disponível para leitura, estudo e obediência",
+          textoAureo: "Lâmpada para os meus pés é tua palavra e luz, para o meu caminho. Salmo 119.105",
+          verdadePratica: "Ter a Bíblia em mãos é uma bênção que exige gratidão, reverência, leitura constante e obediência fiel.",
+          leituraClasse: "Salmo 119.97-105",
+          palavraChave: "Obediência"
+        }
+      ];
+    }
+
+    function fallbackHtml(texto, titulo = "Conteúdo gerado") {
+      return `
+        <div class="block">
+          <h3>${escapeHtml(titulo)}</h3>
+          ${paragraph(texto)}
+        </div>
+      `;
+    }
+
+    function fallbackLicaoRobusta(base, info, numero, dados, isTeacher) {
+      const respostas = isTeacher;
+
+      return `
+        <div class="lesson-hero">
+          <div class="number">Lição ${numero} • ${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</div>
+          <h1>${escapeHtml(dados.titulo)}</h1>
+          <div class="meta">${escapeHtml(info.label)} • Classe: ${escapeHtml(info.revistaClasse)} • ${escapeHtml(dados.leituraClasse)}</div>
+        </div>
+
+        <div class="memory-verse">
+          <h3>${isTeacher ? "Texto Áureo" : "Para Memorizar"}</h3>
+          ${paragraph(dados.textoAureo)}
+        </div>
+
+        <div class="block">
+          <h3>Verdade Prática</h3>
+          ${paragraph(dados.verdadePratica)}
+        </div>
+
+        ${renderDailyReading(numero)}
+
+        <div class="block">
+          <h3>Leitura Bíblica em Classe</h3>
+          ${paragraph("Texto sugerido: " + dados.leituraClasse + ". O professor deve ler o texto com a classe, explicar seu contexto e mostrar como ele fundamenta o tema da lição.")}
+        </div>
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <h3>Objetivos</h3>
+            ${unorderedList([
+              "Compreender " + dados.foco + ".",
+              "Reconhecer a importância desse ensino para a fé cristã.",
+              "Aplicar a verdade estudada à vida pessoal, familiar e congregacional."
+            ])}
+          </div>
+          <div class="mini-card">
+            <h3>Plano de Aula</h3>
+            ${unorderedList([
+              "Inicie com oração e leitura bíblica.",
+              "Apresente a palavra-chave: " + dados.palavraChave + ".",
+              "Trabalhe os três tópicos com perguntas à classe.",
+              "Finalize com revisão, aplicação e compromisso prático."
+            ])}
+          </div>
+        </div>
+
+        <div class="block">
+          <h3>Introdução</h3>
+          ${paragraph("A presente lição aborda " + dados.foco + ". Este é um assunto indispensável para a formação de uma igreja madura, pois ninguém pode sustentar uma fé bíblica se não compreende a natureza, a autoridade e a suficiência da Palavra de Deus.")}
+          ${paragraph("Em tempos de relativismo, falsas doutrinas e desprezo pela verdade, estudar Bibliologia é reafirmar que Deus falou, que sua Palavra é confiável e que as Escrituras continuam sendo a regra suprema para a fé e para a prática cristã.")}
+          ${paragraph("O professor deve conduzir a classe a perceber que a Bíblia não é apenas um livro antigo de valor religioso. Ela é a revelação escrita de Deus, preservada pela providência divina e entregue à igreja como lâmpada, alimento, espada e fundamento.")}
+          ${paragraph("Ao longo da aula, destaque que a fé cristã não repousa em opiniões humanas, experiências isoladas ou tradições sem base bíblica, mas na verdade revelada por Deus nas Escrituras.")}
+        </div>
+
+        ${fallbackTopicosBibliologia(numero)}
+
+        <div class="knowledge-box">
+          <h4>Ampliando o Conhecimento</h4>
+          ${paragraph("A Bibliologia estuda a doutrina das Escrituras. Ela trata de temas como revelação, inspiração, autoridade, suficiência, inerrância, transmissão, canonização, preservação e tradução da Bíblia. Esses assuntos ajudam o cristão a compreender melhor o valor do livro que tem em mãos.")}
+          ${paragraph("Quando Paulo afirma que toda Escritura é divinamente inspirada em 2 Timóteo 3.16, ele usa uma expressão que aponta para a origem divina da Escritura. A Bíblia é soprada por Deus, isto é, procede do próprio Senhor. Isso dá às Escrituras autoridade acima de qualquer tradição, opinião ou filosofia humana.")}
+          ${paragraph("A história da Bíblia também revela a providência divina. Os textos passaram por rolos, papiros, pergaminhos, manuscritos, cópias, traduções e impressões. Mesmo diante de perseguições, tentativas de destruição e limitações históricas, a Palavra permaneceu.")}
+          ${paragraph("O professor pode mostrar à classe que os capítulos e versículos são divisões posteriores que facilitam o estudo. A divisão em capítulos é tradicionalmente associada a Stephen Langton, no século XIII, e a divisão em versículos no Novo Testamento foi popularizada por Robert Estienne, no século XVI.")}
+        </div>
+
+        <div class="teacher-help">
+          <h4>Auxílio Teológico</h4>
+          ${paragraph("A doutrina da inspiração ensina que Deus supervisionou a produção das Escrituras de modo que os autores humanos escreveram exatamente aquilo que o Senhor quis comunicar, sem deixar de usar sua personalidade, vocabulário, contexto e estilo literário.")}
+          ${paragraph("A autoridade da Bíblia decorre de sua origem. Ela não se torna Palavra de Deus porque a igreja a reconhece; a igreja a reconhece porque ela é Palavra de Deus. Esse ponto é essencial para evitar que a autoridade final seja transferida da Escritura para instituições humanas.")}
+          ${paragraph("A preservação das Escrituras não significa que cada cópia manuscrita tenha sido milagrosamente impedida de qualquer variação de cópia, mas que Deus preservou sua Palavra de modo suficiente e fiel para que sua mensagem chegasse até nós com segurança.")}
+          ${paragraph("Explique à classe que confiança na Bíblia não é ignorância histórica. Pelo contrário, quanto mais estudamos sua formação, transmissão e preservação, mais percebemos a providência de Deus conduzindo sua Palavra através dos séculos.")}
+        </div>
+
+        <div class="teacher-help">
+          <h4>Auxílio ao Professor</h4>
+          ${paragraph("Prepare esta aula com antecedência e não trate o tema como simples curiosidade histórica. Mostre que conhecer a origem e a preservação da Bíblia aumenta nossa responsabilidade diante de Deus.")}
+          ${paragraph("Leve uma Bíblia impressa para a aula e, se possível, mostre imagens de rolos, papiros, pergaminhos e manuscritos antigos. Isso ajudará os alunos a visualizarem que o formato atual da Bíblia é resultado de um longo processo histórico.")}
+          ${paragraph("Faça perguntas como: 'Como seria sua vida espiritual se você não tivesse acesso à Bíblia?', 'Você tem valorizado a Palavra que tem em mãos?', 'Sua fé é guiada pela Escritura ou por opiniões?'.")}
+          ${paragraph("Finalize cada tópico com uma aplicação prática. A aula precisa informar a mente, aquecer o coração e conduzir a vontade dos alunos à obediência.")}
+        </div>
+
+        <div class="personal-application">
+          <h4>Aplicação Pessoal</h4>
+          ${paragraph("O estudo desta lição deve nos levar à gratidão. Muitos cristãos possuem várias Bíblias, mas nem sempre leem, estudam e obedecem como deveriam. Ter a Bíblia em mãos é privilégio e responsabilidade.")}
+          ${paragraph("A Palavra de Deus não deve ser tratada como objeto religioso decorativo. Ela precisa ser aberta, lida, meditada, ensinada e praticada.")}
+          ${paragraph("Uma igreja forte nasce de crentes firmados na Escritura. Quando a Bíblia ocupa o centro da vida cristã, a fé amadurece, o discernimento cresce e a obediência se torna fruto natural do amor a Deus.")}
+        </div>
+
+        <div class="block">
+          <h3>Conclusão</h3>
+          ${paragraph("Concluímos que " + dados.foco + " é um ensino essencial para a igreja atual. A Bíblia é mais do que um documento antigo: é a Palavra viva, eficaz e permanente do Deus eterno.")}
+          ${paragraph("O professor deve encerrar a lição chamando a classe a renovar seu compromisso com a leitura, estudo, reverência e obediência às Escrituras.")}
+        </div>
+
+        <div class="summary-box">
+          <h4>Revisando o Conteúdo</h4>
+          ${renderReviewQuestions(respostas, dados)}
+        </div>
+      `;
+    }
+
+    function fallbackTopicosBibliologia(numero) {
+      const topicos = [
+        [
+          {
+            titulo: "A Bíblia é a Palavra de Deus",
+            subs: [
+              ["A origem divina da Escritura", "A Bíblia não é apenas uma coleção de escritos religiosos. Ela é a revelação de Deus registrada para que o ser humano conheça a vontade do Senhor. Em 2 Timóteo 3.16, Paulo afirma que toda Escritura é divinamente inspirada, mostrando que sua fonte última está em Deus. Isso significa que o professor deve conduzir a classe a enxergar a Escritura como voz normativa de Deus, e não como opinião religiosa sujeita às modas do tempo."],
+              ["A inspiração pelo Espírito Santo", "Deus usou homens reais, com personalidade, idioma, cultura e contexto histórico, mas preservou a mensagem pela ação do Espírito Santo. Em 2 Pedro 1.21, aprendemos que homens santos falaram inspirados pelo Espírito Santo. A inspiração não anulou os autores humanos, mas garantiu que a Palavra comunicada fosse fiel ao propósito divino."],
+              ["Regra de fé e prática", "A Bíblia orienta aquilo que cremos e a maneira como vivemos. Ela corrige, ensina, consola, confronta e conduz o cristão à maturidade espiritual. Hebreus 4.12 afirma que a Palavra é viva e eficaz; portanto, ela não apenas informa, mas penetra o coração e produz discernimento espiritual."]
+            ],
+            sinopse: "A Bíblia é Palavra de Deus porque sua origem, autoridade e mensagem procedem do Senhor."
+          },
+          {
+            titulo: "A Bíblia revela Deus ao homem",
+            subs: [
+              ["Deus se fez conhecido", "Sem revelação, o ser humano caminharia em trevas espirituais. Pela Escritura, Deus revela seu caráter, sua santidade, sua justiça, seu amor e seu plano de salvação. A Bíblia não é resultado da busca humana por Deus, mas da iniciativa divina de se revelar."],
+              ["Cristo no centro da revelação", "Toda a Escritura aponta para o plano redentor de Deus em Cristo. O Antigo Testamento prepara, anuncia e simboliza; o Novo Testamento revela o cumprimento em Jesus. Lucas 24.44 mostra que a Lei, os Profetas e os Salmos apontavam para Cristo."],
+              ["A Palavra ilumina o caminho", "O Salmo 119.105 apresenta a Palavra como lâmpada e luz. Ela não apenas informa, mas dirige a caminhada do povo de Deus. O professor deve mostrar que uma vida sem Escritura é uma vida vulnerável à confusão espiritual."]
+            ],
+            sinopse: "A revelação bíblica conduz o homem ao conhecimento de Deus e à obediência."
+          },
+          {
+            titulo: "A Bíblia transforma a vida",
+            subs: [
+              ["Ela confronta o pecado", "A Palavra revela a condição humana diante de Deus, chama ao arrependimento e denuncia tudo aquilo que se opõe à santidade divina. João 17.17 declara: 'Santifica-os na verdade; a tua palavra é a verdade'. A santificação cristã é inseparável da submissão à Palavra."],
+              ["Ela fortalece a fé", "Romanos 15.4 ensina que as Escrituras produzem paciência, consolação e esperança. O cristão amadurece quando se alimenta da Palavra. A fé enfraquece quando a Bíblia é negligenciada e se fortalece quando a verdade divina é recebida com humildade."],
+              ["Ela prepara para toda boa obra", "Segundo 2 Timóteo 3.17, o objetivo da Escritura é tornar o homem de Deus perfeito e preparado para toda boa obra. Isso significa que a Bíblia forma caráter, corrige direção e capacita o cristão para servir ao Senhor."]
+            ],
+            sinopse: "A Bíblia não foi dada apenas para ser conhecida, mas para ser obedecida e vivida."
+          }
+        ],
+        [
+          {
+            titulo: "Deus usou autores humanos",
+            subs: [
+              ["Homens chamados por Deus", "A Bíblia foi escrita por profetas, reis, sacerdotes, pescadores, médicos, apóstolos e servos de Deus em diferentes períodos da história. Essa diversidade demonstra que Deus fala dentro da história, usando instrumentos humanos sem perder o controle da mensagem."],
+              ["Unidade em meio à diversidade", "Mesmo escrita por muitos autores, em lugares e épocas distintas, a Bíblia possui uma mensagem unificada: Deus redime o homem e governa a história. Essa unidade não pode ser explicada apenas por coordenação humana, mas pela ação soberana do Espírito."],
+              ["A ação soberana do Espírito", "2 Pedro 1.21 afirma que homens santos falaram inspirados pelo Espírito Santo. Isso revela que a Escritura não nasceu da vontade humana, mas da iniciativa divina. O professor deve destacar que inspiração é mais que criatividade religiosa; é ação de Deus na comunicação de sua Palavra."]
+            ],
+            sinopse: "Deus usou instrumentos humanos, mas a mensagem preserva autoridade divina."
+          },
+          {
+            titulo: "Os primeiros materiais da Escritura",
+            subs: [
+              ["Rolos antigos", "Antes do formato de livro impresso, os textos eram preservados em rolos. Esses rolos eram lidos nas sinagogas e guardados com grande reverência. Jesus leu o rolo do profeta Isaías em Lucas 4.17, demonstrando esse contexto antigo de leitura pública."],
+              ["Papiro e pergaminho", "O papiro era produzido a partir de uma planta comum no Egito. O pergaminho era feito de pele preparada de animais e se tornou mais resistente para cópias importantes. Esses materiais mostram que a Palavra caminhou por meios históricos reais."],
+              ["Manuscritos preservados", "Durante séculos, copistas trabalharam cuidadosamente para transmitir os textos. Esse processo mostra zelo, reverência e providência divina. O professor pode explicar que Deus preservou sua Palavra sem ignorar processos humanos de cópia, leitura e transmissão."]
+            ],
+            sinopse: "A forma física mudou ao longo do tempo, mas Deus preservou a mensagem da sua Palavra."
+          },
+          {
+            titulo: "A formação do conjunto bíblico",
+            subs: [
+              ["Antigo e Novo Testamento", "A Bíblia possui duas grandes divisões: o Antigo Testamento, relacionado à antiga aliança, e o Novo Testamento, centrado na nova aliança em Cristo. Essa divisão revela o progresso da revelação divina."],
+              ["Livros reconhecidos pelo povo de Deus", "Os livros bíblicos foram reconhecidos por sua autoridade espiritual, coerência doutrinária e uso entre o povo de Deus. A igreja não criou a autoridade da Escritura; ela reconheceu os escritos que traziam autoridade divina."],
+              ["Uma biblioteca sagrada", "A palavra Bíblia lembra a ideia de livros. Trata-se de uma coleção sagrada com história, poesia, profecia, evangelhos, cartas e apocalipse. Essa variedade literária exige leitura cuidadosa, respeitando o gênero de cada texto."]
+            ],
+            sinopse: "A Bíblia é uma coleção de livros inspirados, preservados e reconhecidos pelo povo de Deus."
+          }
+        ],
+        [
+          {
+            titulo: "A transmissão das Escrituras",
+            subs: [
+              ["Cópias feitas à mão", "Antes da imprensa, as Escrituras eram copiadas manualmente. Esse trabalho exigia atenção, reverência e disciplina. Embora esse processo envolvesse mãos humanas, Deus preservou sua mensagem através da história."],
+              ["Comunidades preservadoras", "Judeus, escribas, cristãos e comunidades de fé participaram, ao longo da história, da preservação e circulação dos textos sagrados. A Palavra não ficou isolada; ela foi lida, copiada, ensinada e transmitida."],
+              ["A providência de Deus", "A preservação bíblica não deve ser vista apenas como fato histórico, mas como evidência da fidelidade de Deus em guardar sua Palavra. Isaías 40.8 declara que a Palavra de Deus permanece eternamente."]
+            ],
+            sinopse: "Deus preservou sua Palavra por meio de processos históricos e da sua providência soberana."
+          },
+          {
+            titulo: "Traduções e acesso ao povo",
+            subs: [
+              ["Da língua original aos povos", "O Antigo Testamento foi escrito principalmente em hebraico, com partes em aramaico. O Novo Testamento foi escrito em grego. As traduções permitiram que mais povos conhecessem a Palavra."],
+              ["A importância da tradução", "Traduzir a Bíblia é aproximar a mensagem de Deus da língua do povo. Isso amplia o ensino, a evangelização e a formação cristã. Neemias 8.8 mostra a importância de ler e explicar o sentido da Palavra."],
+              ["O avanço da impressão", "Com a imprensa, a Bíblia passou a ser multiplicada em escala muito maior. O acesso à Escritura se tornou uma bênção para milhões de pessoas. Esse privilégio deve gerar gratidão e responsabilidade."]
+            ],
+            sinopse: "As traduções e a impressão ajudaram a espalhar a Palavra de Deus entre as nações."
+          },
+          {
+            titulo: "Capítulos e versículos",
+            subs: [
+              ["Nem sempre foi assim", "A Bíblia nem sempre esteve dividida em capítulos e versículos como conhecemos hoje. Originalmente, os textos circulavam em rolos e manuscritos sem a organização moderna."],
+              ["A divisão em capítulos", "A divisão em capítulos é tradicionalmente associada a Stephen Langton, no século XIII. Essa organização facilitou a localização e o estudo dos textos bíblicos, especialmente em ambiente acadêmico e litúrgico."],
+              ["A divisão em versículos", "A divisão em versículos no Novo Testamento foi popularizada por Robert Estienne, também conhecido como Stephanus, no século XVI. Hoje, capítulos e versículos ajudam na leitura, ensino e memorização, mas não devem substituir a leitura contextual."]
+            ],
+            sinopse: "Capítulos e versículos são recursos posteriores que facilitam o estudo, mas a autoridade está no texto inspirado."
+          }
+        ],
+        [
+          {
+            titulo: "O privilégio de possuir a Bíblia",
+            subs: [
+              ["Uma bênção nem sempre acessível", "Durante muitos períodos da história, nem todos tinham acesso direto às Escrituras. Hoje, possuir uma Bíblia é uma graça que deve gerar gratidão. O professor deve mostrar que familiaridade não pode produzir desprezo."],
+              ["A Bíblia em nossa língua", "Ter a Palavra traduzida em língua compreensível é um presente espiritual. Isso permite leitura, ensino, evangelização e discipulado. Uma Bíblia fechada em casa é um privilégio desperdiçado."],
+              ["Responsabilidade diante do privilégio", "Quem possui a Bíblia deve lê-la, estudá-la e obedecê-la. O privilégio aumenta a responsabilidade espiritual. Tiago 1.22 ensina que devemos ser cumpridores da Palavra, e não apenas ouvintes."]
+            ],
+            sinopse: "Ter a Bíblia em mãos é uma bênção que deve produzir gratidão e compromisso."
+          },
+          {
+            titulo: "A Bíblia deve ser lida e estudada",
+            subs: [
+              ["Leitura constante", "Josué 1.8 ensina a meditar na Palavra dia e noite. A leitura bíblica precisa fazer parte da rotina espiritual do cristão. Não há maturidade sólida sem contato constante com as Escrituras."],
+              ["Estudo com reverência", "Estudar a Bíblia exige oração, atenção ao contexto e disposição para obedecer. Não estudamos apenas para saber mais, mas para viver melhor diante de Deus."],
+              ["Ensino na igreja e no lar", "Deuteronômio 6.6,7 mostra que a Palavra deve ser ensinada às próximas gerações. A Bíblia precisa ocupar lugar central na família e na igreja."]
+            ],
+            sinopse: "A Palavra deve ser lida, estudada, ensinada e guardada no coração."
+          },
+          {
+            titulo: "A Bíblia deve ser obedecida",
+            subs: [
+              ["Praticantes da Palavra", "Tiago 1.22 adverte que não basta ouvir; é preciso praticar. A verdadeira espiritualidade se manifesta em obediência. Conhecimento sem prática pode produzir orgulho, mas a Palavra recebida com fé gera transformação."],
+              ["Luz para as decisões", "A Palavra orienta escolhas, corrige caminhos e fortalece o cristão diante das pressões do mundo. Salmo 119.105 ensina que a Palavra é lâmpada e luz, guiando tanto os passos imediatos quanto o caminho mais amplo."],
+              ["Viver para a glória de Deus", "A finalidade do estudo bíblico é formar um povo santo, obediente e preparado para servir ao Senhor. Quem ama a Bíblia deve demonstrar esse amor vivendo aquilo que ela ensina."]
+            ],
+            sinopse: "A maior honra que damos à Bíblia é obedecer à voz de Deus revelada nela."
+          }
+        ]
+      ];
+
+      const escolhidos = topicos[numero - 1] || topicos[0];
+
+      return escolhidos.map((topico, index) => `
+        <div class="lesson-topic">
+          <h3>${roman(index + 1)}. ${escapeHtml(topico.titulo)}</h3>
+          ${topico.subs.map((sub, subIndex) => `
+            <div class="subtopic">
+              <h4>${subIndex + 1}. ${escapeHtml(sub[0])}</h4>
+              ${paragraph(sub[1])}
+            </div>
+          `).join("")}
+          <div class="synopsis">
+            <h4>Sinopse ${roman(index + 1)}</h4>
+            ${paragraph(topico.sinopse)}
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderDailyReading(numero) {
+      const readings = {
+        1: [
+          ["Segunda", "2Tm 3.16", "Toda Escritura é inspirada por Deus"],
+          ["Terça", "Sl 119.105", "A Palavra ilumina o caminho"],
+          ["Quarta", "Hb 4.12", "A Palavra é viva e eficaz"],
+          ["Quinta", "Jo 17.17", "A Palavra é a verdade"],
+          ["Sexta", "Rm 15.4", "As Escrituras produzem esperança"],
+          ["Sábado", "Mt 4.4", "Vivemos de toda Palavra de Deus"]
+        ],
+        2: [
+          ["Segunda", "2Pe 1.21", "Homens santos falaram inspirados"],
+          ["Terça", "Êx 24.4", "Moisés escreveu as palavras do Senhor"],
+          ["Quarta", "Jr 36.2", "A Palavra foi registrada em rolos"],
+          ["Quinta", "Lc 24.44", "Lei, Profetas e Salmos"],
+          ["Sexta", "1Co 2.13", "Palavras ensinadas pelo Espírito"],
+          ["Sábado", "2Tm 3.15", "As sagradas letras conduzem à salvação"]
+        ],
+        3: [
+          ["Segunda", "Is 40.8", "A Palavra permanece eternamente"],
+          ["Terça", "Mt 24.35", "As palavras de Cristo não passarão"],
+          ["Quarta", "Sl 12.6,7", "O Senhor preserva sua Palavra"],
+          ["Quinta", "Ne 8.8", "A Palavra foi lida e explicada"],
+          ["Sexta", "Cl 4.16", "Cartas circulavam entre igrejas"],
+          ["Sábado", "Ap 1.3", "Bem-aventurado quem lê"]
+        ],
+        4: [
+          ["Segunda", "Js 1.8", "Meditar dia e noite na Palavra"],
+          ["Terça", "Tg 1.22", "Sede cumpridores da Palavra"],
+          ["Quarta", "Sl 1.2", "Prazer na lei do Senhor"],
+          ["Quinta", "Dt 6.6,7", "Ensinar a Palavra aos filhos"],
+          ["Sexta", "At 17.11", "Examinar as Escrituras"],
+          ["Sábado", "Sl 119.11", "Guardar a Palavra no coração"]
+        ]
+      };
+
+      const items = readings[numero] || readings[1];
+
+      return `
+        <div class="daily-reading">
+          <h3>Leitura Diária</h3>
+          <div class="daily-grid">
+            ${items.map(item => `
+              <div class="daily-item">
+                <strong>${escapeHtml(item[0])} — ${escapeHtml(item[1])}</strong>
+                <span>${escapeHtml(item[2])}</span>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReviewQuestions(withAnswers, dados) {
+      const questions = [
+        ["Qual é o tema principal desta lição?", dados.titulo],
+        ["Qual é a verdade prática estudada?", dados.verdadePratica],
+        ["Por que este assunto é importante para a vida cristã?", "Porque ajuda o cristão a compreender melhor a Palavra de Deus e a viver de modo fiel diante do Senhor."],
+        ["Qual atitude prática esta lição deve produzir?", "Deve produzir fé, reverência, obediência e compromisso com a Palavra de Deus."],
+        ["Como podemos aplicar esta lição durante a semana?", "Lendo a Bíblia, meditando no ensino aprendido e praticando a verdade estudada em nossas decisões diárias."]
+      ];
+
+      return questions.map((item, index) => `
+        <div class="question-answer">
+          <strong>${index + 1}. ${escapeHtml(item[0])}</strong>
+          ${
+            withAnswers
+              ? `<br><strong>Resposta:</strong> ${escapeHtml(item[1])}`
+              : `<div class="student-space">Resposta:</div>`
+          }
+        </div>
+      `).join("");
+    }
+
+    function renderGenerated(html) {
+      currentHtml = html;
+      currentText = extractPlainTextFromHtml(html);
+
+      result.innerHTML = html;
+      printArea.innerHTML = html;
+
+      result.removeAttribute("contenteditable");
+      editWarning.style.display = "none";
+      btnFinishEdit.disabled = true;
+      btnEdit.disabled = false;
+    }
+
+    function extractPlainTextFromHtml(html) {
+      const temp = document.createElement("div");
+      temp.innerHTML = html;
+      return temp.innerText.trim();
+    }
+
+    async function generateMagazineAsync(base) {
+      const revistaTipo = getValue("revistaTipo") || "professor";
+      const revistaClasse = getValue("revistaClasse") || "adultos";
+      const revistaMes = getValue("revistaMes") || "Agosto";
+      const revistaAno = getValue("revistaAno") || new Date().getFullYear();
+      const revistaObservacao = getValue("revistaObservacao");
+
+      const isTeacher = revistaTipo === "professor";
+      const label = isTeacher ? "Revista do professor" : "Revista do aluno";
+      const monthInfo = `${revistaMes} de ${revistaAno} • Revista mensal • 4 lições`;
+
+      const info = {
+        revistaTipo,
+        revistaClasse,
+        revistaMes,
+        revistaAno,
+        revistaObservacao,
+        label,
+        monthInfo
+      };
+
+      const licoes = dadosLicoesBibliologia();
+      let html = `<div class="doc">`;
+
+      setStep(0, "Gerando apresentação da revista...");
+      let apresentacao = await chamarIA(promptApresentacaoRevista(base, info), "Apresentação da Revista");
+      apresentacao = limparMarkdownHtml(apresentacao);
+      if (!apresentacao) {
+        apresentacao = `
+          <h1 class="page-title">Prezado(a) Professor(a)</h1>
+          <p class="subtitle">${escapeHtml(base.title)}</p>
+          <div class="block">
+            <h3>Apresentação da revista</h3>
+            ${paragraph("Nesta revista mensal, estudaremos " + base.theme + " com profundidade bíblica, teológica e pastoral. O propósito é fortalecer a classe adulta no conhecimento das Escrituras, mostrando que a Bíblia é Palavra de Deus, preservada pelo Senhor e entregue à igreja como regra de fé e prática.")}
+            ${paragraph("Professor, conduza cada aula com reverência, clareza e aplicação. Esta revista não deve ser tratada como simples material informativo, mas como ferramenta de formação espiritual para a igreja.")}
+            ${paragraph("O tema Bibliologia é essencial porque todo ensino cristão depende da autoridade das Escrituras. Uma igreja fraca na doutrina da Bíblia será vulnerável a modismos, falsas revelações e interpretações sem fundamento.")}
+          </div>
+          <div class="teacher-help">
+            <h4>Orientação ao professor</h4>
+            ${paragraph("Evite transformar a aula em sermão. Ensine, pergunte, explique, aplique e conduza a classe a participar. Use exemplos históricos, mostre a importância dos manuscritos, traduções, capítulos e versículos, mas sempre aponte para a providência de Deus.")}
+          </div>
+        `;
+      }
+      html += renderPage(apresentacao);
+      renderGenerated(html + `</div>`);
+
+      setStep(1, "Gerando sumário da revista...");
+      let sumario = await chamarIA(promptSumarioRevista(base, info), "Sumário da Revista");
+      sumario = limparMarkdownHtml(sumario);
+      if (!sumario) {
+        sumario = `
+          <h1 class="page-title">Sumário</h1>
+          <p class="subtitle">${escapeHtml(base.title)} — ${escapeHtml(monthInfo)}</p>
+          <div class="block">
+            <h3>Tema mensal</h3>
+            ${paragraph(base.theme)}
+          </div>
+          <div class="block">
+            <h3>Lições do mês</h3>
+            ${orderedList(licoes.map((licao, index) => `Lição ${index + 1} — ${licao.titulo} | Texto base: ${licao.leituraClasse}`))}
+          </div>
+          <div class="knowledge-box">
+            <h4>Estrutura pedagógica</h4>
+            ${paragraph("Cada lição contém texto áureo, verdade prática, leitura bíblica em classe, leitura diária, objetivos, plano de aula, introdução, três tópicos principais, três subtópicos por tópico, sinopse, ampliando o conhecimento, auxílio teológico, auxílio ao professor, aplicação pessoal, conclusão e revisão do conteúdo.")}
+          </div>
+        `;
+      }
+      html += renderPage(sumario);
+      renderGenerated(html + `</div>`);
+
+      for (let i = 0; i < 4; i++) {
+        const numero = i + 1;
+        const dados = licoes[i];
+
+        setStep(i + 2, `Gerando Lição ${numero} com profundidade...`);
+
+        let prompt = isTeacher
+          ? promptLicaoProfessor(base, info, numero, dados)
+          : promptLicaoAluno(base, info, numero, dados);
+
+        let licaoHtml = await chamarIA(prompt, `Lição ${numero}`);
+        licaoHtml = limparMarkdownHtml(licaoHtml);
+
+        if (!licaoHtml) {
+          licaoHtml = fallbackLicaoRobusta(base, info, numero, dados, isTeacher);
+        }
+
+        html += renderPage(licaoHtml);
+        renderGenerated(html + `</div>`);
+      }
+
+      setStep(6, "Preparando comando da capa com IA...");
+      const capaPrompt = promptCapaIA(base, info);
+      html += renderCover(base, isTeacher ? "Revista EBD Mensal — Professor" : "Revista EBD Mensal — Aluno", monthInfo, capaPrompt);
+      renderGenerated(html + `</div>`);
+
+      setStep(7, "Gerando contracapa...");
+      let contracapa = await chamarIA(promptContracapa(base, info), "Contracapa");
+      contracapa = limparMarkdownHtml(contracapa);
+
+      if (!contracapa) {
+        contracapa = `
+          <h1 class="page-title">Contracapa</h1>
+          <p class="subtitle">${escapeHtml(base.title)}</p>
+          <div class="summary-box">
+            <h4>Sinopse</h4>
+            ${paragraph("Esta revista conduz a classe ao estudo da Bíblia como Palavra de Deus, mostrando sua inspiração, composição, preservação, transmissão e o privilégio de termos hoje as Escrituras em mãos.")}
+            ${paragraph("Ao longo das quatro lições, o aluno será levado a compreender que a Bíblia não é apenas um livro antigo, mas a revelação divina preservada por Deus para orientar a fé, a doutrina, a conduta e a esperança da igreja.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(contracapa);
+      html += renderBackCover(base, monthInfo);
+      html += `</div>`;
+
+      finishSteps("Revista EBD mensal gerada com apresentação, sumário, 4 lições profundas, comando de capa IA e contracapa.");
+      renderGenerated(html);
+    }
+
     function generateSermon(base) {
       const points = Number(getValue("sermonPoints") || 4);
       const sermonType = getValue("sermonType") || "temático";
@@ -2120,40 +2961,30 @@
         <div class="doc">
           ${renderCover(base, "Sermão")}
 
-          <section class="page">
-            <div class="page-inner">
-              <div class="lesson-hero">
-                <div class="number">Sermão ${escapeHtml(sermonType)}</div>
-                <h1>${escapeHtml(base.title)}</h1>
-                <div class="meta">Texto base: ${escapeHtml(base.biblicalBase)}</div>
-              </div>
-
-              <div class="tag-list">
-                <span class="tag">Público: ${escapeHtml(base.targetAudience)}</span>
-                <span class="tag">Tom: ${escapeHtml(base.tone)}</span>
-                <span class="tag">Profundidade: ${escapeHtml(base.depthLevel)}</span>
-              </div>
-
-              <div class="block">
-                <h3>Introdução</h3>
-                ${paragraph("Apresente o tema \"" + base.theme + "\" de forma envolvente, bíblica e pastoral. Mostre a necessidade espiritual da mensagem e prepare a igreja para receber a Palavra com fé.")}
-              </div>
-
-              ${topicBlocks}
-
-              <div class="block">
-                <h3>Conclusão</h3>
-                ${paragraph("Reforce a mensagem central, retomando o tema principal e conduzindo a igreja a compreender que a Palavra de Deus exige resposta prática, fé viva e compromisso com o Senhor.")}
-              </div>
-
-              <div class="block">
-                <h3>Apelo</h3>
-                ${paragraph("Finalize " + sermonAppeal + ", chamando os ouvintes à oração, consagração, arrependimento e obediência à vontade de Deus.")}
-              </div>
-
-              ${base.extraNotes ? `<div class="summary-box"><h4>Observações adicionais</h4>${paragraph(base.extraNotes)}</div>` : ""}
+          ${renderPage(`
+            <div class="lesson-hero">
+              <div class="number">Sermão ${escapeHtml(sermonType)}</div>
+              <h1>${escapeHtml(base.title)}</h1>
+              <div class="meta">Texto base: ${escapeHtml(base.biblicalBase)}</div>
             </div>
-          </section>
+
+            <div class="block">
+              <h3>Introdução</h3>
+              ${paragraph("Apresente o tema \"" + base.theme + "\" de forma envolvente, bíblica e pastoral. Mostre a necessidade espiritual da mensagem e prepare a igreja para receber a Palavra com fé.")}
+            </div>
+
+            ${topicBlocks}
+
+            <div class="block">
+              <h3>Conclusão</h3>
+              ${paragraph("Reforce a mensagem central, retomando o tema principal e conduzindo a igreja a compreender que a Palavra de Deus exige resposta prática, fé viva e compromisso com o Senhor.")}
+            </div>
+
+            <div class="block">
+              <h3>Apelo</h3>
+              ${paragraph("Finalize " + sermonAppeal + ", chamando os ouvintes à oração, consagração, arrependimento e obediência à vontade de Deus.")}
+            </div>
+          `)}
 
           ${renderBackCover(base)}
         </div>
@@ -2168,7 +2999,6 @@
         "A transformação que Deus realiza",
         "A promessa que Deus sustenta"
       ];
-
       return titles[index - 1] || theme;
     }
 
@@ -2176,785 +3006,77 @@
       return `
         <div class="doc">
           ${renderCover(base, "Devocional")}
+          ${renderPage(`
+            <h1 class="page-title">${escapeHtml(base.title)}</h1>
+            <p class="subtitle">${escapeHtml(base.subtitle)}</p>
 
-          <section class="page">
-            <div class="page-inner">
-              <h1 class="page-title">${escapeHtml(base.title)}</h1>
-              <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-
-              <div class="memory-verse">
-                <h3>Texto base</h3>
-                ${paragraph(base.biblicalBase)}
-              </div>
-
-              <div class="block">
-                <h3>Reflexão</h3>
-                ${paragraph("Hoje somos conduzidos a meditar sobre \"" + base.theme + "\". A Palavra de Deus nos lembra que a fé precisa ser alimentada diariamente por uma vida de comunhão, obediência e dependência do Senhor.")}
-                ${paragraph("Mesmo em meio às pressões da vida, Deus continua presente, sustentando seus filhos e direcionando cada passo daqueles que confiam nele.")}
-              </div>
-
-              <div class="personal-application">
-                <h4>Aplicação prática</h4>
-                ${unorderedList([
-                  "Separe um momento para orar com sinceridade.",
-                  "Leia o texto bíblico base com atenção.",
-                  "Pergunte ao Senhor o que precisa ser corrigido ou fortalecido em sua vida.",
-                  "Tome uma decisão prática de obediência hoje."
-                ])}
-              </div>
-
-              <div class="block">
-                <h3>Oração</h3>
-                ${paragraph("Senhor Deus, fala comigo por meio da tua Palavra. Fortalece minha fé, guia meus passos e me ajuda a viver de acordo com a tua vontade. Que esta reflexão produza transformação em minha vida. Em nome de Jesus, amém.")}
-              </div>
-
-              ${base.extraNotes ? `<div class="summary-box"><h4>Observações adicionais</h4>${paragraph(base.extraNotes)}</div>` : ""}
+            <div class="memory-verse">
+              <h3>Texto base</h3>
+              ${paragraph(base.biblicalBase)}
             </div>
-          </section>
 
+            <div class="block">
+              <h3>Reflexão</h3>
+              ${paragraph("Hoje somos conduzidos a meditar sobre \"" + base.theme + "\". A Palavra de Deus nos lembra que a fé precisa ser alimentada diariamente por uma vida de comunhão, obediência e dependência do Senhor.")}
+              ${paragraph("Mesmo em meio às pressões da vida, Deus continua presente, sustentando seus filhos e direcionando cada passo daqueles que confiam nele.")}
+            </div>
+
+            <div class="personal-application">
+              <h4>Aplicação prática</h4>
+              ${unorderedList([
+                "Separe um momento para orar com sinceridade.",
+                "Leia o texto bíblico base com atenção.",
+                "Pergunte ao Senhor o que precisa ser corrigido ou fortalecido em sua vida.",
+                "Tome uma decisão prática de obediência hoje."
+              ])}
+            </div>
+
+            <div class="block">
+              <h3>Oração</h3>
+              ${paragraph("Senhor Deus, fala comigo por meio da tua Palavra. Fortalece minha fé, guia meus passos e me ajuda a viver de acordo com a tua vontade. Que esta reflexão produza transformação em minha vida. Em nome de Jesus, amém.")}
+            </div>
+          `)}
           ${renderBackCover(base)}
         </div>
       `;
     }
 
     function generateStudy(base) {
-      const studyDepth = getValue("studyDepth") || "com explicação, aplicações e perguntas";
-      const studyQuestions = getValue("studyQuestions") || "com perguntas e respostas";
-
       return `
         <div class="doc">
           ${renderCover(base, "Estudo Bíblico")}
+          ${renderPage(`
+            <h1 class="page-title">${escapeHtml(base.title)}</h1>
+            <p class="subtitle">${escapeHtml(base.subtitle)}</p>
 
-          <section class="page">
-            <div class="page-inner">
-              <h1 class="page-title">${escapeHtml(base.title)}</h1>
-              <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-
-              <div class="tag-list">
-                <span class="tag">Texto: ${escapeHtml(base.biblicalBase)}</span>
-                <span class="tag">Formato: ${escapeHtml(studyDepth)}</span>
-                <span class="tag">Público: ${escapeHtml(base.targetAudience)}</span>
-              </div>
-
-              <div class="block">
-                <h3>Introdução</h3>
-                ${paragraph("Este estudo aborda o tema \"" + base.theme + "\" com o objetivo de compreender o ensino bíblico, aplicar a verdade espiritual e fortalecer a vida cristã.")}
-              </div>
-
-              <div class="block">
-                <h3>Contexto bíblico</h3>
-                ${paragraph("Analise o texto base " + base.biblicalBase + " considerando seu contexto histórico, espiritual e doutrinário. Observe quem fala, para quem fala, qual situação está sendo tratada e qual verdade Deus deseja comunicar ao seu povo.")}
-              </div>
-
-              <div class="lesson-block">
-                <h3>1. O ensino central do texto</h3>
-                ${paragraph("O primeiro passo é identificar a verdade principal da passagem. Nenhum estudo bíblico deve nascer de ideias soltas, mas da mensagem que o próprio texto comunica.")}
-              </div>
-
-              <div class="lesson-block">
-                <h3>2. O que o texto revela sobre Deus</h3>
-                ${paragraph("A Escritura revela o caráter, a vontade, a santidade, a graça e o governo de Deus. O tema estudado deve conduzir o aluno a conhecer mais profundamente o Senhor.")}
-              </div>
-
-              <div class="lesson-block">
-                <h3>3. O que o texto exige do cristão</h3>
-                ${paragraph("A Palavra de Deus chama o cristão a uma resposta. Essa resposta pode envolver fé, arrependimento, obediência, santidade, serviço, perdão, perseverança ou consagração.")}
-              </div>
-
-              <div class="personal-application">
-                <h4>Aplicações práticas</h4>
-                ${unorderedList([
-                  "O que devo crer a partir desta verdade?",
-                  "O que preciso abandonar?",
-                  "Que atitude devo praticar?",
-                  "Como essa Palavra transforma minha vida diária?"
-                ])}
-              </div>
-
-              <div class="teacher-help">
-                <h4>Perguntas para reflexão</h4>
-                ${unorderedList([
-                  "O que este texto ensina sobre Deus?",
-                  "Qual é a principal correção que esta passagem traz?",
-                  "Como posso aplicar essa verdade na minha família?",
-                  "Como essa lição fortalece a igreja?",
-                  "Que decisão prática devo tomar hoje?"
-                ])}
-              </div>
-
-              <div class="summary-box">
-                <h4>Modelo de perguntas</h4>
-                ${paragraph("Formato escolhido: " + studyQuestions + ". Use perguntas claras, bíblicas e aplicáveis, sempre conectadas ao texto estudado.")}
-              </div>
-
-              ${base.extraNotes ? `<div class="summary-box"><h4>Observações adicionais</h4>${paragraph(base.extraNotes)}</div>` : ""}
+            <div class="block">
+              <h3>Introdução</h3>
+              ${paragraph("Este estudo aborda o tema \"" + base.theme + "\" com o objetivo de compreender o ensino bíblico, aplicar a verdade espiritual e fortalecer a vida cristã.")}
             </div>
-          </section>
 
+            <div class="block">
+              <h3>Contexto bíblico</h3>
+              ${paragraph("Analise o texto base " + base.biblicalBase + " considerando seu contexto histórico, espiritual e doutrinário. Observe quem fala, para quem fala, qual situação está sendo tratada e qual verdade Deus deseja comunicar ao seu povo.")}
+            </div>
+
+            <div class="lesson-block">
+              <h3>1. O ensino central do texto</h3>
+              ${paragraph("O primeiro passo é identificar a verdade principal da passagem. Nenhum estudo bíblico deve nascer de ideias soltas, mas da mensagem que o próprio texto comunica.")}
+            </div>
+
+            <div class="lesson-block">
+              <h3>2. O que o texto revela sobre Deus</h3>
+              ${paragraph("A Escritura revela o caráter, a vontade, a santidade, a graça e o governo de Deus. O tema estudado deve conduzir o aluno a conhecer mais profundamente o Senhor.")}
+            </div>
+
+            <div class="lesson-block">
+              <h3>3. O que o texto exige do cristão</h3>
+              ${paragraph("A Palavra de Deus chama o cristão a uma resposta. Essa resposta pode envolver fé, arrependimento, obediência, santidade, serviço, perdão, perseverança ou consagração.")}
+            </div>
+          `)}
           ${renderBackCover(base)}
         </div>
       `;
-    }
-
-    function generateMagazine(base) {
-      const revistaTipo = getValue("revistaTipo") || "professor";
-      const revistaClasse = getValue("revistaClasse") || "adultos";
-      const revistaMes = getValue("revistaMes") || "Agosto";
-      const revistaAno = getValue("revistaAno") || new Date().getFullYear();
-      const revistaObservacao = getValue("revistaObservacao");
-
-      const isTeacher = revistaTipo === "professor";
-      const label = isTeacher ? "Revista do professor" : "Revista do aluno";
-      const monthInfo = revistaMes + " de " + revistaAno + " • Revista mensal • 4 lições";
-
-      const lessonPlan = getMagazineLessonPlan(base, revistaObservacao);
-
-      return `
-        <div class="doc">
-          ${renderCover(base, isTeacher ? "Revista EBD Mensal — Professor" : "Revista EBD Mensal — Aluno", monthInfo)}
-          ${renderMagazineCredits(base, { label, revistaClasse, revistaMes, revistaAno, monthInfo })}
-          ${renderMagazinePresentation(base, { label, revistaClasse, revistaMes, revistaAno, monthInfo })}
-          ${renderMagazineSummary(base, { label, revistaClasse, revistaMes, revistaAno, monthInfo }, lessonPlan)}
-
-          ${
-            isTeacher
-              ? lessonPlan.map((lesson, index) => teacherLesson(base, { label, revistaClasse, revistaMes, revistaAno, monthInfo }, index + 1, lesson)).join("")
-              : lessonPlan.map((lesson, index) => studentLesson(base, { label, revistaClasse, revistaMes, revistaAno, monthInfo }, index + 1, lesson)).join("")
-          }
-
-          ${renderMagazineClosing(base, { label, revistaClasse, revistaMes, revistaAno, monthInfo })}
-          ${renderBackCover(base, monthInfo)}
-        </div>
-      `;
-    }
-
-    function getMagazineLessonPlan(base, observation) {
-      const lowerTheme = (base.theme + " " + base.title + " " + observation).toLowerCase();
-
-      if (
-        lowerTheme.includes("bibliologia") ||
-        lowerTheme.includes("bíblia") ||
-        lowerTheme.includes("biblio") ||
-        lowerTheme.includes("escritura")
-      ) {
-        return [
-          {
-            title: "O Que é a Bíblia?",
-            focus: "a natureza da Bíblia como Palavra de Deus, inspirada pelo Espírito Santo e regra de fé e prática",
-            text: "2 Timóteo 3.16,17",
-            goldenText: "Toda a Escritura é divinamente inspirada, e proveitosa para ensinar, para redarguir, para corrigir, para instruir em justiça.",
-            practicalTruth: "A Bíblia é a Palavra de Deus revelada aos homens e deve governar a fé, a conduta e a esperança do cristão.",
-            keyword: "Inspiração"
-          },
-          {
-            title: "Como a Bíblia Foi Formada?",
-            focus: "o processo de composição das Escrituras, seus autores humanos, inspiração divina, rolos, papiros e pergaminhos",
-            text: "2 Pedro 1.20,21",
-            goldenText: "Porque a profecia nunca foi produzida por vontade de homem algum, mas os homens santos de Deus falaram inspirados pelo Espírito Santo.",
-            practicalTruth: "Deus usou homens, épocas, idiomas e circunstâncias diferentes para comunicar uma única mensagem fiel e verdadeira.",
-            keyword: "Composição"
-          },
-          {
-            title: "Como a Bíblia Chegou Até Nós?",
-            focus: "a transmissão, preservação, cópias manuscritas, traduções, capítulos, versículos e o cuidado de Deus com sua Palavra",
-            text: "Isaías 40.8",
-            goldenText: "Seca-se a erva, e caem as flores, mas a palavra de nosso Deus subsiste eternamente.",
-            practicalTruth: "Deus preservou sua Palavra através da história para que hoje pudéssemos conhecê-la, estudá-la e obedecê-la.",
-            keyword: "Preservação"
-          },
-          {
-            title: "O Privilégio de Ter a Bíblia em Mãos",
-            focus: "a bênção de possuir a Bíblia impressa, acessível, organizada e disponível para leitura, estudo e obediência",
-            text: "Salmo 119.105",
-            goldenText: "Lâmpada para os meus pés é tua palavra e luz, para o meu caminho.",
-            practicalTruth: "Ter a Bíblia em mãos é uma bênção que exige gratidão, reverência, leitura constante e obediência fiel.",
-            keyword: "Obediência"
-          }
-        ];
-      }
-
-      return [
-        {
-          title: "Fundamentos do Tema",
-          focus: "os fundamentos bíblicos de " + base.theme,
-          text: base.biblicalBase,
-          goldenText: "Escolha um texto áureo relacionado ao tema principal da revista.",
-          practicalTruth: "A Palavra de Deus revela verdades que precisam ser compreendidas e praticadas.",
-          keyword: "Fundamento"
-        },
-        {
-          title: "O Ensino Bíblico Aplicado",
-          focus: "a aplicação prática de " + base.theme + " na vida cristã",
-          text: base.biblicalBase,
-          goldenText: "Escolha um texto áureo relacionado à aplicação da lição.",
-          practicalTruth: "A doutrina bíblica deve produzir transformação na vida diária.",
-          keyword: "Aplicação"
-        },
-        {
-          title: "Desafios e Correções Necessárias",
-          focus: "os perigos, enganos e desafios ligados ao tema " + base.theme,
-          text: base.biblicalBase,
-          goldenText: "Escolha um texto áureo relacionado à perseverança na verdade.",
-          practicalTruth: "O cristão precisa discernir os perigos e permanecer fiel à Palavra.",
-          keyword: "Discernimento"
-        },
-        {
-          title: "Permanecendo Firme na Palavra",
-          focus: "a perseverança e a prática fiel da Palavra de Deus",
-          text: base.biblicalBase,
-          goldenText: "Escolha um texto áureo relacionado à fidelidade.",
-          practicalTruth: "Quem permanece na Palavra permanece seguro na vontade de Deus.",
-          keyword: "Fidelidade"
-        }
-      ];
-    }
-
-    function renderMagazineCredits(base, info) {
-      return `
-        <section class="page">
-          <div class="page-inner">
-            <h1 class="page-title">Expediente</h1>
-            <p class="subtitle">${escapeHtml(base.title)}</p>
-
-            <div class="mini-grid">
-              <div class="mini-card">
-                <h3>Revista</h3>
-                ${paragraph(info.label)}
-                ${paragraph("Classe: " + info.revistaClasse)}
-                ${paragraph(info.monthInfo)}
-              </div>
-
-              <div class="mini-card">
-                <h3>Comentarista</h3>
-                ${paragraph(base.author)}
-                ${paragraph(base.ministry)}
-              </div>
-            </div>
-
-            <div class="block">
-              <h3>Informações editoriais</h3>
-              ${paragraph("Material preparado para uso em Escola Bíblica Dominical, com conteúdo bíblico, didático e pastoral. Esta revista é mensal e contém quatro lições completas, correspondentes aos quatro domingos do mês.")}
-              ${paragraph("O conteúdo deve ser revisado, ajustado e diagramado conforme a identidade visual do ministério antes da publicação final.")}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderMagazinePresentation(base, info) {
-      return `
-        <section class="page">
-          <div class="page-inner">
-            <h1 class="page-title">Prezado(a) Professor(a)</h1>
-            <p class="subtitle">${escapeHtml(base.title)}</p>
-
-            <div class="block">
-              <h3>Apresentação da revista</h3>
-              ${paragraph("Nesta revista mensal, estudaremos o tema \"" + base.theme + "\" com o propósito de fortalecer a fé, aprofundar o conhecimento bíblico e conduzir a classe adulta a uma compreensão mais madura da Palavra de Deus.")}
-              ${paragraph("A Escola Bíblica Dominical não é apenas um espaço de informação, mas de formação espiritual. Por isso, cada lição foi estruturada para unir doutrina, aplicação, participação da classe e edificação prática.")}
-              ${paragraph("Ore, prepare-se com antecedência, leia os textos indicados, adapte os exemplos à realidade da sua classe e conduza os alunos a amar e praticar a Palavra do Senhor.")}
-            </div>
-
-            <div class="teacher-help">
-              <h4>Orientação ao professor</h4>
-              ${paragraph("Ao ministrar cada lição, evite transformar a aula em sermão. Ensine com clareza, faça perguntas, estimule a participação, explique os termos difíceis e conclua cada tópico com uma aplicação prática.")}
-            </div>
-
-            <div class="summary-box">
-              <h4>Bom mês de estudos!</h4>
-              ${paragraph("Que o Senhor use esta revista para edificar vidas, fortalecer famílias, amadurecer discípulos e despertar maior amor pela Palavra de Deus.")}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderMagazineSummary(base, info, lessonPlan) {
-      return `
-        <section class="page">
-          <div class="page-inner">
-            <h1 class="page-title">Sumário</h1>
-            <p class="subtitle">${escapeHtml(base.title)} — ${escapeHtml(info.monthInfo)}</p>
-
-            <div class="block">
-              <h3>Tema mensal</h3>
-              ${paragraph(base.theme)}
-            </div>
-
-            <div class="block">
-              <h3>Lições do mês</h3>
-              ${orderedList(lessonPlan.map((lesson, index) => {
-                return "Lição " + (index + 1) + " — " + lesson.title + " | Texto base: " + lesson.text;
-              }))}
-            </div>
-
-            <div class="knowledge-box">
-              <h4>Estrutura pedagógica</h4>
-              ${paragraph("Cada lição contém texto áureo, verdade prática, leitura bíblica em classe, leitura diária, objetivos, plano de aula, introdução, três tópicos principais, três subtópicos por tópico, sinopse, auxílios, conclusão e revisão do conteúdo.")}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function dailyReadingForLesson(number, lesson) {
-      const sets = {
-        1: [
-          ["Segunda", "2Tm 3.16", "Toda Escritura é inspirada por Deus"],
-          ["Terça", "Sl 119.105", "A Palavra ilumina o caminho"],
-          ["Quarta", "Hb 4.12", "A Palavra é viva e eficaz"],
-          ["Quinta", "Jo 17.17", "A Palavra é a verdade"],
-          ["Sexta", "Rm 15.4", "As Escrituras produzem esperança"],
-          ["Sábado", "Mt 4.4", "Vivemos de toda Palavra de Deus"]
-        ],
-        2: [
-          ["Segunda", "2Pe 1.21", "Homens santos falaram inspirados"],
-          ["Terça", "Êx 24.4", "Moisés escreveu as palavras do Senhor"],
-          ["Quarta", "Jr 36.2", "A Palavra foi registrada em rolos"],
-          ["Quinta", "Lc 24.44", "Lei, Profetas e Salmos"],
-          ["Sexta", "Gl 4.4", "Deus age no tempo certo"],
-          ["Sábado", "1Co 2.13", "Palavras ensinadas pelo Espírito"]
-        ],
-        3: [
-          ["Segunda", "Is 40.8", "A Palavra permanece eternamente"],
-          ["Terça", "Mt 24.35", "As palavras de Cristo não passarão"],
-          ["Quarta", "Sl 12.6,7", "O Senhor preserva sua Palavra"],
-          ["Quinta", "Ne 8.8", "A Palavra foi lida e explicada"],
-          ["Sexta", "Cl 4.16", "Cartas circulavam entre igrejas"],
-          ["Sábado", "Ap 1.3", "Bem-aventurado quem lê"]
-        ],
-        4: [
-          ["Segunda", "Js 1.8", "Meditar dia e noite na Palavra"],
-          ["Terça", "Tg 1.22", "Sede cumpridores da Palavra"],
-          ["Quarta", "Sl 1.2", "Prazer na lei do Senhor"],
-          ["Quinta", "Dt 6.6,7", "Ensinar a Palavra aos filhos"],
-          ["Sexta", "At 17.11", "Examinar as Escrituras"],
-          ["Sábado", "Ap 22.7", "Guardar as palavras do livro"]
-        ]
-      };
-
-      return sets[number] || sets[1];
-    }
-
-    function renderDailyReading(number, lesson) {
-      const readings = dailyReadingForLesson(number, lesson);
-
-      return `
-        <div class="daily-reading">
-          <h3>Leitura diária</h3>
-          <div class="daily-grid">
-            ${readings.map((item) => `
-              <div class="daily-item">
-                <strong>${escapeHtml(item[0])} — ${escapeHtml(item[1])}</strong>
-                <span>${escapeHtml(item[2])}</span>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      `;
-    }
-
-    function lessonTopicContent(lessonNumber, topicNumber, lesson) {
-      const bibliology = [
-        {
-          topics: [
-            {
-              title: "A Bíblia é a Palavra de Deus",
-              subs: [
-                ["A origem divina da Escritura", "A Bíblia não é apenas uma coleção de escritos religiosos. Ela é a revelação de Deus registrada para que o ser humano conheça a vontade do Senhor. Em 2 Timóteo 3.16, Paulo afirma que toda Escritura é divinamente inspirada, mostrando que sua fonte última está em Deus."],
-                ["A inspiração pelo Espírito Santo", "Deus usou homens reais, com personalidade, idioma, cultura e contexto histórico, mas preservou a mensagem pela ação do Espírito Santo. A inspiração não anulou os autores humanos, mas garantiu que a Palavra comunicada fosse fiel ao propósito divino."],
-                ["Regra de fé e prática", "A Bíblia orienta aquilo que cremos e a maneira como vivemos. Ela corrige, ensina, consola, confronta e conduz o cristão à maturidade espiritual."]
-              ],
-              syn: "A Bíblia é Palavra de Deus porque sua origem, autoridade e mensagem procedem do Senhor."
-            },
-            {
-              title: "A Bíblia revela Deus ao homem",
-              subs: [
-                ["Deus se fez conhecido", "Sem revelação, o ser humano caminharia em trevas espirituais. Pela Escritura, Deus revela seu caráter, sua santidade, sua justiça, seu amor e seu plano de salvação."],
-                ["Cristo no centro da revelação", "Toda a Escritura aponta para o plano redentor de Deus em Cristo. O Antigo Testamento prepara, anuncia e simboliza; o Novo Testamento revela o cumprimento em Jesus."],
-                ["A Palavra ilumina o caminho", "O Salmo 119.105 apresenta a Palavra como lâmpada e luz. Ela não apenas informa, mas dirige a caminhada do povo de Deus."]
-              ],
-              syn: "A revelação bíblica conduz o homem ao conhecimento de Deus e à obediência."
-            },
-            {
-              title: "A Bíblia transforma a vida",
-              subs: [
-                ["Ela confronta o pecado", "A Palavra revela a condição humana diante de Deus, chama ao arrependimento e denuncia tudo aquilo que se opõe à santidade divina."],
-                ["Ela fortalece a fé", "Romanos 15.4 ensina que as Escrituras produzem paciência, consolação e esperança. O cristão amadurece quando se alimenta da Palavra."],
-                ["Ela prepara para toda boa obra", "Segundo 2 Timóteo 3.17, o objetivo da Escritura é tornar o homem de Deus perfeito e preparado para toda boa obra."]
-              ],
-              syn: "A Bíblia não foi dada apenas para ser conhecida, mas para ser obedecida e vivida."
-            }
-          ]
-        },
-        {
-          topics: [
-            {
-              title: "Deus usou autores humanos",
-              subs: [
-                ["Homens chamados por Deus", "A Bíblia foi escrita por profetas, reis, sacerdotes, pescadores, médicos, apóstolos e servos de Deus em diferentes períodos da história."],
-                ["Unidade em meio à diversidade", "Mesmo escrita por muitos autores, em lugares e épocas distintas, a Bíblia possui uma mensagem unificada: Deus redime o homem e governa a história."],
-                ["A ação soberana do Espírito", "2 Pedro 1.21 afirma que homens santos falaram inspirados pelo Espírito Santo. Isso revela que a Escritura não nasceu da vontade humana, mas da iniciativa divina."]
-              ],
-              syn: "Deus usou instrumentos humanos, mas a mensagem preserva autoridade divina."
-            },
-            {
-              title: "Os primeiros materiais da Escritura",
-              subs: [
-                ["Rolos antigos", "Antes do formato de livro impresso, os textos eram preservados em rolos. Esses rolos eram lidos nas sinagogas e guardados com grande reverência."],
-                ["Papiro e pergaminho", "O papiro era produzido a partir de uma planta comum no Egito. O pergaminho era feito de pele preparada de animais e se tornou mais resistente para cópias importantes."],
-                ["Manuscritos preservados", "Durante séculos, copistas trabalharam cuidadosamente para transmitir os textos. Esse processo mostra zelo, reverência e providência divina."]
-              ],
-              syn: "A forma física mudou ao longo do tempo, mas Deus preservou a mensagem da sua Palavra."
-            },
-            {
-              title: "A formação do conjunto bíblico",
-              subs: [
-                ["Antigo e Novo Testamento", "A Bíblia possui duas grandes divisões: o Antigo Testamento, relacionado à antiga aliança, e o Novo Testamento, centrado na nova aliança em Cristo."],
-                ["Livros reconhecidos pelo povo de Deus", "Os livros bíblicos foram reconhecidos por sua autoridade espiritual, coerência doutrinária e uso entre o povo de Deus."],
-                ["Uma biblioteca sagrada", "A palavra Bíblia lembra a ideia de livros. Trata-se de uma coleção sagrada com história, poesia, profecia, evangelhos, cartas e apocalipse."]
-              ],
-              syn: "A Bíblia é uma coleção de livros inspirados, preservados e reconhecidos pelo povo de Deus."
-            }
-          ]
-        },
-        {
-          topics: [
-            {
-              title: "A transmissão das Escrituras",
-              subs: [
-                ["Cópias feitas à mão", "Antes da imprensa, as Escrituras eram copiadas manualmente. Esse trabalho exigia atenção, reverência e disciplina."],
-                ["Comunidades preservadoras", "Judeus, escribas, cristãos e comunidades de fé participaram, ao longo da história, da preservação e circulação dos textos sagrados."],
-                ["A providência de Deus", "A preservação bíblica não deve ser vista apenas como fato histórico, mas como evidência da fidelidade de Deus em guardar sua Palavra."]
-              ],
-              syn: "Deus preservou sua Palavra por meio de processos históricos e da sua providência soberana."
-            },
-            {
-              title: "Traduções e acesso ao povo",
-              subs: [
-                ["Da língua original aos povos", "O Antigo Testamento foi escrito principalmente em hebraico, com partes em aramaico. O Novo Testamento foi escrito em grego. As traduções permitiram que mais povos conhecessem a Palavra."],
-                ["A importância da tradução", "Traduzir a Bíblia é aproximar a mensagem de Deus da língua do povo. Isso amplia o ensino, a evangelização e a formação cristã."],
-                ["O avanço da impressão", "Com a imprensa, a Bíblia passou a ser multiplicada em escala muito maior. O acesso à Escritura se tornou uma bênção para milhões de pessoas."]
-              ],
-              syn: "As traduções e a impressão ajudaram a espalhar a Palavra de Deus entre as nações."
-            },
-            {
-              title: "Capítulos e versículos",
-              subs: [
-                ["Nem sempre foi assim", "A Bíblia nem sempre esteve dividida em capítulos e versículos como conhecemos hoje. Originalmente, os textos circulavam em rolos e manuscritos sem a organização moderna."],
-                ["A divisão em capítulos", "A divisão em capítulos é tradicionalmente associada a Stephen Langton, no século XIII. Essa organização facilitou a localização e o estudo dos textos bíblicos."],
-                ["A divisão em versículos", "A divisão em versículos no Novo Testamento foi popularizada por Robert Estienne, também conhecido como Stephanus, no século XVI. Hoje, capítulos e versículos ajudam na leitura, ensino e memorização."]
-              ],
-              syn: "Capítulos e versículos são recursos posteriores que facilitam o estudo, mas a autoridade está no texto inspirado."
-            }
-          ]
-        },
-        {
-          topics: [
-            {
-              title: "O privilégio de possuir a Bíblia",
-              subs: [
-                ["Uma bênção nem sempre acessível", "Durante muitos períodos da história, nem todos tinham acesso direto às Escrituras. Hoje, possuir uma Bíblia é uma graça que deve gerar gratidão."],
-                ["A Bíblia em nossa língua", "Ter a Palavra traduzida em língua compreensível é um presente espiritual. Isso permite leitura, ensino, evangelização e discipulado."],
-                ["Responsabilidade diante do privilégio", "Quem possui a Bíblia deve lê-la, estudá-la e obedecê-la. O privilégio aumenta a responsabilidade espiritual."]
-              ],
-              syn: "Ter a Bíblia em mãos é uma bênção que deve produzir gratidão e compromisso."
-            },
-            {
-              title: "A Bíblia deve ser lida e estudada",
-              subs: [
-                ["Leitura constante", "Josué 1.8 ensina a meditar na Palavra dia e noite. A leitura bíblica precisa fazer parte da rotina espiritual do cristão."],
-                ["Estudo com reverência", "Estudar a Bíblia exige oração, atenção ao contexto e disposição para obedecer. Não estudamos apenas para saber mais, mas para viver melhor diante de Deus."],
-                ["Ensino na igreja e no lar", "Deuteronômio 6.6,7 mostra que a Palavra deve ser ensinada às próximas gerações. A Bíblia precisa ocupar lugar central na família e na igreja."]
-              ],
-              syn: "A Palavra deve ser lida, estudada, ensinada e guardada no coração."
-            },
-            {
-              title: "A Bíblia deve ser obedecida",
-              subs: [
-                ["Praticantes da Palavra", "Tiago 1.22 adverte que não basta ouvir; é preciso praticar. A verdadeira espiritualidade se manifesta em obediência."],
-                ["Luz para as decisões", "A Palavra orienta escolhas, corrige caminhos e fortalece o cristão diante das pressões do mundo."],
-                ["Viver para a glória de Deus", "A finalidade do estudo bíblico é formar um povo santo, obediente e preparado para servir ao Senhor."]
-              ],
-              syn: "A maior honra que damos à Bíblia é obedecer à voz de Deus revelada nela."
-            }
-          ]
-        }
-      ];
-
-      if (lesson.title.toLowerCase().includes("bíblia") || lesson.focus.toLowerCase().includes("bíblia") || lesson.focus.toLowerCase().includes("escritura")) {
-        return bibliology[lessonNumber - 1].topics;
-      }
-
-      return [
-        {
-          title: "A base bíblica da lição",
-          subs: [
-            ["O ensino central", "Desenvolva o ensino central da lição com fidelidade ao texto bíblico, explicando o sentido da passagem e sua importância para a vida cristã."],
-            ["A verdade doutrinária", "Mostre como o tema se conecta à doutrina bíblica e como a igreja deve guardar essa verdade."],
-            ["A aplicação espiritual", "Conduza a classe a perceber que a Palavra precisa ser praticada no cotidiano."]
-          ],
-          syn: "A lição apresenta uma verdade bíblica que deve ser compreendida e aplicada."
-        },
-        {
-          title: "O desenvolvimento do tema",
-          subs: [
-            ["Contexto", "Explique o contexto bíblico e espiritual relacionado ao tema."],
-            ["Exposição", "Desenvolva a verdade com clareza e profundidade."],
-            ["Aplicação", "Mostre como o ensino alcança a família, a igreja e a vida pessoal."]
-          ],
-          syn: "O desenvolvimento do tema conduz o aluno da compreensão à prática."
-        },
-        {
-          title: "A resposta cristã",
-          subs: [
-            ["Crer", "A Palavra chama o aluno a crer na verdade revelada."],
-            ["Obedecer", "A fé bíblica se manifesta em obediência."],
-            ["Perseverar", "A vida cristã exige firmeza e constância diante de Deus."]
-          ],
-          syn: "A resposta correta à Palavra é fé, obediência e perseverança."
-        }
-      ];
-    }
-
-    function teacherLesson(base, info, number, lesson) {
-      const topics = lessonTopicContent(number, number, lesson);
-
-      return `
-        <section class="page">
-          <div class="page-inner">
-            <div class="lesson-hero">
-              <div class="number">Lição ${number} • ${escapeHtml(info.monthInfo)}</div>
-              <h1>${escapeHtml(lesson.title)}</h1>
-              <div class="meta">Classe: ${escapeHtml(info.revistaClasse)} • Texto base: ${escapeHtml(lesson.text)}</div>
-            </div>
-
-            <div class="memory-verse">
-              <h3>Texto áureo</h3>
-              ${paragraph(lesson.goldenText + " (" + lesson.text + ")")}
-            </div>
-
-            <div class="block">
-              <h3>Verdade prática</h3>
-              ${paragraph(lesson.practicalTruth)}
-            </div>
-
-            ${renderDailyReading(number, lesson)}
-
-            <div class="block">
-              <h3>Leitura bíblica em classe</h3>
-              ${paragraph("Texto base sugerido: " + lesson.text + ". Leia a passagem com a classe e explique sua relação com o tema da lição.")}
-            </div>
-
-            <div class="mini-grid">
-              <div class="mini-card">
-                <h3>Objetivos</h3>
-                ${unorderedList([
-                  "Compreender " + lesson.focus + ".",
-                  "Reconhecer a importância desse ensino para a fé cristã.",
-                  "Aplicar a verdade estudada à vida pessoal, familiar e congregacional."
-                ])}
-              </div>
-
-              <div class="mini-card">
-                <h3>Plano de aula</h3>
-                ${unorderedList([
-                  "Iniciar com oração e leitura bíblica.",
-                  "Apresentar o tema e a palavra-chave: " + lesson.keyword + ".",
-                  "Desenvolver os três tópicos com participação da classe.",
-                  "Concluir com revisão, perguntas e aplicação prática."
-                ])}
-              </div>
-            </div>
-
-            <div class="block">
-              <h3>Introdução</h3>
-              ${paragraph("A presente lição trata de " + lesson.focus + ". Este assunto é essencial para que a classe compreenda o valor da Palavra de Deus e sua relevância para a vida cristã.")}
-              ${paragraph("Ao estudar esta lição, o professor deve conduzir os alunos não apenas ao conhecimento, mas também à reverência, gratidão e prática da verdade bíblica.")}
-            </div>
-
-            ${topics.map((topic, topicIndex) => `
-              <div class="lesson-topic">
-                <h3>${roman(topicIndex + 1)}. ${escapeHtml(topic.title)}</h3>
-
-                ${topic.subs.map((sub, subIndex) => `
-                  <div class="subtopic">
-                    <h4>${subIndex + 1}. ${escapeHtml(sub[0])}</h4>
-                    ${paragraph(sub[1])}
-                  </div>
-                `).join("")}
-
-                <div class="synopsis">
-                  <h4>Sinopse ${roman(topicIndex + 1)}</h4>
-                  ${paragraph(topic.syn)}
-                </div>
-              </div>
-            `).join("")}
-
-            <div class="knowledge-box">
-              <h4>Ampliando o conhecimento</h4>
-              ${paragraph("Explique aos alunos que o estudo bíblico sério envolve contexto, reverência e aplicação. No caso da Bibliologia, é importante mostrar que Deus não apenas inspirou sua Palavra, mas também preservou sua mensagem através dos séculos.")}
-            </div>
-
-            <div class="teacher-help">
-              <h4>Auxílio ao professor</h4>
-              ${paragraph("Antes da aula, leia os textos bíblicos indicados, prepare exemplos simples e verifique se a classe compreendeu os termos principais. Use perguntas durante a exposição para manter a participação dos alunos.")}
-            </div>
-
-            <div class="personal-application">
-              <h4>Aplicação pessoal</h4>
-              ${paragraph("A lição deve levar o aluno a reconhecer a importância da Palavra de Deus e a assumir uma postura de maior amor, zelo, leitura, estudo e obediência às Escrituras.")}
-            </div>
-
-            <div class="block">
-              <h3>Conclusão</h3>
-              ${paragraph("Concluímos que " + lesson.focus + " é um ensino indispensável para a formação cristã. O professor deve encerrar reforçando que toda verdade bíblica precisa gerar transformação prática na vida do aluno.")}
-            </div>
-
-            <div class="summary-box">
-              <h4>Revisando o conteúdo</h4>
-              ${renderReviewQuestions(true, lesson)}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function studentLesson(base, info, number, lesson) {
-      const topics = lessonTopicContent(number, number, lesson);
-
-      return `
-        <section class="page">
-          <div class="page-inner">
-            <div class="lesson-hero">
-              <div class="number">Lição ${number} • ${escapeHtml(info.monthInfo)}</div>
-              <h1>${escapeHtml(lesson.title)}</h1>
-              <div class="meta">Classe: ${escapeHtml(info.revistaClasse)} • Texto base: ${escapeHtml(lesson.text)}</div>
-            </div>
-
-            <div class="memory-verse">
-              <h3>Para memorizar</h3>
-              ${paragraph(lesson.goldenText + " (" + lesson.text + ")")}
-            </div>
-
-            <div class="block">
-              <h3>Verdade prática</h3>
-              ${paragraph(lesson.practicalTruth)}
-            </div>
-
-            ${renderDailyReading(number, lesson)}
-
-            <div class="block">
-              <h3>Leitura bíblica em classe</h3>
-              ${paragraph("Texto base sugerido: " + lesson.text + ". Leia com atenção e acompanhe a explicação do professor.")}
-            </div>
-
-            <div class="block">
-              <h3>Introdução</h3>
-              ${paragraph("Nesta lição, vamos estudar " + lesson.focus + ". O objetivo é compreender a Palavra de Deus e aprender como essa verdade se aplica à nossa vida diária.")}
-            </div>
-
-            ${topics.map((topic, topicIndex) => `
-              <div class="lesson-topic">
-                <h3>${roman(topicIndex + 1)}. ${escapeHtml(topic.title)}</h3>
-
-                ${topic.subs.map((sub, subIndex) => `
-                  <div class="subtopic">
-                    <h4>${subIndex + 1}. ${escapeHtml(sub[0])}</h4>
-                    ${paragraph(sub[1])}
-                    <div class="student-space">Minhas anotações:</div>
-                  </div>
-                `).join("")}
-
-                <div class="synopsis">
-                  <h4>Sinopse ${roman(topicIndex + 1)}</h4>
-                  ${paragraph(topic.syn)}
-                </div>
-              </div>
-            `).join("")}
-
-            <div class="personal-application">
-              <h4>Aplicação pessoal</h4>
-              ${unorderedList([
-                "O que Deus falou comigo nesta lição?",
-                "Que atitude preciso mudar?",
-                "Como posso obedecer melhor à Palavra?",
-                "Com quem posso compartilhar essa verdade?"
-              ])}
-            </div>
-
-            <div class="block">
-              <h3>Conclusão</h3>
-              ${paragraph("A verdadeira aprendizagem acontece quando aquilo que ouvimos se transforma em vida. Que esta lição desperte em nós amor, reverência e obediência à Palavra de Deus.")}
-            </div>
-
-            <div class="summary-box">
-              <h4>Revisando o conteúdo</h4>
-              ${renderReviewQuestions(false, lesson)}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function renderReviewQuestions(withAnswers, lesson) {
-      const questions = [
-        ["Qual é o tema principal desta lição?", lesson.title],
-        ["Qual é a verdade prática estudada?", lesson.practicalTruth],
-        ["Por que este assunto é importante para a vida cristã?", "Porque ajuda o cristão a compreender melhor a Palavra de Deus e a viver de modo fiel diante do Senhor."],
-        ["Qual atitude prática esta lição deve produzir?", "Deve produzir fé, reverência, obediência e compromisso com a Palavra de Deus."],
-        ["Como podemos aplicar esta lição durante a semana?", "Lendo a Bíblia, meditando no ensino aprendido e praticando a verdade estudada em nossas decisões diárias."]
-      ];
-
-      return questions.map((item, index) => {
-        return `
-          <div class="question-answer">
-            <strong>${index + 1}. ${escapeHtml(item[0])}</strong>
-            ${
-              withAnswers
-                ? `<br><strong>Resposta:</strong> ${escapeHtml(item[1])}`
-                : `<div class="student-space">Resposta:</div>`
-            }
-          </div>
-        `;
-      }).join("");
-    }
-
-    function renderMagazineClosing(base, info) {
-      return `
-        <section class="page">
-          <div class="page-inner">
-            <h1 class="page-title">Fechamento da Revista</h1>
-            <p class="subtitle">${escapeHtml(base.title)} — ${escapeHtml(info.monthInfo)}</p>
-
-            <div class="block">
-              <h3>Conclusão geral do mês</h3>
-              ${paragraph("Ao longo destas quatro lições, estudamos o tema \"" + base.theme + "\" com o propósito de fortalecer a fé, ampliar o conhecimento bíblico e conduzir a classe à prática da Palavra de Deus.")}
-              ${paragraph("O aprendizado bíblico precisa produzir frutos visíveis: mais reverência, mais obediência, mais compromisso e mais amor pelas Escrituras.")}
-            </div>
-
-            <div class="teacher-help">
-              <h4>Palavra final ao professor</h4>
-              ${paragraph("Professor, seu ministério é precioso. Ensinar a Palavra é cooperar com a formação espiritual da igreja. Prepare-se com oração, estude com dedicação e ensine com amor.")}
-            </div>
-
-            <div class="summary-box">
-              <h4>Revisão geral</h4>
-              ${orderedList([
-                "Lição 1: aprendemos os fundamentos do tema.",
-                "Lição 2: compreendemos o desenvolvimento bíblico e histórico.",
-                "Lição 3: refletimos sobre os desafios e a preservação da verdade.",
-                "Lição 4: aplicamos o ensino à vida cristã diária."
-              ])}
-            </div>
-          </div>
-        </section>
-      `;
-    }
-
-    function roman(number) {
-      const values = ["I", "II", "III", "IV", "V"];
-      return values[number - 1] || String(number);
     }
 
     function generateLongMaterial(base) {
@@ -2977,49 +3099,29 @@
       return `
         <div class="doc">
           ${renderCover(base, typeLabel)}
+          ${renderPage(`
+            <h1 class="page-title">${escapeHtml(base.title)}</h1>
+            <p class="subtitle">${escapeHtml(base.subtitle)}</p>
 
-          <section class="page">
-            <div class="page-inner">
-              <h1 class="page-title">${escapeHtml(base.title)}</h1>
-              <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-
-              <div class="tag-list">
-                <span class="tag">${escapeHtml(typeLabel)}</span>
-                <span class="tag">${escapeHtml(quantity)} ${escapeHtml(quantityType)}</span>
-                <span class="tag">Público: ${escapeHtml(base.targetAudience)}</span>
-              </div>
-
-              <div class="block">
-                <h3>Apresentação</h3>
-                ${paragraph("Este material foi organizado para desenvolver o tema \"" + base.theme + "\" com clareza bíblica, profundidade espiritual e aplicação prática.")}
-              </div>
-
-              <div class="block">
-                <h3>Objetivo geral</h3>
-                ${paragraph("Ensinar, edificar e conduzir o leitor ou aluno a compreender a Palavra de Deus e aplicá-la de maneira prática na vida cristã.")}
-              </div>
-
-              ${chapters}
-
-              <div class="block">
-                <h3>Conclusão geral</h3>
-                ${paragraph("Finalize retomando o tema principal, reforçando os aprendizados e incentivando o leitor a viver a verdade bíblica estudada.")}
-              </div>
-
-              ${base.extraNotes ? `<div class="summary-box"><h4>Observações adicionais</h4>${paragraph(base.extraNotes)}</div>` : ""}
+            <div class="block">
+              <h3>Apresentação</h3>
+              ${paragraph("Este material foi organizado para desenvolver o tema \"" + base.theme + "\" com clareza bíblica, profundidade espiritual e aplicação prática.")}
             </div>
-          </section>
 
+            ${chapters}
+
+            <div class="block">
+              <h3>Conclusão geral</h3>
+              ${paragraph("Finalize retomando o tema principal, reforçando os aprendizados e incentivando o leitor a viver a verdade bíblica estudada.")}
+            </div>
+          `)}
           ${renderBackCover(base)}
         </div>
       `;
     }
 
     function capitalize(text) {
-      if (!text) {
-        return "";
-      }
-
+      if (!text) return "";
       return text.charAt(0).toUpperCase() + text.slice(1);
     }
 
@@ -3064,57 +3166,9 @@ Regras:
       setStatus("Prompt automático criado e colocado no campo Tema principal ou prompt.", "ok");
     }
 
-    function generateContent() {
-      const base = buildBase();
+    async function generateMaterial() {
+      if (isGenerating) return;
 
-      if (isReservedType(base.type) && !isAdminUnlocked()) {
-        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.", "error");
-        return "";
-      }
-
-      if (base.type === "sermao") {
-        return generateSermon(base);
-      }
-
-      if (base.type === "devocional") {
-        return generateDevotional(base);
-      }
-
-      if (base.type === "estudo") {
-        return generateStudy(base);
-      }
-
-      if (base.type === "revista") {
-        return generateMagazine(base);
-      }
-
-      if (["ebook", "livro", "curso"].includes(base.type)) {
-        return generateLongMaterial(base);
-      }
-
-      return generateStudy(base);
-    }
-
-    function extractPlainTextFromHtml(html) {
-      const temp = document.createElement("div");
-      temp.innerHTML = html;
-      return temp.innerText.trim();
-    }
-
-    function renderGenerated(html) {
-      currentHtml = html;
-      currentText = extractPlainTextFromHtml(html);
-
-      result.innerHTML = html;
-      printArea.innerHTML = html;
-
-      result.removeAttribute("contenteditable");
-      editWarning.style.display = "none";
-      btnFinishEdit.disabled = true;
-      btnEdit.disabled = false;
-    }
-
-    function generateMaterial() {
       const title = getValue("title");
       const theme = getValue("theme");
 
@@ -3123,29 +3177,42 @@ Regras:
         return;
       }
 
-      setStatus("Gerando material...", "");
-      simulateProgress();
+      const base = buildBase();
 
-      const html = generateContent();
-
-      if (!html) {
+      if (isReservedType(base.type) && !isAdminUnlocked()) {
+        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.", "error");
         return;
       }
 
-      setTimeout(() => {
-        renderGenerated(html);
+      isGenerating = true;
+      btnGenerate.disabled = true;
+      setStatus("Iniciando geração do material...", "");
+      updateSteps(base.type);
 
-        if (currentType === "revista") {
-          setStatus("Revista EBD mensal gerada com capa, apresentação, sumário, 4 lições completas, fechamento e contracapa.", "ok");
+      try {
+        if (base.type === "revista") {
+          await generateMagazineAsync(base);
         } else {
-          setStatus("Material gerado com sucesso.", "ok");
+          setStep(0, "Gerando material...");
+          let html = "";
+
+          if (base.type === "sermao") html = generateSermon(base);
+          if (base.type === "devocional") html = generateDevotional(base);
+          if (base.type === "estudo") html = generateStudy(base);
+          if (["ebook", "livro", "curso"].includes(base.type)) html = generateLongMaterial(base);
+
+          renderGenerated(html);
+          finishSteps("Material gerado com sucesso.");
         }
 
-        result.scrollIntoView({
-          behavior: "smooth",
-          block: "start"
-        });
-      }, currentType === "revista" ? 4200 : 500);
+        result.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (error) {
+        console.error(error);
+        setStatus("Erro ao gerar material. Verifique a API ou tente novamente.", "error");
+      } finally {
+        isGenerating = false;
+        btnGenerate.disabled = false;
+      }
     }
 
     function salvarPDF() {
@@ -3181,9 +3248,7 @@ Regras:
 
       fields.forEach((id) => {
         const el = document.getElementById(id);
-        if (el) {
-          el.value = "";
-        }
+        if (el) el.value = "";
       });
 
       document.getElementById("depthLevel").value = "profundo";
@@ -3314,7 +3379,7 @@ Regras:
         document.getElementById("revistaMes").value = "Agosto";
         document.getElementById("revistaAno").value = new Date().getFullYear();
         document.getElementById("revistaObservacao").value = "Lição 1: O que é a Bíblia? Lição 2: Como a Bíblia foi formada? Lição 3: Como a Bíblia chegou até nós? Lição 4: O privilégio de ter a Bíblia em mãos.";
-        document.getElementById("extraNotes").value = "Criar revista EBD mensal do professor, classe adulta, com quatro lições completas. Cada lição deve ter três tópicos e cada tópico três subtópicos, sinopse, auxílio ao professor, ampliando o conhecimento, conclusão e revisando o conteúdo com respostas.";
+        document.getElementById("extraNotes").value = "Criar revista EBD mensal do professor, classe adulta, com quatro lições completas. Cada lição deve ter três tópicos e cada tópico três subtópicos, sinopse, auxílio ao professor, ampliando o conhecimento, conclusão e revisando o conteúdo com respostas. Conteúdo robusto e teológico.";
       }
 
       if (type === "ebook") {
