@@ -27,6 +27,9 @@
       --red:#8f2b2b;
       --red-strong:#bd2424;
       --red-soft:#fff0f0;
+      --wine:#7d1025;
+      --wine-2:#b31636;
+      --wine-3:#e63b5a;
       --shadow:0 10px 25px rgba(60,35,20,.08);
       --radius:18px;
     }
@@ -534,17 +537,22 @@
     }
 
     .daily-reading{
-      background:linear-gradient(135deg,#061a48,#0b4fa8 55%,#1075c7);
+      background:
+        radial-gradient(circle at 20% 10%,rgba(255,255,255,.22),transparent 28%),
+        linear-gradient(135deg,#5c0618,#9b102f 48%,#d82048 100%);
       color:#fff;
       border-radius:18px;
       padding:18px;
-      margin-bottom:16px;
-      box-shadow:0 12px 24px rgba(7,49,114,.16);
+      margin:0 0 16px;
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 14px 28px rgba(125,16,37,.24);
     }
 
     .daily-reading h3{
       margin:0 0 12px;
       color:#fff;
+      font-size:24px;
+      letter-spacing:.2px;
     }
 
     .daily-grid{
@@ -554,18 +562,23 @@
     }
 
     .daily-item{
-      background:rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.24);
       border-radius:14px;
       padding:10px 12px;
       font-size:14px;
       line-height:1.5;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
     }
 
     .daily-item strong{
       display:block;
       margin-bottom:4px;
-      color:#ffefc5;
+      color:#ffe9a8;
+    }
+
+    .daily-item span{
+      color:#fff6f8;
     }
 
     .lesson-hero{
@@ -636,6 +649,30 @@
       margin:0 0 10px;
       color:#603600;
       font-size:20px;
+    }
+
+    .bible-ref{
+      display:inline-block;
+      margin:4px 0 10px;
+      padding:7px 11px;
+      border-radius:999px;
+      background:#fff0c7;
+      border:1px solid #d8a734;
+      color:#744c00;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.1px;
+    }
+
+    .bible-note{
+      border-left:4px solid #0f63c9;
+      background:#f1f7ff;
+      border-radius:0 12px 12px 0;
+      padding:10px 12px;
+      margin:8px 0 12px;
+      color:#263d5a;
+      line-height:1.65;
+      font-size:15px;
     }
 
     .synopsis{
@@ -1613,6 +1650,13 @@
 
     function orderedList(items){
       return `<ol class="list">${(items || []).map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ol>`;
+    }
+
+    function bibleRef(ref,explicacao){
+      return `
+        <span class="bible-ref">${escapeHtml(ref)}</span>
+        <div class="bible-note">${escapeHtml(explicacao)}</div>
+      `;
     }
 
     function capitalize(text){
@@ -2676,7 +2720,141 @@ Use HTML com:
 <div class="bibliography-box">
       `.trim();
     }
-        function promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto){
+
+    function promptLicaoProfessor(base,info,licoes,numero,dados){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO PROFESSOR
+
+DADOS DA LIÇÃO
+Número: ${numero}
+Título: ${dados.titulo}
+Foco: ${dados.foco}
+Texto áureo obrigatório: ${dados.textoAureo}
+Verdade prática obrigatória: ${dados.verdadePratica}
+Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
+Palavra-chave obrigatória: ${dados.palavraChave}
+
+Crie uma LIÇÃO COMPLETA, ROBUSTA, PROFUNDA, TEOLÓGICA, BÍBLICA E DIDÁTICA.
+
+ESTRUTURA OBRIGATÓRIA:
+1. Cabeçalho visual da lição.
+2. Leitura Diária logo depois do cabeçalho visual.
+3. Texto Áureo com exatamente o texto áureo obrigatório.
+4. Verdade Prática com exatamente a verdade prática obrigatória.
+5. Leitura Bíblica em Classe com a referência obrigatória e o texto bíblico da passagem, quando possível.
+6. Objetivos da lição.
+7. Plano de aula.
+8. Introdução bem desenvolvida.
+9. Três tópicos principais.
+10. Cada tópico deve ter três subtópicos.
+11. Cada subtópico deve ter conteúdo real, com explicação bíblica, doutrinária, histórica quando necessário e aplicação cristã.
+12. Cada subtópico deve conter pelo menos uma referência bíblica relacionada ao assunto.
+13. A referência bíblica deve ser explicada no próprio subtópico.
+14. Não apenas citar versículos; explicar o sentido, o contexto básico e a aplicação para a lição.
+15. Ao final de cada tópico, fazer uma Sinopse.
+16. Aplicação pessoal.
+17. Conclusão.
+18. Revisando o conteúdo com 5 perguntas e respostas.
+19. Depois do Revisando o conteúdo, incluir:
+- Ampliando o conhecimento;
+- Auxílio teológico;
+- Auxílio ao professor.
+
+REGRAS BÍBLICAS IMPORTANTES:
+- A EBD é Escola Bíblica Dominical, então a lição precisa ter Bíblia.
+- Não deixar subtópicos sem referência bíblica.
+- Em cada tópico principal, usar várias referências bíblicas explicadas.
+- Usar textos bíblicos de forma natural e ligada ao argumento.
+- Evitar conteúdo apenas argumentativo sem base bíblica.
+- Não transformar a lição em estudo histórico seco.
+- Explicar a Bíblia com reverência, clareza e aplicação.
+
+IMPORTANTE:
+- Não copiar o prompt do usuário.
+- Não escrever “desenvolva esta parte”.
+- Não entregar conteúdo fraco.
+- Não inventar texto áureo genérico.
+- Não juntar todas as referências como texto áureo.
+- Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
+
+Use HTML com:
+<div class="lesson-hero">
+<div class="daily-reading">
+<div class="memory-verse">
+<div class="scripture-box">
+<div class="mini-grid">
+<div class="lesson-topic">
+<div class="subtopic">
+<span class="bible-ref">
+<div class="bible-note">
+<div class="synopsis">
+<div class="personal-application">
+<div class="summary-box">
+<div class="knowledge-box">
+<div class="teacher-help">
+      `.trim();
+    }
+        function promptLicaoAluno(base,info,licoes,numero,dados){
+      return `
+${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO ALUNO
+
+DADOS DA LIÇÃO
+Número: ${numero}
+Título: ${dados.titulo}
+Foco: ${dados.foco}
+Texto áureo obrigatório: ${dados.textoAureo}
+Verdade prática obrigatória: ${dados.verdadePratica}
+Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
+Palavra-chave obrigatória: ${dados.palavraChave}
+
+Crie uma LIÇÃO COMPLETA para revista do aluno.
+Ela deve ser mais simples que a revista do professor, mas ainda sólida, bíblica e útil.
+
+ESTRUTURA OBRIGATÓRIA:
+1. Cabeçalho visual.
+2. Leitura Diária logo depois do cabeçalho visual.
+3. Texto para memorizar.
+4. Verdade prática.
+5. Leitura bíblica em classe com referência e texto bíblico, quando possível.
+6. Objetivos.
+7. Introdução.
+8. Três tópicos.
+9. Três subtópicos por tópico.
+10. Cada subtópico deve ter pelo menos uma referência bíblica ligada ao assunto.
+11. Sinopse em cada tópico.
+12. Aplicação pessoal.
+13. Conclusão.
+14. Revisando o conteúdo com 5 perguntas sem respostas, com espaço em branco.
+
+IMPORTANTE:
+- Não copiar o prompt do usuário.
+- Não escrever “desenvolva esta parte”.
+- Não inventar texto áureo genérico.
+- Não juntar todas as referências como texto áureo.
+- Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
+- Nas perguntas finais, deixar espaço de resposta com <div class="student-space">Resposta:</div>.
+
+Use HTML com:
+<div class="lesson-hero">
+<div class="daily-reading">
+<div class="memory-verse">
+<div class="scripture-box">
+<div class="mini-grid">
+<div class="lesson-topic">
+<div class="subtopic">
+<span class="bible-ref">
+<div class="bible-note">
+<div class="synopsis">
+<div class="personal-application">
+<div class="summary-box">
+      `.trim();
+    }
+
+    function promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto){
       const trechoLicao = extrairTrechoDaLicaoBase(revistaProfessorTexto,numero,dados.titulo);
 
       return `
@@ -2945,111 +3123,6 @@ Não reproduza o prompt completo do usuário no texto final.
       `.trim();
     }
 
-    function promptLicaoProfessor(base,info,licoes,numero,dados){
-      return `
-${montarPromptBaseRevista(base,info,licoes)}
-
-ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO PROFESSOR
-
-DADOS DA LIÇÃO
-Número: ${numero}
-Título: ${dados.titulo}
-Foco: ${dados.foco}
-Texto áureo obrigatório: ${dados.textoAureo}
-Verdade prática obrigatória: ${dados.verdadePratica}
-Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
-Palavra-chave obrigatória: ${dados.palavraChave}
-
-Crie uma LIÇÃO COMPLETA, ROBUSTA, PROFUNDA, TEOLÓGICA E DIDÁTICA.
-
-ESTRUTURA OBRIGATÓRIA:
-1. Cabeçalho visual da lição.
-2. Texto Áureo com exatamente o texto áureo obrigatório.
-3. Verdade Prática com exatamente a verdade prática obrigatória.
-4. Leitura Bíblica em Classe com a referência obrigatória e o texto bíblico da passagem, quando possível.
-5. Leitura Diária de segunda a sábado, respeitando o tema da lição.
-6. Objetivos da lição.
-7. Plano de aula.
-8. Introdução bem desenvolvida.
-9. Três tópicos principais.
-10. Cada tópico deve ter três subtópicos.
-11. Cada subtópico deve ter conteúdo real, com explicação bíblica, doutrinária, histórica quando necessário e aplicação cristã.
-12. Ao final de cada tópico, fazer uma Sinopse.
-13. Aplicação pessoal.
-14. Conclusão.
-15. Revisando o conteúdo com 5 perguntas e respostas.
-16. Depois do Revisando o conteúdo, incluir:
-- Ampliando o conhecimento;
-- Auxílio teológico;
-- Auxílio ao professor.
-
-IMPORTANTE:
-- Não copiar o prompt do usuário.
-- Não escrever “desenvolva esta parte”.
-- Não entregar conteúdo fraco.
-- Não inventar texto áureo genérico.
-- Não juntar todas as referências como texto áureo.
-- Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
-
-Use HTML com:
-<div class="lesson-hero">
-<div class="memory-verse">
-<div class="scripture-box">
-<div class="daily-reading">
-<div class="mini-grid">
-<div class="lesson-topic">
-<div class="subtopic">
-<div class="synopsis">
-<div class="personal-application">
-<div class="summary-box">
-<div class="knowledge-box">
-<div class="teacher-help">
-      `.trim();
-    }
-
-    function promptLicaoAluno(base,info,licoes,numero,dados){
-      return `
-${montarPromptBaseRevista(base,info,licoes)}
-
-ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO ALUNO
-
-DADOS DA LIÇÃO
-Número: ${numero}
-Título: ${dados.titulo}
-Foco: ${dados.foco}
-Texto áureo obrigatório: ${dados.textoAureo}
-Verdade prática obrigatória: ${dados.verdadePratica}
-Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
-Palavra-chave obrigatória: ${dados.palavraChave}
-
-Crie uma LIÇÃO COMPLETA para revista do aluno.
-Ela deve ser mais simples que a revista do professor, mas ainda sólida, bíblica e útil.
-
-ESTRUTURA OBRIGATÓRIA:
-1. Cabeçalho visual.
-2. Texto para memorizar.
-3. Verdade prática.
-4. Leitura bíblica em classe com referência e texto bíblico, quando possível.
-5. Leitura diária.
-6. Objetivos.
-7. Introdução.
-8. Três tópicos.
-9. Três subtópicos por tópico.
-10. Sinopse em cada tópico.
-11. Aplicação pessoal.
-12. Conclusão.
-13. Revisando o conteúdo com 5 perguntas sem respostas, com espaço em branco.
-
-IMPORTANTE:
-- Não copiar o prompt do usuário.
-- Não escrever “desenvolva esta parte”.
-- Não inventar texto áureo genérico.
-- Não juntar todas as referências como texto áureo.
-- Quando mencionar o tema da revista, use somente: ${base.visibleTheme}
-- Nas perguntas finais, deixar espaço de resposta com <div class="student-space">Resposta:</div>.
-      `.trim();
-    }
-
     function promptCapaImagem(base,info){
       return `
 Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de material cristão de Escola Bíblica Dominical.
@@ -3185,26 +3258,38 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"A origem divina da Escritura",
+                refs:[
+                  ["2 Timóteo 3.16","Paulo afirma que toda Escritura é divinamente inspirada. Isso mostra que a fonte última da Bíblia não é a vontade humana, mas o próprio Deus."],
+                  ["João 17.17","Jesus declara que a Palavra de Deus é a verdade. A Escritura não apenas contém ideias religiosas; ela comunica a verdade divina."]
+                ],
                 ps:[
-                  "A Bíblia não deve ser tratada apenas como um documento religioso antigo, nem como uma coleção de pensamentos piedosos produzidos pela espiritualidade humana. Sua origem está em Deus. Quando Paulo afirma que toda Escritura é divinamente inspirada, ele estabelece que a fonte última da Escritura não é o homem, mas o próprio Senhor.",
-                  "A expressão divinamente inspirada aponta para a ação de Deus na comunicação da sua Palavra. Isso significa que as Escrituras carregam autoridade porque procedem do Deus que fala. A autoridade da Bíblia não depende da aceitação da cultura, da aprovação de instituições humanas ou da opinião de uma geração.",
-                  "Essa verdade protege a igreja de dois perigos: reduzir a Bíblia a literatura religiosa comum ou submetê-la às preferências humanas. A Escritura julga a igreja; a igreja não julga a Escritura. Por isso, todo ensino, prática, experiência espiritual e tradição precisam ser avaliados à luz da Palavra de Deus."
+                  "A Bíblia não deve ser tratada apenas como um documento religioso antigo, nem como uma coleção de pensamentos piedosos produzidos pela espiritualidade humana. Sua origem está em Deus.",
+                  "A expressão divinamente inspirada aponta para a ação de Deus na comunicação da sua Palavra. Isso significa que as Escrituras carregam autoridade porque procedem do Deus que fala.",
+                  "Essa verdade protege a igreja de dois perigos: reduzir a Bíblia a literatura religiosa comum ou submetê-la às preferências humanas. A Escritura julga a igreja; a igreja não julga a Escritura."
                 ]
               },
               {
                 titulo:"A inspiração pelo Espírito Santo",
+                refs:[
+                  ["2 Pedro 1.21","Pedro ensina que homens santos falaram inspirados pelo Espírito Santo, mostrando que a Escritura nasceu sob direção divina."],
+                  ["1 Coríntios 2.13","Paulo fala de palavras ensinadas pelo Espírito, reforçando que a mensagem divina não depende apenas de sabedoria humana."]
+                ],
                 ps:[
-                  "A inspiração bíblica não significa que Deus simplesmente ofereceu ideias gerais aos escritores e deixou que eles registrassem como quisessem. Também não significa que os autores humanos escreveram em transe, sem consciência ou participação. A doutrina bíblica da inspiração ensina que Deus usou homens reais, com personalidade, vocabulário, cultura e contexto, preservando, ao mesmo tempo, a fidelidade da mensagem revelada.",
-                  "Pedro ensina que homens santos de Deus falaram inspirados pelo Espírito Santo. O verbo usado comunica a ideia de serem conduzidos, movidos ou impulsionados pelo Espírito. Assim como um barco é conduzido pelo vento sem deixar de ser um barco real, os autores bíblicos escreveram de modo humano, mas debaixo da direção soberana de Deus.",
-                  "Esse ensino explica por que encontramos estilos diferentes na Bíblia. Moisés não escreve como Davi; Isaías não escreve como Amós; Paulo não escreve como João. Mesmo assim, a mensagem bíblica possui unidade espiritual e doutrinária. A diversidade dos instrumentos humanos não compromete a unidade da revelação divina."
+                  "A inspiração bíblica não significa que Deus simplesmente ofereceu ideias gerais aos escritores e deixou que eles registrassem como quisessem.",
+                  "A doutrina bíblica da inspiração ensina que Deus usou homens reais, com personalidade, vocabulário, cultura e contexto, preservando, ao mesmo tempo, a fidelidade da mensagem revelada.",
+                  "Esse ensino explica por que encontramos estilos diferentes na Bíblia. Mesmo assim, a mensagem bíblica possui unidade espiritual e doutrinária."
                 ]
               },
               {
                 titulo:"Regra de fé e prática",
+                refs:[
+                  ["2 Timóteo 3.17","A Escritura prepara o homem de Deus para toda boa obra, mostrando que ela é suficiente para formar fé e conduta."],
+                  ["Hebreus 4.12","A Palavra é viva e eficaz, discernindo pensamentos e intenções do coração. Ela não apenas informa; ela confronta e transforma."]
+                ],
                 ps:[
-                  "A Bíblia é regra de fé porque define aquilo que o cristão deve crer. Doutrina não nasce do gosto pessoal, da tradição isolada, da emoção do momento ou de supostas revelações que contradizem o texto sagrado. A fé cristã é edificada sobre a verdade revelada por Deus nas Escrituras.",
-                  "A Bíblia também é regra de prática porque orienta a maneira como o cristão deve viver. Ela não apenas informa a mente, mas também disciplina a vontade, corrige os caminhos e confronta o pecado. Hebreus 4.12 declara que a Palavra é viva e eficaz, apta para discernir os pensamentos e intenções do coração.",
-                  "Quando a Palavra ocupa o centro da vida cristã, a igreja cresce em maturidade, discernimento e santidade. A aplicação é direta: a Bíblia deve governar a pregação, o ensino, a ética, a família, a liderança e a vida devocional."
+                  "A Bíblia é regra de fé porque define aquilo que o cristão deve crer. Doutrina não nasce do gosto pessoal, da tradição isolada ou da emoção do momento.",
+                  "A Bíblia também é regra de prática porque orienta a maneira como o cristão deve viver. Ela disciplina a vontade, corrige os caminhos e confronta o pecado.",
+                  "Quando a Palavra ocupa o centro da vida cristã, a igreja cresce em maturidade, discernimento e santidade."
                 ]
               }
             ],
@@ -3215,25 +3300,37 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Deus se fez conhecido",
+                refs:[
+                  ["Hebreus 1.1,2","Deus falou muitas vezes e de muitas maneiras, mas sua revelação culmina em Cristo."],
+                  ["Romanos 1.19,20","A criação revela o poder de Deus, mas a Escritura revela de modo especial sua vontade salvadora."]
+                ],
                 ps:[
-                  "O ser humano não teria condições de conhecer Deus corretamente se o próprio Deus não se revelasse. A criação revela sua existência, seu poder e sua glória, mas é nas Escrituras que Deus revela com clareza seu caráter, sua vontade, sua santidade, sua justiça e seu plano de salvação.",
-                  "A Bíblia mostra que Deus fala. Desde o princípio, o Senhor se comunica com o homem. Depois, falou pelos profetas, por meio de visões, sonhos, leis, promessas e advertências. No centro de toda revelação está Cristo, a expressão plena da vontade divina.",
-                  "A revelação bíblica não é fruto da tentativa humana de subir até Deus, mas da decisão graciosa de Deus de descer até o homem. Deus não ficou em silêncio; ele falou de maneira suficiente para que conheçamos o caminho da salvação e a vida que lhe agrada."
+                  "O ser humano não teria condições de conhecer Deus corretamente se o próprio Deus não se revelasse.",
+                  "A criação revela sua existência, seu poder e sua glória, mas é nas Escrituras que Deus revela com clareza seu caráter, sua vontade e seu plano de salvação.",
+                  "A revelação bíblica não é fruto da tentativa humana de subir até Deus, mas da decisão graciosa de Deus de descer até o homem."
                 ]
               },
               {
                 titulo:"Cristo no centro da revelação",
+                refs:[
+                  ["Lucas 24.44","Jesus afirmou que a Lei, os Profetas e os Salmos apontavam para ele."],
+                  ["João 5.39","Cristo ensina que as Escrituras testificam dele, mostrando que a revelação bíblica tem centro redentor."]
+                ],
                 ps:[
-                  "A Bíblia possui muitos livros, gêneros literários e contextos históricos, mas sua mensagem central converge para o plano redentor de Deus em Cristo. Jesus afirmou que a Lei de Moisés, os Profetas e os Salmos falavam a respeito dele.",
-                  "No Antigo Testamento, Cristo é anunciado em promessas, alianças, figuras, sombras, sacrifícios e profecias. No Novo Testamento, ele é revelado como o Verbo encarnado, o Cordeiro de Deus, o Mediador da nova aliança, o Senhor ressurreto e o Rei que voltará.",
-                  "Ler a Bíblia cristocentricamente não significa forçar Cristo em cada detalhe do texto, mas reconhecer que toda a história bíblica caminha para a redenção consumada nele."
+                  "A Bíblia possui muitos livros, gêneros literários e contextos históricos, mas sua mensagem central converge para o plano redentor de Deus em Cristo.",
+                  "No Antigo Testamento, Cristo é anunciado em promessas, alianças, figuras, sombras, sacrifícios e profecias.",
+                  "No Novo Testamento, ele é revelado como o Verbo encarnado, o Cordeiro de Deus, o Mediador da nova aliança, o Senhor ressurreto e o Rei que voltará."
                 ]
               },
               {
                 titulo:"A Palavra ilumina o caminho",
+                refs:[
+                  ["Salmo 119.105","A Palavra é lâmpada para os pés e luz para o caminho, guiando tanto passos imediatos quanto a direção da vida."],
+                  ["Provérbios 6.23","O mandamento é lâmpada, a lei é luz e as repreensões da correção são caminho da vida."]
+                ],
                 ps:[
-                  "O Salmo 119.105 declara que a Palavra é lâmpada para os pés e luz para o caminho. A Palavra ilumina os passos imediatos e também aponta a direção da caminhada. Ela guia decisões, corrige desvios e fortalece o crente diante das incertezas da vida.",
-                  "Em um mundo marcado por confusão moral e espiritual, a Escritura oferece direção segura. Ela revela o que é santo e o que é pecado, o que agrada a Deus e o que desonra seu nome.",
+                  "O Salmo 119.105 declara que a Palavra é lâmpada para os pés e luz para o caminho.",
+                  "Em um mundo marcado por confusão moral e espiritual, a Escritura oferece direção segura.",
                   "A luz da Palavra também protege contra enganos espirituais. A Escritura é o critério pelo qual discernimos doutrinas, profecias, ensinos e práticas."
                 ]
               }
@@ -3245,26 +3342,38 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Ela confronta o pecado",
+                refs:[
+                  ["Hebreus 4.12","A Palavra penetra o interior do homem e discerne pensamentos e intenções."],
+                  ["João 17.17","Jesus ora para que seus discípulos sejam santificados na verdade, que é a Palavra de Deus."]
+                ],
                 ps:[
                   "A Palavra de Deus não apenas consola; ela também confronta. Ela revela a santidade de Deus e expõe a realidade do pecado no coração humano.",
-                  "Jesus orou: Santifica-os na verdade; a tua palavra é a verdade. A santificação cristã está profundamente ligada à ação da Palavra.",
+                  "A santificação cristã está profundamente ligada à ação da Palavra.",
                   "Esse confronto não tem o objetivo de destruir, mas de restaurar. A mesma Palavra que fere o orgulho humano também cura o coração arrependido."
                 ]
               },
               {
                 titulo:"Ela fortalece a fé",
+                refs:[
+                  ["Romanos 10.17","A fé vem pelo ouvir, e o ouvir pela Palavra de Deus."],
+                  ["Romanos 15.4","As Escrituras foram escritas para nosso ensino, consolação e esperança."]
+                ],
                 ps:[
-                  "A fé cristã não se fortalece no vazio. Ela é alimentada pela Palavra de Deus. Romanos 10.17 ensina que a fé vem pelo ouvir, e o ouvir pela Palavra de Deus.",
-                  "Romanos 15.4 afirma que tudo o que antes foi escrito, para nosso ensino foi escrito, para que, pela paciência e consolação das Escrituras, tenhamos esperança.",
-                  "As promessas de Deus, os exemplos dos servos fiéis, as advertências contra a incredulidade e a revelação do caráter divino fortalecem a confiança do cristão."
+                  "A fé cristã não se fortalece no vazio. Ela é alimentada pela Palavra de Deus.",
+                  "As promessas de Deus, os exemplos dos servos fiéis e as advertências contra a incredulidade fortalecem a confiança do cristão.",
+                  "Uma igreja que escuta a Palavra com reverência cresce em esperança, firmeza e maturidade."
                 ]
               },
               {
                 titulo:"Ela prepara para toda boa obra",
+                refs:[
+                  ["2 Timóteo 3.17","A Escritura torna o homem de Deus perfeito e perfeitamente instruído para toda boa obra."],
+                  ["Tiago 1.22","A Palavra deve ser praticada, e não apenas ouvida."]
+                ],
                 ps:[
-                  "Segundo 2 Timóteo 3.17, a finalidade da Escritura é tornar o homem de Deus perfeito e perfeitamente instruído para toda boa obra.",
-                  "O ensino bíblico não termina na informação. Ele visa formação. Deus usa a Escritura para moldar pensamentos, afetos, prioridades e atitudes.",
-                  "Assim, a Bíblia transforma a vida porque corrige o caminho, fortalece a fé e equipa o crente para viver de modo digno do evangelho."
+                  "Segundo 2 Timóteo 3.17, a finalidade da Escritura é tornar o homem de Deus preparado para toda boa obra.",
+                  "O ensino bíblico não termina na informação. Ele visa formação.",
+                  "Assim, a Bíblia transforma a vida porque corrige o caminho, fortalece a fé e equipa o crente para viver e servir segundo a vontade de Deus."
                 ]
               }
             ],
@@ -3280,6 +3389,11 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Homens chamados por Deus",
+                refs:[
+                  ["2 Pedro 1.21","O texto afirma que homens santos falaram inspirados pelo Espírito Santo. Isso mostra que Deus usou pessoas reais, mas guiadas pela ação divina."],
+                  ["Êxodo 24.4","Moisés escreveu todas as palavras do Senhor, mostrando que o registro escrito fazia parte do cuidado de Deus com sua revelação."],
+                  ["Lucas 1.1-4","Lucas declara que investigou cuidadosamente os fatos, mostrando que Deus também usou pesquisa, testemunhos e organização humana na produção do texto bíblico."]
+                ],
                 ps:[
                   "A formação da Bíblia envolveu homens reais, vivendo em épocas, culturas e contextos diferentes. Entre os autores bíblicos encontramos profetas, reis, sacerdotes, pastores, pescadores, médicos, apóstolos e líderes levantados por Deus.",
                   "Moisés escreveu palavras da lei, Jeremias recebeu ordem para escrever em um rolo, Lucas investigou cuidadosamente os fatos relacionados a Cristo, e Paulo escreveu cartas às igrejas.",
@@ -3288,6 +3402,11 @@ Mateus 24.35:
               },
               {
                 titulo:"Unidade em meio à diversidade",
+                refs:[
+                  ["2 Timóteo 3.16","A expressão toda Escritura mostra unidade de origem: embora haja muitos autores humanos, a Escritura possui uma fonte divina."],
+                  ["Lucas 24.44","Jesus une Lei, Profetas e Salmos como testemunho coerente sobre o plano de Deus em Cristo."],
+                  ["1 Coríntios 12.4-6","Embora o texto fale dos dons, ele ajuda a compreender como Deus trabalha com diversidade sem perder unidade de propósito."]
+                ],
                 ps:[
                   "A Bíblia foi escrita ao longo de muitos séculos, em diferentes lugares e por diversos autores. Mesmo assim, apresenta unidade impressionante em sua mensagem central.",
                   "A diversidade literária é notável: há narrativa histórica, poesia, sabedoria, profecia, evangelhos, cartas e literatura apocalíptica. Cada gênero exige leitura cuidadosa.",
@@ -3296,6 +3415,11 @@ Mateus 24.35:
               },
               {
                 titulo:"A ação soberana do Espírito",
+                refs:[
+                  ["2 Pedro 1.20,21","Pedro ensina que a profecia da Escritura não nasceu de interpretação particular, mas da ação do Espírito Santo."],
+                  ["1 Coríntios 2.13","Paulo fala de palavras ensinadas pelo Espírito, reforçando que a comunicação da verdade divina é dirigida por Deus."],
+                  ["Neemias 9.30","O texto mostra que Deus advertiu seu povo pelo Espírito, por meio dos profetas."]
+                ],
                 ps:[
                   "A inspiração das Escrituras é obra do Espírito Santo. Pedro afirma que homens santos falaram inspirados pelo Espírito.",
                   "O Espírito Santo não apenas inspirou a Escritura; ele também ilumina o coração do crente para compreendê-la corretamente.",
@@ -3310,22 +3434,34 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Rolos antigos",
+                refs:[
+                  ["Jeremias 36.2","Deus ordenou que Jeremias escrevesse em um rolo todas as palavras que havia falado, mostrando a importância do registro escrito."],
+                  ["Lucas 4.17","Jesus recebeu o livro do profeta Isaías e o abriu na sinagoga, indicando o uso de rolos no contexto da leitura pública."]
+                ],
                 ps:[
-                  "Antes de a Bíblia chegar ao formato de livro encadernado, muitos textos eram preservados em rolos. Esses rolos exigiam cuidado no manuseio, na leitura e na conservação.",
-                  "Em Lucas 4.17, Jesus recebeu o livro do profeta Isaías na sinagoga, abriu o rolo e leu a passagem que anunciava sua missão.",
+                  "Antes de a Bíblia chegar ao formato de livro encadernado, muitos textos eram preservados em rolos.",
+                  "Esses rolos exigiam cuidado no manuseio, na leitura e na conservação.",
                   "Os rolos indicam que a forma física da Bíblia mudou ao longo do tempo. A mensagem divina permaneceu, mas os suportes materiais variaram conforme os recursos disponíveis."
                 ]
               },
               {
                 titulo:"Papiro e pergaminho",
+                refs:[
+                  ["2 Timóteo 4.13","Paulo pede os livros e especialmente os pergaminhos, revelando o uso de materiais escritos no ambiente da igreja primitiva."],
+                  ["2 João 12","João menciona papel e tinta, mostrando que a comunicação escrita fazia parte da vida cristã apostólica."]
+                ],
                 ps:[
-                  "O papiro era produzido a partir de uma planta comum na região do Egito e foi amplamente utilizado no mundo antigo. Era mais acessível, mas também mais frágil.",
+                  "O papiro era produzido a partir de uma planta comum na região do Egito e foi amplamente utilizado no mundo antigo.",
                   "O pergaminho, feito de pele preparada de animais, tornou-se um material mais resistente. Por sua durabilidade, passou a ser usado em cópias importantes.",
                   "Esses materiais mostram que a transmissão bíblica ocorreu em condições históricas concretas. Deus não preservou sua Palavra ignorando a história, mas agindo dentro dela."
                 ]
               },
               {
                 titulo:"Manuscritos preservados",
+                refs:[
+                  ["Colossenses 4.16","Paulo orienta que a carta seja lida e compartilhada com outra igreja, mostrando circulação e preservação de textos apostólicos."],
+                  ["1 Tessalonicenses 5.27","Paulo ordena que a carta seja lida a todos os irmãos, indicando a autoridade e o uso público dos escritos apostólicos."]
+                ],
                 ps:[
                   "Antes da invenção da imprensa, as Escrituras eram copiadas manualmente. Esse processo exigia atenção, disciplina e reverência.",
                   "É verdade que o processo de cópia envolveu variações textuais em manuscritos, como acontece com documentos antigos copiados à mão. Porém, isso não destrói a confiabilidade da Bíblia.",
@@ -3340,14 +3476,22 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Antigo e Novo Testamento",
+                refs:[
+                  ["Lucas 24.44","Jesus reconheceu a Lei, os Profetas e os Salmos como corpo de Escrituras que apontava para ele."],
+                  ["Hebreus 8.6-13","O texto mostra a relação entre antiga e nova aliança, ajudando a compreender a divisão entre Antigo e Novo Testamento."]
+                ],
                 ps:[
                   "A Bíblia cristã é formada por Antigo e Novo Testamento. O Antigo Testamento registra a criação, a queda, as promessas, as alianças, a lei, a história de Israel, os escritos sapienciais e a voz dos profetas.",
                   "A palavra testamento está ligada à ideia de aliança. Assim, a estrutura da Bíblia revela o Deus que se relaciona com seu povo por meio de alianças.",
-                  "O Novo Testamento não descarta o Antigo; ele o cumpre e o interpreta à luz de Cristo. Jesus afirmou que não veio destruir a Lei ou os Profetas, mas cumprir."
+                  "O Novo Testamento não descarta o Antigo; ele o cumpre e o interpreta à luz de Cristo."
                 ]
               },
               {
                 titulo:"Livros reconhecidos pelo povo de Deus",
+                refs:[
+                  ["Romanos 3.2","Paulo afirma que aos judeus foram confiados os oráculos de Deus, indicando a responsabilidade histórica de guardar a revelação."],
+                  ["2 Pedro 3.15,16","Pedro se refere às cartas de Paulo ao lado das demais Escrituras, indicando reconhecimento da autoridade apostólica."]
+                ],
                 ps:[
                   "Os livros bíblicos foram reconhecidos pelo povo de Deus por sua autoridade espiritual, coerência doutrinária e uso entre a comunidade da fé.",
                   "A igreja não transformou livros comuns em Palavra de Deus; ela reconheceu os escritos que traziam autoridade divina.",
@@ -3356,9 +3500,13 @@ Mateus 24.35:
               },
               {
                 titulo:"Uma biblioteca sagrada",
+                refs:[
+                  ["2 Timóteo 3.15","Paulo chama as Escrituras de sagradas letras, capazes de tornar sábio para a salvação."],
+                  ["João 20.31","João explica que escreveu para que seus leitores cressem que Jesus é o Cristo e tivessem vida em seu nome."]
+                ],
                 ps:[
                   "A Bíblia é, em certo sentido, uma biblioteca sagrada: reúne livros históricos, poéticos, proféticos, evangelhos, cartas e literatura apocalíptica.",
-                  "Cada livro contribui para o conjunto da revelação. Gênesis apresenta fundamentos; Êxodo revela redenção e aliança; os Salmos expressam oração e adoração; os evangelhos proclamam Cristo; as epístolas instruem a igreja.",
+                  "Cada livro contribui para o conjunto da revelação. Gênesis apresenta fundamentos; Êxodo revela redenção e aliança; os Salmos expressam oração e adoração; os evangelhos proclamam Cristo.",
                   "A variedade da Bíblia mostra a sabedoria de Deus em comunicar sua verdade de muitas formas, alcançando a mente, o coração, a memória, a consciência e a esperança do seu povo."
                 ]
               }
@@ -3375,6 +3523,10 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Cópias feitas à mão",
+                refs:[
+                  ["Deuteronômio 17.18,19","O rei deveria escrever para si uma cópia da lei e lê-la todos os dias, mostrando o valor do registro e da transmissão."],
+                  ["Colossenses 4.16","As cartas apostólicas eram lidas e compartilhadas entre igrejas, indicando circulação e preservação do ensino."]
+                ],
                 ps:[
                   "Durante séculos, antes da imprensa, os textos bíblicos foram transmitidos por meio de cópias manuscritas. Esse processo exigia trabalho paciente e cuidadoso.",
                   "Esse fato mostra que Deus usa meios humanos em seus propósitos. Assim como usou autores humanos na inspiração, também usou copistas, comunidades e leitores na transmissão.",
@@ -3383,16 +3535,24 @@ Mateus 24.35:
               },
               {
                 titulo:"Comunidades preservadoras",
+                refs:[
+                  ["Neemias 8.8","O povo lia a lei, explicava o sentido e dava entendimento. Isso mostra a preservação da Palavra ligada ao ensino comunitário."],
+                  ["1 Tessalonicenses 5.27","Paulo ordena a leitura pública da carta, mostrando que os escritos apostólicos deveriam ser preservados e ensinados."]
+                ],
                 ps:[
                   "A transmissão bíblica não foi obra de indivíduos isolados apenas. Comunidades de fé leram, guardaram, ensinaram e preservaram as Escrituras.",
                   "No Antigo Testamento, a leitura pública da lei fazia parte da vida do povo. No Novo Testamento, cartas apostólicas circulavam entre igrejas.",
-                  "A Escola Bíblica Dominical participa dessa longa história de transmissão do ensino bíblico. Quando a igreja ensina a Palavra com fidelidade, coopera para que a próxima geração conheça o Senhor."
+                  "A Escola Bíblica Dominical participa dessa longa história de transmissão do ensino bíblico."
                 ]
               },
               {
                 titulo:"A providência de Deus",
+                refs:[
+                  ["Isaías 40.8","A Palavra de Deus subsiste eternamente, ainda que a fragilidade humana seja comparada à erva."],
+                  ["Mateus 24.35","Jesus declara que suas palavras não passarão, reforçando a permanência da revelação divina."]
+                ],
                 ps:[
-                  "A preservação da Bíblia é mais do que um fato histórico; é também expressão da providência de Deus. Isaías 40.8 declara que a Palavra do nosso Deus subsiste eternamente.",
+                  "A preservação da Bíblia é mais do que um fato histórico; é também expressão da providência de Deus.",
                   "Ao longo dos séculos, impérios caíram, línguas mudaram, perseguições se levantaram e culturas se transformaram, mas a Palavra permaneceu.",
                   "A Bíblia que temos em mãos não é acidente da história; é testemunho da fidelidade do Deus que fala e preserva sua Palavra."
                 ]
@@ -3405,6 +3565,10 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Da língua original aos povos",
+                refs:[
+                  ["Atos 2.6-11","No Pentecostes, pessoas de várias nações ouviram as grandezas de Deus em suas próprias línguas."],
+                  ["Apocalipse 7.9","A visão de povos, tribos, línguas e nações diante do Cordeiro mostra o alcance universal da mensagem de Deus."]
+                ],
                 ps:[
                   "O Antigo Testamento foi escrito principalmente em hebraico, com algumas partes em aramaico. O Novo Testamento foi escrito em grego.",
                   "Com o passar do tempo, a tradução tornou-se necessária para que diferentes povos tivessem acesso à mensagem bíblica.",
@@ -3413,16 +3577,24 @@ Mateus 24.35:
               },
               {
                 titulo:"A importância da tradução",
+                refs:[
+                  ["Neemias 8.8","O texto mostra que a Palavra era lida e explicada para que o povo entendesse o sentido."],
+                  ["Romanos 10.14,17","A fé vem pelo ouvir a Palavra, por isso é necessário que a mensagem seja comunicada de modo compreensível."]
+                ],
                 ps:[
                   "A tradução bíblica aproxima a mensagem de Deus do coração das pessoas. Quando o povo escuta a Palavra em sua própria língua, a compreensão se torna mais clara.",
-                  "No dia de Pentecostes, pessoas de várias nações ouviram as grandezas de Deus em suas próprias línguas.",
-                  "Ter a Bíblia em português é um privilégio imenso. Mas privilégio sem uso se torna negligência. Quem tem acesso à Palavra deve lê-la, estudá-la e obedecê-la."
+                  "Ter a Bíblia em português é um privilégio imenso. Mas privilégio sem uso se torna negligência.",
+                  "Quem tem acesso à Palavra deve lê-la, estudá-la e obedecê-la."
                 ]
               },
               {
                 titulo:"O avanço da impressão",
+                refs:[
+                  ["Habacuque 2.2","A ordem para escrever a visão de modo legível mostra o valor da comunicação clara da mensagem."],
+                  ["2 Timóteo 2.2","Paulo orienta Timóteo a transmitir o ensino a homens fiéis, destacando a continuidade da transmissão da verdade."]
+                ],
                 ps:[
-                  "A invenção e expansão da imprensa transformaram profundamente a circulação da Bíblia. Antes, cada cópia exigia trabalho manual.",
+                  "A invenção e expansão da imprensa transformaram profundamente a circulação da Bíblia.",
                   "Com a impressão, tornou-se possível multiplicar exemplares em escala muito maior, alcançando lares, escolas, igrejas e missionários.",
                   "Hoje, além da Bíblia impressa, há acesso digital em celulares, computadores e aplicativos. Essa abundância aumenta nossa responsabilidade."
                 ]
@@ -3435,26 +3607,38 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Nem sempre foi assim",
+                refs:[
+                  ["Lucas 4.17-20","Jesus leu o rolo de Isaías na sinagoga; o texto mostra uma forma de leitura anterior ao formato moderno de capítulos e versículos."],
+                  ["Atos 8.30-35","O eunuco lia Isaías, e Filipe explicou o texto a partir do contexto messiânico."]
+                ],
                 ps:[
-                  "A Bíblia nem sempre esteve organizada em capítulos e versículos como conhecemos hoje. Os textos bíblicos originalmente circularam em rolos, manuscritos e coleções sem a divisão moderna.",
-                  "Capítulos e versículos são ferramentas úteis, mas não fazem parte da inspiração original do texto. Eles ajudam na leitura, memorização, ensino e referência.",
+                  "A Bíblia nem sempre esteve organizada em capítulos e versículos como conhecemos hoje.",
+                  "Capítulos e versículos são ferramentas úteis, mas não fazem parte da inspiração original do texto.",
                   "Muitos erros de interpretação acontecem quando um versículo é isolado de seu parágrafo, de seu livro ou do conjunto da Escritura."
                 ]
               },
               {
                 titulo:"A divisão em capítulos",
+                refs:[
+                  ["Neemias 8.8","A leitura com explicação do sentido mostra que o entendimento do texto é mais importante que apenas localizar uma divisão."],
+                  ["2 Timóteo 2.15","O obreiro deve manejar bem a Palavra da verdade, o que exige leitura cuidadosa e contextual."]
+                ],
                 ps:[
-                  "A divisão da Bíblia em capítulos é tradicionalmente associada a Stephen Langton, no século XIII. Essa organização facilitou o estudo, a consulta e o ensino das Escrituras.",
+                  "A divisão da Bíblia em capítulos facilitou o estudo, a consulta e o ensino das Escrituras.",
                   "Com os capítulos, tornou-se mais simples orientar a leitura pública, preparar estudos e citar textos de forma padronizada.",
-                  "É importante lembrar que a divisão em capítulos nem sempre acompanha perfeitamente o fluxo do argumento bíblico. Por isso, a leitura contextual continua indispensável."
+                  "É importante lembrar que a divisão em capítulos nem sempre acompanha perfeitamente o fluxo do argumento bíblico."
                 ]
               },
               {
                 titulo:"A divisão em versículos",
+                refs:[
+                  ["Salmo 119.11","Guardar a Palavra no coração envolve memorização e meditação, algo que a divisão em versículos facilita."],
+                  ["Josué 1.8","A meditação contínua na Palavra exige leitura, repetição e prática obediente."]
+                ],
                 ps:[
-                  "A divisão em versículos no Novo Testamento foi popularizada por Robert Estienne, também conhecido como Stephanus, no século XVI.",
-                  "Os versículos ajudaram profundamente na memorização, no ensino, na pregação e na comparação de textos.",
-                  "A igreja deve agradecer por esse recurso, mas também aprender a usá-lo bem. Citar versículos é importante; interpretá-los corretamente é indispensável."
+                  "A divisão em versículos ajudou profundamente na memorização, no ensino, na pregação e na comparação de textos.",
+                  "A igreja deve agradecer por esse recurso, mas também aprender a usá-lo bem.",
+                  "Citar versículos é importante; interpretá-los corretamente é indispensável."
                 ]
               }
             ],
@@ -3470,22 +3654,34 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Uma bênção que muitos não tiveram",
+                refs:[
+                  ["Salmo 119.97","O salmista declara seu amor pela lei do Senhor, mostrando que a Palavra deve ser recebida como tesouro espiritual."],
+                  ["Amós 8.11","A fome de ouvir a Palavra do Senhor é apresentada como juízo, mostrando o quanto é precioso ter acesso à Palavra."]
+                ],
                 ps:[
-                  "Ter a Bíblia em mãos é uma dádiva espiritual que nem sempre foi experimentada com a mesma facilidade pelo povo de Deus. Muitos servos do Senhor ouviram a Palavra por leitura pública, cópias limitadas ou ensino oral.",
+                  "Ter a Bíblia em mãos é uma dádiva espiritual que nem sempre foi experimentada com a mesma facilidade pelo povo de Deus.",
                   "Hoje, a Bíblia está impressa, traduzida, organizada e disponível em muitos formatos. Esse acesso deve produzir gratidão, não indiferença.",
-                  "O privilégio de possuir a Bíblia se torna responsabilidade diante de Deus. Quem tem acesso à Palavra deve lê-la, guardá-la e obedecê-la."
+                  "O privilégio de possuir a Bíblia se torna responsabilidade diante de Deus."
                 ]
               },
               {
                 titulo:"A Palavra no coração",
+                refs:[
+                  ["Salmo 119.11","Guardar a Palavra no coração protege contra o pecado e forma a vida interior do servo de Deus."],
+                  ["Colossenses 3.16","A Palavra de Cristo deve habitar abundantemente no povo de Deus."]
+                ],
                 ps:[
-                  "Possuir uma Bíblia não significa, por si só, viver debaixo da autoridade da Palavra. O perigo é ter a Escritura nas mãos e não permitir que ela governe o coração.",
-                  "O salmista declara que guardou a Palavra no coração para não pecar contra Deus. Isso mostra que a Palavra precisa descer da página para a vida.",
+                  "Possuir uma Bíblia não significa, por si só, viver debaixo da autoridade da Palavra.",
+                  "O perigo é ter a Escritura nas mãos e não permitir que ela governe o coração.",
                   "O professor deve conduzir a classe a perceber que a verdadeira reverência pelas Escrituras aparece na obediência diária."
                 ]
               },
               {
                 titulo:"Gratidão e reverência",
+                refs:[
+                  ["Neemias 8.5,6","Quando a Palavra foi aberta, o povo se levantou e adorou, demonstrando reverência diante da Escritura."],
+                  ["Tiago 1.21","Devemos receber com mansidão a Palavra implantada, que pode salvar a alma."]
+                ],
                 ps:[
                   "A Bíblia não deve ser tratada como objeto comum. Ela é a Palavra de Deus escrita, instrumento de ensino, correção, consolo e direção espiritual.",
                   "A gratidão pela Bíblia se expressa em leitura constante, estudo sério, meditação, memorização e prática.",
@@ -3500,24 +3696,36 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"No lar",
+                refs:[
+                  ["Deuteronômio 6.6,7","A Palavra deveria ser ensinada aos filhos na rotina da vida, dentro e fora de casa."],
+                  ["Josué 24.15","Josué afirma sua decisão de servir ao Senhor com sua casa, mostrando a responsabilidade espiritual da família."]
+                ],
                 ps:[
-                  "A Palavra deve estar presente no lar cristão. Deuteronômio 6 ensina que a verdade de Deus deve ser ensinada aos filhos no caminho, em casa e na rotina da vida.",
+                  "A Palavra deve estar presente no lar cristão.",
                   "A família que abre espaço para a Bíblia fortalece sua fé, orienta suas decisões e forma uma nova geração com temor do Senhor.",
                   "O professor pode incentivar os alunos a estabelecerem momentos simples de leitura bíblica em família, oração e conversa sobre a Palavra."
                 ]
               },
               {
                 titulo:"Na igreja",
+                refs:[
+                  ["Atos 2.42","A igreja perseverava na doutrina dos apóstolos, mostrando a centralidade do ensino."],
+                  ["1 Timóteo 4.13","Paulo orienta Timóteo a persistir na leitura, exortação e ensino."]
+                ],
                 ps:[
-                  "A igreja deve ser governada pela Escritura. Pregação, louvor, ensino, aconselhamento, disciplina, comunhão e missão precisam estar debaixo da Palavra.",
-                  "Quando a Bíblia perde o centro, a igreja se torna vulnerável a opiniões, modismos e experiências sem discernimento.",
+                  "A igreja deve ser governada pela Escritura.",
+                  "Pregação, louvor, ensino, aconselhamento, disciplina, comunhão e missão precisam estar debaixo da Palavra.",
                   "A Escola Bíblica Dominical é um espaço importante para recolocar a Palavra no centro da formação cristã."
                 ]
               },
               {
                 titulo:"Na vida devocional",
+                refs:[
+                  ["Salmo 1.1,2","O homem bem-aventurado medita na lei do Senhor de dia e de noite."],
+                  ["Mateus 4.4","Jesus ensina que o homem vive de toda Palavra que procede da boca de Deus."]
+                ],
                 ps:[
-                  "A leitura bíblica pessoal alimenta a comunhão com Deus. O cristão não vive apenas de cultos públicos; ele precisa aprender a buscar o Senhor diariamente.",
+                  "A leitura bíblica pessoal alimenta a comunhão com Deus.",
                   "A Palavra consola, confronta, corrige e fortalece. Ela ilumina os passos nos dias bons e sustenta a fé nos dias difíceis.",
                   "O professor deve ensinar que devoção não é apenas emoção religiosa, mas relacionamento com Deus orientado pela Escritura."
                 ]
@@ -3530,14 +3738,22 @@ Mateus 24.35:
             subs:[
               {
                 titulo:"Conhecimento exige resposta",
+                refs:[
+                  ["Tiago 1.22","Devemos ser praticantes da Palavra, e não somente ouvintes."],
+                  ["Lucas 11.28","Jesus declara bem-aventurados os que ouvem a Palavra de Deus e a guardam."]
+                ],
                 ps:[
-                  "Quanto maior o acesso à Palavra, maior a responsabilidade. Ouvir, ler e estudar a Bíblia deve levar o cristão a responder com fé e obediência.",
-                  "Tiago ensina que devemos ser praticantes da Palavra e não apenas ouvintes. O conhecimento sem prática pode produzir engano espiritual.",
+                  "Quanto maior o acesso à Palavra, maior a responsabilidade.",
+                  "Ouvir, ler e estudar a Bíblia deve levar o cristão a responder com fé e obediência.",
                   "A lição deve conduzir a classe a perguntar: que verdade Deus está me chamando a praticar?"
                 ]
               },
               {
                 titulo:"Ensinar para transformar",
+                refs:[
+                  ["Mateus 28.19,20","Jesus ordenou ensinar os discípulos a guardar todas as coisas que ele mandou."],
+                  ["Efésios 4.11-13","O ensino contribui para o aperfeiçoamento dos santos e maturidade do corpo de Cristo."]
+                ],
                 ps:[
                   "O professor da EBD não ensina apenas para informar. Ele ensina para formar discípulos que vivam segundo a Palavra.",
                   "A aula deve ter aplicação clara, conduzindo os alunos a decisões concretas diante de Deus.",
@@ -3546,8 +3762,12 @@ Mateus 24.35:
               },
               {
                 titulo:"Amor pela Palavra",
+                refs:[
+                  ["Salmo 119.103","A Palavra é doce ao paladar do servo de Deus, mais doce que o mel."],
+                  ["João 14.21","Quem ama a Cristo guarda seus mandamentos."]
+                ],
                 ps:[
-                  "O Salmo 119 revela um coração que ama, medita, guarda e obedece à Palavra. Esse deve ser o espírito da igreja diante das Escrituras.",
+                  "O Salmo 119 revela um coração que ama, medita, guarda e obedece à Palavra.",
                   "O amor pela Bíblia cresce quando entendemos sua origem divina, sua preservação providencial e seu poder transformador.",
                   "Que a classe termine este estudo não apenas sabendo mais sobre a Bíblia, mas amando mais a Palavra e obedecendo melhor ao Senhor."
                 ]
@@ -3564,26 +3784,38 @@ Mateus 24.35:
           subs:[
             {
               titulo:"A verdade revelada nas Escrituras",
+              refs:[
+                ["2 Timóteo 3.16","A Escritura é inspirada por Deus e serve como fundamento seguro para o ensino cristão."],
+                ["Salmo 119.105","A Palavra de Deus ilumina o caminho e orienta a vida do seu povo."]
+              ],
               ps:[
-                `O tema "${dados.titulo}" precisa ser estudado a partir da autoridade das Escrituras. A igreja não constrói sua fé sobre opiniões, costumes ou sentimentos passageiros, mas sobre a Palavra de Deus, que orienta a vida cristã com segurança.`,
-                `Quando observamos este assunto à luz do tema mensal "${base.visibleTheme}", percebemos que Deus deseja formar seu povo com entendimento, maturidade e obediência. A Bíblia não apenas informa; ela corrige, consola, confronta e transforma.`,
-                `Por isso, esta lição deve conduzir o aluno a examinar o texto bíblico com reverência, buscando compreender o que Deus revela, como essa verdade se aplica à igreja e que resposta espiritual o Senhor espera de cada crente.`
+                `O tema "${dados.titulo}" precisa ser estudado a partir da autoridade das Escrituras. A igreja não constrói sua fé sobre opiniões, costumes ou sentimentos passageiros, mas sobre a Palavra de Deus.`,
+                `Quando observamos este assunto à luz do tema mensal "${base.visibleTheme}", percebemos que Deus deseja formar seu povo com entendimento, maturidade e obediência.`,
+                `Por isso, esta lição deve conduzir o aluno a examinar o texto bíblico com reverência, buscando compreender o que Deus revela e que resposta espiritual o Senhor espera.`
               ]
             },
             {
               titulo:"A importância doutrinária do tema",
+              refs:[
+                ["Tito 2.1","Paulo orienta que se fale o que convém à sã doutrina."],
+                ["Atos 2.42","A igreja perseverava na doutrina dos apóstolos, mostrando o valor da formação bíblica."]
+              ],
               ps:[
-                "Toda verdade cristã precisa estar ligada à doutrina bíblica. Doutrina não é apenas teoria; é ensino saudável que sustenta a fé, protege contra o erro e orienta a prática cristã.",
-                "O assunto desta lição possui valor espiritual porque ajuda a igreja a pensar biblicamente. Uma igreja sem doutrina se torna vulnerável a confusões, exageros e práticas sem fundamento.",
-                `Ao estudar "${dados.titulo}", a classe deve perceber que o conhecimento bíblico conduz à vida piedosa. A verdade revelada por Deus sempre chama o cristão a uma resposta de fé e obediência.`
+                "Toda verdade cristã precisa estar ligada à doutrina bíblica. Doutrina não é apenas teoria; é ensino saudável que sustenta a fé.",
+                "O assunto desta lição possui valor espiritual porque ajuda a igreja a pensar biblicamente.",
+                `Ao estudar "${dados.titulo}", a classe deve perceber que o conhecimento bíblico conduz à vida piedosa.`
               ]
             },
             {
               titulo:"Aplicação para a igreja atual",
+              refs:[
+                ["Tiago 1.22","A Palavra precisa ser praticada, e não apenas ouvida."],
+                ["Romanos 12.2","A renovação da mente conduz o cristão a discernir a vontade de Deus."]
+              ],
               ps:[
-                "O ensino bíblico precisa alcançar a realidade da igreja hoje. Não estudamos apenas para saber mais, mas para viver melhor diante de Deus, da família, da igreja e da sociedade.",
-                "O tema desta lição confronta hábitos, fortalece convicções e chama o povo de Deus a uma vida mais fiel. A aplicação prática deve mostrar como essa verdade se manifesta nas decisões, nos relacionamentos e no serviço cristão.",
-                "Quando a Palavra é recebida com humildade, ela produz transformação. O aluno deve sair desta lição com clareza, convicção e disposição para praticar aquilo que aprendeu."
+                "O ensino bíblico precisa alcançar a realidade da igreja hoje.",
+                "O tema desta lição confronta hábitos, fortalece convicções e chama o povo de Deus a uma vida mais fiel.",
+                "Quando a Palavra é recebida com humildade, ela produz transformação."
               ]
             }
           ],
@@ -3594,26 +3826,38 @@ Mateus 24.35:
           subs:[
             {
               titulo:"Deus ensina com propósito",
+              refs:[
+                ["2 Timóteo 3.17","A Palavra prepara o servo de Deus para toda boa obra."],
+                ["Efésios 4.12,13","O ensino contribui para o aperfeiçoamento dos santos e maturidade da igreja."]
+              ],
               ps:[
-                "Deus não revela sua Palavra sem propósito. Cada ensino bíblico visa formar o caráter do seu povo, fortalecer a fé e conduzir a igreja a uma vida que glorifique o nome do Senhor.",
-                "Ao estudar este assunto, precisamos perguntar: que tipo de pessoa Deus deseja formar em nós? Que área da vida precisa ser ajustada? Que verdade precisa ser praticada?",
-                "O propósito de Deus não é apenas transmitir informação religiosa, mas produzir discernimento, santidade, amor, serviço e perseverança na caminhada cristã."
+                "Deus não revela sua Palavra sem propósito. Cada ensino bíblico visa formar o caráter do seu povo.",
+                "O propósito de Deus não é apenas transmitir informação religiosa, mas produzir discernimento, santidade, amor, serviço e perseverança.",
+                "A aula deve levar o aluno a perguntar que tipo de pessoa Deus deseja formar em sua vida."
               ]
             },
             {
               titulo:"O crescimento espiritual da classe",
+              refs:[
+                ["Colossenses 1.10","O cristão deve frutificar em toda boa obra e crescer no conhecimento de Deus."],
+                ["2 Pedro 3.18","Devemos crescer na graça e no conhecimento de nosso Senhor Jesus Cristo."]
+              ],
               ps:[
-                "A Escola Bíblica Dominical existe para formar discípulos. Por isso, a lição precisa alcançar mente, coração e prática. O aluno precisa compreender, crer e viver a verdade estudada.",
-                "O crescimento espiritual acontece quando a Palavra é recebida com fé. O conhecimento bíblico deve gerar humildade, não orgulho; serviço, não vaidade; obediência, não apenas discurso.",
-                "Nesta lição, o professor deve conduzir a classe a perceber que todo tema bíblico tem uma finalidade pastoral: aproximar o povo de Deus da vontade do Senhor."
+                "A Escola Bíblica Dominical existe para formar discípulos.",
+                "O conhecimento bíblico deve gerar humildade, não orgulho; serviço, não vaidade; obediência, não apenas discurso.",
+                "Todo tema bíblico tem uma finalidade pastoral: aproximar o povo de Deus da vontade do Senhor."
               ]
             },
             {
               titulo:"A resposta esperada do cristão",
+              refs:[
+                ["João 14.15","O amor a Cristo se expressa na obediência aos seus mandamentos."],
+                ["Lucas 6.46","Jesus confronta aqueles que o chamam Senhor, mas não praticam o que ele ordena."]
+              ],
               ps:[
-                "Diante da verdade de Deus, o cristão não pode permanecer indiferente. A Palavra sempre exige uma resposta: arrependimento, fé, consagração, obediência, perseverança ou serviço.",
-                `O estudo de "${dados.titulo}" deve levar a classe a examinar sua própria vida. Não basta reconhecer que a verdade é bíblica; é preciso permitir que ela governe atitudes e decisões.`,
-                "A resposta correta à Palavra é uma vida rendida ao Senhor. A lição cumpre seu propósito quando o aluno decide praticar aquilo que aprendeu."
+                "Diante da verdade de Deus, o cristão não pode permanecer indiferente.",
+                `O estudo de "${dados.titulo}" deve levar a classe a examinar sua própria vida.`,
+                "A resposta correta à Palavra é uma vida rendida ao Senhor."
               ]
             }
           ],
@@ -3624,26 +3868,38 @@ Mateus 24.35:
           subs:[
             {
               titulo:"Da compreensão à prática",
+              refs:[
+                ["Mateus 7.24","Quem ouve e pratica a Palavra edifica a casa sobre a rocha."],
+                ["Tiago 1.25","O praticante da Palavra será bem-aventurado no que realizar."]
+              ],
               ps:[
-                "A Bíblia ensina que devemos ser praticantes da Palavra, e não somente ouvintes. O conhecimento bíblico que não se transforma em prática permanece incompleto.",
-                "A lição precisa sair do campo das ideias e alcançar a rotina do aluno. O que se aprende na EBD deve influenciar a família, o trabalho, o ministério, as decisões e os relacionamentos.",
-                "Viver esta verdade significa permitir que Deus reorganize prioridades, corrija caminhos e fortaleça a vida cristã com base na sua Palavra."
+                "A Bíblia ensina que devemos ser praticantes da Palavra, e não somente ouvintes.",
+                "A lição precisa sair do campo das ideias e alcançar a rotina do aluno.",
+                "Viver esta verdade significa permitir que Deus reorganize prioridades, corrija caminhos e fortaleça a vida cristã."
               ]
             },
             {
               titulo:"Testemunho diante do mundo",
+              refs:[
+                ["Mateus 5.16","A luz dos discípulos deve brilhar diante dos homens para glória do Pai."],
+                ["Filipenses 2.15","O povo de Deus deve resplandecer como astros no mundo."]
+              ],
               ps:[
-                "Quando a igreja pratica a Palavra, ela se torna testemunha viva da verdade que proclama. O mundo precisa ver no povo de Deus coerência entre fé, discurso e vida.",
-                "O tema estudado nesta lição deve produzir frutos visíveis. A fé cristã não é apenas confissão verbal; é vida transformada pela graça e orientada pela Palavra.",
-                "Cada aluno é chamado a viver de modo que o nome do Senhor seja honrado. A doutrina bíblica saudável deve gerar conduta saudável."
+                "Quando a igreja pratica a Palavra, ela se torna testemunha viva da verdade que proclama.",
+                "O mundo precisa ver no povo de Deus coerência entre fé, discurso e vida.",
+                "Cada aluno é chamado a viver de modo que o nome do Senhor seja honrado."
               ]
             },
             {
               titulo:"Perseverança na verdade",
+              refs:[
+                ["João 8.31,32","O verdadeiro discípulo permanece na Palavra e conhece a verdade que liberta."],
+                ["Hebreus 10.23","Devemos reter firme a confissão da esperança, porque fiel é quem prometeu."]
+              ],
               ps:[
-                "Viver a verdade exige perseverança. Nem sempre será fácil obedecer, manter convicções ou permanecer fiel diante das pressões da vida.",
-                "A Palavra de Deus sustenta o cristão nos dias difíceis. Ela fortalece a fé, renova a esperança e mantém o coração firme no Senhor.",
-                "A lição termina chamando a classe a permanecer na verdade, confiando que Deus honra aqueles que ouvem e praticam a sua Palavra."
+                "Viver a verdade exige perseverança.",
+                "A Palavra de Deus sustenta o cristão nos dias difíceis, fortalece a fé e renova a esperança.",
+                "A lição termina chamando a classe a permanecer na verdade, confiando que Deus honra aqueles que ouvem e praticam sua Palavra."
               ]
             }
           ],
@@ -3660,6 +3916,11 @@ Mateus 24.35:
           ${topico.subs.map((sub,subIndex) => `
             <div class="subtopic">
               <h4>${subIndex + 1}. ${escapeHtml(sub.titulo)}</h4>
+              ${
+                Array.isArray(sub.refs)
+                  ? sub.refs.map(ref => bibleRef(ref[0],ref[1])).join("")
+                  : ""
+              }
               ${paragraphs(sub.ps)}
             </div>
           `).join("")}
@@ -3728,6 +3989,8 @@ Mateus 24.35:
           <div class="meta">${escapeHtml(info.label)} • Classe: ${escapeHtml(info.revistaClasse)} • Palavra-chave: ${escapeHtml(dados.palavraChave)}</div>
         </div>
 
+        ${renderDailyReading(numero,dados)}
+
         <div class="memory-verse">
           <h3>${isTeacher ? "Texto Áureo" : "Para Memorizar"}</h3>
           ${paragraph(dados.textoAureo)}
@@ -3739,7 +4002,6 @@ Mateus 24.35:
         </div>
 
         ${renderScriptureBox(dados.leituraClasse)}
-        ${renderDailyReading(numero,dados)}
 
         <div class="mini-grid">
           <div class="mini-card">
@@ -4118,7 +4380,7 @@ Mateus 24.35:
 
           <div class="knowledge-box">
             <h4>Estrutura Pedagógica</h4>
-            ${paragraph("Cada lição apresenta texto áureo, verdade prática, leitura bíblica em classe, leitura diária, objetivos, plano de aula, introdução, três tópicos, subtópicos, sinopse, aplicação, conclusão e revisão.")}
+            ${paragraph("Cada lição apresenta texto áureo, verdade prática, leitura diária, leitura bíblica em classe, objetivos, plano de aula, introdução, três tópicos, subtópicos, sinopse, aplicação, conclusão e revisão.")}
           </div>
         `;
       }
@@ -4131,7 +4393,7 @@ Mateus 24.35:
         const dados = licoes[i];
 
         await pause(900);
-        setStep(i + 2,`Gerando Lição ${numero} com profundidade...`);
+        setStep(i + 2,`Gerando Lição ${numero} com profundidade bíblica...`);
 
         const prompt = info.isTeacher
           ? promptLicaoProfessor(base,info,licoes,numero,dados)
@@ -4583,7 +4845,7 @@ Mateus 24.35:
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Primeiro gerar Revista do Professor. Depois trocar para Livro de apoio para o professor, usando a revista salva como base para expansão profunda, densa, teológica e pastoral.");
+        setValue("extraNotes","Quero uma revista bíblica, robusta e profunda. Cada subtópico precisa ter referências bíblicas explicadas, texto bíblico, aplicação prática e conexão direta com a lição. A leitura diária deve aparecer logo depois do cabeçalho da lição.");
       }
 
       if(type === "sermao"){
