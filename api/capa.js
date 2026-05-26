@@ -18,11 +18,22 @@ export default async function handler(req, res) {
     }
 
     const dados = normalizarDados(req.body || {});
-    const adminCodeServer = process.env.Isiquel_Admin || "00";
 
-    const tiposReservados = ["revista", "livro", "ebook", "curso"];
+    /*
+      IMPORTANTE:
+      O index.html já controla o acesso aos recursos reservados pela interface.
+      Por padrão, esta API não bloqueia a capa por adminCode para não impedir a geração.
+      Se quiser obrigar código também no servidor, crie na Vercel:
+      REQUIRE_IMAGE_ADMIN=true
+      e configure:
+      Isiquel_Admin=seu_codigo
+    */
+    const exigirAdminNaImagem = String(process.env.REQUIRE_IMAGE_ADMIN || "false").toLowerCase() === "true";
+    const adminCodeServer = process.env.Isiquel_Admin || "";
 
-    if (tiposReservados.includes(dados.materialType)) {
+    const tiposReservados = ["revista", "revista-ebd", "livro", "ebook", "curso"];
+
+    if (exigirAdminNaImagem && tiposReservados.includes(dados.materialType)) {
       if (!dados.adminCode || dados.adminCode !== adminCodeServer) {
         return res.status(401).json({
           ok: false,
@@ -33,6 +44,14 @@ export default async function handler(req, res) {
 
     const prompt = criarPromptImagem(dados);
     const erros = [];
+
+    /*
+      1) Tenta Gemini primeiro.
+      2) Se não conseguir, tenta OpenAI.
+      3) Se gerar, devolve em vários nomes compatíveis:
+         imageUrl, dataUrl, imageDataUrl, image
+      Assim o index.html reconhece a capa sem precisar mexer de novo.
+    */
 
     if (geminiApiKey) {
       const modelosGemini = limparLista([
@@ -50,11 +69,9 @@ export default async function handler(req, res) {
           });
 
           if (imageDataUrl) {
-            return res.status(200).json({
-              ok: true,
+            return responderImagem(res, {
               provider: `gemini:${modelo}`,
-              imageDataUrl,
-              prompt
+              imageDataUrl
             });
           }
         } catch (erro) {
@@ -66,8 +83,7 @@ export default async function handler(req, res) {
     if (openaiApiKey) {
       const modelosOpenAI = limparLista([
         process.env.OPENAI_IMAGE_MODEL_1 || "gpt-image-1",
-        process.env.OPENAI_IMAGE_MODEL_2 || "gpt-image-1-mini",
-        process.env.OPENAI_IMAGE_MODEL_3 || "dall-e-3"
+        process.env.OPENAI_IMAGE_MODEL_2 || "dall-e-3"
       ]);
 
       for (const modelo of modelosOpenAI) {
@@ -80,11 +96,9 @@ export default async function handler(req, res) {
           });
 
           if (imageDataUrl) {
-            return res.status(200).json({
-              ok: true,
+            return responderImagem(res, {
               provider: `openai:${modelo}`,
-              imageDataUrl,
-              prompt
+              imageDataUrl
             });
           }
         } catch (erro) {
@@ -106,15 +120,38 @@ export default async function handler(req, res) {
 }
 
 /* =========================================================
+   RESPOSTA COMPATÍVEL COM O INDEX.HTML
+========================================================= */
+
+function responderImagem(res, { provider, imageDataUrl }) {
+  return res.status(200).json({
+    ok: true,
+    provider,
+
+    // Compatibilidade com o index.html atual
+    imageUrl: imageDataUrl,
+    dataUrl: imageDataUrl,
+    imageDataUrl,
+    image: imageDataUrl
+  });
+}
+
+/* =========================================================
    NORMALIZAÇÃO
 ========================================================= */
 
 function normalizarDados(body) {
-  const tipoImagem = String(body.tipoImagem || body.imageType || "front").trim().toLowerCase();
+  const tipoImagem = String(
+    body.tipoImagem ||
+    body.imageType ||
+    body.etapa ||
+    "front"
+  ).trim().toLowerCase();
 
   const materialType = String(
     body.materialType ||
     body.tipoMaterial ||
+    body.tipo ||
     "revista"
   ).trim().toLowerCase();
 
@@ -123,8 +160,32 @@ function normalizarDados(body) {
   const theme = String(body.theme || body.tema || body.temaPrincipal || "").trim();
   const author = String(body.author || body.autor || body.comentarista || "").trim();
   const ministry = String(body.ministry || body.editora || body.ministerio || "").trim();
-  const revistaVersion = String(body.revistaVersion || body.versaoRevista || "professor").trim();
+
+  const revistaVersion = String(
+    body.revistaVersion ||
+    body.versaoRevista ||
+    body.revistaTipo ||
+    "professor"
+  ).trim().toLowerCase();
+
+  const revistaClasse = String(
+    body.revistaClasse ||
+    body.classe ||
+    body.publico ||
+    "adultos"
+  ).trim();
+
+  const revistaMes = String(body.revistaMes || body.mes || "").trim();
+  const revistaAno = String(body.revistaAno || body.ano || "").trim();
+
   const visualTheme = String(body.visualTheme || "").trim();
+
+  const promptDireto = String(
+    body.prompt ||
+    body.imagePrompt ||
+    body.promptImagem ||
+    ""
+  ).trim();
 
   const lessonTitles = Array.isArray(body.lessonTitles)
     ? body.lessonTitles
@@ -141,8 +202,14 @@ function normalizarDados(body) {
     theme,
     author,
     ministry,
+
     revistaVersion,
+    revistaClasse,
+    revistaMes,
+    revistaAno,
+
     visualTheme,
+    promptDireto,
     lessonTitles
   };
 }
@@ -166,10 +233,20 @@ function escolherTamanhoOpenAI(modelo) {
 ========================================================= */
 
 function criarPromptImagem(dados) {
-  const isBack = dados.tipoImagem === "back";
+  /*
+    Se o index.html já mandou o prompt pronto,
+    usamos ele e apenas reforçamos a regra de NÃO colocar texto.
+  */
+  if (dados.promptDireto && dados.promptDireto.length > 50) {
+    return reforcarPromptSemTexto(dados.promptDireto);
+  }
+
+  const isBack =
+    dados.tipoImagem === "back" ||
+    dados.tipoImagem.includes("contracapa");
 
   const tipoRevista =
-    dados.revistaVersion === "aluno"
+    dados.revistaVersion.includes("aluno")
       ? "REVISTA DO ALUNO"
       : "REVISTA DO PROFESSOR";
 
@@ -183,28 +260,20 @@ function criarPromptImagem(dados) {
 
   if (isBack) {
     return `
-Crie uma arte vertical profissional em proporção 2:3 para a CONTRACAPA de uma revista cristã de Escola Bíblica Dominical.
+Crie SOMENTE A ARTE DE FUNDO de uma contracapa profissional para uma revista cristã mensal de Escola Bíblica Dominical.
 
-IMPORTANTE:
-A imagem deve ser somente arte visual de fundo editorial.
-Não escreva textos pequenos.
-Não coloque letras embaralhadas.
-Não coloque marca d'água.
-Não coloque logotipo de IA.
-Não coloque símbolo do Gemini.
-Não coloque pessoas.
-Não crie aparência infantil.
-Não use folhinhas soltas, bloquinhos, cartões ou papeizinhos retangulares espalhados.
-Não polua a composição.
+NÃO escreva nenhum texto na imagem.
+NÃO coloque título, subtítulo, letras, palavras, logotipos, marcas, selos, assinatura ou nomes.
+A imagem será usada como fundo visual, e o aplicativo colocará os textos depois.
 
 Tema da revista:
-${dados.title}
+${dados.title || "Bibliologia"}
 
 Subtítulo:
-${dados.subtitle}
+${dados.subtitle || "A origem, formação, preservação e transmissão da Bíblia"}
 
 Assunto geral:
-${dados.theme}
+${dados.theme || "Bibliologia e o valor das Escrituras"}
 
 ${temaVisual}
 
@@ -229,44 +298,35 @@ Elementos visuais desejados:
 - manuscritos bíblicos;
 - textura de pergaminho antigo;
 - luz dourada suave;
-- tons marrons profundos, dourados, bege envelhecido e sombras elegantes;
+- tons marrons profundos, dourados, bege envelhecido, azul escuro e sombras elegantes;
 - atmosfera de reverência, estudo bíblico e preservação das Escrituras.
 
-A contracapa deve ter áreas limpas e confortáveis para colocar texto depois.
+A contracapa deve ter áreas limpas e confortáveis para o app colocar texto depois.
 Deve parecer uma revista impressa profissional, não uma imagem simples.
+
+Formato vertical 2:3.
+Sem texto.
+Sem letras legíveis.
+Sem marca d'água.
+Sem logotipo.
 `.trim();
   }
 
   return `
-Crie uma arte vertical profissional em proporção 2:3 para a CAPA FRONTAL de uma revista mensal cristã de Escola Bíblica Dominical.
+Crie SOMENTE A ARTE DE FUNDO de uma capa frontal profissional para uma revista mensal cristã de Escola Bíblica Dominical.
 
-A imagem deve ser uma arte de capa profissional, bonita, editorial e madura.
-A imagem será usada como fundo principal da capa, e o aplicativo colocará o título por cima depois.
-
-IMPORTANTE:
-NÃO escreva o título na imagem.
-NÃO escreva palavras pequenas.
-NÃO coloque letras embaralhadas.
-NÃO coloque marca d'água.
-NÃO coloque logotipo de IA.
-NÃO coloque símbolo do Gemini.
-NÃO coloque pessoas.
-NÃO criar aparência infantil.
-NÃO use folhinhas soltas.
-NÃO use bloquinhos.
-NÃO use cartões espalhados.
-NÃO use papeizinhos retangulares.
-NÃO poluir a capa.
-NÃO esconder o espaço central superior onde o título será colocado depois.
+NÃO escreva nenhum texto na imagem.
+NÃO coloque título, subtítulo, letras, palavras, logotipos, marcas, selos, assinatura ou nomes.
+A imagem será usada como fundo principal da capa, e o aplicativo colocará todos os textos por cima depois.
 
 Tema principal da revista:
-${dados.title}
+${dados.title || "O Livro que Carregamos"}
 
 Subtítulo:
-${dados.subtitle}
+${dados.subtitle || "A origem, formação, preservação e transmissão da Bíblia"}
 
 Assunto geral:
-${dados.theme}
+${dados.theme || "Bibliologia: a origem, formação, preservação e transmissão das Escrituras"}
 
 ${temaVisual}
 
@@ -274,26 +334,33 @@ Tipo de revista:
 REVISTA MENSAL DE ESCOLA BÍBLICA DOMINICAL
 ${tipoRevista}
 
+Classe:
+${dados.revistaClasse || "adultos"}
+
+Mês/Ano:
+${[dados.revistaMes, dados.revistaAno].filter(Boolean).join(" de ")}
+
 Ministério:
-${dados.ministry}
+${dados.ministry || "CPID — Casa Publicadora da Igreja de Deus"}
 
 Autor/comentarista:
-${dados.author}
+${dados.author || "Isiquel Rodrigues"}
 
 Lições da revista:
 ${titulosLicoes}
 
-Direção visual obrigatória:
+DIREÇÃO VISUAL OBRIGATÓRIA:
 Crie uma composição nobre, bíblica e editorial com:
-- Bíblia antiga aberta em posição de destaque;
+- uma Bíblia antiga aberta em posição de destaque;
 - páginas antigas com textura realista;
+- luz dourada celestial saindo da Bíblia;
 - pergaminhos enrolados;
 - rolos antigos das Escrituras;
-- manuscritos bíblicos ao fundo;
-- luz dourada suave saindo da Bíblia;
+- papiros e manuscritos ao fundo;
+- textura sutil de manuscritos hebraicos e gregos, mas sem letras legíveis;
 - atmosfera de revelação, autoridade divina, inspiração bíblica e preservação das Escrituras;
 - profundidade visual;
-- fundo escuro elegante com tons marrons, dourados, bronze, bege antigo e luz suave.
+- fundo escuro elegante com tons azul profundo, marrom, dourado, bronze, bege antigo e luz quente.
 
 A imagem deve transmitir:
 - Bibliologia;
@@ -306,18 +373,50 @@ A imagem deve transmitir:
 - estudo bíblico sério;
 - herança espiritual da Igreja.
 
-Estilo:
+ESTILO:
 - capa de revista cristã impressa profissional;
 - acabamento realista ou semi-ilustrado premium;
 - aparência editorial moderna;
 - composição elegante;
-- iluminação cinematográfica suave;
+- iluminação cinematográfica;
 - visual limpo, nobre e bem acabado;
 - sem excesso de elementos;
-- sem aparência infantil.
+- sem aparência infantil;
+- sem pessoas;
+- sem cartões, papeizinhos, bloquinhos ou elementos soltos bagunçados.
 
-Deixe espaço visual organizado para o título e subtítulo serem colocados pelo aplicativo depois.
-A imagem deve funcionar como arte de capa profissional, não apenas como fundo simples.
+COMPOSIÇÃO:
+- deixe espaço visual organizado no topo e no centro para o app aplicar título e subtítulo;
+- a Bíblia aberta deve ficar como elemento principal;
+- o fundo deve ser rico, mas não poluído;
+- a capa deve parecer uma arte premium de revista cristã real.
+
+Formato vertical 2:3.
+Sem texto.
+Sem letras legíveis.
+Sem marca d'água.
+Sem logotipo.
+`.trim();
+}
+
+function reforcarPromptSemTexto(promptOriginal) {
+  return `
+${promptOriginal}
+
+REFORÇO OBRIGATÓRIO PARA A GERAÇÃO:
+- Gere somente a arte/fundo visual da capa.
+- Não escreva nenhum texto na imagem.
+- Não coloque título.
+- Não coloque subtítulo.
+- Não coloque letras legíveis.
+- Não coloque nome de autor.
+- Não coloque nome de ministério.
+- Não coloque logotipo.
+- Não coloque marca d'água.
+- Não coloque selo com texto.
+- Não coloque assinatura.
+- A arte precisa ter espaço limpo para o aplicativo colocar os textos por cima.
+- Visual profissional, premium, editorial, reverente e adequado para revista cristã impressa.
 `.trim();
 }
 
@@ -380,6 +479,8 @@ async function gerarImagemGemini({ apiKey, model, prompt }) {
 async function gerarImagemOpenAI({ apiKey, model, prompt, size }) {
   const url = "https://api.openai.com/v1/images/generations";
 
+  const m = String(model || "").toLowerCase();
+
   const body = {
     model,
     prompt,
@@ -387,10 +488,15 @@ async function gerarImagemOpenAI({ apiKey, model, prompt, size }) {
     n: 1
   };
 
-  if (!String(model).toLowerCase().includes("dall-e-3")) {
-    body.quality = "medium";
-  } else {
+  /*
+    gpt-image-1 aceita quality: low, medium, high em muitas contas.
+    dall-e-3 usa standard/hd.
+    Se a conta/modelo não aceitar quality, o código tenta de novo sem quality.
+  */
+  if (m.includes("dall-e-3")) {
     body.quality = "standard";
+  } else {
+    body.quality = "medium";
   }
 
   let resposta = await fetch(url, {
@@ -407,7 +513,7 @@ async function gerarImagemOpenAI({ apiKey, model, prompt, size }) {
   if (!resposta.ok) {
     const msg = data?.error?.message || "";
 
-    if (msg.toLowerCase().includes("quality")) {
+    if (msg.toLowerCase().includes("quality") || msg.toLowerCase().includes("unsupported")) {
       delete body.quality;
 
       resposta = await fetch(url, {
@@ -475,9 +581,10 @@ function limparMensagemErro(msg) {
     texto.includes("api key") ||
     texto.includes("apikey") ||
     texto.includes("invalid key") ||
-    texto.includes("unauthorized")
+    texto.includes("unauthorized") ||
+    texto.includes("permission")
   ) {
-    return "A chave da API de imagem está inválida ou não foi configurada corretamente na Vercel. Confira GEMINI_API_KEY e OPENAI_API_KEY.";
+    return "A chave da API de imagem está inválida, sem permissão ou não foi configurada corretamente na Vercel. Confira GEMINI_API_KEY e OPENAI_API_KEY.";
   }
 
   if (
@@ -485,10 +592,11 @@ function limparMensagemErro(msg) {
     (
       texto.includes("not found") ||
       texto.includes("does not exist") ||
-      texto.includes("not supported")
+      texto.includes("not supported") ||
+      texto.includes("unsupported")
     )
   ) {
-    return "Um dos modelos de imagem configurados não está disponível na sua conta. Verifique GEMINI_IMAGE_MODEL ou OPENAI_IMAGE_MODEL na Vercel.";
+    return "Um dos modelos de imagem configurados não está disponível na sua conta. Verifique GEMINI_IMAGE_MODEL_1 ou OPENAI_IMAGE_MODEL_1 na Vercel.";
   }
 
   if (texto.includes("safety") || texto.includes("policy")) {
