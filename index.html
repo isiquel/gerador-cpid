@@ -662,17 +662,6 @@
       font-size:13px;
     }
 
-    .bible-note{
-      border-left:4px solid #0f63c9;
-      background:#f1f7ff;
-      border-radius:0 12px 12px 0;
-      padding:10px 12px;
-      margin:8px 0 12px;
-      color:#263d5a;
-      line-height:1.65;
-      font-size:15px;
-    }
-
     .synopsis{
       background:linear-gradient(180deg,#fff8e9,#ffedbf);
       border:1px solid #d6a734;
@@ -2530,6 +2519,9 @@ REGRAS IMPORTANTES
 - Quando precisar mencionar o tema no texto, use somente o Tema visível do material.
 - Respeitar os dados de cada lição: título, texto áureo, verdade prática, leitura em classe, leitura diária e palavra-chave.
 - Texto Áureo, Verdade Prática, Leitura Bíblica em Classe e Leitura Diária devem continuar separados e bem organizados.
+- Cada lição deve possuir uma introdução exclusiva, diretamente ligada ao título, ao foco, ao texto áureo e à leitura bíblica em classe daquela lição.
+- Não repetir a mesma introdução nas quatro lições.
+- A introdução deve preparar o aluno para o assunto específico que será desenvolvido naquela lição.
 - Nos tópicos e subtópicos, não coloque referências bíblicas apenas como etiquetas soltas.
 - As referências bíblicas dos tópicos devem entrar dentro da argumentação, acompanhando o desenvolvimento lógico do parágrafo.
 - Cada subtópico deve ter progressão: ideia principal, base bíblica citada no texto, explicação do texto bíblico, conexão doutrinária e aplicação prática.
@@ -2750,7 +2742,7 @@ ESTRUTURA OBRIGATÓRIA:
 5. Leitura Bíblica em Classe com a referência obrigatória e o texto bíblico da passagem, quando possível.
 6. Objetivos da lição.
 7. Plano de aula.
-8. Introdução bem desenvolvida.
+8. Introdução exclusiva da lição, sem repetir a introdução das outras lições.
 9. Três tópicos principais.
 10. Cada tópico deve ter três subtópicos.
 11. Cada subtópico deve ter conteúdo real, com explicação bíblica, doutrinária, histórica quando necessário e aplicação cristã.
@@ -2771,6 +2763,15 @@ ESTRUTURA OBRIGATÓRIA:
 - Ampliando o conhecimento;
 - Auxílio teológico;
 - Auxílio ao professor.
+
+REGRA DA INTRODUÇÃO:
+- A introdução da Lição ${numero} deve ser própria desta lição.
+- Ela deve introduzir especificamente o assunto: ${dados.titulo}.
+- Ela deve se conectar ao foco da lição: ${dados.foco}.
+- Ela deve preparar o professor e a classe para o desenvolvimento da lição.
+- Não repetir a introdução das outras lições.
+- Não usar introdução genérica do tema mensal.
+- A introdução deve mencionar o texto bíblico principal da lição e mostrar por que ele é importante para o assunto.
 
 REGRAS BÍBLICAS IMPORTANTES:
 - A EBD é Escola Bíblica Dominical, então a lição precisa ter Bíblia.
@@ -2838,7 +2839,7 @@ ESTRUTURA OBRIGATÓRIA:
 4. Verdade prática.
 5. Leitura bíblica em classe com referência e texto bíblico, quando possível.
 6. Objetivos.
-7. Introdução.
+7. Introdução exclusiva da lição, sem repetir a introdução das outras lições.
 8. Três tópicos.
 9. Três subtópicos por tópico.
 10. Cada subtópico deve ter base bíblica, mas as referências devem entrar naturalmente dentro do argumento.
@@ -2846,6 +2847,14 @@ ESTRUTURA OBRIGATÓRIA:
 12. Aplicação pessoal.
 13. Conclusão.
 14. Revisando o conteúdo com 5 perguntas sem respostas, com espaço em branco.
+
+REGRA DA INTRODUÇÃO:
+- A introdução da Lição ${numero} deve ser própria desta lição.
+- Ela deve introduzir especificamente o assunto: ${dados.titulo}.
+- Ela deve se conectar ao foco da lição: ${dados.foco}.
+- Ela deve mencionar o texto bíblico principal da lição: ${dados.leituraClasse}.
+- Não repetir a introdução das outras lições.
+- Não usar introdução genérica do tema mensal.
 
 REGRAS DE ESCRITA:
 - Não coloque referências bíblicas apenas como etiquetas soltas dentro dos subtópicos.
@@ -2902,7 +2911,7 @@ Este capítulo é material de bastidor e preparação do professor.
 
 ESTRUTURA OBRIGATÓRIA:
 1. Cabeçalho do capítulo.
-2. Introdução robusta.
+2. Introdução robusta própria deste capítulo, ligada diretamente à Lição ${numero}: ${dados.titulo}.
 3. O que a revista ensina de forma resumida.
 4. Ampliação do tema.
 5. Panorama bíblico.
@@ -3265,6 +3274,63 @@ Mateus 24.35:
               </div>
             `).join("")}
           </div>
+        </div>
+      `;
+    }
+
+    function gerarIntroducaoLicao(base,dados){
+      const titulo = String(dados.titulo || "").toLowerCase();
+
+      if(titulo.includes("o que é a bíblia") || titulo.includes("o que é a biblia")){
+        return `
+          <div class="block">
+            <h3>Introdução</h3>
+            ${paragraphHtml(`A primeira lição começa pela pergunta mais fundamental de todo estudo de Bibliologia: o que é a Bíblia? Antes de falar sobre formação, transmissão, traduções ou leitura diária, o aluno precisa compreender a natureza espiritual das Escrituras. Paulo afirma que “toda Escritura é divinamente inspirada” ${refInline("2Tm 3.16")}, mostrando que a Bíblia não é apenas um registro religioso, mas a Palavra de Deus comunicada aos homens.`)}
+            ${paragraphHtml(`Ao estudar ${refInline(dados.leituraClasse)}, a classe será conduzida a enxergar que a Escritura ensina, corrige, redargui e instrui em justiça. Isso significa que a Bíblia não apenas informa sobre Deus; ela forma o caráter do servo de Deus. Ela orienta a fé, governa a prática cristã e prepara o homem de Deus para toda boa obra.`)}
+            ${paragraph(`Nesta lição, o professor deve conduzir a turma a uma convicção essencial: a Bíblia precisa ser recebida com reverência, estudada com seriedade e obedecida com fé. Quem compreende o que a Bíblia é passa a lê-la não como livro comum, mas como voz de Deus para sua vida.`)}
+          </div>
+        `;
+      }
+
+      if(titulo.includes("como a bíblia foi formada") || titulo.includes("como a biblia foi formada")){
+        return `
+          <div class="block">
+            <h3>Introdução</h3>
+            ${paragraphHtml(`Depois de compreender que a Bíblia é a Palavra de Deus, surge uma pergunta natural: como essa Palavra chegou ao formato que conhecemos? A segunda lição apresenta o processo de formação das Escrituras, mostrando que Deus usou autores humanos, épocas diferentes, idiomas variados e circunstâncias históricas específicas para comunicar sua mensagem.`)}
+            ${paragraphHtml(`O texto de ${refInline(dados.leituraClasse)} é central para este estudo, pois Pedro afirma que a profecia nunca foi produzida por vontade humana, mas que homens santos falaram inspirados pelo Espírito Santo. Isso ajuda a classe a entender que a participação humana na escrita bíblica não anula sua origem divina; pelo contrário, revela a maneira sábia como Deus decidiu falar dentro da história.`)}
+            ${paragraph(`Nesta lição, o professor deve mostrar que a Bíblia não caiu pronta do céu em formato impresso. Ela foi formada ao longo do tempo, por meio da inspiração divina e do registro fiel da revelação de Deus. Esse conhecimento fortalece a fé, corrige ideias simplistas e desperta gratidão pelo cuidado do Senhor em comunicar sua Palavra.`)}
+          </div>
+        `;
+      }
+
+      if(titulo.includes("como a bíblia chegou") || titulo.includes("como a biblia chegou")){
+        return `
+          <div class="block">
+            <h3>Introdução</h3>
+            ${paragraphHtml(`A terceira lição trata de uma questão indispensável: como a Bíblia chegou até nós? Depois de estudar sua natureza e sua formação, agora observamos sua transmissão, preservação, cópias manuscritas, traduções e organização ao longo da história. Esse assunto mostra que a Palavra de Deus atravessou séculos sem perder sua força espiritual.`)}
+            ${paragraphHtml(`A leitura bíblica da lição, ${refInline(dados.leituraClasse)}, destaca a permanência da Palavra diante da fragilidade humana. Isaías declara que a erva seca e a flor cai, mas a Palavra de Deus permanece para sempre; Jesus confirma que céu e terra passarão, mas suas palavras não passarão. Essa verdade dá segurança ao professor e à classe.`)}
+            ${paragraph(`Nesta lição, o aluno deve perceber que ter a Bíblia em mãos hoje não é fruto do acaso. Por trás da preservação das Escrituras há o cuidado soberano de Deus, usando meios históricos, comunidades de fé, copistas, tradutores e servos comprometidos com a transmissão da verdade.`)}
+          </div>
+        `;
+      }
+
+      if(titulo.includes("privilégio") || titulo.includes("privilegio")){
+        return `
+          <div class="block">
+            <h3>Introdução</h3>
+            ${paragraphHtml(`A quarta lição encerra o mês levando a classe da informação à responsabilidade. Depois de estudar o que a Bíblia é, como foi formada e como chegou até nós, agora somos chamados a refletir sobre o privilégio de ter a Bíblia em mãos. Possuir a Palavra de Deus é uma bênção, mas também uma responsabilidade espiritual.`)}
+            ${paragraphHtml(`O Salmo 119.105 afirma que a Palavra é lâmpada para os pés e luz para o caminho ${refInline("Sl 119.105")}. A imagem mostra que a Escritura orienta tanto os passos diários quanto a direção da vida. Quem tem essa luz não deve caminhar como quem vive nas trevas.`)}
+            ${paragraph(`Nesta lição, o professor deve conduzir a classe a gratidão, reverência e obediência. A Bíblia aberta diante de nós não deve produzir apenas admiração, mas leitura constante, estudo sério, meditação, memorização e prática fiel da vontade de Deus.`)}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="block">
+          <h3>Introdução</h3>
+          ${paragraphHtml(`Esta lição introduz o assunto "${escapeHtml(dados.titulo)}", conduzindo a classe a compreender ${escapeHtml(dados.foco)}. O estudo precisa nascer das Escrituras, pois é a Palavra de Deus que orienta a fé, corrige a vida e conduz o povo do Senhor à maturidade espiritual.`)}
+          ${paragraphHtml(`A leitura bíblica principal desta lição, ${refInline(dados.leituraClasse)}, deve ser observada com atenção. O professor precisa mostrar que o texto bíblico não é apenas abertura formal da aula, mas fundamento do ensino que será desenvolvido.`)}
+          ${paragraph(`A introdução desta lição prepara o aluno para enxergar o tema com clareza, reverência e aplicação prática. O alvo é que a classe compreenda a verdade bíblica, reflita sobre sua própria vida e responda com fé e obediência.`)}
         </div>
       `;
     }
@@ -3857,12 +3923,7 @@ Mateus 24.35:
           </div>
         </div>
 
-        <div class="block">
-          <h3>Introdução</h3>
-          ${paragraph("Esta lição integra o tema " + base.visibleTheme + ". O assunto é essencial para uma igreja que deseja crescer com firmeza doutrinária, maturidade espiritual e fidelidade à Palavra de Deus.")}
-          ${paragraph("Em uma geração marcada por opiniões rápidas, relativismo moral e muitas vozes religiosas, a igreja precisa retornar continuamente às Escrituras. A Bíblia não é um acessório da fé cristã; ela é o fundamento pelo qual conhecemos Deus, compreendemos o evangelho e discernimos a verdade.")}
-          ${paragraph("O objetivo não é apenas acumular informações, mas formar reverência, convicção e prática cristã. Conhecer a verdade deve produzir amor pela Palavra, gratidão a Deus e compromisso com a obediência.")}
-        </div>
+        ${gerarIntroducaoLicao(base,dados)}
 
         ${renderTopicos(gerarTopicosGenericos(base,dados))}
 
@@ -4213,7 +4274,7 @@ Mateus 24.35:
 
           <div class="knowledge-box">
             <h4>Estrutura Pedagógica</h4>
-            ${paragraph("Cada lição apresenta texto áureo, verdade prática, leitura diária, leitura bíblica em classe, objetivos, plano de aula, introdução, três tópicos, subtópicos, sinopse, aplicação, conclusão e revisão.")}
+            ${paragraph("Cada lição apresenta texto áureo, verdade prática, leitura diária, leitura bíblica em classe, objetivos, plano de aula, introdução própria da lição, três tópicos, subtópicos, sinopse, aplicação, conclusão e revisão.")}
           </div>
         `;
       }
@@ -4226,7 +4287,7 @@ Mateus 24.35:
         const dados = licoes[i];
 
         await pause(900);
-        setStep(i + 2,`Gerando Lição ${numero} com profundidade bíblica...`);
+        setStep(i + 2,`Gerando Lição ${numero} com introdução própria e profundidade bíblica...`);
 
         const prompt = info.isTeacher
           ? promptLicaoProfessor(base,info,licoes,numero,dados)
@@ -4289,7 +4350,7 @@ Mateus 24.35:
         salvarRevistaProfessorBaseAutomatico(base,info,html);
         finishSteps("Revista do Professor gerada e salva automaticamente como base para o Livro de Apoio.");
       }else{
-        finishSteps("Revista EBD mensal gerada com conteúdo robusto, arte de capa profissional e textos aplicados pelo app.");
+        finishSteps("Revista EBD mensal gerada com conteúdo robusto, introduções próprias, arte de capa profissional e textos aplicados pelo app.");
       }
     }
 
@@ -4678,7 +4739,7 @@ Mateus 24.35:
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Quero uma revista bíblica, robusta e profunda. As referências bíblicas dos subtópicos devem entrar dentro da argumentação, acompanhando a progressão do ensino. Não quero referências apenas como caixas soltas. Cada subtópico deve ter ideia principal, texto bíblico citado no parágrafo, explicação, conexão doutrinária e aplicação prática. A leitura diária deve aparecer logo depois do cabeçalho da lição.");
+        setValue("extraNotes","Quero uma revista bíblica, robusta e profunda. Cada lição precisa ter introdução própria, sem repetir a mesma introdução. As referências bíblicas dos subtópicos devem entrar dentro da argumentação, acompanhando a progressão do ensino. Não quero referências apenas como caixas soltas. Cada subtópico deve ter ideia principal, texto bíblico citado no parágrafo, explicação, conexão doutrinária e aplicação prática. A leitura diária deve aparecer logo depois do cabeçalho da lição.");
       }
 
       if(type === "sermao"){
@@ -4725,6 +4786,7 @@ Inclua referências bíblicas explicadas, aplicações práticas, perguntas para
 Não copie conteúdo de nenhuma editora.
 Explique os versículos com fidelidade ao contexto.
 As referências bíblicas devem entrar naturalmente na argumentação, sustentando o raciocínio, e não apenas aparecer como etiquetas soltas.
+Cada introdução deve ser exclusiva do assunto trabalhado, sem repetir uma introdução genérica.
       `.trim();
 
       setValue("theme",prompt);
