@@ -17,21 +17,30 @@
       --brown:#5f3b25;
       --brown-2:#7a5034;
       --gold:#b88c3a;
+      --gold-strong:#d89600;
       --green:#238b45;
+      --green-strong:#1f9d45;
       --green-2:#dff4e5;
       --blue:#224b88;
+      --blue-strong:#0f63c9;
       --blue-soft:#edf4ff;
       --red:#8f2b2b;
+      --red-strong:#bd2424;
       --red-soft:#fff0f0;
       --shadow:0 10px 25px rgba(60,35,20,.08);
       --radius:18px;
     }
 
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
+
+    html,body{
+      margin:0;
+      padding:0;
+    }
+
     body{
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(180deg,#f8f3ed 0%, #efe7dd 100%);
+      background:linear-gradient(180deg,#f8f3ed 0%, #efe7dd 100%);
       color:var(--text);
     }
 
@@ -128,7 +137,7 @@
       margin-bottom:13px;
     }
 
-    input, textarea, select{
+    input,textarea,select{
       width:100%;
       border:1px solid var(--line);
       background:#fff;
@@ -146,7 +155,9 @@
       line-height:1.5;
     }
 
-    input:focus, textarea:focus, select:focus{
+    input:focus,
+    textarea:focus,
+    select:focus{
       border-color:var(--brown-2);
       box-shadow:0 0 0 4px rgba(122,80,52,.12);
     }
@@ -255,7 +266,10 @@
       transition:.2s ease;
     }
 
-    .btn:hover{transform:translateY(-1px)}
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
     .btn:disabled{
       opacity:.55;
       cursor:not-allowed;
@@ -342,7 +356,9 @@
       color:#257342;
     }
 
-    .hidden{display:none !important}
+    .hidden{
+      display:none !important;
+    }
 
     .preview-header{
       display:flex;
@@ -410,10 +426,12 @@
       padding:22px;
       box-shadow:0 6px 18px rgba(50,30,20,.04);
       page-break-after:always;
+      break-after:page;
     }
 
     .page:last-child{
       page-break-after:auto;
+      break-after:auto;
     }
 
     .page-title{
@@ -465,7 +483,9 @@
       font-size:16px;
     }
 
-    .list li{margin-bottom:8px}
+    .list li{
+      margin-bottom:8px;
+    }
 
     .mini-grid{
       display:grid;
@@ -475,26 +495,28 @@
     }
 
     .mini-card{
-      border:1px solid #e4d9cf;
+      border:1px solid #b8d4f2;
       border-radius:18px;
       padding:18px;
-      background:#fff;
+      background:linear-gradient(180deg,#ffffff,#f7fbff);
     }
 
     .memory-verse{
-      background:#fff7ea;
-      border:1px solid #e6cb98;
+      background:linear-gradient(135deg,#fff1c2,#ffd978);
+      border:1px solid #c98900;
       border-radius:18px;
       padding:18px;
       margin-bottom:16px;
+      box-shadow:0 8px 20px rgba(179,122,0,.10);
     }
 
     .daily-reading{
-      background:#203e76;
+      background:linear-gradient(135deg,#061a48,#0b4fa8 55%,#1075c7);
       color:#fff;
       border-radius:18px;
       padding:18px;
       margin-bottom:16px;
+      box-shadow:0 12px 24px rgba(7,49,114,.16);
     }
 
     .daily-reading h3{
@@ -509,8 +531,8 @@
     }
 
     .daily-item{
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.18);
       border-radius:14px;
       padding:10px 12px;
       font-size:14px;
@@ -524,7 +546,9 @@
     }
 
     .lesson-hero{
-      background:linear-gradient(135deg,#223d73,#365e9e);
+      background:linear-gradient(135deg,#082d73,#0f63c9 55%,#1c8fce);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 16px 35px rgba(9,50,119,.18);
       color:#fff;
       border-radius:22px;
       padding:26px;
@@ -535,8 +559,8 @@
       display:inline-block;
       padding:7px 12px;
       border-radius:999px;
-      background:rgba(255,255,255,.14);
-      border:1px solid rgba(255,255,255,.2);
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.24);
       font-size:13px;
       font-weight:700;
       margin-bottom:14px;
@@ -555,71 +579,82 @@
       font-size:15px;
     }
 
+    .lesson-page{
+      page-break-before:always;
+      break-before:page;
+    }
+
     .lesson-topic{
-      border-left:5px solid #284d91;
-      background:#fff;
+      border-left:8px solid #0c5fc4;
+      background:linear-gradient(180deg,#ffffff,#f8fbff);
       border-radius:0 18px 18px 0;
-      padding:0 0 0 16px;
+      padding:0 0 0 18px;
       margin-bottom:22px;
     }
 
     .lesson-topic h3{
       font-size:28px;
       margin:0 0 12px;
-      color:#20457f;
+      color:#073d8c;
       padding-top:2px;
     }
 
     .subtopic{
       border:1px solid #eadfce;
-      border-left:5px solid #c79b46;
+      border-left:7px solid #d89600;
       border-radius:16px;
       padding:16px;
       margin:14px 0;
-      background:#fffdf9;
+      background:linear-gradient(180deg,#fffdf7,#fff6df);
+      box-shadow:0 8px 18px rgba(110,72,20,.05);
     }
 
     .subtopic h4{
       margin:0 0 10px;
-      color:#5a3a22;
+      color:#603600;
       font-size:20px;
     }
 
     .synopsis{
-      background:#f7f3ea;
-      border:1px solid #ddcfb6;
+      background:linear-gradient(180deg,#fff8e9,#ffedbf);
+      border:1px solid #d6a734;
+      border-left:7px solid #bd8400;
       border-radius:16px;
       padding:16px;
       margin:14px 0 6px;
     }
 
     .knowledge-box{
-      background:#edf4ff;
-      border:1px solid #bcd0ef;
+      background:linear-gradient(180deg,#eaf4ff,#dcecff);
+      border:1px solid #4a8dda;
+      border-left:7px solid #1264c5;
       border-radius:18px;
       padding:18px;
       margin-bottom:16px;
     }
 
     .teacher-help{
-      background:#f1f8ff;
-      border:1px solid #93b8ea;
+      background:linear-gradient(180deg,#eefaff,#def4ff);
+      border:1px solid #2c91cf;
+      border-left:7px solid #008ac2;
       border-radius:18px;
       padding:18px;
       margin-bottom:16px;
     }
 
     .summary-box{
-      background:#fff8f8;
-      border:1px solid #d8b0b0;
+      background:linear-gradient(180deg,#fff3f3,#ffe7e7);
+      border:1px solid #c94a4a;
+      border-left:7px solid #b92424;
       border-radius:18px;
       padding:18px;
       margin-bottom:16px;
     }
 
     .personal-application{
-      background:#f8fff8;
-      border:1px solid #b8d5b8;
+      background:linear-gradient(180deg,#effff3,#dffff0);
+      border:1px solid #35a853;
+      border-left:7px solid #208f3d;
       border-radius:18px;
       padding:18px;
       margin-bottom:16px;
@@ -645,16 +680,16 @@
     }
 
     .scripture-box{
-      border:1px solid #e4d6c8;
+      border:1px solid #8bb9ef;
       border-radius:18px;
-      background:#fff;
+      background:linear-gradient(180deg,#ffffff,#f4f9ff);
       padding:18px;
       margin-bottom:16px;
     }
 
     .scripture-box h4{
       margin:0 0 10px;
-      color:#5c3a23;
+      color:#063d8d;
       font-size:20px;
     }
 
@@ -824,6 +859,7 @@
       border:1px solid #ddcfbf;
       color:#7b665a;
       margin-top:6px;
+      line-height:1.4;
     }
 
     #printArea{
@@ -843,7 +879,11 @@
     }
 
     @media (max-width:740px){
-      .grid-2,.grid-3,.mini-grid,.editorial-grid,.daily-grid{
+      .grid-2,
+      .grid-3,
+      .mini-grid,
+      .editorial-grid,
+      .daily-grid{
         grid-template-columns:1fr;
       }
 
@@ -873,6 +913,21 @@
     }
 
     @media print{
+      @page{
+        size:A4 portrait;
+        margin:12mm;
+      }
+
+      body.print-a4 @page{
+        size:A4 portrait;
+        margin:12mm;
+      }
+
+      body.print-a3-livreto @page{
+        size:A3 landscape;
+        margin:10mm;
+      }
+
       body{
         background:#fff;
       }
@@ -907,12 +962,74 @@
         display:block;
       }
 
+      body.print-a3-livreto #printArea{
+        columns:2;
+        column-gap:14mm;
+      }
+
+      body.print-a3-livreto .page,
+      body.print-a3-livreto .cover-page,
+      body.print-a3-livreto .back-cover-page{
+        width:auto;
+        max-width:none;
+        break-inside:avoid;
+        page-break-inside:avoid;
+        margin:0 0 10mm;
+      }
+
       .page,
       .cover-page,
       .back-cover-page{
         box-shadow:none;
         border:1px solid #ddd;
+        page-break-after:always;
+        break-after:page;
+      }
+
+      .page:last-child,
+      .cover-page:last-child,
+      .back-cover-page:last-child{
+        page-break-after:auto;
+        break-after:auto;
+      }
+
+      .lesson-page{
+        page-break-before:always;
+        break-before:page;
+      }
+
+      .lesson-hero,
+      .page-title{
+        break-after:avoid;
+        page-break-after:avoid;
+      }
+
+      .lesson-topic,
+      .subtopic,
+      .memory-verse,
+      .scripture-box,
+      .daily-reading,
+      .mini-card,
+      .summary-box,
+      .knowledge-box,
+      .teacher-help,
+      .personal-application,
+      .synopsis,
+      .block{
         break-inside:avoid;
+        page-break-inside:avoid;
+      }
+
+      .lesson-topic h3,
+      .subtopic h4,
+      .block h3{
+        break-after:avoid;
+        page-break-after:avoid;
+      }
+
+      .text{
+        orphans:3;
+        widows:3;
       }
     }
   </style>
@@ -945,6 +1062,7 @@
         <input type="hidden" id="contentType" value="sermao" />
 
         <div class="section-title">Tipo de material</div>
+
         <div class="type-grid">
           <button type="button" class="type-option active" data-type="sermao" data-reserved="false">
             <div class="type-icon">🎙️</div>
@@ -1176,6 +1294,17 @@
             </div>
           </div>
 
+          <div class="field">
+            <label for="printFormat">Formato de impressão da revista</label>
+            <select id="printFormat">
+              <option value="a4" selected>A4 normal — PDF padrão</option>
+              <option value="a3-livreto">A3 paisagem — estilo livreto / encadernação</option>
+            </select>
+            <div class="chip-note">
+              Para livreto dobrável perfeito, use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
+            </div>
+          </div>
+
           <div class="grid-2">
             <div class="field">
               <label for="revistaMes">Mês</label>
@@ -1349,7 +1478,7 @@
       return el ? String(el.value || "").trim() : "";
     }
 
-    function setValue(id, value){
+    function setValue(id,value){
       const el = document.getElementById(id);
       if(el) el.value = value;
     }
@@ -1393,7 +1522,7 @@
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    function setStatus(message, type = ""){
+    function setStatus(message,type = ""){
       statusBox.className = "status";
       if(type) statusBox.classList.add(type);
       statusBox.textContent = message;
@@ -1437,8 +1566,9 @@
       progressBar.style.width = "0%";
     }
 
-    function setStep(index, message){
+    function setStep(index,message){
       const steps = [...stepsBox.querySelectorAll(".step")];
+
       steps.forEach((step,i) => {
         step.classList.remove("active");
         if(i < index) step.classList.add("done");
@@ -1457,8 +1587,9 @@
         step.classList.remove("active");
         step.classList.add("done");
       });
+
       progressBar.style.width = "100%";
-      if(message) setStatus(message, "ok");
+      if(message) setStatus(message,"ok");
     }
 
     function updateReservedState(){
@@ -1489,7 +1620,7 @@
 
     function setContentType(type){
       if(isReservedType(type) && !isAdminUnlocked()){
-        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.", "error");
+        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.","error");
         return;
       }
 
@@ -1497,7 +1628,7 @@
       contentTypeInput.value = type;
 
       typeButtons.forEach(button => {
-        button.classList.toggle("active", button.dataset.type === type);
+        button.classList.toggle("active",button.dataset.type === type);
       });
 
       hideDynamicFields();
@@ -1505,14 +1636,18 @@
       if(type === "sermao") sermaoFields.classList.remove("hidden");
       if(type === "devocional") devocionalFields.classList.remove("hidden");
       if(type === "estudo") estudoFields.classList.remove("hidden");
+
       if(type === "revista"){
         revistaFields.classList.remove("hidden");
-        setValue("coverMode", "com-capa");
+        setValue("coverMode","com-capa");
       }
-      if(["ebook","livro","curso"].includes(type)) bookFields.classList.remove("hidden");
+
+      if(["ebook","livro","curso"].includes(type)){
+        bookFields.classList.remove("hidden");
+      }
 
       updateSteps(type);
-      setStatus("Modo selecionado: " + getTypeLabel(type) + ".", "ok");
+      setStatus("Modo selecionado: " + getTypeLabel(type) + ".","ok");
     }
 
     function defaultTitle(type){
@@ -1525,6 +1660,7 @@
         livro:"Livro Cristão",
         curso:"Curso Bíblico"
       };
+
       return labels[type] || "Material Cristão";
     }
 
@@ -1538,6 +1674,7 @@
         livro:"Uma obra cristã estruturada para ensino e edificação.",
         curso:"Formação bíblica organizada em módulos."
       };
+
       return subtitles[type] || "Material gerado pelo VERBO IA.";
     }
 
@@ -1546,23 +1683,23 @@
 
       return {
         type,
-        title: getValue("title") || defaultTitle(type),
-        subtitle: getValue("subtitle") || defaultSubtitle(type),
-        theme: getValue("theme") || "Tema não informado",
-        biblicalBase: getValue("biblicalBase") || "Texto bíblico a definir",
-        targetAudience: getValue("targetAudience") || "Igreja em geral",
-        tone: getValue("tone") || "bíblico, pastoral, didático e pentecostal",
-        author: getValue("author") || "Autor não informado",
-        ministry: getValue("ministry") || "Ministério não informado",
-        depthLevel: getValue("depthLevel") || "profundo",
-        coverMode: type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa"),
-        extraNotes: getValue("extraNotes") || ""
+        title:getValue("title") || defaultTitle(type),
+        subtitle:getValue("subtitle") || defaultSubtitle(type),
+        theme:getValue("theme") || "Tema não informado",
+        biblicalBase:getValue("biblicalBase") || "Texto bíblico a definir",
+        targetAudience:getValue("targetAudience") || "Igreja em geral",
+        tone:getValue("tone") || "bíblico, pastoral, didático e pentecostal",
+        author:getValue("author") || "Autor não informado",
+        ministry:getValue("ministry") || "Ministério não informado",
+        depthLevel:getValue("depthLevel") || "profundo",
+        coverMode:type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa"),
+        extraNotes:getValue("extraNotes") || ""
       };
     }
 
-    function renderPage(inner){
+    function renderPage(inner,extraClass = ""){
       return `
-        <section class="page">
+        <section class="page ${extraClass}">
           ${inner}
         </section>
       `;
@@ -1570,12 +1707,14 @@
 
     function renderGenerated(html){
       currentHtml = html;
+
       const temp = document.createElement("div");
       temp.innerHTML = html;
       currentText = temp.innerText.trim();
 
       result.innerHTML = html;
       printArea.innerHTML = html;
+
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
       btnFinishEdit.disabled = true;
@@ -1631,19 +1770,19 @@
 
     function limparMarkdownHtml(text){
       return String(text || "")
-        .replace(/^```html\s*/i, "")
-        .replace(/^```\s*/i, "")
-        .replace(/```$/i, "")
+        .replace(/^```html\s*/i,"")
+        .replace(/^```\s*/i,"")
+        .replace(/```$/i,"")
         .trim();
     }
 
-    async function chamarTextoIA(prompt, etapa = "Geração"){
+    async function chamarTextoIA(prompt,etapa = "Geração"){
       const payload = {
         prompt,
         etapa,
-        tipo: currentType,
-        formato: "html",
-        sistema: "VERBO IA"
+        tipo:currentType,
+        formato:"html",
+        sistema:"VERBO IA"
       };
 
       const globalFns = [
@@ -1657,12 +1796,12 @@
       for(const fnName of globalFns){
         try{
           if(typeof window[fnName] === "function"){
-            const res = await window[fnName](prompt, payload);
+            const res = await window[fnName](prompt,payload);
             const normalized = normalizeAIResponse(res);
             if(normalized) return normalized;
           }
         }catch(error){
-          console.warn("Falha em", fnName, error);
+          console.warn("Falha em",fnName,error);
         }
       }
 
@@ -1675,7 +1814,7 @@
 
       for(const endpoint of endpoints){
         try{
-          const res = await fetch(endpoint, {
+          const res = await fetch(endpoint,{
             method:"POST",
             headers:{ "Content-Type":"application/json" },
             body:JSON.stringify(payload)
@@ -1695,22 +1834,22 @@
             if(normalized) return normalized;
           }
         }catch(error){
-          console.warn("Endpoint indisponível:", endpoint, error);
+          console.warn("Endpoint indisponível:",endpoint,error);
         }
       }
 
       return "";
     }
 
-    async function chamarImagemIA(prompt, meta = {}){
+    async function chamarImagemIA(prompt,meta = {}){
       const payload = {
         prompt,
-        etapa: meta.etapa || "Capa IA",
-        tipo: meta.tipo || currentType,
-        width: 1024,
-        height: 1536,
-        style: "editorial cristã premium",
-        ratio: "2:3"
+        etapa:meta.etapa || "Capa IA",
+        tipo:meta.tipo || currentType,
+        width:1024,
+        height:1536,
+        style:"editorial cristã premium",
+        ratio:"2:3"
       };
 
       const globalFns = [
@@ -1723,14 +1862,14 @@
       for(const fnName of globalFns){
         try{
           if(typeof window[fnName] === "function"){
-            const res = await window[fnName](prompt, payload);
+            const res = await window[fnName](prompt,payload);
             const normalized = normalizeImageResponse(res);
             if(normalized){
               return { ok:true, source:fnName, image:normalized };
             }
           }
         }catch(error){
-          console.warn("Falha na imagem IA:", fnName, error);
+          console.warn("Falha na imagem IA:",fnName,error);
         }
       }
 
@@ -1746,7 +1885,7 @@
 
       for(const endpoint of strategies){
         try{
-          const res = await fetch(endpoint, {
+          const res = await fetch(endpoint,{
             method:"POST",
             headers:{ "Content-Type":"application/json" },
             body:JSON.stringify(payload)
@@ -1770,14 +1909,14 @@
             }
           }
         }catch(error){
-          console.warn("Falha endpoint imagem:", endpoint, error);
+          console.warn("Falha endpoint imagem:",endpoint,error);
         }
       }
 
       return { ok:false, source:"fallback-html", image:"" };
     }
 
-    function montarPromptBaseRevista(base, info){
+    function montarPromptBaseRevista(base,info){
       return `
 Você é um comentarista de Escola Bíblica Dominical, teólogo pentecostal, escritor cristão e professor experiente.
 
@@ -1821,9 +1960,9 @@ REGRAS IMPORTANTES
       `.trim();
     }
 
-    function promptApresentacaoRevista(base, info){
+    function promptApresentacaoRevista(base,info){
       return `
-${montarPromptBaseRevista(base, info)}
+${montarPromptBaseRevista(base,info)}
 
 ETAPA: APRESENTAÇÃO DA REVISTA
 
@@ -1852,9 +1991,9 @@ Quero uma apresentação forte e bem desenvolvida, não resumida.
       `.trim();
     }
 
-    function promptSumarioRevista(base, info){
+    function promptSumarioRevista(base,info){
       return `
-${montarPromptBaseRevista(base, info)}
+${montarPromptBaseRevista(base,info)}
 
 ETAPA: SUMÁRIO DA REVISTA
 
@@ -1887,9 +2026,9 @@ Use HTML com:
       `.trim();
     }
 
-    function promptLicaoProfessor(base, info, numero, dados){
+    function promptLicaoProfessor(base,info,numero,dados){
       return `
-${montarPromptBaseRevista(base, info)}
+${montarPromptBaseRevista(base,info)}
 
 ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO PROFESSOR
 
@@ -1955,9 +2094,9 @@ Use HTML com:
       `.trim();
     }
 
-    function promptLicaoAluno(base, info, numero, dados){
+    function promptLicaoAluno(base,info,numero,dados){
       return `
-${montarPromptBaseRevista(base, info)}
+${montarPromptBaseRevista(base,info)}
 
 ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO ALUNO
 
@@ -1996,9 +2135,9 @@ IMPORTANTE:
       `.trim();
     }
 
-    function promptContracapa(base, info){
+    function promptContracapa(base,info){
       return `
-${montarPromptBaseRevista(base, info)}
+${montarPromptBaseRevista(base,info)}
 
 ETAPA: CONTRACAPA
 
@@ -2021,7 +2160,7 @@ Use HTML com:
       `.trim();
     }
 
-    function promptCapaImagem(base, info){
+    function promptCapaImagem(base,info){
       return `
 Crie uma capa profissional de revista de Escola Bíblica Dominical, em estilo editorial cristão premium.
 
@@ -2114,6 +2253,7 @@ INSTRUÇÕES:
       const revistaMes = getValue("revistaMes") || "Agosto";
       const revistaAno = getValue("revistaAno") || String(new Date().getFullYear());
       const revistaObservacao = getValue("revistaObservacao") || "";
+      const printFormat = getValue("printFormat") || "a4";
 
       return {
         revistaTipo,
@@ -2121,9 +2261,10 @@ INSTRUÇÕES:
         revistaMes,
         revistaAno,
         revistaObservacao,
-        isTeacher: revistaTipo === "professor",
-        label: revistaTipo === "professor" ? "Revista do professor" : "Revista do aluno",
-        monthInfo: `${revistaMes} de ${revistaAno} • Revista mensal • 4 lições`
+        printFormat,
+        isTeacher:revistaTipo === "professor",
+        label:revistaTipo === "professor" ? "Revista do professor" : "Revista do aluno",
+        monthInfo:`${revistaMes} de ${revistaAno} • Revista mensal • 4 lições`
       };
     }
         function scriptureText(ref){
@@ -2750,7 +2891,7 @@ Mateus 24.35:
       `).join("");
     }
 
-    function renderReviewQuestions(isTeacher, dados){
+    function renderReviewQuestions(isTeacher){
       const questions = [
         ["Por que a Bíblia deve ser reconhecida como Palavra de Deus?", "Porque sua origem está em Deus, sua mensagem foi inspirada pelo Espírito Santo e sua autoridade governa a fé e a prática cristã."],
         ["Qual é a importância da inspiração das Escrituras?", "A inspiração garante que Deus comunicou sua Palavra por meio de autores humanos sem perder a fidelidade da mensagem divina."],
@@ -2792,7 +2933,7 @@ Mateus 24.35:
       `;
     }
 
-    function fallbackLicaoRobusta(base, info, numero, dados){
+    function fallbackLicaoRobusta(base,info,numero,dados){
       const isTeacher = info.isTeacher;
 
       return `
@@ -2861,14 +3002,14 @@ Mateus 24.35:
 
         <div class="summary-box">
           <h4>Revisando o Conteúdo</h4>
-          ${renderReviewQuestions(isTeacher, dados)}
+          ${renderReviewQuestions(isTeacher)}
         </div>
 
         ${isTeacher ? renderAuxiliosFinais(numero) : ""}
       `;
     }
 
-    function renderCover(base, info, imageData){
+    function renderCover(base,info,imageData){
       const hasImage = imageData?.ok && imageData?.image;
 
       const imageTag = hasImage
@@ -2904,7 +3045,7 @@ Mateus 24.35:
       `;
     }
 
-    function renderBackCover(base, info){
+    function renderBackCover(base,info){
       return `
         <section class="page back-cover-page">
           <div class="cover-bg"></div>
@@ -2937,8 +3078,8 @@ Mateus 24.35:
       const licoes = dadosLicoesBibliologia();
       let html = `<div class="doc">`;
 
-      setStep(0, "Gerando apresentação da revista...");
-      let apresentacao = await chamarTextoIA(promptApresentacaoRevista(base, info), "Apresentação da revista");
+      setStep(0,"Gerando apresentação da revista...");
+      let apresentacao = await chamarTextoIA(promptApresentacaoRevista(base,info),"Apresentação da revista");
       apresentacao = limparMarkdownHtml(apresentacao);
 
       if(!apresentacao){
@@ -2969,13 +3110,13 @@ Mateus 24.35:
         `;
       }
 
-      html += renderPage(apresentacao);
+      html += renderPage(apresentacao,"intro-page");
       renderGenerated(html + `</div>`);
 
       await pause(700);
 
-      setStep(1, "Gerando sumário da revista...");
-      let sumario = await chamarTextoIA(promptSumarioRevista(base, info), "Sumário da revista");
+      setStep(1,"Gerando sumário da revista...");
+      let sumario = await chamarTextoIA(promptSumarioRevista(base,info),"Sumário da revista");
       sumario = limparMarkdownHtml(sumario);
 
       if(!sumario){
@@ -3000,7 +3141,7 @@ Mateus 24.35:
         `;
       }
 
-      html += renderPage(sumario);
+      html += renderPage(sumario,"summary-page");
       renderGenerated(html + `</div>`);
 
       for(let i = 0; i < 4; i++){
@@ -3008,39 +3149,39 @@ Mateus 24.35:
         const dados = licoes[i];
 
         await pause(900);
-        setStep(i + 2, `Gerando Lição ${numero} com profundidade...`);
+        setStep(i + 2,`Gerando Lição ${numero} com profundidade...`);
 
         const prompt = info.isTeacher
-          ? promptLicaoProfessor(base, info, numero, dados)
-          : promptLicaoAluno(base, info, numero, dados);
+          ? promptLicaoProfessor(base,info,numero,dados)
+          : promptLicaoAluno(base,info,numero,dados);
 
-        let licao = await chamarTextoIA(prompt, `Lição ${numero}`);
+        let licao = await chamarTextoIA(prompt,`Lição ${numero}`);
         licao = limparMarkdownHtml(licao);
 
         if(!licao){
-          licao = fallbackLicaoRobusta(base, info, numero, dados);
+          licao = fallbackLicaoRobusta(base,info,numero,dados);
         }
 
-        html += renderPage(licao);
+        html += renderPage(licao,"lesson-page");
         renderGenerated(html + `</div>`);
       }
 
       await pause(900);
-      setStep(6, "Gerando capa profissional...");
+      setStep(6,"Gerando capa profissional...");
 
-      const imagePrompt = promptCapaImagem(base, info);
-      const imageData = await chamarImagemIA(imagePrompt, {
+      const imagePrompt = promptCapaImagem(base,info);
+      const imageData = await chamarImagemIA(imagePrompt,{
         etapa:"Capa da revista",
         tipo:"revista-ebd"
       });
 
-      html += renderCover(base, info, imageData);
+      html += renderCover(base,info,imageData);
       renderGenerated(html + `</div>`);
 
       await pause(700);
 
-      setStep(7, "Gerando contracapa...");
-      let contracapa = await chamarTextoIA(promptContracapa(base, info), "Contracapa");
+      setStep(7,"Gerando contracapa...");
+      let contracapa = await chamarTextoIA(promptContracapa(base,info),"Contracapa");
       contracapa = limparMarkdownHtml(contracapa);
 
       if(!contracapa){
@@ -3061,12 +3202,12 @@ Mateus 24.35:
         `;
       }
 
-      html += renderPage(contracapa);
-      html += renderBackCover(base, info);
+      html += renderPage(contracapa,"back-text-page");
+      html += renderBackCover(base,info);
       html += `</div>`;
 
       renderGenerated(html);
-      finishSteps("Revista EBD mensal gerada com conteúdo robusto, auxílios no final, capa limpa e contracapa.");
+      finishSteps("Revista EBD mensal gerada com conteúdo robusto, leitura bíblica completa, capa IA e contracapa.");
     }
 
     function generateSermon(base){
@@ -3075,6 +3216,7 @@ Mateus 24.35:
       const sermonAppeal = getValue("sermonAppeal") || "com apelo espiritual forte";
 
       let topics = "";
+
       for(let i = 1; i <= points; i++){
         topics += `
           <div class="block">
@@ -3191,13 +3333,14 @@ Mateus 24.35:
     function generateLongMaterial(base){
       const quantity = Number(getValue("quantity") || 10);
       const quantityType = getValue("quantityType") || "capítulos";
-      const count = Math.min(quantity, 20);
+      const count = Math.min(quantity,20);
 
       let content = "";
+
       for(let i = 1; i <= count; i++){
         content += `
           <div class="block">
-            <h3>${capitalize(quantityType.slice(0, -1) || quantityType)} ${i}</h3>
+            <h3>${capitalize(quantityType.slice(0,-1) || quantityType)} ${i}</h3>
             ${paragraph("Desenvolva esta parte com base no tema \"" + base.theme + "\", trazendo explicação bíblica, aplicação prática, exemplos, perguntas e uma conclusão clara.")}
           </div>
         `;
@@ -3231,12 +3374,12 @@ Mateus 24.35:
       const base = buildBase();
 
       if(!getValue("title") && !getValue("theme")){
-        setStatus("Informe pelo menos o título ou o tema principal antes de gerar.", "error");
+        setStatus("Informe pelo menos o título ou o tema principal antes de gerar.","error");
         return;
       }
 
       if(isReservedType(base.type) && !isAdminUnlocked()){
-        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.", "error");
+        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.","error");
         return;
       }
 
@@ -3249,7 +3392,7 @@ Mateus 24.35:
         if(base.type === "revista"){
           await generateMagazineAsync(base);
         }else{
-          setStep(0, "Gerando material...");
+          setStep(0,"Gerando material...");
 
           let html = "";
           if(base.type === "sermao") html = generateSermon(base);
@@ -3264,7 +3407,7 @@ Mateus 24.35:
         result.scrollIntoView({ behavior:"smooth", block:"start" });
       }catch(error){
         console.error(error);
-        setStatus("Erro ao gerar material. Verifique a API ou tente novamente.", "error");
+        setStatus("Erro ao gerar material. Verifique a API ou tente novamente.","error");
       }finally{
         isGenerating = false;
         btnGenerate.disabled = false;
@@ -3273,7 +3416,7 @@ Mateus 24.35:
 
     function salvarPDF(){
       if(!currentHtml && !result.innerText.trim()){
-        setStatus("Gere um material antes de salvar ou imprimir em PDF.", "error");
+        setStatus("Gere um material antes de salvar ou imprimir em PDF.","error");
         return;
       }
 
@@ -3281,26 +3424,46 @@ Mateus 24.35:
         finalizarEdicao();
       }
 
+      const format = getValue("printFormat") || "a4";
+
+      document.body.classList.remove("print-a4","print-a3-livreto");
+
+      if(format === "a3-livreto"){
+        document.body.classList.add("print-a3-livreto");
+        setStatus("Modo A3 paisagem estilo livreto ativado. Na tela de impressão, escolha A3 e paisagem.","ok");
+      }else{
+        document.body.classList.add("print-a4");
+        setStatus("Modo A4 normal ativado. Na tela de impressão, escolha A4 e retrato.","ok");
+      }
+
       printArea.innerHTML = result.innerHTML;
-      window.print();
+
+      setTimeout(() => {
+        window.print();
+
+        setTimeout(() => {
+          document.body.classList.remove("print-a4","print-a3-livreto");
+        },800);
+      },200);
     }
 
     function limparTudo(){
       [
         "title","subtitle","theme","biblicalBase","targetAudience","tone","author",
         "ministry","extraNotes","quantity","revistaAno","revistaObservacao"
-      ].forEach(id => setValue(id, ""));
+      ].forEach(id => setValue(id,""));
 
-      setValue("depthLevel", "profundo");
-      setValue("coverMode", currentType === "revista" ? "com-capa" : "sem-capa");
-      setValue("sermonPoints", "4");
-      setValue("sermonType", "temático");
-      setValue("sermonAppeal", "com apelo espiritual forte");
-      setValue("revistaTipo", "professor");
-      setValue("revistaClasse", "adultos");
-      setValue("revistaMes", "Agosto");
-      setValue("revistaAno", "2026");
-      setValue("quantityType", "capítulos");
+      setValue("depthLevel","profundo");
+      setValue("coverMode",currentType === "revista" ? "com-capa" : "sem-capa");
+      setValue("sermonPoints","4");
+      setValue("sermonType","temático");
+      setValue("sermonAppeal","com apelo espiritual forte");
+      setValue("revistaTipo","professor");
+      setValue("revistaClasse","adultos");
+      setValue("revistaMes","Agosto");
+      setValue("revistaAno","2026");
+      setValue("printFormat","a4");
+      setValue("quantityType","capítulos");
 
       currentHtml = "";
       currentText = "";
@@ -3321,20 +3484,20 @@ Mateus 24.35:
       `;
 
       updateSteps(currentType);
-      setStatus("Campos limpos. Aguardando geração.", "ok");
+      setStatus("Campos limpos. Aguardando geração.","ok");
     }
 
     function ativarEdicao(){
       if(!result.innerText.trim() || result.querySelector(".placeholder")){
-        setStatus("Gere um material antes de ativar a edição.", "error");
+        setStatus("Gere um material antes de ativar a edição.","error");
         return;
       }
 
-      result.setAttribute("contenteditable", "true");
+      result.setAttribute("contenteditable","true");
       editWarning.style.display = "block";
       btnFinishEdit.disabled = false;
       btnEdit.disabled = true;
-      setStatus("Modo edição ativado.", "ok");
+      setStatus("Modo edição ativado.","ok");
     }
 
     function finalizarEdicao(){
@@ -3347,22 +3510,22 @@ Mateus 24.35:
       currentText = result.innerText.trim();
       printArea.innerHTML = currentHtml;
 
-      setStatus("Edição finalizada e material atualizado.", "ok");
+      setStatus("Edição finalizada e material atualizado.","ok");
     }
 
     async function copiarTexto(){
       const text = result.innerText.trim();
 
       if(!text || result.querySelector(".placeholder")){
-        setStatus("Nenhum material foi gerado para copiar.", "error");
+        setStatus("Nenhum material foi gerado para copiar.","error");
         return;
       }
 
       try{
         await navigator.clipboard.writeText(text);
-        setStatus("Texto copiado com sucesso.", "ok");
+        setStatus("Texto copiado com sucesso.","ok");
       }catch(error){
-        setStatus("Não foi possível copiar automaticamente. Selecione o texto manualmente.", "error");
+        setStatus("Não foi possível copiar automaticamente. Selecione o texto manualmente.","error");
       }
     }
 
@@ -3370,52 +3533,53 @@ Mateus 24.35:
       const type = currentType;
 
       if(type === "revista"){
-        setValue("title", "Bibliologia: Conhecendo a Bíblia que Temos em Mãos");
-        setValue("subtitle", "A origem, composição, preservação e transmissão das Escrituras até os nossos dias");
-        setValue("theme", "Bibliologia: o que é a Bíblia, como foi formada, como chegou até nós e o privilégio de termos a Palavra de Deus em mãos.");
-        setValue("biblicalBase", "2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmo 119.105");
-        setValue("targetAudience", "Classe adulta da Escola Bíblica Dominical");
-        setValue("tone", "bíblico, pastoral, pentecostal, teológico, didático e acessível");
-        setValue("author", "Isiquel Rodrigues");
-        setValue("ministry", "CPID — Casa Publicadora da Igreja de Deus");
-        setValue("coverMode", "com-capa");
-        setValue("revistaTipo", "professor");
-        setValue("revistaClasse", "adultos");
-        setValue("revistaMes", "Agosto");
-        setValue("revistaAno", "2026");
-        setValue("revistaObservacao", "Lição 1: O que é a Bíblia? Lição 2: Como a Bíblia foi formada? Lição 3: Como a Bíblia chegou até nós? Lição 4: O privilégio de ter a Bíblia em mãos.");
-        setValue("extraNotes", "Quero conteúdo robusto, profundo, teológico, com referências bíblicas, leitura bíblica em classe com texto completo, revista do professor com subsídios no final da lição e respostas.");
+        setValue("title","Bibliologia: Conhecendo a Bíblia que Temos em Mãos");
+        setValue("subtitle","A origem, composição, preservação e transmissão das Escrituras até os nossos dias");
+        setValue("theme","Bibliologia: o que é a Bíblia, como foi formada, como chegou até nós e o privilégio de termos a Palavra de Deus em mãos.");
+        setValue("biblicalBase","2 Timóteo 3.16-17; 2 Pedro 1.20-21; Salmo 119.105");
+        setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
+        setValue("tone","bíblico, pastoral, pentecostal, teológico, didático e acessível");
+        setValue("author","Isiquel Rodrigues");
+        setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
+        setValue("coverMode","com-capa");
+        setValue("revistaTipo","professor");
+        setValue("revistaClasse","adultos");
+        setValue("revistaMes","Agosto");
+        setValue("revistaAno","2026");
+        setValue("printFormat","a4");
+        setValue("revistaObservacao","Lição 1: O que é a Bíblia? Lição 2: Como a Bíblia foi formada? Lição 3: Como a Bíblia chegou até nós? Lição 4: O privilégio de ter a Bíblia em mãos.");
+        setValue("extraNotes","Quero conteúdo robusto, profundo, teológico, com referências bíblicas, leitura bíblica em classe com texto completo, revista do professor com subsídios no final da lição e respostas.");
       }
 
       if(type === "sermao"){
-        setValue("title", "A Família Que Permanece de Pé");
-        setValue("subtitle", "Lições bíblicas para uma casa firmada em Deus");
-        setValue("theme", "A família que Deus abençoa");
-        setValue("biblicalBase", "Josué 24.15");
-        setValue("targetAudience", "Igreja em geral");
-        setValue("tone", "bíblico, pastoral, pentecostal e profundo");
+        setValue("title","A Família Que Permanece de Pé");
+        setValue("subtitle","Lições bíblicas para uma casa firmada em Deus");
+        setValue("theme","A família que Deus abençoa");
+        setValue("biblicalBase","Josué 24.15");
+        setValue("targetAudience","Igreja em geral");
+        setValue("tone","bíblico, pastoral, pentecostal e profundo");
       }
 
       if(type === "devocional"){
-        setValue("title", "Deus Cuida de Mim");
-        setValue("subtitle", "Uma reflexão sobre confiança e descanso em Deus");
-        setValue("theme", "O cuidado de Deus");
-        setValue("biblicalBase", "Salmo 23.1");
+        setValue("title","Deus Cuida de Mim");
+        setValue("subtitle","Uma reflexão sobre confiança e descanso em Deus");
+        setValue("theme","O cuidado de Deus");
+        setValue("biblicalBase","Salmo 23.1");
       }
 
       if(type === "estudo"){
-        setValue("title", "O Poder da Oração na Vida Cristã");
-        setValue("subtitle", "Um estudo bíblico sobre fé, perseverança e comunhão com Deus");
-        setValue("theme", "A oração como fundamento da vida cristã");
-        setValue("biblicalBase", "Tiago 5.16");
+        setValue("title","O Poder da Oração na Vida Cristã");
+        setValue("subtitle","Um estudo bíblico sobre fé, perseverança e comunhão com Deus");
+        setValue("theme","A oração como fundamento da vida cristã");
+        setValue("biblicalBase","Tiago 5.16");
       }
 
-      setStatus("Exemplo preenchido para " + getTypeLabel(type) + ".", "ok");
+      setStatus("Exemplo preenchido para " + getTypeLabel(type) + ".","ok");
     }
 
     function gerarPromptAutomatico(){
       if(!isAdminUnlocked()){
-        setStatus("Prompt automático é reservado. Digite o código de acesso.", "error");
+        setStatus("Prompt automático é reservado. Digite o código de acesso.","error");
         return;
       }
 
@@ -3432,23 +3596,23 @@ Não copie conteúdo de nenhuma editora.
 Explique os versículos com fidelidade ao contexto.
       `.trim();
 
-      setValue("theme", prompt);
-      setStatus("Prompt automático criado no campo Tema principal ou prompt.", "ok");
+      setValue("theme",prompt);
+      setStatus("Prompt automático criado no campo Tema principal ou prompt.","ok");
     }
 
     typeButtons.forEach(button => {
-      button.addEventListener("click", () => setContentType(button.dataset.type));
+      button.addEventListener("click",() => setContentType(button.dataset.type));
     });
 
-    adminCode.addEventListener("input", updateReservedState);
-    btnGenerate.addEventListener("click", generateMaterial);
-    btnPrint.addEventListener("click", salvarPDF);
-    btnClear.addEventListener("click", limparTudo);
-    btnEdit.addEventListener("click", ativarEdicao);
-    btnFinishEdit.addEventListener("click", finalizarEdicao);
-    btnCopy.addEventListener("click", copiarTexto);
-    btnTest.addEventListener("click", preencherTeste);
-    btnPrompt.addEventListener("click", gerarPromptAutomatico);
+    adminCode.addEventListener("input",updateReservedState);
+    btnGenerate.addEventListener("click",generateMaterial);
+    btnPrint.addEventListener("click",salvarPDF);
+    btnClear.addEventListener("click",limparTudo);
+    btnEdit.addEventListener("click",ativarEdicao);
+    btnFinishEdit.addEventListener("click",finalizarEdicao);
+    btnCopy.addEventListener("click",copiarTexto);
+    btnTest.addEventListener("click",preencherTeste);
+    btnPrompt.addEventListener("click",gerarPromptAutomatico);
 
     updateReservedState();
     setContentType("sermao");
