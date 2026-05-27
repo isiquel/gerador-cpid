@@ -488,7 +488,7 @@
 
     .text{
       margin:0 0 14px;
-      line-height:1.78;
+      line-height:1.68;
       color:#3d312a;
       font-size:16px;
       text-align:justify;
@@ -497,7 +497,7 @@
     .list{
       margin:0;
       padding-left:22px;
-      line-height:1.75;
+      line-height:1.7;
       font-size:16px;
     }
 
@@ -526,6 +526,20 @@
       padding:18px;
       margin-bottom:16px;
       box-shadow:0 8px 20px rgba(179,122,0,.10);
+    }
+
+    .lesson-synthesis{
+      background:linear-gradient(135deg,#eaf4ff,#cfe7ff);
+      border:1px solid #5c99dd;
+      border-radius:18px;
+      padding:18px;
+      margin-bottom:16px;
+      box-shadow:0 8px 20px rgba(35,90,160,.10);
+    }
+
+    .lesson-synthesis h3{
+      margin:0 0 12px;
+      color:#073d8c;
     }
 
     .scripture-full{
@@ -576,16 +590,16 @@
     .daily-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:12px;
+      gap:10px;
     }
 
     .daily-item{
       background:rgba(255,255,255,.12);
       border:1px solid rgba(255,255,255,.24);
       border-radius:14px;
-      padding:10px 12px;
-      font-size:14px;
-      line-height:1.5;
+      padding:9px 11px;
+      font-size:13.5px;
+      line-height:1.42;
       box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
     }
 
@@ -597,6 +611,98 @@
 
     .daily-item span{
       color:#fff6f8;
+    }
+
+    .lesson-cover-page{
+      background:#f8fbff;
+      border:1px solid #b9d1ec;
+      padding:0;
+      overflow:hidden;
+    }
+
+    .lesson-cover-header{
+      min-height:230px;
+      padding:26px;
+      color:#fff;
+      background:
+        linear-gradient(135deg,rgba(8,45,115,.92),rgba(15,99,201,.85)),
+        radial-gradient(circle at 82% 20%,rgba(255,218,118,.45),transparent 30%);
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+    }
+
+    .lesson-cover-header .number{
+      display:inline-block;
+      width:max-content;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.24);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:14px;
+    }
+
+    .lesson-cover-header h1{
+      margin:0;
+      color:#fff;
+      font-size:38px;
+      line-height:1.08;
+      text-shadow:0 6px 18px rgba(0,0,0,.35);
+    }
+
+    .lesson-cover-body{
+      padding:20px;
+    }
+
+    .opening-cards{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin-bottom:14px;
+    }
+
+    .opening-card{
+      border-radius:18px;
+      padding:16px;
+      border:1px solid #d6c6a5;
+      background:#fff8e8;
+    }
+
+    .opening-card.blue{
+      background:#eaf4ff;
+      border-color:#9fc4ef;
+    }
+
+    .opening-card h3{
+      margin:0 0 10px;
+      color:#704915;
+      font-size:18px;
+    }
+
+    .opening-card.blue h3{
+      color:#073d8c;
+    }
+
+    .opening-card p{
+      margin:0;
+      line-height:1.58;
+      font-size:15px;
+    }
+
+    .comment-label{
+      display:inline-block;
+      margin:0 0 14px;
+      padding:8px 14px;
+      border-radius:999px;
+      background:#fff0c7;
+      border:1px solid #d8a734;
+      color:#704915;
+      font-weight:800;
+      letter-spacing:.4px;
+      text-transform:uppercase;
+      font-size:13px;
     }
 
     .lesson-hero{
@@ -647,7 +753,7 @@
     }
 
     .lesson-topic h3{
-      font-size:28px;
+      font-size:26px;
       margin:0 0 12px;
       color:#073d8c;
       padding-top:2px;
@@ -657,8 +763,8 @@
       border:1px solid #eadfce;
       border-left:7px solid #d89600;
       border-radius:16px;
-      padding:16px;
-      margin:14px 0;
+      padding:15px;
+      margin:12px 0;
       background:linear-gradient(180deg,#fffdf7,#fff6df);
       box-shadow:0 8px 18px rgba(110,72,20,.05);
     }
@@ -685,7 +791,7 @@
       border:1px solid #d6a734;
       border-left:7px solid #bd8400;
       border-radius:16px;
-      padding:16px;
+      padding:15px;
       margin:14px 0 6px;
     }
 
@@ -948,9 +1054,10 @@
     }
 
     @media (max-width:740px){
-      .grid-2,.grid-3,.mini-grid,.daily-grid{ grid-template-columns:1fr; }
+      .grid-2,.grid-3,.mini-grid,.daily-grid,.opening-cards{ grid-template-columns:1fr; }
       .page-title{ font-size:28px; }
       .lesson-hero h1{ font-size:28px; }
+      .lesson-cover-header h1{ font-size:30px; }
       .cover-title{ font-size:38px; }
       .cover-subtitle{ font-size:18px; }
       .cover-content{ padding:18px; }
@@ -1016,7 +1123,7 @@
         box-shadow:none;
         border:1px solid #ddd;
         border-radius:12px;
-        padding:14mm;
+        padding:12mm;
         margin:0 0 6mm 0;
         page-break-after:auto;
         break-after:auto;
@@ -1033,17 +1140,29 @@
         break-before:page;
       }
 
-      .cover-page,
-      .back-cover-page{
-        box-shadow:none;
-        border:1px solid #ddd;
+      .lesson-cover-page{
         page-break-before:always;
         break-before:page;
+        break-inside:avoid;
+        page-break-inside:avoid;
+      }
+
+      .cover-page{
+        page-break-before:auto;
+        break-before:auto;
         page-break-after:always;
         break-after:page;
       }
 
+      .back-cover-page{
+        page-break-before:always;
+        break-before:page;
+        page-break-after:auto;
+        break-after:auto;
+      }
+
       .memory-verse,
+      .lesson-synthesis,
       .scripture-full,
       .daily-reading,
       .mini-card,
@@ -1060,8 +1179,8 @@
 
       .text,
       .list{
-        font-size:14.5px !important;
-        line-height:1.55 !important;
+        font-size:14.2px !important;
+        line-height:1.5 !important;
       }
 
       .block,
@@ -1072,11 +1191,21 @@
       .personal-application,
       .scripture-full,
       .memory-verse,
+      .lesson-synthesis,
       .daily-reading,
       .book-note,
       .bibliography-box{
-        padding:13px !important;
-        margin-bottom:10px !important;
+        padding:12px !important;
+        margin-bottom:9px !important;
+      }
+
+      .lesson-cover-header{
+        min-height:190px !important;
+      }
+
+      .daily-item{
+        padding:7px 9px !important;
+        font-size:12.8px !important;
       }
 
       .cover-page,
@@ -1130,8 +1259,8 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção v10.4:</strong><br>
-          A Revista do Aluno não usa mais quadros técnicos como “Tese da Lição”, “Caminho da Lição” e “Verdade Prática”. Agora a lição vem mais limpa: texto áureo, leitura bíblica com versículos, introdução, tópicos, sinopse de cada tópico, conclusão e revisão.
+          <strong>Correção v10.4.1:</strong><br>
+          Modelo editorial tipo livreto EBD: capa no início, contracapa no final, abertura compacta da lição, leitura diária objetiva, tópicos obedecendo à direção informada e conteúdo mais enxuto.
         </div>
 
         <div class="top-note">
@@ -1442,9 +1571,9 @@
 
           <div class="field">
             <label for="revistaObservacao">Direção das 4 lições do mês</label>
-            <textarea id="revistaObservacao" placeholder="Ex: Lição 1: ...&#10;Lição 2: ...&#10;Lição 3: ...&#10;Lição 4: ..."></textarea>
+            <textarea id="revistaObservacao" placeholder="Ex: Lição 1: ...&#10;Texto base: ...&#10;Tópico 1: ...&#10;Subtópicos: ..."></textarea>
             <div class="chip-note">
-              Opcional. Se você escrever as 4 lições aqui ou no prompt, o app deve obedecer exatamente.
+              Opcional, mas recomendado. Se você escrever as 4 lições aqui, o app deve obedecer os títulos, tópicos e subtópicos informados.
             </div>
           </div>
         </div>
@@ -1542,11 +1671,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v104";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v104";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1041";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1041";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v104";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v104";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1041";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1041";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -2293,7 +2422,7 @@
       }
 
       const temConteudoBiblico =
-        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã/i.test(limpo);
+        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino/i.test(limpo);
 
       if(limpo.length >= minimo && temConteudoBiblico) return true;
       if(opcoes.aceitarCurto && limpo.length >= 120 && temConteudoBiblico) return true;
@@ -2505,6 +2634,24 @@
       return limpo || `Lição ${indice}`;
     }
 
+    function extrairPalavraChave(titulo,tema = ""){
+      const proibidas = [
+        "a","o","as","os","um","uma","uns","umas",
+        "de","da","do","das","dos","e","em","na","no","nas","nos",
+        "para","por","com","sobre","à","ao","às","aos"
+      ];
+
+      const base = String(titulo || tema || "")
+        .replace(/[^\p{L}\p{N}\s]/gu," ")
+        .split(/\s+/)
+        .map(p => p.trim())
+        .filter(Boolean);
+
+      const palavra = base.find(p => !proibidas.includes(p.toLowerCase()) && p.length > 2);
+
+      return palavra || "Lição";
+    }
+
     function dividirReferenciasBiblicas(texto){
       const raw = String(texto || "").trim();
       if(!raw) return [];
@@ -2528,39 +2675,75 @@
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
 
+      if(r.includes("joão 14") || r.includes("jo 14")){
+        return "Jesus prometeu preparar lugar e voltar para receber os seus.";
+      }
+
+      if(r.includes("atos 1") || r.includes("at 1")){
+        return "Cristo voltará de modo real, visível e glorioso.";
+      }
+
+      if(r.includes("tito 2")){
+        return "A graça nos ensina a viver aguardando a bendita esperança.";
+      }
+
+      if(r.includes("1 tessalonicenses 4") || r.includes("1ts 4") || r.includes("1 ts 4")){
+        return "A volta de Cristo consola a igreja diante da morte.";
+      }
+
+      if(r.includes("1 coríntios 15") || r.includes("1co 15") || r.includes("1 co 15")){
+        return "Os salvos serão transformados pela vitória de Cristo.";
+      }
+
+      if(r.includes("filipenses 3") || r.includes("fp 3")){
+        return "Nossa cidadania está nos céus, de onde aguardamos o Salvador.";
+      }
+
+      if(r.includes("mateus 24") || r.includes("mt 24")){
+        return "A igreja deve vigiar, pois o Senhor virá em hora inesperada.";
+      }
+
+      if(r.includes("apocalipse 20") || r.includes("ap 20")){
+        return "O juízo final revela a seriedade da eternidade.";
+      }
+
+      if(r.includes("apocalipse 21") || r.includes("ap 21")){
+        return "Deus fará novas todas as coisas e habitará com seu povo.";
+      }
+
+      if(r.includes("2 pedro 3") || r.includes("2pe 3") || r.includes("2 pe 3")){
+        return "A esperança futura deve produzir vida santa no presente.";
+      }
+
       if(r.includes("2 timóteo 3") || r.includes("2tm 3") || r.includes("2 tm 3")){
-        return "Toda a Escritura é inspirada por Deus e útil para formar o servo de Deus.";
+        return "Toda a Escritura é inspirada por Deus e útil para formar o servo fiel.";
       }
 
       if(r.includes("2 pedro 1") || r.includes("2pe 1") || r.includes("2 pe 1")){
-        return "Homens santos falaram da parte de Deus movidos pelo Espírito Santo.";
+        return "A Escritura nasceu da ação do Espírito Santo sobre homens santos.";
       }
 
       if(r.includes("hebreus 4") || r.includes("hb 4")){
-        return "A Palavra de Deus é viva, eficaz e penetra o coração humano.";
+        return "A Palavra de Deus é viva, eficaz e alcança o coração humano.";
       }
 
       if(r.includes("salmo 119") || r.includes("sl 119")){
-        return "A Palavra de Deus ilumina o caminho do servo fiel.";
+        return "A Palavra de Deus ilumina o caminho do cristão.";
       }
 
       if(r.includes("isaías 40") || r.includes("is 40")){
-        return "A Palavra de Deus permanece para sempre.";
+        return "A Palavra de Deus permanece firme para sempre.";
       }
 
       if(r.includes("joão 17") || r.includes("jo 17")){
         return "A verdade de Deus santifica o seu povo.";
       }
 
-      if(r.includes("lucas 24") || r.includes("lc 24")){
-        return "As Escrituras apontam para Cristo e precisam ser compreendidas espiritualmente.";
-      }
-
       if(r.includes("romanos 15") || r.includes("rm 15")){
         return "As Escrituras foram escritas para ensino, perseverança e esperança.";
       }
 
-      return `A Palavra de Deus orienta a compreensão do tema "${tema}".`;
+      return "Uma verdade bíblica para meditação e aplicação espiritual.";
     }
 
     function criarLeituraDiariaUniversal(base,dados,textoBase = ""){
@@ -2581,12 +2764,12 @@
       });
 
       const refsGerais = [
-        "2 Timóteo 3.16-17",
-        "2 Pedro 1.20-21",
-        "Hebreus 4.12",
-        "Salmo 119.105",
-        "Isaías 40.8",
-        "João 17.17"
+        "João 14.1-3",
+        "Atos 1.9-11",
+        "Tito 2.11-14",
+        "1 Tessalonicenses 4.13-18",
+        "Mateus 24.42-44",
+        "Apocalipse 21.1-7"
       ];
 
       refsGerais.forEach(ref => {
@@ -2598,48 +2781,55 @@
       const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
       return dias.map((dia,index) => {
-        const ref = refsUnicas[index] || refsGerais[index] || "2 Timóteo 3.16-17";
+        const ref = refsUnicas[index] || refsGerais[index] || "João 14.1-3";
         return [dia,ref,resumoDaReferencia(ref,tema)];
       });
     }
 
-    function montarLicaoUniversal(titulo,index,base,extra = "",textoBase = ""){
+    function montarLicaoUniversal(titulo,index,base,extra = "",textoBase = "",topicosExtraidos = null){
       const tema = base.visibleTheme || base.title || base.theme || "tema bíblico";
       const tituloLimpo = titulo || `Lição ${index}`;
       const textoDaLicao = textoBase || base.biblicalBase || "Texto bíblico definido conforme o tema da lição";
+
+      const topicosPadrao = [
+        {
+          titulo:"O fundamento bíblico do tema",
+          funcao:"Apresentar a base bíblica da lição.",
+          subtitulos:["A revelação de Deus","A fé fundamentada","A obediência à Palavra"]
+        },
+        {
+          titulo:"A explicação doutrinária da lição",
+          funcao:"Desenvolver o significado espiritual e teológico do assunto.",
+          subtitulos:["A verdade revelada","A fé preservada","A doutrina aplicada"]
+        },
+        {
+          titulo:"A aplicação para a vida cristã",
+          funcao:"Conduzir o cristão à prática da Palavra.",
+          subtitulos:["Amar a Palavra","Obedecer à Palavra","Viver pela Palavra"]
+        }
+      ];
+
+      const topicosFinal = Array.isArray(topicosExtraidos) && topicosExtraidos.length === 3
+        ? topicosExtraidos
+        : topicosPadrao;
 
       const dados = {
         titulo:tituloLimpo,
         tese:gerarTeseUniversal(tituloLimpo,base,extra),
         progressao:[
-          "Fundamento bíblico.",
-          "Explicação doutrinária.",
-          "Aplicação prática."
+          topicosFinal[0]?.titulo || "Fundamento bíblico.",
+          topicosFinal[1]?.titulo || "Explicação doutrinária.",
+          topicosFinal[2]?.titulo || "Aplicação prática."
         ],
         foco:extra || `compreender "${tituloLimpo}" dentro do tema mensal "${tema}"`,
         textoAureo:`Texto-chave da lição: ${textoDaLicao}.`,
         leituraClasse:textoDaLicao,
-        palavraChave:tituloLimpo.split(" ").filter(Boolean)[0] || "Lição",
-        termos:["revelação","inspiração","autoridade","fé cristã"],
-        topicos:[
-          {
-            titulo:"O fundamento bíblico do tema",
-            funcao:"Apresentar a base bíblica da lição.",
-            subtitulos:["A revelação de Deus","A ação do Espírito Santo","A autoridade da Palavra"]
-          },
-          {
-            titulo:"A explicação doutrinária da lição",
-            funcao:"Desenvolver o significado espiritual e teológico do assunto.",
-            subtitulos:["A verdade revelada","A fé fundamentada","A doutrina preservada"]
-          },
-          {
-            titulo:"A aplicação para a vida cristã",
-            funcao:"Conduzir o cristão à prática da Palavra.",
-            subtitulos:["Amar a Palavra","Obedecer à Palavra","Viver pela Palavra"]
-          }
-        ],
+        sintese:extra || `A lição mostra como a verdade bíblica estudada orienta a fé, fortalece a esperança e conduz o cristão à obediência.`,
+        palavraChave:extrairPalavraChave(tituloLimpo,tema),
+        termos:["fé","esperança","santidade","obediência"],
+        topicos:topicosFinal,
         perguntas:[
-          ["O que esta lição ensina sobre a Palavra de Deus?",""],
+          ["Qual é o ensino central desta lição?",""],
           ["Por que esse ensino é importante para a vida cristã?",""],
           ["Como o cristão deve responder a essa verdade?",""],
           ["Que aplicação prática podemos levar para a semana?",""]
@@ -2649,6 +2839,59 @@
 
       dados.leituraDiaria = criarLeituraDiariaUniversal(base,dados,textoDaLicao);
       return dados;
+    }
+
+    function extrairTopicosDoBloco(bloco){
+      const linhas = String(bloco || "")
+        .split(/\n+/)
+        .map(l => l.trim())
+        .filter(Boolean);
+
+      const topicos = [];
+
+      for(let i = 0; i < linhas.length; i++){
+        const linha = linhas[i];
+
+        const topicoMatch = linha.match(/^T[oó]pico\s*([1-3])\s*[:\-–—]\s*(.+)$/i);
+
+        if(topicoMatch){
+          const numero = Number(topicoMatch[1]);
+          const titulo = topicoMatch[2].trim();
+
+          let subtitulos = [];
+
+          for(let j = i + 1; j < linhas.length; j++){
+            const prox = linhas[j];
+
+            if(/^T[oó]pico\s*[1-3]\s*[:\-–—]/i.test(prox)) break;
+            if(/^Li[cç][aã]o\s*[1-4]\s*[:\-–—]/i.test(prox)) break;
+
+            const subMatch = prox.match(/^Subt[oó]picos\s*[:\-–—]\s*(.+)$/i);
+
+            if(subMatch){
+              subtitulos = subMatch[1]
+                .split(/;|\|/)
+                .map(s => s.trim())
+                .filter(Boolean)
+                .slice(0,3);
+              break;
+            }
+          }
+
+          topicos[numero - 1] = {
+            titulo,
+            funcao:`Desenvolver o tópico "${titulo}" de forma bíblica, clara e aplicável.`,
+            subtitulos:subtitulos.length === 3 ? subtitulos : [
+              "Fundamento bíblico",
+              "Explicação do ensino",
+              "Aplicação para a vida cristã"
+            ]
+          };
+        }
+      }
+
+      const filtrados = topicos.filter(Boolean);
+      return filtrados.length === 3 ? filtrados : null;
     }
 
     function extrairLicoesDoTexto(texto,base){
@@ -2664,7 +2907,7 @@
         const inicio = match.index;
         const resto = raw.slice(inicio + 10);
         const proximo = resto.search(/li[cç][aã]o\s*[1-4]\s*[:\-–—]/i);
-        const fim = proximo >= 0 ? inicio + 10 + proximo : Math.min(raw.length,inicio + 1800);
+        const fim = proximo >= 0 ? inicio + 10 + proximo : Math.min(raw.length,inicio + 2600);
         const bloco = raw.slice(inicio,fim);
 
         const textoBaseMatch = bloco.match(/texto\s*base\s*[:\-–—]\s*([^\n]+)/i);
@@ -2672,8 +2915,9 @@
 
         const textoBase = textoBaseMatch ? textoBaseMatch[1].trim() : "";
         const objetivo = objetivoMatch ? objetivoMatch[1].trim() : "";
+        const topicos = extrairTopicosDoBloco(bloco);
 
-        encontradas[numero - 1] = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase);
+        encontradas[numero - 1] = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase,topicos);
       }
 
       const filtradas = encontradas.filter(Boolean);
@@ -2733,9 +2977,11 @@ ${textoCompleto}
 REGRAS:
 - Obedeça ao tema que o usuário pediu.
 - Se o usuário escreveu Lição 1, Lição 2, Lição 3 e Lição 4, preserve esses títulos exatamente.
-- Cada lição precisa ter título, texto áureo, leitura bíblica em classe, leitura diária, três tópicos e três subtópicos por tópico.
-- A progressão deve ser: fundamento bíblico, explicação doutrinária/histórica, aplicação prática.
-- A leitura diária precisa ter referências bíblicas reais.
+- Se o usuário escreveu Tópico 1, Tópico 2 e Tópico 3 em cada lição, preserve esses títulos.
+- Se o usuário escreveu subtópicos, preserve os subtópicos.
+- Cada lição precisa ter título, texto áureo, leitura bíblica em classe, síntese da lição, leitura diária, três tópicos e três subtópicos por tópico.
+- A progressão deve ser bíblica, doutrinária e prática.
+- A leitura diária precisa ter referências bíblicas reais e frases curtas.
 - Responda SOMENTE em JSON válido, sem markdown.
 
 FORMATO:
@@ -2743,7 +2989,7 @@ FORMATO:
   "licoes": [
     {
       "titulo": "",
-      "tese": "",
+      "sintese": "",
       "foco": "",
       "textoAureo": "",
       "leituraClasse": "",
@@ -2751,12 +2997,12 @@ FORMATO:
       "termos": ["", "", ""],
       "progressao": ["", "", ""],
       "leituraDiaria": [
-        ["Segunda", "Referência bíblica real", "Resumo"],
-        ["Terça", "Referência bíblica real", "Resumo"],
-        ["Quarta", "Referência bíblica real", "Resumo"],
-        ["Quinta", "Referência bíblica real", "Resumo"],
-        ["Sexta", "Referência bíblica real", "Resumo"],
-        ["Sábado", "Referência bíblica real", "Resumo"]
+        ["Segunda", "Referência bíblica real", "Resumo curto"],
+        ["Terça", "Referência bíblica real", "Resumo curto"],
+        ["Quarta", "Referência bíblica real", "Resumo curto"],
+        ["Quinta", "Referência bíblica real", "Resumo curto"],
+        ["Sexta", "Referência bíblica real", "Resumo curto"],
+        ["Sábado", "Referência bíblica real", "Resumo curto"]
       ],
       "topicos": [
         {"titulo": "", "funcao": "", "subtitulos": ["", "", ""]},
@@ -2795,11 +3041,14 @@ FORMATO:
             const merged = {
               ...fallback,
               ...l,
-              topicos:Array.isArray(l.topicos) && l.topicos.length === 3 ? l.topicos : fallback.topicos,
+              topicos:Array.isArray(fallback.topicos) && fallback.topicos.length === 3 ? fallback.topicos : (Array.isArray(l.topicos) && l.topicos.length === 3 ? l.topicos : fallback.topicos),
               progressao:Array.isArray(l.progressao) && l.progressao.length ? l.progressao : fallback.progressao,
               perguntas:Array.isArray(l.perguntas) && l.perguntas.length ? l.perguntas : fallback.perguntas,
-              termos:Array.isArray(l.termos) && l.termos.length ? l.termos : fallback.termos
+              termos:Array.isArray(l.termos) && l.termos.length ? l.termos : fallback.termos,
+              palavraChave:extrairPalavraChave(l.titulo || fallback.titulo,base.visibleTheme)
             };
+
+            merged.sintese = l.sintese || fallback.sintese || fallback.tese;
 
             merged.leituraDiaria = Array.isArray(l.leituraDiaria) && l.leituraDiaria.length === 6
               ? l.leituraDiaria
@@ -2821,6 +3070,7 @@ FORMATO:
 Lição ${i + 1}: ${l.titulo}
 Texto áureo: ${l.textoAureo}
 Leitura em classe: ${l.leituraClasse}
+Síntese: ${l.sintese || l.tese || ""}
 Tópicos: ${(l.topicos || []).map(t => `${t.titulo}: ${(t.subtitulos || []).join("; ")}`).join(" | ")}
         `.trim())
         .join("\n\n");
@@ -2835,6 +3085,7 @@ O tema e o conteúdo devem obedecer ao que o usuário escreveu no aplicativo.
 Não use tema pré-definido.
 Não use conteúdo pronto.
 Se o usuário escreveu 4 lições, use exatamente essas 4 lições.
+Se o usuário escreveu tópicos e subtópicos, preserve esses tópicos e subtópicos.
 
 DADOS DO MATERIAL
 Título: ${base.title}
@@ -2860,9 +3111,10 @@ REGRAS DE QUALIDADE:
 - Conteúdo original.
 - Linguagem bíblica, pastoral, pentecostal, teológica, didática e acessível.
 - Referências bíblicas devem entrar dentro da argumentação.
-- Não copie conteúdo de nenhuma editora.
-- Nunca copie o prompt do usuário dentro do conteúdo final.
+- Não copiar conteúdo de nenhuma editora.
+- Nunca copiar o prompt do usuário dentro do conteúdo final.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+- A Revista do Aluno deve ser profunda, mas compacta como livreto de EBD.
       `.trim();
     }
 
@@ -2877,6 +3129,7 @@ Explique o valor do tema mensal e mostre que as 4 lições caminham em progress�
 Se for Revista do Aluno:
 - Fale com o cristão.
 - Não use linguagem de professor.
+- Seja profundo, mas objetivo.
 
 Use HTML com:
 <h1 class="page-title">
@@ -2910,6 +3163,7 @@ REVISTA DO ALUNO — LIÇÃO ${numero}
 Título: ${dados.titulo}
 Texto áureo: ${dados.textoAureo}
 Leitura bíblica em classe: ${dados.leituraClasse}
+Síntese da lição: ${dados.sintese || dados.tese || ""}
 Palavra-chave: ${dados.palavraChave}
 
 PARTE A GERAR AGORA:
@@ -2930,6 +3184,7 @@ REGRAS:
 - Use “o cristão”, “o servo de Deus”, “a igreja”, “nós aprendemos”, “somos chamados”.
 - Linguagem natural, bíblica, pastoral e ensinável.
 - Evite repetir abertura de parágrafo.
+- Seja profundo, mas compacto como revista EBD.
 - Entregue somente HTML interno.
 
 ${extra}`;
@@ -3244,6 +3499,33 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       `;
     }
 
+    function renderLessonOpeningPage(base,info,numero,dados){
+      return `
+        <section class="page lesson-cover-page">
+          <div class="lesson-cover-header">
+            <span class="number">Lição ${numero} • ${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</span>
+            <h1>${escapeHtml(dados.titulo)}</h1>
+          </div>
+
+          <div class="lesson-cover-body">
+            <div class="opening-cards">
+              <div class="opening-card">
+                <h3>Texto Áureo</h3>
+                <p>${escapeHtml(dados.textoAureo || "Texto áureo a definir conforme a lição.")}</p>
+              </div>
+
+              <div class="opening-card blue">
+                <h3>Síntese da Lição</h3>
+                <p>${escapeHtml(dados.sintese || dados.tese || "A lição apresenta uma verdade bíblica central para edificação da fé cristã.")}</p>
+              </div>
+            </div>
+
+            ${renderDailyReading(numero,dados)}
+          </div>
+        </section>
+      `;
+    }
+
     function limparLinguagemAluno(html){
       let out = String(html || "");
 
@@ -3374,7 +3656,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       return `
         <div class="memory-verse">
           <h3>Texto Áureo</h3>
-          ${paragraph(dados.textoAureo || "Toda a Escritura é inspirada por Deus e útil para o ensino, para a repreensão, para a correção e para a instrução em justiça.")}
+          ${paragraph(dados.textoAureo || "Texto áureo a definir conforme a lição.")}
         </div>
 
         <div class="scripture-full">
@@ -3415,13 +3697,15 @@ Subtópico: ${subtitulo}
 
 Regras:
 - Use exatamente: <div class="subtopic"><h4>${s + 1}. ${subtitulo}</h4>...</div>
-- Escreva 2 a 4 parágrafos fortes.
+- Escreva 2 parágrafos fortes, objetivos e bem explicados.
+- Não transforme o subtópico em capítulo de livro.
+- Use linguagem de revista EBD: profunda, clara e compacta.
 - Integre pelo menos uma referência bíblica no argumento quando couber.
 - Não escreva sinopse aqui.
 - Não escreva orientação ao professor.
 - Não escreva linguagem técnica interna.
           `,
-          220
+          180
         );
 
         partes.push(subHtml || blocoErroParte(base,numero,dados,`Tópico ${indice + 1} — subtópico ${s + 1}`));
@@ -3445,7 +3729,7 @@ Regras:
 - Faça 1 parágrafo de síntese clara.
 - Não escreva orientação ao professor.
           `,
-        130
+        120
       );
 
       partes.push(sinopse || `
@@ -3465,15 +3749,15 @@ Regras:
 
       partes.push(`
         <div class="lesson-hero">
-          <div class="number">Lição ${numero} • ${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</div>
+          <div class="number">Comentário • Lição ${numero}</div>
           <h1>${escapeHtml(dados.titulo)}</h1>
           <div class="meta">${escapeHtml(info.label)} • Classe: ${escapeHtml(info.revistaClasse)} • Palavra-chave: ${escapeHtml(dados.palavraChave || "Lição")}</div>
         </div>
       `);
 
-      partes.push(renderDailyReading(numero,dados));
-
       partes.push(await gerarTextoAureoELeitura(base,info,licoes,numero,dados));
+
+      partes.push(`<span class="comment-label">Comentário</span>`);
 
       const intro = await gerarParteAluno(
         base,
@@ -3484,12 +3768,12 @@ Regras:
         "Introdução da lição",
         `
 Crie apenas a introdução da lição.
-A introdução deve ter 3 a 5 parágrafos.
+A introdução deve ter 3 parágrafos.
 Não repita frases genéricas.
 Mostre o problema central da lição, o valor bíblico do assunto e prepare o cristão para os tópicos.
 Use <div class="block"><h3>Introdução</h3>...</div>.
         `,
-        260
+        220
       );
 
       partes.push(intro || blocoErroParte(base,numero,dados,"Introdução"));
@@ -3506,6 +3790,29 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         partes.push(topicoHtml);
       }
 
+      const ampliando = await gerarParteAluno(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        "Ampliando o Conhecimento",
+        `
+Crie somente um quadro Ampliando o Conhecimento.
+Regras:
+- Use <div class="knowledge-box"><h4>Ampliando o Conhecimento</h4>...</div>
+- Escreva 2 parágrafos curtos.
+- Traga uma informação bíblica, histórica, doutrinária ou cultural que ajude o cristão a entender melhor a lição.
+- Não cite livros específicos inventados.
+- Não use linguagem de professor.
+        `,
+        180
+      );
+
+      if(ampliando){
+        partes.push(ampliando);
+      }
+
       const conclusao = await gerarParteAluno(
         base,
         info,
@@ -3515,10 +3822,11 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         "Conclusão",
         `
 Crie somente a conclusão.
-A conclusão deve retomar a lição, ligar os tópicos e chamar o cristão à obediência.
+A conclusão deve ter 2 parágrafos.
+Retome a lição, ligue os tópicos e chame o cristão à obediência.
 Use <div class="block"><h3>Conclusão</h3>...</div>.
         `,
-        220
+        180
       );
 
       partes.push(conclusao || blocoErroParte(base,numero,dados,"Conclusão"));
@@ -3532,18 +3840,18 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         "Revisando o conteúdo",
         `
 Crie somente a seção Revisando o Conteúdo.
-Faça 4 ou 5 perguntas.
+Faça 4 perguntas.
 Não coloque respostas, pois esta é Revista do Aluno.
 Use <div class="summary-box"><h4>Revisando o Conteúdo</h4>.
 Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong><div class="student-space">Resposta:</div></div>.
         `,
-        160
+        140
       );
 
       partes.push(revisao || `
         <div class="summary-box">
           <h4>Revisando o Conteúdo</h4>
-          ${(dados.perguntas || []).slice(0,5).map((q,i) => `
+          ${(dados.perguntas || []).slice(0,4).map((q,i) => `
             <div class="question-answer">
               <strong>${i + 1}. ${escapeHtml(q[0] || "Pergunta da lição")}</strong>
               <div class="student-space">Resposta:</div>
@@ -3739,7 +4047,8 @@ Use as classes:
         </section>
       `;
     }
-        async function generateSupportBookAsync(base,info,licoes){
+
+    async function generateSupportBookAsync(base,info,licoes){
       const revistaProfessorHtml = obterBaseProfessor();
       const revistaProfessorTexto = extrairTextoDeHtml(revistaProfessorHtml);
 
@@ -3841,8 +4150,7 @@ Use as classes:
         tipo:"livro-apoio-ebd"
       });
 
-      html += renderCover(base,info,imageData);
-      renderGenerated(html + `</div>`);
+      const capaFinal = renderCover(base,info,imageData);
 
       await pause(700);
 
@@ -3900,7 +4208,8 @@ Use as classes:
       html += renderBackCover(base,info);
       html += `</div>`;
 
-      renderGenerated(html);
+      const htmlFinal = html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`);
+      renderGenerated(htmlFinal);
       finishSteps("Livro de apoio finalizado. Revise possíveis páginas de erro antes de imprimir.");
     }
 
@@ -4023,23 +4332,22 @@ Use as classes:
 
         if(info.isTeacher){
           licao = await gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto);
-        }else{
-          licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
-        }
-
-        if(!licao || extrairTextoDeHtml(licao).trim().length < 1000){
-          todasLicoesOk = false;
-          html += paginaErroLicao(base,info,numero,dados,"lição");
-          setStatus(`A IA não conseguiu gerar a Lição ${numero} com qualidade suficiente.`,"error");
-        }else{
-          if(info.isStudent){
-            licao = limparLinguagemAluno(licao);
-          }
-
           html += renderPage(licao,"lesson-page");
+        }else{
+          html += renderLessonOpeningPage(base,info,numero,dados);
+          licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
 
-          if(licao.includes("Parte não gerada")){
+          if(!licao || extrairTextoDeHtml(licao).trim().length < 1000){
             todasLicoesOk = false;
+            html += paginaErroLicao(base,info,numero,dados,"lição");
+            setStatus(`A IA não conseguiu gerar a Lição ${numero} com qualidade suficiente.`,"error");
+          }else{
+            licao = limparLinguagemAluno(licao);
+            html += renderPage(licao,"lesson-page");
+
+            if(licao.includes("Parte não gerada")){
+              todasLicoesOk = false;
+            }
           }
         }
 
@@ -4065,8 +4373,9 @@ Use as classes:
         tipo:"revista-ebd"
       });
 
-      html += renderCover(base,info,imageData);
-      renderGenerated(html + `</div>`);
+      const capaFinal = renderCover(base,info,imageData);
+
+      renderGenerated(html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`) + `</div>`);
 
       await pause(600);
 
@@ -4102,10 +4411,15 @@ Use as classes:
       html += renderBackCover(base,info);
       html += `</div>`;
 
-      renderGenerated(html);
+      const htmlFinalComCapaNoInicio = html.replace(
+        `<div class="doc">`,
+        `<div class="doc">${capaFinal}`
+      );
+
+      renderGenerated(htmlFinalComCapaNoInicio);
 
       if(todasLicoesOk && info.isStudent){
-        finishSteps("Revista do Aluno gerada em blocos menores com sucesso e base textual salva para a Revista do Professor.");
+        finishSteps("Revista do Aluno gerada em modelo de livreto EBD com sucesso e base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
         finishSteps("Revista do Professor gerada em blocos menores com sucesso e base textual salva para o Livro de Apoio.");
       }else{
@@ -4433,12 +4747,12 @@ Use as classes:
       const type = currentType;
 
       if(type === "revista"){
-        setValue("title","A Bíblia Revelada");
-        setValue("subtitle","De onde veio, como chegou até nós e por que ela é a Palavra de Deus");
-        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical com o tema: A Bíblia Revelada: origem, formação, transmissão e autoridade da Palavra de Deus. Explique o que é a Bíblia, de onde veio, como foi inspirada, como foi preservada, como chegou até nós e por que podemos confiar nela.");
-        setValue("biblicalBase","2 Timóteo 3.16-17; 2 Pedro 1.20-21; Isaías 40.8; João 17.17");
+        setValue("title","Escatologia Bíblica");
+        setValue("subtitle","A esperança da igreja e os últimos acontecimentos à luz da Palavra de Deus");
+        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical com o tema: Escatologia Bíblica. A revista deve ensinar sobre a esperança da igreja, a volta de Jesus Cristo, o arrebatamento, a ressurreição dos santos, a grande tribulação, o juízo de Deus, o reino de Cristo, o destino eterno e os novos céus e nova terra. A abordagem deve ser bíblica, pastoral, pentecostal, equilibrada e sem sensacionalismo.");
+        setValue("biblicalBase","João 14.1-3; Atos 1.9-11; 1 Tessalonicenses 4.13-18; 1 Coríntios 15.51-58; Mateus 24.42-44; Apocalipse 21.1-7");
         setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
-        setValue("tone","bíblico, pastoral, pentecostal, teológico, didático e equilibrado");
+        setValue("tone","bíblico, pastoral, pentecostal, escatológico, didático, equilibrado, profundo e esperançoso");
         setValue("author","Isiquel Rodrigues");
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
@@ -4447,8 +4761,8 @@ Use as classes:
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
-        setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nTexto base: 2 Timóteo 3.16-17; Hebreus 4.12; Salmo 119.105\nObjetivo: explicar que a Bíblia é a Palavra de Deus escrita, inspirada pelo Espírito Santo, suficiente para ensinar, corrigir, instruir e conduzir o povo de Deus.\n\nLição 2: De Onde Veio a Bíblia?\nTexto base: 2 Pedro 1.20-21; Hebreus 1.1-2; Lucas 24.44-45\nObjetivo: mostrar que a Bíblia veio da revelação de Deus. Ela foi escrita por homens santos, em diferentes épocas e contextos, mas sua fonte última é o próprio Deus.\n\nLição 3: Como a Bíblia Chegou Até Nós?\nTexto base: Jeremias 36.1-4; Lucas 1.1-4; Romanos 15.4\nObjetivo: explicar de forma simples e segura a formação, transmissão, cópia, preservação, tradução e chegada da Bíblia até os leitores de hoje.\n\nLição 4: Por Que Podemos Confiar na Bíblia?\nTexto base: Isaías 40.8; Mateus 24.35; João 17.17\nObjetivo: demonstrar que a Bíblia é confiável porque Deus é fiel, sua Palavra permanece para sempre, sua mensagem é coerente, transformadora e confirmada na história da fé cristã.");
-        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Na Revista do Aluno, não use linguagem de professor. Não use quadros técnicos como tese da lição, caminho da lição e verdade prática. Quero texto áureo com versículo completo, leitura bíblica em classe com versículos escritos, introdução, três tópicos com três subtópicos, sinopse no final de cada tópico, conclusão e revisando o conteúdo.");
+        setValue("revistaObservacao","Lição 1: A Esperança da Igreja\nTexto base: João 14.1-3; Atos 1.9-11; Tito 2.11-14\nObjetivo: mostrar que a escatologia bíblica começa com a esperança na volta de Jesus Cristo. A igreja não caminha para o caos final, mas para o encontro glorioso com o Senhor.\n\nTópico 1: A promessa da volta de Cristo\nSubtópicos: Jesus prometeu voltar; A ascensão confirma a promessa; A volta de Cristo fortalece a esperança da igreja.\n\nTópico 2: A esperança que sustenta o cristão\nSubtópicos: A esperança cristã não é fuga da realidade; A promessa de Cristo fortalece a fé; A igreja vive aguardando o seu Senhor.\n\nTópico 3: A esperança que produz santidade\nSubtópicos: Quem espera Cristo busca uma vida santa; A esperança corrige prioridades; A igreja vigilante permanece fiel.\n\n\nLição 2: O Arrebatamento e a Ressurreição dos Santos\nTexto base: 1 Tessalonicenses 4.13-18; 1 Coríntios 15.51-58; Filipenses 3.20-21\nObjetivo: explicar que a volta de Cristo envolve consolo, transformação, ressurreição e encontro com o Senhor.\n\nTópico 1: O consolo da promessa\nSubtópicos: A morte não é o fim para os que estão em Cristo; Os salvos dormem na esperança da ressurreição; A Palavra consola a igreja diante da morte.\n\nTópico 2: A transformação dos vivos e a ressurreição dos mortos\nSubtópicos: Os mortos em Cristo ressuscitarão; Os vivos serão transformados; O corpo corruptível será revestido de incorruptibilidade.\n\nTópico 3: O encontro glorioso com o Senhor\nSubtópicos: A igreja será reunida com Cristo; Estaremos para sempre com o Senhor; Esta esperança fortalece a perseverança cristã.\n\n\nLição 3: A Grande Tribulação, o Juízo e o Reino de Cristo\nTexto base: Mateus 24.21-31; 2 Tessalonicenses 1.6-10; Apocalipse 20.1-6\nObjetivo: apresentar de forma bíblica e equilibrada os acontecimentos relacionados ao juízo de Deus, ao sofrimento final, à manifestação gloriosa de Cristo e ao seu reino.\n\nTópico 1: Um tempo de grande aflição\nSubtópicos: A Bíblia fala de dias difíceis no fim; O pecado humano será julgado por Deus; A igreja deve discernir os tempos sem cair em medo.\n\nTópico 2: O juízo justo de Deus\nSubtópicos: Deus julgará o mal com justiça; Cristo se manifestará em glória; Nenhuma injustiça ficará impune diante do Senhor.\n\nTópico 3: O Reino de Cristo\nSubtópicos: Cristo reinará com justiça; O Reino revela a vitória do Cordeiro; A esperança do Reino fortalece a fidelidade da igreja.\n\n\nLição 4: O Destino Eterno e a Nova Criação\nTexto base: Apocalipse 20.11-15; Apocalipse 21.1-7; 2 Pedro 3.10-13\nObjetivo: ensinar que a história terminará com o juízo final, a derrota definitiva do mal e a plena restauração de todas as coisas em novos céus e nova terra.\n\nTópico 1: O juízo final\nSubtópicos: Todos comparecerão diante de Deus; Os livros serão abertos; O juízo final revela a seriedade da eternidade.\n\nTópico 2: A derrota definitiva do mal\nSubtópicos: O pecado não terá a última palavra; A morte será vencida definitivamente; Deus fará justiça plena.\n\nTópico 3: Novos céus e nova terra\nSubtópicos: Deus habitará com o seu povo; Não haverá mais dor, morte ou pranto; A esperança eterna fortalece a vida cristã hoje.");
+        setValue("extraNotes","A Revista do Aluno deve parecer um livreto de EBD: profunda, mas compacta. Quero abertura de lição com Texto Áureo, Síntese da Lição e Leitura Diária. Depois, Leitura Bíblica em Classe, Comentário, Introdução, tópicos, subtópicos, sinopses, Ampliando o Conhecimento, Conclusão e Revisando o Conteúdo. Não usar Verdade Prática, Tese da Lição, Objetivos da Aula nem Caminho da Lição.");
       }
 
       if(type === "sermao"){
@@ -4486,15 +4800,22 @@ Para EBD, siga esta lógica:
 3. Livro de Apoio: expansão profunda da Revista do Professor.
 
 Exigência para Revista do Aluno:
-- Não usar quadros técnicos como “Tese da Lição”, “Caminho da Lição” e “Verdade Prática”.
-- Usar texto áureo com versículo escrito.
-- Usar leitura bíblica em classe com versículos escritos.
-- Criar introdução.
-- Criar três tópicos principais.
-- Criar três subtópicos em cada tópico.
-- Criar sinopse no final de cada tópico.
-- Criar conclusão.
-- Criar revisando o conteúdo.
+- Modelo editorial tipo livreto de EBD.
+- Capa no início e contracapa no final.
+- Abertura compacta da lição.
+- Texto Áureo com versículo escrito.
+- Síntese da Lição.
+- Leitura Diária curta, objetiva e bíblica.
+- Leitura Bíblica em Classe com versículos escritos.
+- Comentário.
+- Introdução.
+- Três tópicos principais.
+- Três subtópicos em cada tópico.
+- Sinopse no final de cada tópico.
+- Ampliando o Conhecimento.
+- Conclusão.
+- Revisando o conteúdo.
+- Não usar “Tese da Lição”, “Caminho da Lição”, “Objetivos da Aula” nem “Verdade Prática”.
 - Não usar linguagem de professor.
 - Não escrever “o aluno é levado”.
 - Preferir: “o cristão”, “a igreja”, “o servo de Deus”, “somos chamados”.
