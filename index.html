@@ -98,13 +98,6 @@
       min-height:700px;
     }
 
-    .section-title{
-      margin:12px 0 9px;
-      font-size:15px;
-      font-weight:800;
-      color:var(--brown);
-    }
-
     .compact-flow{
       background:#fffaf2;
       border:1px solid #ead6ad;
@@ -798,20 +791,6 @@
       color:#3f3128;
     }
 
-    .comment-label{
-      display:inline-block;
-      margin:0 0 14px;
-      padding:8px 14px;
-      border-radius:999px;
-      background:#fff0c7;
-      border:1px solid #d8a734;
-      color:#704915;
-      font-weight:800;
-      letter-spacing:.4px;
-      text-transform:uppercase;
-      font-size:13px;
-    }
-
     .compact-comment-header{
       border-left:7px solid #0c5fc4;
       background:#f4f9ff;
@@ -902,6 +881,24 @@
       margin:0 0 9px;
       color:#603600;
       font-size:19px;
+    }
+
+    .manual-placeholder{
+      background:#fffefb;
+      border:1px dashed #c9b99f;
+      border-left:7px solid #c9a45b;
+      min-height:118px;
+    }
+
+    .manual-placeholder .manual-empty{
+      min-height:70px;
+      border-radius:12px;
+      background:rgba(255,255,255,.6);
+    }
+
+    .manual-placeholder .text{
+      min-height:70px;
+      margin-bottom:0;
     }
 
     .bible-ref{
@@ -995,11 +992,6 @@
       min-height:48px;
       color:#8e7d6d;
       background:#fffdfb;
-    }
-
-    .error-page{
-      border:1px solid #e1b2b2;
-      background:#fff7f7;
     }
 
     .cover-page,
@@ -1384,7 +1376,8 @@
       .personal-application,
       .synopsis,
       .book-note,
-      .bibliography-box{
+      .bibliography-box,
+      .manual-placeholder{
         break-inside:avoid;
         page-break-inside:avoid;
       }
@@ -1409,6 +1402,15 @@
       .bibliography-box{
         padding:10px !important;
         margin-bottom:8px !important;
+      }
+
+      .manual-placeholder{
+        min-height:95px !important;
+      }
+
+      .manual-placeholder .manual-empty,
+      .manual-placeholder .text{
+        min-height:55px !important;
       }
 
       .lesson-cover-header{
@@ -1934,11 +1936,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1044";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1044";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1045";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1045";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1044";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1044";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1045";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1045";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1980,6 +1982,7 @@
     let currentText = "";
     let currentType = "sermao";
     let isGenerating = false;
+    let manualPlaceholdersCount = 0;
 
     const stepsByType = {
       sermao: ["Tema", "Texto", "Tópicos", "Conclusão"],
@@ -2693,10 +2696,11 @@
       }
 
       const temConteudoBiblico =
-        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino/i.test(limpo);
+        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino|oração|pecado|graça|obediência|verdade|adolescente|jovem/i.test(limpo);
 
       if(limpo.length >= minimo && temConteudoBiblico) return true;
-      if(opcoes.aceitarCurto && limpo.length >= 100 && temConteudoBiblico) return true;
+      if(opcoes.aceitarCurto && limpo.length >= 80 && temConteudoBiblico) return true;
+      if(opcoes.aceitarMuitoCurto && limpo.length >= 55 && temConteudoBiblico) return true;
 
       return false;
     }
@@ -2773,18 +2777,97 @@
       return "";
     }
 
+    function criarPromptMaisSimples(promptOriginal,etapa){
+      return `
+${promptOriginal}
+
+TENTATIVA EXTRA:
+A resposta anterior falhou ou veio vazia.
+
+Agora simplifique:
+- Entregue somente o conteúdo pedido.
+- Não explique o processo.
+- Não use markdown.
+- Não use texto técnico.
+- Não mencione que houve erro.
+- Seja bíblico, claro e direto.
+- Se for subtópico, escreva apenas 1 parágrafo forte.
+- HTML interno apenas.
+
+Etapa: ${etapa}
+      `.trim();
+    }
+
+    function criarPromptMinimo(promptOriginal,etapa){
+      return `
+${promptOriginal}
+
+ÚLTIMA TENTATIVA:
+Entregue uma versão menor.
+
+Regras:
+- Escreva apenas o essencial.
+- Se for subtópico, faça somente 1 parágrafo curto e bíblico.
+- Se for introdução, faça apenas 1 parágrafo.
+- Se for conclusão, faça apenas 1 parágrafo.
+- Se for sinopse, faça apenas 2 ou 3 linhas.
+- Não precisa alongar.
+- Não mencione erro.
+- Não peça desculpas.
+- Entregue somente HTML interno aproveitável.
+
+Etapa: ${etapa}
+      `.trim();
+    }
+
     async function chamarTextoIAComTentativas(prompts,etapa,opcoes = {}){
       const lista = Array.isArray(prompts) ? prompts : [prompts];
 
       for(let i = 0; i < lista.length; i++){
-        const tentativa = await chamarTextoIA(lista[i],`${etapa} — tentativa ${i + 1}`,opcoes);
-        const limpo = limparMarkdownHtml(tentativa);
+        const promptOriginal = lista[i];
 
-        if(validarRespostaIA(limpo,opcoes.minimo || 220,opcoes)){
-          return limpo;
+        const tentativas = [
+          {
+            prompt:promptOriginal,
+            nome:`${etapa} — tentativa 1`,
+            minimo:opcoes.minimo || 220,
+            aceitarCurto:opcoes.aceitarCurto
+          },
+          {
+            prompt:criarPromptMaisSimples(promptOriginal,etapa),
+            nome:`${etapa} — tentativa 2 simplificada`,
+            minimo:Math.max(80,Math.floor((opcoes.minimo || 220) * 0.55)),
+            aceitarCurto:true
+          },
+          {
+            prompt:criarPromptMinimo(promptOriginal,etapa),
+            nome:`${etapa} — tentativa 3 mínima`,
+            minimo:55,
+            aceitarCurto:true,
+            aceitarMuitoCurto:true
+          }
+        ];
+
+        for(const tentativa of tentativas){
+          const html = await chamarTextoIA(tentativa.prompt,tentativa.nome,{
+            ...opcoes,
+            minimo:tentativa.minimo,
+            aceitarCurto:tentativa.aceitarCurto,
+            aceitarMuitoCurto:tentativa.aceitarMuitoCurto
+          });
+
+          const limpo = limparMarkdownHtml(html);
+
+          if(validarRespostaIA(limpo,tentativa.minimo,{
+            ...opcoes,
+            aceitarCurto:tentativa.aceitarCurto,
+            aceitarMuitoCurto:tentativa.aceitarMuitoCurto
+          })){
+            return limpo;
+          }
+
+          await pause(350);
         }
-
-        await pause(300);
       }
 
       return "";
@@ -2970,6 +3053,26 @@
 
       const mapa = [
         {
+          teste:["daniel 1.8","dn 1.8"],
+          texto:"E Daniel assentou no seu coração não se contaminar com a porção do manjar do rei, nem com o vinho que ele bebia."
+        },
+        {
+          teste:["provérbios 4.23","pv 4.23"],
+          texto:"Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida."
+        },
+        {
+          teste:["1 timóteo 4.12","1tm 4.12","1 tm 4.12"],
+          texto:"Ninguém despreze a tua mocidade; mas sê o exemplo dos fiéis, na palavra, no trato, na caridade, no espírito, na fé, na pureza."
+        },
+        {
+          teste:["salmo 119.9","sl 119.9"],
+          texto:"Com que purificará o jovem o seu caminho? Observando-o conforme a tua palavra."
+        },
+        {
+          teste:["josué 24.15","js 24.15"],
+          texto:"Porém eu e a minha casa serviremos ao Senhor."
+        },
+        {
           teste:["2 timóteo 3.14","2tm 3.14","2 tm 3.14"],
           texto:"Tu, porém, permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido."
         },
@@ -3101,6 +3204,7 @@ FORMATO:
         {
           minimo:80,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           minQuality:"um único versículo escrito por extenso em JSON"
         }
       );
@@ -3141,6 +3245,42 @@ FORMATO:
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
 
+      if(r.includes("daniel 1") || r.includes("dn 1")){
+        return "Daniel decidiu permanecer fiel a Deus mesmo em ambiente de pressão.";
+      }
+
+      if(r.includes("provérbios 4") || r.includes("pv 4")){
+        return "O coração precisa ser guardado, pois dele procedem as escolhas da vida.";
+      }
+
+      if(r.includes("provérbios 13") || r.includes("pv 13")){
+        return "Quem anda com pessoas sábias aprende a escolher melhor.";
+      }
+
+      if(r.includes("1 coríntios 15") || r.includes("1co 15") || r.includes("1 co 15")){
+        return "As más companhias podem corromper bons costumes.";
+      }
+
+      if(r.includes("salmo 1") || r.includes("sl 1")){
+        return "O justo evita conselhos maus e encontra prazer na Palavra.";
+      }
+
+      if(r.includes("1 timóteo 4") || r.includes("1tm 4") || r.includes("1 tm 4")){
+        return "O jovem cristão pode ser exemplo em palavras, atitudes, fé e pureza.";
+      }
+
+      if(r.includes("1 coríntios 10") || r.includes("1co 10") || r.includes("1 co 10")){
+        return "Deus oferece escape diante das tentações.";
+      }
+
+      if(r.includes("efésios 6") || r.includes("ef 6")){
+        return "A armadura de Deus fortalece o cristão para resistir no dia mau.";
+      }
+
+      if(r.includes("josué 24") || r.includes("js 24")){
+        return "Servir ao Senhor exige decisão pessoal e firme.";
+      }
+
       if(r.includes("2 timóteo 3") || r.includes("2tm 3") || r.includes("2 tm 3")){
         return "A Escritura forma o servo de Deus para permanecer na verdade.";
       }
@@ -3150,7 +3290,7 @@ FORMATO:
       }
 
       if(r.includes("salmo 119") || r.includes("sl 119")){
-        return "A Palavra ilumina o caminho do cristão.";
+        return "A Palavra ilumina e purifica o caminho do cristão.";
       }
 
       if(r.includes("gálatas 1") || r.includes("gl 1")){
@@ -3201,14 +3341,6 @@ FORMATO:
         return "A graça nos ensina a viver aguardando a bendita esperança.";
       }
 
-      if(r.includes("1 tessalonicenses 4") || r.includes("1ts 4") || r.includes("1 ts 4")){
-        return "A volta de Cristo consola a igreja diante da morte.";
-      }
-
-      if(r.includes("1 coríntios 15") || r.includes("1co 15") || r.includes("1 co 15")){
-        return "Os salvos serão transformados pela vitória de Cristo.";
-      }
-
       if(r.includes("filipenses 3") || r.includes("fp 3")){
         return "Nossa cidadania está nos céus, de onde aguardamos o Salvador.";
       }
@@ -3246,12 +3378,12 @@ FORMATO:
       });
 
       const refsGerais = [
-        "2 Timóteo 3.14-17",
-        "João 17.17",
-        "Salmo 119.105",
-        "Gálatas 1.6-10",
-        "1 Pedro 1.13-16",
-        "Judas 1.20-25"
+        "Daniel 1.8",
+        "Provérbios 4.23",
+        "1 Timóteo 4.12",
+        "Salmo 119.9",
+        "Romanos 12.1-2",
+        "Josué 24.15"
       ];
 
       refsGerais.forEach(ref => {
@@ -4006,6 +4138,18 @@ Use HTML com:
     function detectarEstiloVisualCapa(base,info){
       const texto = `${base.title} ${base.subtitle} ${base.visibleTheme} ${base.theme} ${info.revistaClasse}`.toLowerCase();
 
+      if(/adolescentes|adolescência|escolhas|futuro|internet|pressão|redes sociais|identidade/.test(texto)){
+        return "visual cristão atual para adolescentes, moderno e reverente, jovem lendo a Bíblia ou caminhando diante de escolhas, luz suave e esperançosa, elementos discretos de escola, celular e caminho, sem parecer infantil e sem parecer secular demais";
+      }
+
+      if(/crianças|infantil|criança/.test(texto)){
+        return "visual infantil cristão, alegre, colorido, crianças aprendendo a Bíblia, ambiente limpo, luz suave, sem caricatura exagerada";
+      }
+
+      if(/jovens|juventude|propósito/.test(texto)){
+        return "visual jovem cristão, moderno e reverente, grupo de jovens com Bíblia, luz vibrante, cidade ao fundo, fé e propósito";
+      }
+
       if(/escatologia|volta de cristo|arrebatamento|eternidade|apocalipse|últimos dias|novos céus|nova terra/.test(texto)){
         return "visual esperançoso e glorioso, céu iluminado, horizonte dourado, sensação de eternidade, igreja aguardando Cristo, luz celestial, sem medo e sem sensacionalismo";
       }
@@ -4016,18 +4160,6 @@ Use HTML com:
 
       if(/família|lar|casamento|filhos|casa/.test(texto)){
         return "visual familiar cristão, família em oração, lar acolhedor, luz suave entrando pela janela, Bíblia sobre a mesa, ambiente de paz";
-      }
-
-      if(/jovens|juventude|identidade|propósito|escolhas/.test(texto)){
-        return "visual jovem cristão, moderno e reverente, grupo de jovens com Bíblia, luz vibrante, cidade ao fundo, fé e propósito";
-      }
-
-      if(/adolescentes|adolescência/.test(texto)){
-        return "visual didático e atual para adolescentes, Bíblia, caderno, luz colorida moderada, ambiente de estudo cristão, esperança e escolhas";
-      }
-
-      if(/crianças|infantil|criança/.test(texto)){
-        return "visual infantil cristão, alegre, colorido, crianças aprendendo a Bíblia, ambiente limpo, luz suave, sem caricatura exagerada";
       }
 
       if(/missões|missionário|ide|evangelização|grande comissão/.test(texto)){
@@ -4174,36 +4306,61 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
       return out;
     }
 
-    function blocoErroParte(base,numero,dados,nomeParte){
+    function blocoManualVazio(tipo,titulo,subtitulo = ""){
+      manualPlaceholdersCount++;
+
+      const tituloLimpo = titulo || "Conteúdo a inserir";
+      const subtituloLimpo = subtitulo ? `<p class="text manual-empty"></p>` : `<p class="text manual-empty"></p>`;
+
+      if(tipo === "subtopic"){
+        return `
+          <div class="subtopic manual-placeholder" data-manual-placeholder="true">
+            <h4>${escapeHtml(tituloLimpo)}</h4>
+            ${subtituloLimpo}
+          </div>
+        `;
+      }
+
+      if(tipo === "synopsis"){
+        return `
+          <div class="synopsis manual-placeholder" data-manual-placeholder="true">
+            <h4>${escapeHtml(tituloLimpo)}</h4>
+            <p class="text manual-empty"></p>
+          </div>
+        `;
+      }
+
+      if(tipo === "knowledge"){
+        return `
+          <div class="knowledge-box manual-placeholder" data-manual-placeholder="true">
+            <h4>${escapeHtml(tituloLimpo)}</h4>
+            <p class="text manual-empty"></p>
+          </div>
+        `;
+      }
+
       return `
-        <div class="summary-box">
-          <h4>Parte não gerada: ${escapeHtml(nomeParte)}</h4>
-          ${paragraph("A IA não conseguiu entregar esta parte com qualidade suficiente. O app não criou conteúdo artificial para preencher espaço.")}
-          ${paragraph(`Tema: ${base.visibleTheme}. Lição ${numero}: ${dados.titulo}.`)}
+        <div class="block manual-placeholder" data-manual-placeholder="true">
+          <h3>${escapeHtml(tituloLimpo)}</h3>
+          <p class="text manual-empty"></p>
         </div>
       `;
     }
 
     function paginaErroLicao(base,info,numero,dados,tipo = "lição"){
-      return `
-        <section class="page error-page">
-          <h1 class="page-title">Não foi possível gerar a ${tipo} ${numero}</h1>
-          <p class="subtitle">${escapeHtml(dados.titulo || "Lição não gerada")}</p>
+      manualPlaceholdersCount++;
 
-          <div class="summary-box">
-            <h4>A IA não conseguiu entregar conteúdo aproveitável nesta etapa</h4>
-            ${paragraph("O app tentou gerar o conteúdo em blocos menores. Mesmo assim, a IA/API não devolveu material suficiente ou devolveu conteúdo inadequado.")}
-            ${paragraph("Para evitar uma revista artificial, repetitiva ou genérica, o VERBO IA não inventou uma lição universal no lugar da IA.")}
+      return `
+        <section class="page lesson-page">
+          <div class="lesson-hero">
+            <div class="number">Lição ${numero} • ${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</div>
+            <h1>${escapeHtml(dados.titulo || "Lição")}</h1>
+            <div class="meta">${escapeHtml(info.label)} • Classe: ${escapeHtml(info.revistaClasse)}</div>
           </div>
 
-          <div class="block">
-            <h3>O que fazer agora</h3>
-            ${orderedList([
-              "Clique em Gerar material novamente.",
-              "Se continuar falhando, reduza um pouco o prompt.",
-              "Confira se suas chaves de IA no Vercel estão ativas e com limite disponível.",
-              "Gere primeiro a Revista do Aluno. Depois gere a Revista do Professor. Depois o Livro de Apoio."
-            ])}
+          <div class="block manual-placeholder" data-manual-placeholder="true">
+            <h3>${escapeHtml(tipo)} a completar manualmente</h3>
+            <p class="text manual-empty"></p>
           </div>
         </section>
       `;
@@ -4218,6 +4375,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
         {
           minimo,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           isStudent:true,
           minQuality:"parte compacta da Revista do Aluno, linguagem natural, bíblica e sem bastidor editorial"
         }
@@ -4236,6 +4394,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
         {
           minimo,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           minQuality:"parte da Revista do Professor baseada na Revista do Aluno"
         }
       );
@@ -4250,6 +4409,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
         {
           minimo:230,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           isStudent:info.isStudent
         }
       );
@@ -4259,10 +4419,10 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
       }
 
       return `
-        <div class="scripture-full">
+        <div class="scripture-full manual-placeholder" data-manual-placeholder="true">
           <h3>Leitura Bíblica em Classe</h3>
           <span class="ref">${escapeHtml(dados.leituraClasse)}</span>
-          ${paragraph("A IA não conseguiu escrever os versículos completos nesta tentativa. Edite este bloco antes de imprimir, inserindo os versículos da leitura bíblica em classe.")}
+          <p class="text manual-empty"></p>
         </div>
       `;
     }
@@ -4307,10 +4467,10 @@ Regras:
 - Não escreva orientação ao professor.
 - Não escreva linguagem técnica interna.
           `,
-          120
+          115
         );
 
-        partes.push(subHtml || blocoErroParte(base,numero,dados,`Tópico ${indice + 1} — subtópico ${s + 1}`));
+        partes.push(subHtml || blocoManualVazio("subtopic",`${s + 1}. ${subtitulo}`));
       }
 
       const sinopse = await gerarParteAluno(
@@ -4332,16 +4492,10 @@ Regras:
 - Não repita a introdução.
 - Não escreva orientação ao professor.
           `,
-        100
+        90
       );
 
-      partes.push(sinopse || `
-        <div class="synopsis">
-          <h4>Sinopse do Tópico ${roman(indice + 1)}</h4>
-          ${paragraph(`Este tópico apresenta ${topico.titulo.toLowerCase()}, preparando o cristão para compreender e praticar a verdade estudada.`)}
-        </div>
-      `);
-
+      partes.push(sinopse || blocoManualVazio("synopsis",`Sinopse do Tópico ${roman(indice + 1)}`));
       partes.push(`</div>`);
 
       return partes.join("\n");
@@ -4374,10 +4528,10 @@ Não antecipe todos os argumentos dos tópicos.
 Mostre o problema central da lição, o valor bíblico do assunto e prepare o cristão para os tópicos.
 Use <div class="block"><h3>Introdução</h3>...</div>.
         `,
-        170
+        160
       );
 
-      partes.push(intro || blocoErroParte(base,numero,dados,"Introdução"));
+      partes.push(intro || blocoManualVazio("block","Introdução"));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -4408,12 +4562,10 @@ Regras:
 - Não use linguagem de professor.
 - Não repita a introdução nem as sinopses.
         `,
-        130
+        110
       );
 
-      if(ampliando){
-        partes.push(ampliando);
-      }
+      partes.push(ampliando || blocoManualVazio("knowledge","Ampliando o Conhecimento"));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -4429,10 +4581,10 @@ Retome a lição, ligue os tópicos e chame o cristão à obediência.
 Não reescreva tudo que já foi dito.
 Use <div class="block"><h3>Conclusão</h3>...</div>.
         `,
-        150
+        140
       );
 
-      partes.push(conclusao || blocoErroParte(base,numero,dados,"Conclusão"));
+      partes.push(conclusao || blocoManualVazio("block","Conclusão"));
 
       const revisao = await gerarParteAluno(
         base,
@@ -4448,7 +4600,7 @@ Não coloque respostas, pois esta é Revista do Aluno.
 Use <div class="summary-box"><h4>Revisando o Conteúdo</h4>.
 Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong><div class="student-space">Resposta:</div></div>.
         `,
-        120
+        110
       );
 
       partes.push(revisao || `
@@ -4516,10 +4668,10 @@ Crie somente a introdução da Revista do Professor.
 Preserve a linha da Revista do Aluno, mas acrescente orientação ao professor.
 Use <div class="block"><h3>Introdução</h3>...</div> e <div class="teacher-help"><h4>Orientação Inicial ao Professor</h4>...</div>.
         `,
-        230
+        220
       );
 
-      partes.push(intro || blocoErroParte(base,numero,dados,"Introdução do professor"));
+      partes.push(intro || blocoManualVazio("block","Introdução do Professor"));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -4554,10 +4706,10 @@ Regras:
 - Pode usar linguagem de professor.
 - Evite repetição e alongamento desnecessário.
           `,
-          380
+          350
         );
 
-        partes.push(topicoHtml || blocoErroParte(base,numero,dados,`Tópico ${i + 1} do professor`));
+        partes.push(topicoHtml || blocoManualVazio("block",`${roman(i + 1)}. ${topico.titulo}`));
       }
 
       const auxilios = await gerarParteProfessor(
@@ -4586,10 +4738,10 @@ Use as classes:
 
 Seja completo, mas sem desperdiçar páginas.
         `,
-        460
+        430
       );
 
-      partes.push(auxilios || blocoErroParte(base,numero,dados,"Aplicação, auxílios e revisão"));
+      partes.push(auxilios || blocoManualVazio("block","Aplicação, auxílios e revisão"));
 
       return partes.join("\n");
     }
@@ -4600,6 +4752,10 @@ Seja completo, mas sem desperdiçar páginas.
       const imageTag = hasImage
         ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa do material" loading="eager" decoding="sync" />`
         : "";
+
+      const classeCapa = info.revistaClasse === "adolescentes"
+        ? "Classe adolescentes"
+        : `Classe ${info.revistaClasse}`;
 
       return `
         <section class="page cover-page">
@@ -4617,7 +4773,7 @@ Seja completo, mas sem desperdiçar páginas.
                 <p class="cover-subtitle">${escapeHtml(base.subtitle)}</p>
                 <div class="cover-pill-row">
                   <span class="cover-pill">${escapeHtml(info.label)}</span>
-                  <span class="cover-pill">Classe ${escapeHtml(info.revistaClasse)}</span>
+                  <span class="cover-pill">${escapeHtml(classeCapa)}</span>
                   <span class="cover-pill">${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</span>
                 </div>
               </div>
@@ -4683,18 +4839,11 @@ Seja completo, mas sem desperdiçar páginas.
       let abertura = await chamarTextoIAComTentativas(
         [promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Abertura do livro de apoio",
-        { minimo:500, aceitarCurto:true }
+        { minimo:500, aceitarCurto:true, aceitarMuitoCurto:true }
       );
 
       if(!abertura){
-        abertura = `
-          <h1 class="page-title">${escapeHtml(base.title)}</h1>
-          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-          <div class="book-note">
-            <h4>Livro de Apoio para o Professor</h4>
-            ${paragraph("A IA não conseguiu gerar uma abertura completa nesta tentativa. O professor pode editar esta página manualmente depois.")}
-          </div>
-        `;
+        abertura = blocoManualVazio("block","Abertura do Livro de Apoio");
       }
 
       html += renderPage(abertura,"intro-page");
@@ -4707,7 +4856,7 @@ Seja completo, mas sem desperdiçar páginas.
       let sumario = await chamarTextoIAComTentativas(
         [promptSumarioLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Sumário do livro de apoio",
-        { minimo:350, aceitarCurto:true }
+        { minimo:350, aceitarCurto:true, aceitarMuitoCurto:true }
       );
 
       if(!sumario){
@@ -4734,12 +4883,12 @@ Seja completo, mas sem desperdiçar páginas.
         const capitulo = await chamarTextoIAComTentativas(
           [promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto)],
           `Capítulo ${numero} do livro de apoio`,
-          { minimo:650, aceitarCurto:true }
+          { minimo:650, aceitarCurto:true, aceitarMuitoCurto:true }
         );
 
         if(!capitulo){
-          html += paginaErroLicao(base,info,numero,dados,"capítulo do livro de apoio");
-          setStatus(`A IA não conseguiu gerar o capítulo ${numero}. O app não inventou conteúdo universal.`,"error");
+          html += paginaErroLicao(base,info,numero,dados,"Capítulo do Livro de Apoio");
+          setStatus(`Capítulo ${numero} ficou em branco para edição manual. O app continuará gerando as próximas partes.`,"error");
         }else{
           html += renderPage(capitulo,"lesson-page");
         }
@@ -4765,17 +4914,19 @@ Seja completo, mas sem desperdiçar páginas.
       const respostas = await chamarTextoIAComTentativas(
         [promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Respostas na ponta da língua",
-        { minimo:500, aceitarCurto:true }
+        { minimo:500, aceitarCurto:true, aceitarMuitoCurto:true }
       );
 
       if(respostas){
         html += renderPage(respostas,"support-qa-page");
+      }else{
+        html += renderPage(blocoManualVazio("block","Respostas na ponta da língua"),"support-qa-page");
       }
 
       const bibliografia = await chamarTextoIAComTentativas(
         [promptBibliografiaLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Bibliografia recomendada",
-        { minimo:300, aceitarCurto:true }
+        { minimo:300, aceitarCurto:true, aceitarMuitoCurto:true }
       );
 
       if(bibliografia){
@@ -4785,7 +4936,7 @@ Seja completo, mas sem desperdiçar páginas.
       const apendices = await chamarTextoIAComTentativas(
         [promptApendicesLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Apêndices do livro de apoio",
-        { minimo:350, aceitarCurto:true }
+        { minimo:350, aceitarCurto:true, aceitarMuitoCurto:true }
       );
 
       if(apendices){
@@ -4795,7 +4946,7 @@ Seja completo, mas sem desperdiçar páginas.
       const contracapa = await chamarTextoIAComTentativas(
         [promptContracapa(base,info,licoes)],
         "Contracapa do livro de apoio",
-        { minimo:180, aceitarCurto:true }
+        { minimo:180, aceitarCurto:true, aceitarMuitoCurto:true }
       );
 
       if(contracapa){
@@ -4807,11 +4958,17 @@ Seja completo, mas sem desperdiçar páginas.
 
       const htmlFinal = html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`);
       renderGenerated(htmlFinal);
-      finishSteps("Livro de apoio finalizado. Revise possíveis páginas de erro antes de imprimir.");
+
+      if(manualPlaceholdersCount > 0){
+        finishSteps(`Livro de apoio finalizado com ${manualPlaceholdersCount} espaço(s) em branco para edição manual.`);
+      }else{
+        finishSteps("Livro de apoio finalizado. Revise antes de imprimir.");
+      }
     }
 
     async function generateMagazineAsync(base){
       const info = montarInfoRevista(base);
+      manualPlaceholdersCount = 0;
 
       setStep(0,"Organizando estrutura das 4 lições com base no seu prompt...");
       const licoes = await gerarEstruturaLicoesComIA(base,info);
@@ -4865,6 +5022,7 @@ Seja completo, mas sem desperdiçar páginas.
         {
           minimo:250,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           isStudent:info.isStudent
         }
       );
@@ -4877,10 +5035,7 @@ Seja completo, mas sem desperdiçar páginas.
         apresentacao = `
           <h1 class="page-title">Apresentação</h1>
           <p class="subtitle">${escapeHtml(base.title)}</p>
-          <div class="summary-box">
-            <h4>A IA não conseguiu gerar a apresentação</h4>
-            ${paragraph("O app continuará gerando as lições em blocos menores. Depois você pode editar esta apresentação manualmente ou tentar gerar novamente.")}
-          </div>
+          ${blocoManualVazio("block","Apresentação")}
         `;
       }
 
@@ -4897,6 +5052,7 @@ Seja completo, mas sem desperdiçar páginas.
         {
           minimo:220,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           isStudent:info.isStudent
         }
       );
@@ -4930,8 +5086,8 @@ Seja completo, mas sem desperdiçar páginas.
         setStep(
           i + 2,
           info.isTeacher
-            ? `Gerando Lição ${numero} do professor em blocos menores...`
-            : `Gerando Lição ${numero} do aluno em versão compacta...`
+            ? `Gerando Lição ${numero} do professor com insistência inteligente...`
+            : `Gerando Lição ${numero} do aluno com insistência inteligente...`
         );
 
         let licao = "";
@@ -4943,15 +5099,15 @@ Seja completo, mas sem desperdiçar páginas.
           html += renderLessonOpeningPage(base,info,numero,dados);
           licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
 
-          if(!licao || extrairTextoDeHtml(licao).trim().length < 800){
+          if(!licao || extrairTextoDeHtml(licao).trim().length < 500){
             todasLicoesOk = false;
-            html += paginaErroLicao(base,info,numero,dados,"lição");
-            setStatus(`A IA não conseguiu gerar a Lição ${numero} com qualidade suficiente.`,"error");
+            html += paginaErroLicao(base,info,numero,dados,"Lição");
+            setStatus(`A Lição ${numero} ficou com espaço em branco para edição manual. O app continuará gerando as próximas partes.`,"error");
           }else{
             licao = limparLinguagemAluno(licao);
             html += renderPage(licao,"lesson-page");
 
-            if(licao.includes("Parte não gerada")){
+            if(licao.includes("manual-placeholder")){
               todasLicoesOk = false;
             }
           }
@@ -4993,6 +5149,7 @@ Seja completo, mas sem desperdiçar páginas.
         {
           minimo:180,
           aceitarCurto:true,
+          aceitarMuitoCurto:true,
           isStudent:info.isStudent
         }
       );
@@ -5007,10 +5164,7 @@ Seja completo, mas sem desperdiçar páginas.
         html += renderPage(`
           <h1 class="page-title">${escapeHtml(base.title)}</h1>
           <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-          <div class="summary-box">
-            <h4>Observação editorial</h4>
-            ${paragraph("A IA não conseguiu gerar a contracapa textual. A capa final visual foi mantida, e esta página pode ser editada manualmente antes da impressão.")}
-          </div>
+          ${blocoManualVazio("block","Texto da contracapa")}
         `,"back-text-page");
       }
 
@@ -5024,12 +5178,14 @@ Seja completo, mas sem desperdiçar páginas.
 
       renderGenerated(htmlFinalComCapaNoInicio);
 
-      if(todasLicoesOk && info.isStudent){
-        finishSteps("Revista do Aluno gerada em versão compacta, com Texto Áureo completo e base textual salva para a Revista do Professor.");
+      if(manualPlaceholdersCount > 0){
+        finishSteps(`Geração finalizada com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente antes do PDF.`);
+      }else if(todasLicoesOk && info.isStudent){
+        finishSteps("Revista do Aluno gerada com sucesso, compacta e com base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
         finishSteps("Revista do Professor gerada com sucesso e base textual salva para o Livro de Apoio.");
       }else{
-        finishSteps("Geração finalizada com uma ou mais partes não geradas. Revise antes de imprimir e tente novamente se necessário.");
+        finishSteps("Geração finalizada. Revise o material antes de imprimir.");
       }
     }
 
@@ -5161,6 +5317,7 @@ Seja completo, mas sem desperdiçar páginas.
 
       isGenerating = true;
       btnGenerate.disabled = true;
+      manualPlaceholdersCount = 0;
       updateSteps(base.type);
       setStatus("Iniciando geração do material...");
 
@@ -5286,6 +5443,7 @@ Seja completo, mas sem desperdiçar páginas.
 
       currentHtml = "";
       currentText = "";
+      manualPlaceholdersCount = 0;
       printArea.innerHTML = "";
 
       result.removeAttribute("contenteditable");
@@ -5317,7 +5475,7 @@ Seja completo, mas sem desperdiçar páginas.
       editWarning.style.display = "block";
       btnFinishEdit.disabled = false;
       btnEdit.disabled = true;
-      setStatus("Modo edição ativado.","ok");
+      setStatus("Modo edição ativado. Você pode preencher espaços em branco e ajustar o texto.","ok");
     }
 
     function finalizarEdicao(){
@@ -5353,22 +5511,22 @@ Seja completo, mas sem desperdiçar páginas.
       const type = currentType;
 
       if(type === "revista"){
-        setValue("title","A Igreja em Tempos de Confusão");
-        setValue("subtitle","Guardando a fé, a santidade e a verdade em uma geração marcada por engano, relativismo e esfriamento espiritual");
-        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical com o tema: A Igreja em Tempos de Confusão. A revista deve tratar de um assunto atual e urgente para a Igreja de Deus: como permanecer firme em Cristo em uma geração marcada por confusão doutrinária, relativismo moral, esfriamento espiritual, evangelho raso, ataques à família, perda do temor de Deus e afastamento da verdade bíblica. A abordagem deve ser bíblica, pastoral, pentecostal, doutrinária, didática, profunda e prática. A Revista do Aluno deve seguir o modelo editorial de livreto EBD: profunda, compacta, econômica para impressão, progressiva, bíblica e ensinável. O Texto Áureo deve ter um único versículo escrito por extenso, sem explicação extra.");
-        setValue("biblicalBase","2 Timóteo 3.14-17; João 17.17; Gálatas 1.6-10; 2 Timóteo 4.1-5; 1 Pedro 1.13-16; Romanos 12.1-2; Mateus 24.12-13; Judas 1.20-25");
-        setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
-        setValue("tone","bíblico, pastoral, pentecostal, doutrinário, didático, atual, profundo, firme e esperançoso");
+        setValue("title","Escolhas que Definem o Futuro");
+        setValue("subtitle","Como o adolescente cristão pode permanecer firme em Deus em uma geração de pressão, distrações e confusão");
+        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical para adolescentes com o tema: Escolhas que Definem o Futuro. A revista deve ensinar adolescentes cristãos a tomarem decisões sábias diante das pressões desta geração, como amizades, internet, redes sociais, identidade, pureza, obediência, fé, família, escola, tentações e compromisso com Deus. A linguagem deve ser bíblica, pastoral, pentecostal, clara, atual, respeitosa e direta. Não infantilizar os adolescentes, mas também não usar linguagem adulta demais. O conteúdo deve conversar com a realidade deles, usando exemplos práticos, perguntas de reflexão e aplicações para o dia a dia. A Revista do Aluno deve seguir o modelo editorial de livreto EBD: profunda, compacta, econômica para impressão, progressiva, bíblica e ensinável. O Texto Áureo deve ter um único versículo escrito por extenso, sem explicação extra.");
+        setValue("biblicalBase","Daniel 1.8; Provérbios 4.23; 1 Timóteo 4.12; Romanos 12.1-2; Salmo 119.9; 1 Coríntios 10.13; Efésios 6.10-18; Josué 24.15");
+        setValue("targetAudience","Adolescentes da Escola Bíblica Dominical");
+        setValue("tone","bíblico, pastoral, pentecostal, atual, didático, direto, acolhedor, prático e reflexivo");
         setValue("author","Isiquel Rodrigues");
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
         setValue("revistaTipo","aluno");
-        setValue("revistaClasse","adultos");
+        setValue("revistaClasse","adolescentes");
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
-        setValue("revistaObservacao","Lição 1: Uma Geração Confusa e a Verdade da Palavra\nTexto base: 2 Timóteo 3.14-17; João 17.17; Salmo 119.105\nObjetivo: mostrar que, em tempos de confusão espiritual e moral, a igreja precisa permanecer firmada na verdade da Palavra de Deus.\n\nTópico 1: A confusão de uma geração sem absolutos\nSubtópicos: A verdade tem sido relativizada; A opinião humana tem ocupado o lugar da Palavra; A igreja precisa discernir o espírito do tempo.\n\nTópico 2: A Palavra de Deus como fundamento da verdade\nSubtópicos: Toda a Escritura é inspirada por Deus; A Palavra santifica o povo de Deus; A Escritura ilumina o caminho do cristão.\n\nTópico 3: A igreja guardando a verdade em amor\nSubtópicos: Defender a verdade sem perder a graça; Ensinar a Palavra com fidelidade; Viver a verdade diante de uma geração confusa.\n\n\nLição 2: O Perigo do Evangelho Raso\nTexto base: Gálatas 1.6-10; Mateus 7.21-27; 2 Timóteo 4.1-5\nObjetivo: alertar a igreja sobre os perigos de um evangelho sem cruz, sem arrependimento, sem santidade e sem compromisso real com Cristo.\n\nTópico 1: Quando o evangelho é esvaziado\nSubtópicos: Um evangelho sem arrependimento; Uma fé sem obediência; Uma mensagem que agrada o homem, mas não transforma o coração.\n\nTópico 2: O perigo de ouvir apenas o que agrada\nSubtópicos: A rejeição da sã doutrina; A busca por mensagens convenientes; O risco de confundir emoção com conversão.\n\nTópico 3: Voltando ao evangelho de Cristo\nSubtópicos: Cristo é o centro da mensagem; A cruz confronta o pecado; O verdadeiro evangelho produz fruto e perseverança.\n\n\nLição 3: Santidade em Tempos de Relativismo\nTexto base: 1 Pedro 1.13-16; Romanos 12.1-2; Hebreus 12.14\nObjetivo: ensinar que a santidade continua sendo uma exigência bíblica para o povo de Deus, mesmo em uma cultura que tenta normalizar o pecado.\n\nTópico 1: O chamado bíblico à santidade\nSubtópicos: Deus é santo e chama seu povo à santidade; A santidade envolve mente, corpo e conduta; A graça não anula a obediência.\n\nTópico 2: O perigo da conformação com o mundo\nSubtópicos: O mundo tenta moldar os valores da igreja; A mente precisa ser renovada pela Palavra; O cristão não pode negociar princípios eternos.\n\nTópico 3: Uma vida santa em uma geração impura\nSubtópicos: Santidade no falar, no pensar e no agir; Santidade na família e nos relacionamentos; Santidade como testemunho diante do mundo.\n\n\nLição 4: Uma Igreja Firme Até a Volta de Cristo\nTexto base: Mateus 24.12-13; Apocalipse 3.7-13; Judas 1.20-25\nObjetivo: mostrar que, mesmo diante do esfriamento espiritual e da multiplicação do engano, a igreja deve permanecer fiel, vigilante e esperançosa até a volta de Cristo.\n\nTópico 1: O perigo do esfriamento espiritual\nSubtópicos: O amor de muitos se esfriará; A rotina religiosa pode substituir a vida com Deus; A vigilância espiritual não pode ser abandonada.\n\nTópico 2: Perseverando em fidelidade\nSubtópicos: Guardar a Palavra de Cristo; Permanecer firme mesmo com pouca força; Não negociar a fé diante da pressão.\n\nTópico 3: A esperança que sustenta a igreja\nSubtópicos: Cristo guarda os que permanecem fiéis; A volta de Jesus fortalece a perseverança; A igreja deve edificar-se na fé até o fim.");
-        setValue("extraNotes","A Revista do Aluno deve parecer um livreto de EBD: profunda, compacta e econômica para impressão. O alvo é uma revista mensal com cerca de 28 a 32 páginas. O Texto Áureo deve aparecer somente na abertura da lição, com um único versículo escrito por extenso e sem explicação extra. Não repetir o Texto Áureo dentro do comentário. Cada subtópico deve ter 1 parágrafo forte ou no máximo 2 parágrafos curtos. Evitar repetição de ideias apenas para preencher espaço. A capa deve variar conforme o tema e não ficar sempre no mesmo padrão visual.");
+        setValue("revistaObservacao","Lição 1: Decidindo Permanecer Fiel a Deus\nTexto base: Daniel 1.8; Romanos 12.1-2; Provérbios 4.23\nObjetivo: mostrar que o adolescente cristão precisa decidir no coração permanecer fiel a Deus, mesmo quando está cercado por pressões contrárias à fé.\n\nTópico 1: Uma decisão tomada no coração\nSubtópicos: Daniel decidiu antes da pressão; O coração precisa ser guardado; A fidelidade começa em escolhas internas.\n\nTópico 2: Pressões que tentam moldar o adolescente\nSubtópicos: A cultura tenta formar pensamentos e desejos; Nem tudo que parece normal agrada a Deus; O cristão não deve se conformar com este mundo.\n\nTópico 3: Permanecendo firme sem perder a identidade\nSubtópicos: Ser diferente não é motivo de vergonha; Deus honra quem escolhe obedecer; A fidelidade hoje prepara o futuro.\n\n\nLição 2: Amizades, Influências e Conselhos\nTexto base: Provérbios 13.20; 1 Coríntios 15.33; Salmo 1.1-3\nObjetivo: ensinar que amizades e influências têm poder sobre pensamentos, atitudes e decisões, por isso o adolescente cristão deve escolher bem quem ouve e com quem caminha.\n\nTópico 1: A força das influências\nSubtópicos: Ninguém caminha sem ser influenciado; Boas companhias fortalecem a fé; Más companhias podem enfraquecer valores.\n\nTópico 2: Conselhos que aproximam ou afastam de Deus\nSubtópicos: Nem todo conselho é sábio; A Palavra de Deus deve orientar as decisões; O adolescente cristão precisa discernir vozes.\n\nTópico 3: Escolhendo amizades que edificam\nSubtópicos: Amizade verdadeira não empurra para o pecado; Bons amigos ajudam na caminhada com Deus; Cristo deve ser o centro das relações.\n\n\nLição 3: Santidade em Tempos de Internet e Pressão\nTexto base: Salmo 119.9; 1 Timóteo 4.12; 1 Coríntios 10.13\nObjetivo: mostrar que a santidade continua sendo possível e necessária, mesmo em uma geração marcada por internet, exposição, tentações, comparação e pressão social.\n\nTópico 1: Guardando o caminho pela Palavra\nSubtópicos: A Palavra limpa a mente e orienta os passos; O adolescente precisa alimentar a fé; Santidade começa no coração.\n\nTópico 2: Lidando com tentações reais\nSubtópicos: A tentação não deve ser tratada como brincadeira; Deus sempre oferece escape; Fugir do pecado também é sinal de força.\n\nTópico 3: Testemunho cristão na vida diária\nSubtópicos: O adolescente pode ser exemplo; Santidade aparece nas palavras, escolhas e atitudes; A vida cristã deve ser visível dentro e fora da igreja.\n\n\nLição 4: Escolhendo Servir ao Senhor\nTexto base: Josué 24.15; Efésios 6.10-18; Mateus 6.33\nObjetivo: conduzir o adolescente a entender que servir a Deus é uma decisão diária, consciente e corajosa, que envolve prioridade, perseverança e compromisso.\n\nTópico 1: Uma escolha pessoal e consciente\nSubtópicos: Ninguém pode decidir por nós; Servir a Deus exige posicionamento; A fé precisa ser assumida com responsabilidade.\n\nTópico 2: Fortalecidos para vencer as batalhas\nSubtópicos: A vida cristã envolve lutas espirituais; A armadura de Deus protege o cristão; A oração fortalece o adolescente.\n\nTópico 3: Colocando Deus em primeiro lugar\nSubtópicos: Prioridades revelam o coração; Buscar o Reino muda as decisões; Quem escolhe Deus constrói um futuro com propósito.");
+        setValue("extraNotes","A revista deve ser para adolescentes, não para crianças e não para adultos. Usar linguagem clara, atual e próxima da realidade dos adolescentes, sem gírias exageradas e sem infantilizar. O conteúdo deve ser bíblico, profundo na medida certa, direto ao ponto e aplicável à vida real. O Texto Áureo deve ter apenas um versículo escrito por extenso, sem explicação extra. A revista deve ter cerca de 28 a 32 páginas no total. A capa deve ser voltada para adolescentes, com visual cristão atual, bonito, respeitoso e reverente.");
       }
 
       if(type === "sermao"){
@@ -5430,6 +5588,7 @@ Exigência para Revista do Aluno:
 - Preferir: “o cristão”, “a igreja”, “o servo de Deus”, “somos chamados”.
 - Evitar repetição de ideias só para preencher espaço.
 - A capa deve ser criada conforme o tema específico, sem repetir sempre o mesmo padrão visual.
+- Quando uma parte for difícil, tente entregar versão menor antes de deixar em branco.
 
 Regra para Revista do Professor:
 - Manter o mesmo conteúdo-base do aluno.
