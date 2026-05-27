@@ -1222,8 +1222,8 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção v10:</strong><br>
-          O app não carrega mais tema pronto de Bibliologia. A estrutura continua fixa, mas o tema e o conteúdo obedecem ao que você digitou no prompt.
+          <strong>Correção v10.1:</strong><br>
+          O app não carrega tema pronto. A IA é a fonte principal do conteúdo. Se a IA falhar, o fallback continua no tema pedido, com linguagem de aluno para Revista do Aluno e linguagem de professor apenas na Revista do Professor.
         </div>
 
         <div class="unlock-box">
@@ -1629,11 +1629,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v10";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v10";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v101";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v101";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v10";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v10";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v101";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v101";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1926,11 +1926,13 @@
 
         const linhaTema = linhas.find(l =>
           l.length > 4 &&
-          l.length < 120 &&
+          l.length < 140 &&
           !/^crie/i.test(l) &&
           !/^subtítulo/i.test(l) &&
           !/^a revista/i.test(l) &&
-          !/^não/i.test(l)
+          !/^não/i.test(l) &&
+          !/^regra/i.test(l) &&
+          !/^cada/i.test(l)
         );
 
         return linhaTema || "Tema mensal da Escola Bíblica Dominical";
@@ -2333,27 +2335,48 @@
     function limparMarkdownHtml(text){
       return String(text || "")
         .replace(/^```html\s*/i,"")
+        .replace(/^```json\s*/i,"")
         .replace(/^```\s*/i,"")
         .replace(/```$/i,"")
         .trim();
     }
 
-    function validarRespostaIA(texto,minimo = 2200){
-      const limpo = String(texto || "").replace(/<[^>]+>/g," ").trim();
-      if(limpo.length < minimo) return false;
+    function validarRespostaIA(texto,minimo = 700){
+      const original = String(texto || "").trim();
+      const limpo = original.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
 
-      const sinaisFracos = [
-        "Desenvolva esta parte",
-        "Como explicar este tema com clareza?",
-        "Explique a partir da Bíblia, use exemplos simples",
-        "Este capítulo aprofunda o tema",
-        "Texto bíblico completo a ser conferido"
+      if(!limpo) return false;
+
+      const mensagensErro = [
+        "error",
+        "erro",
+        "failed",
+        "falhou",
+        "undefined",
+        "cannot",
+        "não foi possível gerar",
+        "api key",
+        "quota",
+        "limite excedido"
       ];
 
-      const repetitivo = sinaisFracos.filter(sinal => limpo.includes(sinal)).length >= 2;
-      if(repetitivo) return false;
+      const pareceErro = mensagensErro.some(sinal => limpo.toLowerCase().includes(sinal));
+      if(pareceErro && limpo.length < 900) return false;
 
-      return true;
+      const temEstruturaHtml =
+        /<h1|<h2|<h3|<div|<p|<ul|<ol/i.test(original);
+
+      const temConteudoBiblico =
+        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|aliança|oração|missão|família|salvação/i.test(limpo);
+
+      const temEstruturaDeLicao =
+        /Introdução|Conclusão|Verdade Prática|Texto Áureo|Leitura Bíblica|Tópico|Revisando|Aplicação|Objetivos|Lição/i.test(limpo);
+
+      if(limpo.length >= minimo && temConteudoBiblico) return true;
+      if(limpo.length >= 450 && temEstruturaHtml && temConteudoBiblico) return true;
+      if(limpo.length >= 500 && temEstruturaDeLicao) return true;
+
+      return false;
     }
 
     async function chamarTextoIA(prompt,etapa = "Geração",opcoes = {}){
@@ -2548,59 +2571,173 @@
         return objetivo.replace(/\.$/,"") + ".";
       }
 
-      return `A lição "${titulo}" deve conduzir o aluno a compreender o tema "${base.visibleTheme}" a partir da Escritura, desenvolver convicção doutrinária e responder com prática cristã.`;
+      return `A lição "${titulo}" conduz o aluno a compreender o tema "${base.visibleTheme}" à luz das Escrituras, formando convicção bíblica e prática cristã equilibrada.`;
+    }
+
+    function dividirReferenciasBiblicas(texto){
+      const raw = String(texto || "").trim();
+
+      if(!raw) return [];
+
+      return raw
+        .split(/;|\n/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => item.replace(/\.$/,""))
+        .filter(item => item.length > 2);
+    }
+
+    function resumoDaReferencia(ref,tema){
+      const r = String(ref || "").toLowerCase();
+
+      if(r.includes("marcos 7") || r.includes("mc 7")){
+        return "A Palavra de Deus está acima das tradições humanas.";
+      }
+
+      if(r.includes("colossenses 2") || r.includes("cl 2")){
+        return "Regras humanas não produzem verdadeira espiritualidade.";
+      }
+
+      if(r.includes("1 pedro") || r.includes("1pe") || r.includes("1 pe")){
+        return "Deus chama seu povo para uma vida santa.";
+      }
+
+      if(r.includes("hebreus 12") || r.includes("hb 12")){
+        return "A santidade deve acompanhar a caminhada cristã.";
+      }
+
+      if(r.includes("romanos 12") || r.includes("rm 12")){
+        return "A mente do cristão deve ser transformada pela vontade de Deus.";
+      }
+
+      if(r.includes("1 coríntios 6") || r.includes("1co 6") || r.includes("1 co 6")){
+        return "Nem tudo que é lícito convém ao cristão.";
+      }
+
+      if(r.includes("1 coríntios 10") || r.includes("1co 10") || r.includes("1 co 10")){
+        return "Tudo deve ser feito para a glória de Deus.";
+      }
+
+      if(r.includes("gálatas 5") || r.includes("galatas 5") || r.includes("gl 5")){
+        return "A liberdade cristã deve ser vivida com responsabilidade.";
+      }
+
+      if(r.includes("filipenses 4") || r.includes("fp 4")){
+        return "O cristão deve ocupar a mente com aquilo que agrada a Deus.";
+      }
+
+      if(r.includes("1 tessalonicenses 5") || r.includes("1ts 5") || r.includes("1 ts 5")){
+        return "O cristão deve examinar tudo e reter o que é bom.";
+      }
+
+      if(r.includes("2 timóteo 3") || r.includes("2tm 3") || r.includes("2 tm 3")){
+        return "A Escritura é inspirada por Deus e suficiente para ensinar.";
+      }
+
+      if(r.includes("salmo 119") || r.includes("sl 119")){
+        return "A Palavra de Deus ilumina o caminho do servo fiel.";
+      }
+
+      if(r.includes("joão 17") || r.includes("jo 17")){
+        return "A verdade de Deus santifica o seu povo.";
+      }
+
+      if(r.includes("tiago 1") || r.includes("tg 1")){
+        return "A Palavra precisa ser praticada, não apenas ouvida.";
+      }
+
+      return `A Palavra de Deus orienta a compreensão do tema "${tema}".`;
+    }
+
+    function criarLeituraDiariaUniversal(base,dados,textoBase = ""){
+      const tema = base.visibleTheme || base.title || "tema bíblico";
+
+      const refsBase = [
+        ...dividirReferenciasBiblicas(textoBase),
+        ...dividirReferenciasBiblicas(dados?.leituraClasse),
+        ...dividirReferenciasBiblicas(base.biblicalBase)
+      ];
+
+      const refsUnicas = [];
+
+      refsBase.forEach(ref => {
+        if(ref && !refsUnicas.some(r => r.toLowerCase() === ref.toLowerCase())){
+          refsUnicas.push(ref);
+        }
+      });
+
+      const refsGerais = [
+        "2 Timóteo 3.16-17",
+        "Salmo 119.105",
+        "João 17.17",
+        "Tiago 1.22",
+        "Romanos 12.1-2",
+        "1 Coríntios 10.31",
+        "1 Tessalonicenses 5.21-22"
+      ];
+
+      refsGerais.forEach(ref => {
+        if(refsUnicas.length < 6 && !refsUnicas.some(r => r.toLowerCase() === ref.toLowerCase())){
+          refsUnicas.push(ref);
+        }
+      });
+
+      const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+
+      return dias.map((dia,index) => {
+        const ref = refsUnicas[index] || refsGerais[index] || "2 Timóteo 3.16-17";
+        return [dia,ref,resumoDaReferencia(ref,tema)];
+      });
     }
 
     function montarLicaoUniversal(titulo,index,base,extra = "",textoBase = ""){
       const tema = base.visibleTheme || base.title || base.theme || "tema bíblico";
       const tituloLimpo = titulo || `Lição ${index}`;
+      const textoDaLicao = textoBase || base.biblicalBase || "Texto bíblico definido conforme o tema da lição";
 
-      return {
+      const dados = {
         titulo:tituloLimpo,
         tese:gerarTeseUniversal(tituloLimpo,base,extra),
         progressao:[
-          "Primeiro, a lição apresenta o fundamento bíblico do assunto.",
-          "Depois, desenvolve a doutrina, o significado espiritual e a importância para a fé cristã.",
-          "Por fim, conduz o aluno à aplicação prática, à obediência e ao compromisso com Deus."
+          "Compreender o fundamento bíblico da lição.",
+          "Perceber a importância espiritual e doutrinária do assunto.",
+          "Aplicar a verdade estudada à vida cristã diária."
         ],
-        foco:extra || `o estudo bíblico, doutrinário, histórico e prático de "${tituloLimpo}" dentro do tema mensal "${tema}"`,
-        textoAureo:`Versículo-chave relacionado à lição: ${textoBase || base.biblicalBase || "texto bíblico definido pela IA"}.`,
-        verdadePratica:`A verdade estudada nesta lição deve conduzir o aluno a compreender "${tituloLimpo}" à luz das Escrituras e praticar a vontade de Deus.`,
-        leituraClasse:textoBase || base.biblicalBase || "Texto bíblico a definir pela IA conforme o tema da lição",
+        foco:extra || `compreender "${tituloLimpo}" dentro do tema mensal "${tema}", com fidelidade bíblica e aplicação prática`,
+        textoAureo:`Texto-chave da lição: ${textoDaLicao}.`,
+        verdadePratica:`A Palavra de Deus deve orientar a compreensão de "${tituloLimpo}", formando fé, discernimento e obediência.`,
+        leituraClasse:textoDaLicao,
         palavraChave:tituloLimpo.split(" ").filter(Boolean)[0] || "Lição",
-        termos:["fundamento bíblico","doutrina","aplicação","vida cristã"],
+        termos:["doutrina bíblica","princípio cristão","discernimento","obediência"],
         topicos:[
           {
-            titulo:`O fundamento bíblico de ${tituloLimpo}`,
-            funcao:"mostrar onde o assunto nasce na Escritura e preparar o aluno para compreender a doutrina.",
-            subtitulos:["A Palavra como ponto de partida","A verdade revelada no texto bíblico","A importância de interpretar corretamente"]
+            titulo:"A Palavra de Deus como fundamento",
+            funcao:"Mostrar que toda verdade espiritual precisa começar na revelação bíblica.",
+            subtitulos:["A Escritura orienta a fé cristã","A verdade bíblica protege a igreja","A obediência nasce da Palavra"]
           },
           {
-            titulo:`A importância doutrinária e espiritual de ${tituloLimpo}`,
-            funcao:"desenvolver o ensino bíblico, mostrando sua relevância para a fé cristã.",
-            subtitulos:["O valor doutrinário do tema","O crescimento espiritual produzido pela Palavra","A igreja fortalecida pelo ensino"]
+            titulo:"O ensino bíblico aplicado ao tema da lição",
+            funcao:"Desenvolver o significado espiritual e doutrinário do assunto estudado.",
+            subtitulos:["A doutrina forma convicções","O discernimento evita extremos","A fé amadurece com equilíbrio"]
           },
           {
-            titulo:`A resposta prática diante de ${tituloLimpo}`,
-            funcao:"conduzir o aluno à obediência, à aplicação pessoal e à prática cristã.",
-            subtitulos:["A verdade aplicada ao coração","A verdade aplicada à vida diária","A verdade produzindo fruto"]
+            titulo:"Vivendo esta verdade na prática",
+            funcao:"Conduzir o aluno à aplicação pessoal, espiritual e comunitária.",
+            subtitulos:["A verdade alcança o coração","A prática revela maturidade","A vida cristã glorifica a Deus"]
           }
         ],
         perguntas:[
-          ["Qual é a verdade central desta lição?","A verdade central deve ser entendida a partir da Escritura, aplicada à vida cristã e vivida com obediência."],
-          ["Como aplicar esta lição à igreja atual?","Aplicamos quando permitimos que a Palavra corrija pensamentos, atitudes, prioridades e decisões."],
-          ["Por que este assunto é importante para a fé cristã?","Porque ajuda o aluno a compreender melhor a revelação de Deus e a viver de modo fiel à Palavra."],
-          ["Que resposta prática Deus espera de nós?","Deus espera fé, obediência, reverência e compromisso com sua vontade."]
+          ["Qual é a verdade central desta lição?","A verdade central é que a vida cristã deve ser guiada pela Palavra de Deus, e não apenas por opiniões humanas."],
+          ["Por que a Bíblia precisa ser a base da doutrina cristã?","Porque somente a Escritura possui autoridade final para ensinar, corrigir e orientar a fé da igreja."],
+          ["Como o cristão deve lidar com assuntos difíceis?","Deve examinar a Palavra, buscar discernimento, agir com temor de Deus e evitar tanto o legalismo quanto a libertinagem."],
+          ["Que resposta prática Deus espera de nós?","Deus espera fé, obediência, santidade, equilíbrio e compromisso com sua vontade."]
         ],
-        leituraDiaria:[
-          ["Segunda","Texto bíblico da lição","O fundamento bíblico do assunto."],
-          ["Terça","Texto bíblico complementar","A verdade revelada por Deus."],
-          ["Quarta","Texto bíblico complementar","O desenvolvimento doutrinário do tema."],
-          ["Quinta","Texto bíblico complementar","A aplicação espiritual para a vida cristã."],
-          ["Sexta","Texto bíblico complementar","O chamado à obediência."],
-          ["Sábado","Texto bíblico complementar","A perseverança na Palavra."]
-        ]
+        leituraDiaria:[]
       };
+
+      dados.leituraDiaria = criarLeituraDiariaUniversal(base,dados,textoDaLicao);
+
+      return dados;
     }
 
     function extrairLicoesDoTexto(texto,base){
@@ -2617,7 +2754,7 @@
         const inicio = match.index;
         const resto = raw.slice(inicio + 10);
         const proximo = resto.search(/li[cç][aã]o\s*[1-4]\s*[:\-–—]/i);
-        const fim = proximo >= 0 ? inicio + 10 + proximo : Math.min(raw.length,inicio + 1600);
+        const fim = proximo >= 0 ? inicio + 10 + proximo : Math.min(raw.length,inicio + 1800);
         const bloco = raw.slice(inicio,fim);
 
         const textoBaseMatch = bloco.match(/texto\s*base\s*[:\-–—]\s*([^\n]+)/i);
@@ -2675,6 +2812,7 @@ ${base.extraNotes}
 
     async function gerarEstruturaLicoesComIA(base,info){
       const licoesExtraidas = dadosLicoesMensais(base,info);
+
       const textoCompleto = `
 Título: ${base.title}
 Subtítulo: ${base.subtitle}
@@ -2699,6 +2837,7 @@ REGRAS:
 - Se o usuário escreveu Lição 1, Lição 2, Lição 3 e Lição 4, preserve esses títulos exatamente.
 - Cada lição precisa ter título, tese, texto base, verdade prática, palavra-chave, leitura diária, três tópicos e três subtópicos por tópico.
 - A progressão deve ser: fundamento, doutrina, aplicação.
+- A leitura diária precisa ter referências bíblicas reais.
 - Responda SOMENTE em JSON válido, sem markdown.
 
 FORMATO:
@@ -2715,12 +2854,12 @@ FORMATO:
       "termos": ["", "", ""],
       "progressao": ["", "", ""],
       "leituraDiaria": [
-        ["Segunda", "Referência", "Resumo"],
-        ["Terça", "Referência", "Resumo"],
-        ["Quarta", "Referência", "Resumo"],
-        ["Quinta", "Referência", "Resumo"],
-        ["Sexta", "Referência", "Resumo"],
-        ["Sábado", "Referência", "Resumo"]
+        ["Segunda", "Referência bíblica real", "Resumo"],
+        ["Terça", "Referência bíblica real", "Resumo"],
+        ["Quarta", "Referência bíblica real", "Resumo"],
+        ["Quinta", "Referência bíblica real", "Resumo"],
+        ["Sexta", "Referência bíblica real", "Resumo"],
+        ["Sábado", "Referência bíblica real", "Resumo"]
       ],
       "topicos": [
         {
@@ -2751,7 +2890,7 @@ FORMATO:
       `.trim();
 
       const resposta = await chamarTextoIA(prompt,"Estrutura universal das 4 lições",{
-        minimo:800,
+        minimo:600,
         minQuality:"JSON com 4 lições baseadas no tema do usuário"
       });
 
@@ -2767,15 +2906,20 @@ FORMATO:
         if(json && Array.isArray(json.licoes) && json.licoes.length === 4){
           return json.licoes.map((l,i) => {
             const fallback = licoesExtraidas[i] || montarLicaoUniversal(l.titulo || `Lição ${i + 1}`,i + 1,base);
-            return {
+            const merged = {
               ...fallback,
               ...l,
               topicos:Array.isArray(l.topicos) && l.topicos.length === 3 ? l.topicos : fallback.topicos,
               progressao:Array.isArray(l.progressao) && l.progressao.length ? l.progressao : fallback.progressao,
-              leituraDiaria:Array.isArray(l.leituraDiaria) && l.leituraDiaria.length === 6 ? l.leituraDiaria : fallback.leituraDiaria,
               perguntas:Array.isArray(l.perguntas) && l.perguntas.length ? l.perguntas : fallback.perguntas,
               termos:Array.isArray(l.termos) && l.termos.length ? l.termos : fallback.termos
             };
+
+            merged.leituraDiaria = Array.isArray(l.leituraDiaria) && l.leituraDiaria.length === 6
+              ? l.leituraDiaria
+              : criarLeituraDiariaUniversal(base,merged,merged.leituraClasse || fallback.leituraClasse);
+
+            return merged;
           });
         }
       }catch(error){
@@ -2784,13 +2928,14 @@ FORMATO:
 
       return licoesExtraidas;
     }
-        function montarPromptBaseRevista(base,info,licoes){
+
+    function montarPromptBaseRevista(base,info,licoes){
       const listaLicoes = (licoes || [])
         .map((l,i) => `
 Lição ${i + 1}: ${l.titulo}
 Tese: ${l.tese}
 Progressão: ${(l.progressao || []).join(" / ")}
-Tópicos: ${(l.topicos || []).map(t => `${t.titulo} — função: ${t.funcao}`).join(" | ")}
+Tópicos: ${(l.topicos || []).map(t => `${t.titulo} — função editorial interna: ${t.funcao}`).join(" | ")}
 Texto áureo: ${l.textoAureo}
 Leitura: ${l.leituraClasse}
 Palavra-chave: ${l.palavraChave}
@@ -2997,43 +3142,49 @@ Crie a lição-base completa, profunda e bem organizada.
 DADOS:
 Título: ${dados.titulo}
 Tese da lição: ${dados.tese}
-Progressão pedagógica:
+Progressão pedagógica interna:
 ${(dados.progressao || []).map((p,i) => `${i + 1}. ${p}`).join("\n")}
 Foco: ${dados.foco}
 Texto áureo: ${dados.textoAureo}
 Verdade prática: ${dados.verdadePratica}
 Leitura bíblica: ${dados.leituraClasse}
 Palavra-chave: ${dados.palavraChave}
+Leitura diária:
+${(dados.leituraDiaria || []).map(item => `${item[0]} — ${item[1]} — ${item[2]}`).join("\n")}
 Tópicos obrigatórios:
-${(dados.topicos || []).map((t,i) => `${i + 1}. ${t.titulo} — função: ${t.funcao} — subtópicos: ${(t.subtitulos || []).join("; ")}`).join("\n")}
+${(dados.topicos || []).map((t,i) => `${i + 1}. ${t.titulo} — subtópicos: ${(t.subtitulos || []).join("; ")}`).join("\n")}
 
 ESTRUTURA:
 1. Cabeçalho visual da lição.
-2. Leitura Diária.
+2. Leitura Diária com referências bíblicas reais.
 3. Texto Áureo ou Para Memorizar.
 4. Verdade Prática.
 5. Leitura Bíblica em Classe.
 6. Objetivos.
 7. Tese da lição.
-8. Caminho da lição, mostrando a progressão.
+8. Caminho da lição, mostrando a progressão para o aluno de forma natural.
 9. Introdução exclusiva com 4 a 6 parágrafos.
 10. Três tópicos principais obrigatórios.
 11. Cada tópico com três subtópicos obrigatórios.
 12. Cada subtópico com 4 a 6 parágrafos substanciais.
-13. Em cada tópico, mostre como ele prepara o próximo.
-14. Referências bíblicas integradas no argumento.
-15. Sinopse em cada tópico.
-16. Aplicação pessoal.
-17. Conclusão.
-18. Revisando o conteúdo com perguntas sem resposta.
+13. Referências bíblicas integradas no argumento.
+14. Sinopse em cada tópico.
+15. Aplicação pessoal.
+16. Conclusão.
+17. Revisando o conteúdo com perguntas sem resposta.
 
 REGRAS DA REVISTA DO ALUNO:
+- Escreva como conteúdo final para o aluno estudar.
+- Não escreva bastidor editorial.
+- Não escreva plano de aula.
+- Não escreva orientação técnica.
+- Não use expressões como: “este tópico aprofunda”, “este subtópico ajuda”, “função deste tópico”, “progressão pedagógica”, “conduzir a classe”, “o professor deve”.
 - Não use “o professor deve”.
 - Não use “professor”, “conduza a classe”, “explique aos alunos”, “mostre à classe” ou “oriente a turma”.
 - Não coloque auxílio ao professor.
 - Não coloque resposta das perguntas.
 - Fale diretamente com o aluno.
-- Use expressões como: “nesta lição estudaremos”, “a Palavra nos ensina”, “somos conduzidos a compreender”.
+- Use expressões como: “nesta lição estudaremos”, “a Palavra nos ensina”, “somos chamados a compreender”, “o cristão deve discernir”, “a Bíblia nos orienta”.
 - Não entregar subtópico com apenas 2 ou 3 linhas.
 - Não escreva conteúdo genérico.
 - Escreva conteúdo específico da tese da lição.
@@ -3052,8 +3203,7 @@ Use HTML com:
 <div class="personal-application">
 <div class="summary-box">`;
     }
-
-    function promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto){
+        function promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto){
       const trechoAluno = extrairTrechoDaLicaoBase(revistaAlunoTexto,numero,dados.titulo);
 
       return `${montarPromptProfessorBaseadoAluno(base,info,licoes,revistaAlunoTexto)}
@@ -3071,6 +3221,8 @@ Texto áureo obrigatório: ${dados.textoAureo}
 Verdade prática obrigatória: ${dados.verdadePratica}
 Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
 Palavra-chave obrigatória: ${dados.palavraChave}
+Leitura diária obrigatória:
+${(dados.leituraDiaria || []).map(item => `${item[0]} — ${item[1]} — ${item[2]}`).join("\n")}
 Tópicos obrigatórios:
 ${(dados.topicos || []).map((t,i) => `${i + 1}. ${t.titulo} — função: ${t.funcao}`).join("\n")}
 
@@ -3104,6 +3256,13 @@ ESTRUTURA:
 20. Auxílio teológico.
 21. Auxílio didático.
 22. Orientação ao professor.
+
+REGRAS:
+- A Revista do Professor pode ter linguagem de professor.
+- Pode usar: “o professor deve”, “conduza a classe”, “explique aos alunos”.
+- Mas não deve mudar a lição-base do aluno.
+- Deve aprofundar, orientar e responder.
+- Deve manter o mesmo tema pedido pelo usuário.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -3297,7 +3456,8 @@ A imagem deve obedecer ao tema informado pelo usuário.
 Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial premium, sem letras, sem logotipos, vertical 2:3.
       `.trim();
     }
-        function renderScriptureBox(ref){
+
+    function renderScriptureBox(ref){
       return `
         <div class="scripture-box">
           <h4>Leitura Bíblica em Classe</h4>
@@ -3310,14 +3470,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
     function renderDailyReading(numero,dados){
       const items = Array.isArray(dados.leituraDiaria) && dados.leituraDiaria.length === 6
         ? dados.leituraDiaria
-        : [
-          ["Segunda","Texto bíblico da lição","O fundamento bíblico do assunto."],
-          ["Terça","Texto bíblico complementar","A verdade revelada por Deus."],
-          ["Quarta","Texto bíblico complementar","O desenvolvimento doutrinário do tema."],
-          ["Quinta","Texto bíblico complementar","A aplicação espiritual para a vida cristã."],
-          ["Sexta","Texto bíblico complementar","O chamado à obediência."],
-          ["Sábado","Texto bíblico complementar","A perseverança na Palavra."]
-        ];
+        : criarLeituraDiariaUniversal(buildBase(),dados,dados.leituraClasse || "");
 
       return `
         <div class="daily-reading">
@@ -3340,13 +3493,16 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
     function gerarParagrafosUniversais(base,dados,topico,subtitulo,topicoIndex,subIndex){
       const refBase = dados.leituraClasse || base.biblicalBase || "texto bíblico da lição";
-      const tese = dados.tese || dados.foco || `o tema ${base.visibleTheme}`;
+      const tema = base.visibleTheme || base.title || "tema bíblico";
 
       return [
-        `Este ponto aprofunda a tese da lição: ${tese} O assunto "${subtitulo}" deve ser compreendido dentro do tema "${base.visibleTheme}", sem fugir da direção dada pelo usuário.`,
-        `A partir de ${refInline(refBase)}, somos conduzidos a enxergar que a fé cristã precisa ser formada pela Palavra de Deus. O estudo não deve ser apenas informativo; ele precisa produzir entendimento, reverência e prática.`,
-        `Dentro do tópico "${topico.titulo}", este subtópico ajuda a construir a progressão da lição. Primeiro entendemos o fundamento bíblico, depois percebemos sua importância doutrinária e, por fim, somos chamados à aplicação espiritual.`,
-        `Assim, a lição avança com ordem e propósito. O aluno é conduzido a compreender o assunto, examinar a própria vida e responder com fé obediente diante da vontade de Deus.`
+        `A Palavra de Deus nos ensina que a vida cristã precisa ser guiada pela verdade revelada nas Escrituras. Por isso, ao estudar "${subtitulo}", devemos olhar primeiro para aquilo que Deus revelou, e não apenas para costumes, opiniões ou tradições humanas.`,
+
+        `O texto bíblico indicado para esta lição, ${refInline(refBase)}, ajuda o aluno a compreender que a fé cristã não pode ser construída sobre achismos. A doutrina verdadeira nasce da Palavra de Deus, é confirmada pela Escritura e produz obediência no coração.`,
+
+        `Esse ensino também nos ajuda a viver com equilíbrio. O cristão não deve desprezar a santidade, mas também não deve transformar preferências humanas em mandamentos divinos. Quando a Bíblia fala, obedecemos. Quando a Bíblia não transforma algo em doutrina obrigatória, precisamos agir com prudência, amor e discernimento.`,
+
+        `Assim, o estudo de "${tema}" nos chama a uma vida cristã madura. O aluno é levado a examinar sua fé, rever suas atitudes e buscar uma obediência que não seja apenas exterior, mas que nasça de um coração transformado por Deus.`
       ];
     }
 
@@ -3355,19 +3511,19 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         ? dados.topicos
         : [
           {
-            titulo:`O fundamento bíblico de ${dados.titulo}`,
-            funcao:"apresentar o fundamento bíblico do assunto.",
-            subtitulos:["A verdade revelada nas Escrituras","A importância doutrinária do tema","Aplicação para a igreja atual"]
+            titulo:"A Palavra de Deus como fundamento",
+            funcao:"Mostrar que todo ensino cristão precisa nascer da Escritura.",
+            subtitulos:["A Escritura orienta a fé cristã","A verdade bíblica protege a igreja","A obediência nasce da Palavra"]
           },
           {
-            titulo:`O desenvolvimento espiritual em ${dados.titulo}`,
-            funcao:"desenvolver o ensino e preparar para aplicação.",
-            subtitulos:["Conhecimento que produz maturidade","A verdade aplicada ao cotidiano","A igreja fortalecida pela Palavra"]
+            titulo:"A verdade bíblica aplicada à vida cristã",
+            funcao:"Desenvolver o ensino bíblico com equilíbrio espiritual e doutrinário.",
+            subtitulos:["A doutrina forma convicções","O discernimento evita extremos","A fé amadurece com equilíbrio"]
           },
           {
-            titulo:`O propósito de Deus em ${dados.titulo}`,
-            funcao:"conduzir o aluno à resposta prática.",
-            subtitulos:["Deus ensina com propósito","O crescimento espiritual do aluno e da igreja","A resposta prática do aluno"]
+            titulo:"Vivendo com discernimento diante de Deus",
+            funcao:"Conduzir o aluno à prática da verdade estudada.",
+            subtitulos:["A verdade alcança o coração","A prática revela maturidade","A vida cristã glorifica a Deus"]
           }
         ];
 
@@ -3377,7 +3533,9 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         subs:(topico.subtitulos || []).map((subtitulo,subIndex) =>
           criarSubtopico(subtitulo,gerarParagrafosUniversais(base,dados,topico,subtitulo,topicoIndex,subIndex))
         ),
-        sinopse:`Este tópico cumpre a função de ${topico.funcao} Ele prepara o estudante para o próximo passo da lição e ajuda a construir a compreensão da tese: ${dados.tese || dados.foco}.`
+        sinopse:info.isTeacher
+          ? `Este tópico ajuda o professor a conduzir a classe em direção à tese da lição: ${dados.tese || dados.foco}.`
+          : `Neste tópico, aprendemos que a Palavra de Deus deve orientar nossa fé, nossas decisões e nossa maneira de viver diante do Senhor.`
       }));
     }
 
@@ -3385,18 +3543,21 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       return topicos.map((topico,index) => `
         <div class="lesson-topic">
           <h3>${roman(index + 1)}. ${escapeHtml(topico.titulo)}</h3>
-          ${topico.funcao ? `
+
+          ${isTeacher && topico.funcao ? `
             <div class="book-note">
-              <h4>${isTeacher ? "Função pedagógica deste tópico" : "Por que este tópico é importante"}</h4>
+              <h4>Função pedagógica deste tópico</h4>
               ${paragraph(topico.funcao)}
             </div>
           ` : ""}
+
           ${topico.subs.map((sub,subIndex) => `
             <div class="subtopic">
               <h4>${subIndex + 1}. ${escapeHtml(sub.titulo)}</h4>
               ${(sub.ps || []).map(p => paragraphHtml(p)).join("")}
             </div>
           `).join("")}
+
           <div class="synopsis">
             <h4>Sinopse ${roman(index + 1)}</h4>
             ${paragraph(topico.sinopse)}
@@ -3409,11 +3570,11 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       return `
         <div class="block">
           <h3>Introdução</h3>
-          ${paragraph(`A lição "${dados.titulo}" ocupa lugar importante dentro do tema mensal "${base.visibleTheme}". Ela não deve ser estudada como informação isolada, mas como parte de uma caminhada bíblica, doutrinária e espiritual.`)}
+          ${paragraph(`Nesta lição estudaremos "${dados.titulo}" dentro do tema mensal "${base.visibleTheme}". O objetivo não é apenas conhecer informações, mas permitir que a Palavra de Deus forme nossa fé, corrija nossos pensamentos e conduza nossa prática cristã.`)}
           ${paragraph(`A tese central desta lição é: ${dados.tese || dados.foco}`)}
-          ${paragraph(`O estudo começa apresentando o fundamento bíblico do assunto, depois desenvolve sua importância doutrinária e, por fim, conduz o aluno à resposta prática. Assim, a lição não fica solta, mas caminha em progressão.`)}
-          ${paragraph(`A leitura bíblica em classe, ${dados.leituraClasse}, oferece a base para o desenvolvimento do assunto. O texto bíblico deve conduzir a reflexão e orientar a resposta prática.`)}
-          ${paragraph(`Ao estudar esta lição, somos chamados a crescer em conhecimento e reverência. A Palavra de Deus não apenas informa; ela ilumina, corrige, consola e transforma.`)}
+          ${paragraph(`A Bíblia nos orienta a examinar todas as coisas com temor, discernimento e obediência. Por isso, esta lição começa no fundamento bíblico, desenvolve o ensino espiritual e conduz o aluno à aplicação prática.`)}
+          ${paragraph(`A leitura bíblica em classe, ${dados.leituraClasse}, oferece a base para o desenvolvimento do assunto. O texto bíblico deve iluminar a nossa compreensão e orientar nossa resposta diante de Deus.`)}
+          ${paragraph(`Ao estudar esta lição, somos chamados a crescer em conhecimento, equilíbrio e fidelidade. A fé cristã madura não vive de achismos; ela se submete à Palavra do Senhor.`)}
           ${isTeacher ? paragraph("Na Revista do Professor, esta introdução também serve como orientação para conduzir a aula com profundidade, clareza e aplicação pastoral.") : ""}
         </div>
       `;
@@ -3489,16 +3650,26 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         [/O professor deve/gi,"A lição deve"],
         [/O professor precisa/gi,"O estudante precisa"],
         [/Professor,\s*/gi,""],
+        [/professor,\s*/gi,""],
         [/Explique aos alunos/gi,"Observe"],
+        [/explique aos alunos/gi,"observe"],
         [/Mostre aos alunos/gi,"Observe"],
+        [/mostre aos alunos/gi,"observe"],
         [/Mostre à classe/gi,"Observe"],
+        [/mostre à classe/gi,"observe"],
         [/conduza a classe/gi,"considere"],
         [/conduzir a classe/gi,"conduzir o estudo"],
         [/A classe precisa perceber/gi,"O estudante precisa perceber"],
         [/a classe precisa perceber/gi,"o estudante precisa perceber"],
         [/A classe será chamada/gi,"Somos chamados"],
         [/a classe será chamada/gi,"somos chamados"],
-        [/O crescimento espiritual da classe/gi,"O crescimento espiritual do aluno e da igreja"]
+        [/O crescimento espiritual da classe/gi,"O crescimento espiritual do aluno e da igreja"],
+        [/função pedagógica/gi,"importância do ensino"],
+        [/Este tópico aprofunda/gi,"Este tópico nos ajuda a compreender"],
+        [/este tópico aprofunda/gi,"este tópico nos ajuda a compreender"],
+        [/Este subtópico ajuda/gi,"Este ensino ajuda"],
+        [/este subtópico ajuda/gi,"este ensino ajuda"],
+        [/progressão pedagógica/gi,"caminho da lição"]
       ];
 
       trocas.forEach(([padrao, substituto]) => {
@@ -3538,7 +3709,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
             <h3>Objetivos</h3>
             ${unorderedList([
               "Compreender " + dados.foco + ".",
-              "Perceber como a lição progride do fundamento para a aplicação.",
+              "Perceber como a Palavra de Deus orienta este assunto.",
               "Aplicar a verdade estudada à vida pessoal, familiar e congregacional."
             ])}
           </div>
@@ -3553,7 +3724,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
             ]) : unorderedList([
               "Leia o texto bíblico com atenção.",
               "Observe a tese principal da lição.",
-              "Perceba como cada tópico prepara o próximo.",
+              "Pergunte: o que a Bíblia ensina sobre este assunto?",
               "Ore pedindo a Deus entendimento e obediência."
             ])}
           </div>
@@ -3566,12 +3737,12 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         <div class="personal-application">
           <h4>Aplicação Pessoal</h4>
           ${paragraph(`A lição nos chama a receber a verdade estudada com seriedade. O tema "${base.visibleTheme}" precisa produzir convicção, reverência e obediência.`)}
-          ${paragraph("A aplicação começa quando o aluno pergunta: que verdade Deus está corrigindo em mim? Que decisão prática preciso tomar?")}
+          ${paragraph("A aplicação começa quando o aluno pergunta: que verdade Deus está corrigindo em mim? Que decisão prática preciso tomar? Como posso viver de modo mais fiel à Palavra?")}
         </div>
 
         <div class="block">
           <h3>Conclusão</h3>
-          ${paragraph(`Concluímos que ${dados.foco} é um ensino importante para a formação cristã. A lição começou no fundamento bíblico, desenvolveu a doutrina e agora chama o aluno à prática da Palavra.`)}
+          ${paragraph(`Concluímos que ${dados.foco} é um ensino importante para a formação cristã. A lição começou no fundamento bíblico, desenvolveu a compreensão espiritual e agora chama o aluno à prática da Palavra.`)}
         </div>
 
         <div class="summary-box">
@@ -3590,7 +3761,11 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         "santidade":"Santidade é separação para Deus e vida conformada ao seu caráter.",
         "escatologia":"Escatologia é o estudo bíblico das últimas coisas, incluindo volta de Cristo, ressurreição, juízo, reino e eternidade.",
         "pentateuco":"Pentateuco é o conjunto dos cinco primeiros livros da Bíblia, tradicionalmente ligados a Moisés: Gênesis, Êxodo, Levítico, Números e Deuteronômio.",
-        "torá":"Torá é termo hebraico geralmente traduzido como lei ou instrução, usado especialmente para se referir aos cinco primeiros livros das Escrituras."
+        "torá":"Torá é termo hebraico geralmente traduzido como lei ou instrução, usado especialmente para se referir aos cinco primeiros livros das Escrituras.",
+        "doutrina bíblica":"Doutrina bíblica é o ensino fundamentado nas Escrituras, recebido como regra de fé e prática da igreja.",
+        "tradição":"Tradição é uma prática ou costume transmitido ao longo do tempo. Ela pode ser útil, mas não possui a mesma autoridade da Palavra de Deus.",
+        "legalismo":"Legalismo é transformar regras humanas em condição de espiritualidade, salvação ou aceitação diante de Deus.",
+        "liberdade cristã":"Liberdade cristã é viver livre da escravidão do pecado e de jugos humanos, servindo a Deus com responsabilidade, amor e santidade."
       };
 
       return mapa[String(termo).toLowerCase()] || `Este termo deve ser explicado a partir do tema "${base.visibleTheme}", mostrando sua importância bíblica, doutrinária e prática para a compreensão da lição.`;
@@ -3831,10 +4006,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       let html = `<div class="doc">`;
 
       setStep(0,"Gerando abertura baseada na Revista do Professor salva...");
-      let abertura = await chamarTextoIA(promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto),"Abertura do livro de apoio",{ minimo:800 });
+      let abertura = await chamarTextoIA(promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto),"Abertura do livro de apoio",{ minimo:700 });
       abertura = limparMarkdownHtml(abertura);
 
-      if(!validarRespostaIA(abertura,800)){
+      if(!validarRespostaIA(abertura,700)){
         abertura = fallbackAberturaLivroApoio(base,info,licoes);
       }
 
@@ -3844,10 +4019,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       await pause(700);
 
       setStep(1,"Gerando sumário baseado na revista salva...");
-      let sumario = await chamarTextoIA(promptSumarioLivroApoio(base,info,licoes,revistaProfessorTexto),"Sumário do livro de apoio",{ minimo:800 });
+      let sumario = await chamarTextoIA(promptSumarioLivroApoio(base,info,licoes,revistaProfessorTexto),"Sumário do livro de apoio",{ minimo:700 });
       sumario = limparMarkdownHtml(sumario);
 
-      if(!validarRespostaIA(sumario,800)){
+      if(!validarRespostaIA(sumario,700)){
         sumario = fallbackSumarioLivroApoio(base,info,licoes);
       }
 
@@ -3864,12 +4039,12 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         let capitulo = await chamarTextoIA(
           promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto),
           `Capítulo ${numero} do livro de apoio`,
-          { minimo:1800 }
+          { minimo:1200 }
         );
 
         capitulo = limparMarkdownHtml(capitulo);
 
-        if(!validarRespostaIA(capitulo,1800)){
+        if(!validarRespostaIA(capitulo,1200)){
           capitulo = fallbackCapituloLivroApoio(base,info,numero,dados);
           setStatus(`A IA falhou no capítulo ${numero}; o app usou capítulo universal baseado no tema solicitado.`,"ok");
         }
@@ -3893,10 +4068,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
       setStep(7,"Gerando respostas, bibliografia, apêndices e contracapa...");
 
-      let respostas = await chamarTextoIA(promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto),"Respostas na ponta da língua",{ minimo:1000 });
+      let respostas = await chamarTextoIA(promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto),"Respostas na ponta da língua",{ minimo:800 });
       respostas = limparMarkdownHtml(respostas);
 
-      if(!validarRespostaIA(respostas,1000)){
+      if(!validarRespostaIA(respostas,800)){
         respostas = `
           <h1 class="page-title">Respostas na ponta da língua</h1>
           <p class="subtitle">Perguntas para preparo do professor</p>
@@ -3919,10 +4094,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
       html += renderPage(respostas,"support-qa-page");
 
-      let bibliografia = await chamarTextoIA(promptBibliografiaLivroApoio(base,info,licoes,revistaProfessorTexto),"Bibliografia recomendada",{ minimo:500 });
+      let bibliografia = await chamarTextoIA(promptBibliografiaLivroApoio(base,info,licoes,revistaProfessorTexto),"Bibliografia recomendada",{ minimo:400 });
       bibliografia = limparMarkdownHtml(bibliografia);
 
-      if(!validarRespostaIA(bibliografia,500)){
+      if(!validarRespostaIA(bibliografia,400)){
         bibliografia = `
           <h1 class="page-title">Bibliografia recomendada</h1>
           <div class="bibliography-box">
@@ -3941,10 +4116,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
       html += renderPage(bibliografia,"bibliography-page");
 
-      let apendices = await chamarTextoIA(promptApendicesLivroApoio(base,info,licoes,revistaProfessorTexto),"Apêndices do livro de apoio",{ minimo:700 });
+      let apendices = await chamarTextoIA(promptApendicesLivroApoio(base,info,licoes,revistaProfessorTexto),"Apêndices do livro de apoio",{ minimo:600 });
       apendices = limparMarkdownHtml(apendices);
 
-      if(!validarRespostaIA(apendices,700)){
+      if(!validarRespostaIA(apendices,600)){
         apendices = `
           <h1 class="page-title">Apêndices</h1>
           <div class="knowledge-box">
@@ -3956,10 +4131,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
       html += renderPage(apendices,"appendix-page");
 
-      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa do livro de apoio",{ minimo:400 });
+      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa do livro de apoio",{ minimo:350 });
       contracapa = limparMarkdownHtml(contracapa);
 
-      if(!validarRespostaIA(contracapa,400)){
+      if(!validarRespostaIA(contracapa,350)){
         contracapa = `
           <h1 class="page-title">${escapeHtml(base.title)}</h1>
           <p class="subtitle">${escapeHtml(base.subtitle)}</p>
@@ -4017,10 +4192,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       let html = `<div class="doc">`;
 
       setStep(0,info.isTeacher ? "Gerando apresentação do professor baseada na Revista do Aluno..." : "Gerando apresentação da Revista do Aluno...");
-      let apresentacao = await chamarTextoIA(promptApresentacaoRevista(base,info,licoes),"Apresentação da revista",{ minimo:500 });
+      let apresentacao = await chamarTextoIA(promptApresentacaoRevista(base,info,licoes),"Apresentação da revista",{ minimo:450 });
       apresentacao = limparMarkdownHtml(apresentacao);
 
-      if(!validarRespostaIA(apresentacao,500)){
+      if(!validarRespostaIA(apresentacao,450)){
         apresentacao = `
           <h1 class="page-title">Prezado(a) ${info.isTeacher ? "Professor(a)" : "Aluno(a)"}</h1>
           <p class="subtitle">${escapeHtml(base.title)}</p>
@@ -4040,10 +4215,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       await pause(700);
 
       setStep(1,"Gerando sumário da revista...");
-      let sumario = await chamarTextoIA(promptSumarioRevista(base,info,licoes),"Sumário da revista",{ minimo:400 });
+      let sumario = await chamarTextoIA(promptSumarioRevista(base,info,licoes),"Sumário da revista",{ minimo:350 });
       sumario = limparMarkdownHtml(sumario);
 
-      if(!validarRespostaIA(sumario,400)){
+      if(!validarRespostaIA(sumario,350)){
         sumario = `
           <h1 class="page-title">Sumário</h1>
           <p class="subtitle">${escapeHtml(base.title)} — ${escapeHtml(info.monthInfo)}</p>
@@ -4070,10 +4245,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
           ? promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto)
           : promptLicaoAluno(base,info,licoes,numero,dados);
 
-        let licao = await chamarTextoIA(prompt,`Lição ${numero}`,{ minimo:1800 });
+        let licao = await chamarTextoIA(prompt,`Lição ${numero}`,{ minimo:700 });
         licao = limparMarkdownHtml(licao);
 
-        if(!validarRespostaIA(licao,1800)){
+        if(!validarRespostaIA(licao,700)){
           licao = fallbackLicaoUniversal(base,info,numero,dados);
           setStatus(`A IA falhou na Lição ${numero}; o app usou uma lição universal baseada no tema solicitado.`,"ok");
         }
@@ -4108,10 +4283,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       await pause(700);
 
       setStep(7,"Gerando contracapa...");
-      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa",{ minimo:400 });
+      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa",{ minimo:350 });
       contracapa = limparMarkdownHtml(contracapa);
 
-      if(!validarRespostaIA(contracapa,400)){
+      if(!validarRespostaIA(contracapa,350)){
         contracapa = `
           <h1 class="page-title">${escapeHtml(base.title)}</h1>
           <p class="subtitle">${escapeHtml(base.subtitle)}</p>
@@ -4459,12 +4634,12 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       const type = currentType;
 
       if(type === "revista"){
-        setValue("title","O Pentateuco");
-        setValue("subtitle","Os fundamentos da fé, da aliança e da adoração");
-        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical com o tema: O Pentateuco. A revista deve tratar dos fundamentos da fé, da aliança e da adoração nos cinco primeiros livros da Bíblia.");
-        setValue("biblicalBase","Gênesis 1.1; Êxodo 3.7-12; Levítico 19.1-2; Deuteronômio 6.4-9");
+        setValue("title","Usos e Costumes à Luz da Bíblia");
+        setValue("subtitle","O que é doutrina bíblica, o que é princípio cristão e o que é tradição humana");
+        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical com o tema: Usos e Costumes à Luz da Bíblia. Ensine que se não houver texto bíblico, princípio bíblico fiel ou base doutrinária nas Escrituras, não se deve transformar opinião humana, costume local ou tradição denominacional em doutrina bíblica obrigatória.");
+        setValue("biblicalBase","Marcos 7.6-13; Colossenses 2.20-23; 1 Pedro 1.15-16; 1 Coríntios 10.31");
         setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
-        setValue("tone","bíblico, pastoral, pentecostal, teológico, didático e acessível");
+        setValue("tone","bíblico, pastoral, pentecostal, teológico, didático e equilibrado");
         setValue("author","Isiquel Rodrigues");
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
@@ -4473,8 +4648,8 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
-        setValue("revistaObservacao","Lição 1: Gênesis — O Deus Criador e o Início de Todas as Coisas\nLição 2: Êxodo — O Deus Libertador e a Formação do Seu Povo\nLição 3: Levítico e Números — Santidade, Adoração e Caminhada no Deserto\nLição 4: Deuteronômio — A Renovação da Aliança e o Chamado à Obediência");
-        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada tópico deve preparar o próximo. Cada subtópico deve ter conteúdo real. Na Revista do Aluno não use linguagem de professor. No Livro de Apoio, aprofunde termos ligados ao tema real da revista.");
+        setValue("revistaObservacao","Lição 1: Doutrina Bíblica ou Mandamento de Homens?\nTexto base: Marcos 7.6-13; Colossenses 2.20-23\nObjetivo: mostrar a diferença entre mandamento de Deus e tradição humana, ensinando que costumes não podem ser colocados acima da Palavra de Deus.\n\nLição 2: Santidade Cristã Sem Legalismo\nTexto base: 1 Pedro 1.15-16; Hebreus 12.14; Romanos 12.1-2\nObjetivo: ensinar que a Bíblia chama o cristão à santidade verdadeira, mas a santidade bíblica não pode ser reduzida a aparência exterior, regras humanas ou costumes locais.\n\nLição 3: Liberdade Cristã Com Responsabilidade\nTexto base: 1 Coríntios 6.12; 1 Coríntios 10.23-33; Gálatas 5.13\nObjetivo: explicar que a liberdade cristã não é permissão para pecar, mas também não deve ser anulada por imposições humanas sem base bíblica.\n\nLição 4: Discernindo o Que Convém ao Cristão\nTexto base: 1 Tessalonicenses 5.21-22; Filipenses 4.8; 1 Coríntios 10.31\nObjetivo: ensinar o cristão a avaliar práticas, costumes, roupas, hábitos, entretenimentos e comportamentos à luz da Palavra, da consciência, do testemunho e da glória de Deus.");
+        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Na Revista do Aluno, fale diretamente com o aluno. Não use linguagem de professor. No Livro de Apoio, aprofunde termos como doutrina, tradição, costume, legalismo, santidade, liberdade cristã, consciência e mandamentos de homens.");
       }
 
       if(type === "sermao"){
@@ -4527,9 +4702,15 @@ Exigência de progressão:
 - Não entregar subtópicos de 2 ou 3 linhas.
 
 Regra para Revista do Aluno:
+- Escreva como conteúdo final para o aluno estudar.
 - Não usar linguagem de professor.
 - Não escrever “o professor deve”.
+- Não escrever bastidor editorial.
 - Falar diretamente com o aluno.
+
+Regra para Revista do Professor:
+- Manter o mesmo conteúdo-base do aluno.
+- Acrescentar respostas, plano de aula, auxílios e orientação ao professor.
 
 Regra para Livro de Apoio:
 - Usar a Revista do Professor como base.
