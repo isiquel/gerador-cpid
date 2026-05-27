@@ -7,6 +7,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    const body = req.body || {};
+
     const geminiApiKey = process.env.GEMINI_API_KEY || "";
     const openaiApiKey = process.env.OPENAI_API_KEY || "";
 
@@ -17,7 +19,60 @@ export default async function handler(req, res) {
       });
     }
 
-    const form = normalizarFormulario(req.body || {});
+    /*
+      =====================================================
+      MODO NOVO — COMPATÍVEL COM INDEX v10.4
+      =====================================================
+      O index.html v10.4 envia:
+      {
+        prompt: "...",
+        etapa: "...",
+        tipo: "revista",
+        formato: "html"
+      }
+
+      Neste modo, a API NÃO força JSON.
+      Ela envia o prompt direto para Gemini/OpenAI
+      e devolve texto/HTML para o frontend.
+    */
+
+    const promptDireto = String(body.prompt || body.comando || body.texto || "").trim();
+
+    if (promptDireto) {
+      const etapa = String(body.etapa || "Geração de conteúdo").trim();
+      const tipo = String(body.tipo || body.materialType || body.tipoMaterial || "material").trim();
+      const formato = String(body.formato || "html").trim();
+
+      const respostaIA = await gerarComFallbackTextoLivre({
+        prompt: montarPromptTextoLivre({
+          prompt: promptDireto,
+          etapa,
+          tipo,
+          formato
+        }),
+        geminiApiKey,
+        openaiApiKey
+      });
+
+      return res.status(200).json({
+        ok: true,
+        provider: respostaIA.provider,
+        text: respostaIA.text,
+        html: respostaIA.text,
+        content: respostaIA.text,
+        output: respostaIA.text,
+        resultado: respostaIA.text
+      });
+    }
+
+    /*
+      =====================================================
+      MODO ANTIGO — COMPATIBILIDADE
+      =====================================================
+      Mantém suporte para chamadas antigas que esperavam JSON.
+    */
+
+    const form = normalizarFormulario(body);
     const adminCodeServer = process.env.Isiquel_Admin || "00";
 
     const tiposReservados = ["ebook", "livro", "curso", "revista"];
@@ -33,7 +88,7 @@ export default async function handler(req, res) {
 
     const prompt = criarPrompt(form);
 
-    const respostaIA = await gerarComFallback({
+    const respostaIA = await gerarComFallbackJSON({
       prompt,
       geminiApiKey,
       openaiApiKey
@@ -44,18 +99,226 @@ export default async function handler(req, res) {
     return res.status(200).json({
       ok: true,
       provider: respostaIA.provider,
-      material
+      material,
+      text: respostaIA.text,
+      content: respostaIA.text,
+      output: respostaIA.text,
+      resultado: respostaIA.text
     });
+
   } catch (erro) {
     return res.status(500).json({
       ok: false,
-      error: limparMensagemErro(erro?.message || "Erro interno ao gerar material.")
+      error: limparMensagemErro(erro?.message || "Erro interno ao gerar material."),
+      detalhe: String(erro?.message || "")
     });
   }
 }
 
 /* =========================================================
-   NORMALIZAÇÃO
+   MODO TEXTO LIVRE / HTML — USADO PELA v10.4
+========================================================= */
+
+function montarPromptTextoLivre({ prompt, etapa, tipo, formato }) {
+  return `
+Você é um pastor, teólogo, escritor cristão, comentarista bíblico e editor de materiais cristãos.
+
+ETAPA:
+${etapa}
+
+TIPO DE MATERIAL:
+${tipo}
+
+FORMATO DE RESPOSTA:
+${formato}
+
+INSTRUÇÕES IMPORTANTES:
+- Responda somente com o conteúdo solicitado pelo usuário.
+- Não responda em JSON.
+- Não use markdown.
+- Não use crases.
+- Se o pedido solicitar HTML, entregue apenas HTML interno.
+- Não inclua <html>, <head> nem <body>.
+- Não explique o que você fez.
+- Não mencione inteligência artificial.
+- Escreva em português do Brasil.
+- Use linguagem bíblica, pastoral, pentecostal, didática, reverente e madura.
+- Não use conteúdo raso.
+- Não repita frases vazias.
+- Não use frases genéricas como “a Palavra de Deus orienta a compreensão do tema”.
+- Desenvolva o assunto de forma específica conforme o tema, a lição, o tópico e o subtópico.
+- Quando for Revista do Aluno, não use linguagem de professor.
+- Não escreva “o professor deve”, “conduza a classe”, “explique aos alunos”, “o aluno é levado”, “ajuda o aluno”, “função pedagógica” ou “este tópico aprofunda”.
+- Use expressões como “o cristão”, “a igreja”, “o servo de Deus”, “somos chamados”, “nós aprendemos” e “a Palavra de Deus nos ensina”.
+
+PEDIDO DO USUÁRIO:
+${prompt}
+  `.trim();
+}
+
+async function gerarComFallbackTextoLivre({ prompt, geminiApiKey, openaiApiKey }) {
+  const erros = [];
+
+  if (geminiApiKey) {
+    const modelosGemini = limparLista([
+      process.env.GEMINI_TEXT_MODEL_1 || "gemini-2.5-flash-lite",
+      process.env.GEMINI_TEXT_MODEL_2 || "gemini-2.5-flash",
+      process.env.GEMINI_TEXT_MODEL_3 || "gemini-2.0-flash"
+    ]);
+
+    for (const modelo of modelosGemini) {
+      try {
+        const text = await callGeminiTextLivre(geminiApiKey, modelo, prompt);
+
+        if (text && text.trim()) {
+          return {
+            provider: `gemini:${modelo}`,
+            text: limparRespostaTexto(text)
+          };
+        }
+      } catch (erro) {
+        erros.push(`Gemini ${modelo}: ${erro?.message || "erro desconhecido"}`);
+
+        if (ehErroDeCota(erro?.message)) {
+          break;
+        }
+      }
+    }
+  }
+
+  if (openaiApiKey) {
+    const modelosOpenAI = limparLista([
+      process.env.OPENAI_TEXT_MODEL_1 || "gpt-4.1-mini",
+      process.env.OPENAI_TEXT_MODEL_2 || "gpt-4.1",
+      process.env.OPENAI_TEXT_MODEL_3 || "gpt-4.1-nano"
+    ]);
+
+    for (const modelo of modelosOpenAI) {
+      try {
+        const text = await callOpenAITextLivre(openaiApiKey, modelo, prompt);
+
+        if (text && text.trim()) {
+          return {
+            provider: `openai:${modelo}`,
+            text: limparRespostaTexto(text)
+          };
+        }
+      } catch (erro) {
+        erros.push(`OpenAI ${modelo}: ${erro?.message || "erro desconhecido"}`);
+
+        if (ehErroDeCota(erro?.message)) {
+          break;
+        }
+      }
+    }
+  }
+
+  throw new Error(erros.join(" | ") || "Nenhuma IA conseguiu gerar o conteúdo.");
+}
+
+async function callGeminiTextLivre(apiKey, model, prompt) {
+  const url =
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const body = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: prompt
+          }
+        ]
+      }
+    ],
+    generationConfig: {
+      temperature: 0.72,
+      topP: 0.9,
+      maxOutputTokens: 12000
+    }
+  };
+
+  const resposta = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(body)
+  });
+
+  const data = await resposta.json().catch(() => null);
+
+  if (!resposta.ok) {
+    throw new Error(data?.error?.message || `Erro ao chamar Gemini ${model}.`);
+  }
+
+  const text =
+    data?.candidates?.[0]?.content?.parts
+      ?.map(part => part.text || "")
+      .join("\n")
+      .trim() || "";
+
+  if (!text) {
+    throw new Error(`Gemini ${model} não retornou texto.`);
+  }
+
+  return text;
+}
+
+async function callOpenAITextLivre(apiKey, model, prompt) {
+  const url = "https://api.openai.com/v1/chat/completions";
+
+  const body = {
+    model,
+    messages: [
+      {
+        role: "system",
+        content: "Você é um pastor, teólogo, escritor cristão e editor de materiais bíblicos. Responda somente com o conteúdo solicitado, sem JSON, sem markdown e sem explicações extras."
+      },
+      {
+        role: "user",
+        content: prompt
+      }
+    ],
+    temperature: 0.72,
+    max_tokens: 12000
+  };
+
+  const resposta = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify(body)
+  });
+
+  const data = await resposta.json().catch(() => null);
+
+  if (!resposta.ok) {
+    throw new Error(data?.error?.message || `Erro ao chamar OpenAI ${model}.`);
+  }
+
+  const text = data?.choices?.[0]?.message?.content?.trim() || "";
+
+  if (!text) {
+    throw new Error(`OpenAI ${model} não retornou texto.`);
+  }
+
+  return text;
+}
+
+function limparRespostaTexto(texto) {
+  return String(texto || "")
+    .replace(/^```html\s*/i, "")
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```$/i, "")
+    .trim();
+}
+
+/* =========================================================
+   MODO JSON ANTIGO
 ========================================================= */
 
 function normalizarFormulario(body) {
@@ -162,11 +425,7 @@ function normalizarFormulario(body) {
   };
 }
 
-/* =========================================================
-   FALLBACK GEMINI + OPENAI
-========================================================= */
-
-async function gerarComFallback({ prompt, geminiApiKey, openaiApiKey }) {
+async function gerarComFallbackJSON({ prompt, geminiApiKey, openaiApiKey }) {
   const erros = [];
 
   if (geminiApiKey) {
@@ -178,7 +437,7 @@ async function gerarComFallback({ prompt, geminiApiKey, openaiApiKey }) {
 
     for (const modelo of modelosGemini) {
       try {
-        const text = await callGeminiText(geminiApiKey, modelo, prompt);
+        const text = await callGeminiTextJSON(geminiApiKey, modelo, prompt);
 
         if (text && text.trim()) {
           return {
@@ -201,7 +460,7 @@ async function gerarComFallback({ prompt, geminiApiKey, openaiApiKey }) {
 
     for (const modelo of modelosOpenAI) {
       try {
-        const text = await callOpenAIText(openaiApiKey, modelo, prompt);
+        const text = await callOpenAITextJSON(openaiApiKey, modelo, prompt);
 
         if (text && text.trim()) {
           return {
@@ -222,39 +481,8 @@ function limparLista(lista) {
   return [...new Set(lista.filter(Boolean).map(x => String(x).trim()).filter(Boolean))];
 }
 
-/* =========================================================
-   PROMPTS
-========================================================= */
-
 function criarPrompt(form) {
-  if (form.materialType === "revista" && form.revistaPart === "meta") {
-    return promptRevistaMeta(form);
-  }
-
-  if (form.materialType === "revista" && form.revistaPart === "lesson") {
-    return promptRevistaLicao(form);
-  }
-
-  if (form.materialType === "revista" && form.revistaPart === "cover") {
-    return promptRevistaCapa(form);
-  }
-
-  if (form.materialType === "revista" && form.revistaPart === "backcover") {
-    return promptRevistaContracapa(form);
-  }
-
-  if (form.materialType === "revista") {
-    return promptRevistaCompleta(form);
-  }
-
-  if (form.materialType === "livro" && form.livroPart === "meta") {
-    return promptLivroMeta(form);
-  }
-
-  if (form.materialType === "livro" && form.livroPart === "chapter") {
-    return promptLivroCapitulo(form);
-  }
-
+  if (form.materialType === "revista") return promptRevistaCompleta(form);
   if (form.materialType === "livro") return promptLivro(form);
   if (form.materialType === "sermao") return promptSermao(form);
   if (form.materialType === "devocional") return promptDevocional(form);
@@ -294,382 +522,17 @@ Regras gerais:
 - Não produza conteúdo raso.
 - Não repita frases vazias.
 - Não mencione inteligência artificial.
-- Não use símbolo do Gemini.
 - Não invente dados históricos inseguros.
 - Explique os textos bíblicos usados.
 - Use fidelidade bíblica e doutrinária.
-- Seja profundo, mas não escreva respostas longas demais a ponto de quebrar o JSON.
 `.trim();
-}
-
-/* =========================================================
-   REVISTA EBD
-========================================================= */
-
-function promptRevistaMeta(form) {
-  return `
-${promptBase(form)}
-
-Crie apenas a estrutura inicial de uma revista mensal de Escola Bíblica Dominical, versão do professor.
-
-O modelo deve seguir uma revista pedagógica de EBD do professor, com:
-- apresentação ao professor;
-- panorama geral da revista;
-- orientação geral ao professor;
-- quatro lições organizadas.
-
-Nesta etapa, crie somente:
-1. Dados gerais da revista.
-2. Apresentação ao professor.
-3. Panorama geral da revista.
-4. Orientações gerais para o professor.
-5. Títulos das 4 lições.
-
-Não desenvolva as lições ainda.
-Não crie capa.
-Não crie contracapa.
-
-Retorne JSON neste formato:
-
-{
-  "type": "revista",
-  "title": "",
-  "subtitle": "",
-  "author": "",
-  "ministry": "",
-  "revistaVersion": "professor",
-  "presentationToTeacher": "",
-  "magazineOverview": "",
-  "generalTeacherGuidance": "",
-  "monthSummary": "",
-  "quarterSummary": "",
-  "lessonTitles": [
-    "Lição 1 - ...",
-    "Lição 2 - ...",
-    "Lição 3 - ...",
-    "Lição 4 - ..."
-  ]
-}
-`;
-}
-
-function promptRevistaLicao(form) {
-  const numero = form.lessonNumber || 1;
-  const tituloSugerido = form.lessonTitles[numero - 1] || `Lição ${numero}`;
-
-  return `
-${promptBase(form)}
-
-Crie somente a LIÇÃO ${numero} da revista.
-
-Título sugerido:
-${tituloSugerido}
-
-Lições da revista:
-${form.lessonTitles.map((t, i) => `${i + 1}. ${t}`).join("\n")}
-
-Contexto geral da revista:
-Apresentação ao professor:
-${form.presentationToTeacher}
-
-Panorama geral:
-${form.magazineOverview}
-
-Orientações gerais:
-${form.generalTeacherGuidance}
-
-Não gere a revista inteira.
-Não gere capa.
-Não gere contracapa.
-Não gere outras lições.
-
-A lição deve seguir o modelo de uma REVISTA DO PROFESSOR de Escola Bíblica Dominical.
-
-FORMATO PEDAGÓGICO OBRIGATÓRIO:
-1. Cabeçalho da lição.
-2. Texto áureo com referência e versículo por extenso.
-3. Verdade prática.
-4. Leitura diária de segunda a sábado.
-5. Leitura bíblica em classe com referência e texto por extenso.
-6. Hinos sugeridos.
-7. Plano de aula.
-8. Palavra-chave.
-9. Comentário da lição com introdução, três tópicos e subtópicos.
-10. Sinopse de cada tópico.
-11. Auxílio bibliológico ou doutrinário.
-12. Ampliando o conhecimento.
-13. Aplicação prática.
-14. Conclusão.
-15. Perguntas e respostas para revisão.
-
-REGRAS PARA NÃO QUEBRAR A GERAÇÃO:
-- Não escreva textos enormes.
-- Cada subtópico deve ter 1 parágrafo forte, claro e útil ao professor.
-- Cada tópico principal deve ter 1 parágrafo introdutório.
-- A leitura bíblica em classe deve trazer o texto bíblico por extenso, mas escolha uma leitura moderada, de preferência entre 4 e 8 versículos.
-- Não tente escrever uma revista inteira dentro de uma única lição.
-- Não deixe o JSON quebrado.
-- Não coloque aspas desnecessárias dentro dos textos, para evitar quebrar o JSON.
-- Não use quebras exageradas.
-
-REGRAS DE QUALIDADE:
-- O conteúdo não pode ser raso.
-- Cada subtópico precisa ter explicação bíblica, doutrinária e aplicação pastoral.
-- Explique a referência bíblica usada.
-- Escreva como material para professor adulto.
-- Inclua orientação para o professor conduzir a aula.
-- Use linguagem clara, madura, bíblica e reverente.
-
-A LEITURA BÍBLICA EM CLASSE deve seguir este padrão:
-[
-  {
-    "reference": "Referência bíblica",
-    "text": "Texto bíblico por extenso"
-  }
-]
-
-A LEITURA DIÁRIA deve seguir este padrão:
-[
-  {
-    "day": "Segunda",
-    "reference": "",
-    "theme": ""
-  }
-]
-
-${form.instrucoesExtras ? `Instruções extras do usuário:\n${form.instrucoesExtras}` : ""}
-
-Retorne JSON válido neste formato:
-
-{
-  "type": "revistaLesson",
-  "number": ${numero},
-  "date": "",
-  "title": "",
-  "subtitle": "",
-  "imagePrompt": "",
-  "goldenText": "",
-  "practicalTruth": "",
-  "dailyReading": [
-    {
-      "day": "Segunda",
-      "reference": "",
-      "theme": ""
-    },
-    {
-      "day": "Terça",
-      "reference": "",
-      "theme": ""
-    },
-    {
-      "day": "Quarta",
-      "reference": "",
-      "theme": ""
-    },
-    {
-      "day": "Quinta",
-      "reference": "",
-      "theme": ""
-    },
-    {
-      "day": "Sexta",
-      "reference": "",
-      "theme": ""
-    },
-    {
-      "day": "Sábado",
-      "reference": "",
-      "theme": ""
-    }
-  ],
-  "bibleReading": [
-    {
-      "reference": "",
-      "text": ""
-    }
-  ],
-  "hymns": ["", "", ""],
-  "lessonPlan": {
-    "introduction": "",
-    "objectives": ["", "", ""],
-    "methodology": "",
-    "application": "",
-    "conclusion": ""
-  },
-  "keyword": "",
-  "teacherWord": "",
-  "lessonOverview": "",
-  "introduction": "",
-  "topics": [
-    {
-      "title": "",
-      "reference": "",
-      "text": "",
-      "subtopics": [
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        },
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        },
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        }
-      ],
-      "synopsis": "",
-      "teacherAid": "",
-      "expandingKnowledge": ""
-    },
-    {
-      "title": "",
-      "reference": "",
-      "text": "",
-      "subtopics": [
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        },
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        },
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        }
-      ],
-      "synopsis": "",
-      "teacherAid": "",
-      "expandingKnowledge": ""
-    },
-    {
-      "title": "",
-      "reference": "",
-      "text": "",
-      "subtopics": [
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        },
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        },
-        {
-          "title": "",
-          "reference": "",
-          "text": ""
-        }
-      ],
-      "synopsis": "",
-      "teacherAid": "",
-      "expandingKnowledge": ""
-    }
-  ],
-  "lifeApplication": "",
-  "conclusion": "",
-  "bibliologicalAid": "",
-  "historicalSupport": "",
-  "interpretationCare": "",
-  "doctrinalSupport": "",
-  "recommendedDeepening": ["", "", "", ""],
-  "teacherNotes": "",
-  "reviewQuestions": [
-    {
-      "question": "",
-      "answer": ""
-    },
-    {
-      "question": "",
-      "answer": ""
-    },
-    {
-      "question": "",
-      "answer": ""
-    },
-    {
-      "question": "",
-      "answer": ""
-    },
-    {
-      "question": "",
-      "answer": ""
-    }
-  ]
-}
-`;
-}
-
-function promptRevistaCapa(form) {
-  return `
-${promptBase(form)}
-
-Crie somente os textos editoriais da capa frontal.
-
-Não crie lições.
-Não crie a revista inteira.
-Não gere imagem.
-A imagem será gerada por outro arquivo.
-
-A capa deve ser profissional, bíblica, editorial, reverente e coerente com o tema.
-
-Retorne JSON:
-
-{
-  "type": "revistaCover",
-  "title": "",
-  "subtitle": "",
-  "topLabel": "Revista Mensal de Escola Bíblica Dominical",
-  "versionLabel": "Revista do Professor",
-  "author": "",
-  "ministry": "",
-  "visualTheme": "",
-  "coverPhrase": ""
-}
-`;
-}
-
-function promptRevistaContracapa(form) {
-  return `
-${promptBase(form)}
-
-Crie somente os textos editoriais da contracapa.
-
-Não gere lições.
-Não gere a revista inteira.
-Não gere imagem.
-
-Retorne JSON:
-
-{
-  "type": "revistaBackCover",
-  "title": "",
-  "subtitle": "",
-  "ministry": "",
-  "author": "",
-  "backCoverPhrase": "",
-  "backCoverText": "",
-  "visualTheme": ""
-}
-`;
 }
 
 function promptRevistaCompleta(form) {
   return `
 ${promptBase(form)}
 
-Crie uma revista de EBD em formato resumido. O modo principal do sistema gera a revista por partes.
+Crie uma revista mensal de Escola Bíblica Dominical com exatamente 4 lições.
 
 Retorne JSON:
 
@@ -679,18 +542,12 @@ Retorne JSON:
   "subtitle": "",
   "author": "",
   "ministry": "",
-  "presentationToTeacher": "",
-  "magazineOverview": "",
-  "generalTeacherGuidance": "",
+  "presentation": "",
   "lessonTitles": ["", "", "", ""],
   "lessons": []
 }
 `;
 }
-
-/* =========================================================
-   SERMÃO / DEVOCIONAL / ESTUDO
-========================================================= */
 
 function promptSermao(form) {
   return `
@@ -734,10 +591,8 @@ Retorne JSON:
   "title": "",
   "subtitle": "",
   "biblicalBase": "",
-  "introduction": "",
   "reflection": "",
   "application": "",
-  "conclusion": "",
   "prayer": ""
 }
 `;
@@ -770,10 +625,6 @@ Retorne JSON:
 }
 `;
 }
-
-/* =========================================================
-   EBOOK / CURSO / LIVRO
-========================================================= */
 
 function promptEbook(form) {
   return `
@@ -843,8 +694,6 @@ Retorne JSON:
   "author": "",
   "ministry": "",
   "presentation": "",
-  "preface": "",
-  "generalIntroduction": "",
   "chapters": [
     {
       "number": 1,
@@ -853,103 +702,12 @@ Retorne JSON:
     }
   ],
   "finalConclusion": "",
-  "wordToReader": "",
-  "authorBio": "",
   "backCoverText": ""
 }
 `;
 }
 
-function promptLivroMeta(form) {
-  const total = form.quantity || 10;
-
-  return `
-${promptBase(form)}
-
-Crie apenas a estrutura inicial de um livro cristão com ${total} capítulos.
-
-Não desenvolva os capítulos ainda.
-
-Retorne JSON:
-
-{
-  "type": "livro",
-  "title": "",
-  "subtitle": "",
-  "author": "",
-  "ministry": "",
-  "presentation": "",
-  "preface": "",
-  "generalIntroduction": "",
-  "bookCentralThesis": "",
-  "readingPath": "",
-  "chapterPlan": [
-    {
-      "number": 1,
-      "title": "",
-      "centralIdea": ""
-    }
-  ],
-  "finalConclusion": "",
-  "wordToReader": "",
-  "authorBio": "",
-  "backCoverText": ""
-}
-`;
-}
-
-function promptLivroCapitulo(form) {
-  const numero = form.chapterNumber || 1;
-  const plano = Array.isArray(form.chapterPlan) ? form.chapterPlan : [];
-  const capituloPlano = plano[numero - 1] || {};
-
-  return `
-${promptBase(form)}
-
-Crie somente o capítulo ${numero} do livro.
-
-Título sugerido:
-${capituloPlano.title || `Capítulo ${numero}`}
-
-Ideia central:
-${capituloPlano.centralIdea || ""}
-
-Tese central do livro:
-${form.bookCentralThesis}
-
-Caminho de leitura:
-${form.readingPath}
-
-Resumo do capítulo anterior:
-${form.previousChapterSummary}
-
-Retorne JSON:
-
-{
-  "type": "bookChapter",
-  "number": ${numero},
-  "title": "",
-  "chapterQuestion": "",
-  "centralThesis": "",
-  "openingNarrative": "",
-  "ideaDevelopment": "",
-  "biblicalExposition": "",
-  "argumentDevelopment": "",
-  "theologicalReflection": "",
-  "biblicalExamples": "",
-  "pastoralApplication": "",
-  "chapterSummary": "",
-  "reflectiveClosing": "",
-  "transitionToNextChapter": ""
-}
-`;
-}
-
-/* =========================================================
-   CHAMADAS DE API
-========================================================= */
-
-async function callGeminiText(apiKey, model, prompt) {
+async function callGeminiTextJSON(apiKey, model, prompt) {
   const url =
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
@@ -999,7 +757,7 @@ async function callGeminiText(apiKey, model, prompt) {
   return text;
 }
 
-async function callOpenAIText(apiKey, model, prompt) {
+async function callOpenAITextJSON(apiKey, model, prompt) {
   const url = "https://api.openai.com/v1/chat/completions";
 
   const body = {
@@ -1045,10 +803,6 @@ async function callOpenAIText(apiKey, model, prompt) {
   return text;
 }
 
-/* =========================================================
-   JSON E ERROS
-========================================================= */
-
 function extrairJSON(texto) {
   if (!texto || typeof texto !== "string") {
     throw new Error("A IA não retornou texto para converter em JSON.");
@@ -1074,7 +828,7 @@ function extrairJSON(texto) {
       try {
         return JSON.parse(recorte);
       } catch (erroRecorte) {
-        throw new Error("A IA respondeu, mas o JSON veio quebrado. A lição ficou grande demais. Tente gerar novamente.");
+        throw new Error("A IA respondeu, mas o JSON veio quebrado. Tente gerar novamente.");
       }
     }
 
@@ -1082,16 +836,22 @@ function extrairJSON(texto) {
   }
 }
 
-function limparMensagemErro(msg) {
+function ehErroDeCota(msg) {
   const texto = String(msg || "").toLowerCase();
 
-  if (
+  return (
     texto.includes("quota") ||
     texto.includes("exceeded") ||
     texto.includes("billing") ||
     texto.includes("rate limit") ||
     texto.includes("insufficient_quota")
-  ) {
+  );
+}
+
+function limparMensagemErro(msg) {
+  const texto = String(msg || "").toLowerCase();
+
+  if (ehErroDeCota(texto)) {
     return "A cota da IA acabou ou a API está sem crédito disponível. O sistema tentou Gemini e OpenAI/GPT, mas não conseguiu gerar agora.";
   }
 
@@ -1110,7 +870,7 @@ function limparMensagemErro(msg) {
     texto.includes("token") ||
     texto.includes("json veio quebrado")
   ) {
-    return "A lição ficou grande demais e a IA cortou a resposta. O código foi ajustado para reduzir o tamanho, mas tente gerar novamente.";
+    return "A resposta ficou grande demais ou foi cortada pela IA. Tente gerar novamente.";
   }
 
   if (texto.includes("json")) {
