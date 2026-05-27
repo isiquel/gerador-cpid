@@ -46,24 +46,29 @@
     }
 
     .app-header{
-      background:linear-gradient(135deg,#4f301f,#7a4b30);
+      background:linear-gradient(135deg,#241a14,#3c2a20);
       color:#fff;
       border-radius:24px;
       padding:22px 24px;
       box-shadow:var(--shadow);
       margin-bottom:20px;
+      overflow:hidden;
     }
 
     .app-header h1{
       margin:0 0 8px;
       font-size:32px;
       line-height:1.1;
+      letter-spacing:2px;
     }
 
     .app-header p{
       margin:0;
       color:#f7e8dc;
       font-size:15px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
     .layout{
@@ -81,7 +86,7 @@
     }
 
     .left-panel{
-      padding:18px;
+      padding:16px;
       position:sticky;
       top:16px;
       max-height:calc(100vh - 32px);
@@ -94,59 +99,121 @@
     }
 
     .section-title{
-      margin:16px 0 10px;
+      margin:12px 0 9px;
       font-size:15px;
-      font-weight:700;
+      font-weight:800;
       color:var(--brown);
     }
 
-    .top-note{
-      background:#fff7e9;
-      border:1px solid #ecd3a1;
-      color:#7b5731;
+    .compact-flow{
+      background:#fffaf2;
+      border:1px solid #ead6ad;
+      color:#745329;
       border-radius:16px;
-      padding:12px 14px;
-      font-size:14px;
-      line-height:1.45;
-      margin-bottom:14px;
-    }
-
-    .base-note{
-      background:#eefaf1;
-      border:1px solid #9fd1ad;
-      color:#21653a;
-      border-radius:16px;
-      padding:12px 14px;
+      padding:10px 12px;
       font-size:13px;
       line-height:1.45;
-      margin-bottom:10px;
+      margin-bottom:12px;
     }
 
-    .base-note.warn{
+    .compact-flow strong{
+      color:#5a3b1e;
+    }
+
+    .status-mini-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin:8px 0 10px;
+    }
+
+    .status-mini{
+      background:#fff;
+      border:1px solid var(--line-2);
+      border-radius:14px;
+      padding:9px 10px;
+      color:#6c5a50;
+      font-size:12.5px;
+      line-height:1.35;
+    }
+
+    .status-mini.ok{
+      background:#eefaf1;
+      border-color:#9fd1ad;
+      color:#21653a;
+    }
+
+    .status-mini.warn{
       background:#fff7e6;
       border-color:#e6ca84;
       color:#7c5924;
     }
 
-    .unlock-box{
+    .accordion{
       background:#fff;
       border:1px solid var(--line-2);
       border-radius:18px;
-      padding:14px;
-      margin-bottom:14px;
+      margin:10px 0;
+      overflow:hidden;
     }
 
-    .unlock-box label,
-    .field label{
-      display:block;
-      font-size:13px;
-      font-weight:700;
+    .accordion summary{
+      list-style:none;
+      cursor:pointer;
+      padding:13px 14px;
+      font-weight:800;
       color:var(--brown);
-      margin-bottom:6px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      user-select:none;
+    }
+
+    .accordion summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .accordion summary::after{
+      content:"＋";
+      flex:0 0 auto;
+      width:28px;
+      height:28px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#f5eee6;
+      color:#7b5b45;
+      font-weight:900;
+    }
+
+    .accordion[open] summary::after{
+      content:"−";
+      background:#70452b;
+      color:#fff;
+    }
+
+    .accordion-body{
+      border-top:1px solid var(--line-2);
+      padding:13px;
+      background:#fffdfb;
+    }
+
+    .accordion-body.tight{
+      padding-top:8px;
     }
 
     .field{
-      margin-bottom:13px;
+      margin-bottom:12px;
+    }
+
+    .field label{
+      display:block;
+      font-size:13px;
+      font-weight:800;
+      color:var(--brown);
+      margin-bottom:6px;
     }
 
     input,textarea,select{
@@ -155,7 +222,7 @@
       background:#fff;
       color:var(--text);
       border-radius:16px;
-      padding:13px 14px;
+      padding:12px 13px;
       font-size:15px;
       outline:none;
       transition:.2s ease;
@@ -165,6 +232,14 @@
       min-height:110px;
       resize:vertical;
       line-height:1.5;
+    }
+
+    #theme{
+      min-height:132px;
+    }
+
+    #revistaObservacao{
+      min-height:145px;
     }
 
     input:focus,
@@ -188,21 +263,24 @@
 
     .type-grid{
       display:grid;
-      gap:10px;
-      margin-bottom:14px;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-bottom:10px;
     }
 
     .type-option{
       display:flex;
-      gap:12px;
-      align-items:flex-start;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-start;
       border:1px solid var(--line);
       background:#fff;
-      border-radius:18px;
-      padding:14px;
+      border-radius:16px;
+      padding:10px 11px;
       cursor:pointer;
       transition:.2s ease;
       text-align:left;
+      min-height:52px;
     }
 
     .type-option:hover{
@@ -222,31 +300,33 @@
     }
 
     .type-icon{
-      font-size:20px;
+      font-size:17px;
       line-height:1;
-      margin-top:2px;
+      margin-top:1px;
     }
 
     .type-name{
-      font-size:17px;
-      font-weight:700;
-      margin-bottom:2px;
+      font-size:13.5px;
+      font-weight:800;
+      margin-bottom:1px;
     }
 
     .type-desc{
-      font-size:13px;
+      display:none;
+      font-size:12px;
       color:var(--muted);
-      line-height:1.35;
+      line-height:1.25;
     }
 
     .status{
       border-radius:16px;
-      padding:12px 14px;
-      font-size:14px;
-      margin-top:14px;
+      padding:11px 13px;
+      font-size:13.5px;
+      margin-top:12px;
       background:#f6f0ea;
       border:1px solid var(--line);
       color:var(--text);
+      line-height:1.4;
     }
 
     .status.ok{
@@ -264,18 +344,30 @@
     .actions-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:14px;
+      gap:9px;
+      margin-top:10px;
+    }
+
+    .primary-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+      margin:12px 0 8px;
+    }
+
+    .primary-actions .btn-primary{
+      grid-column:1 / -1;
     }
 
     .btn{
       border:none;
-      border-radius:18px;
-      padding:14px 16px;
-      font-size:15px;
-      font-weight:700;
+      border-radius:17px;
+      padding:13px 14px;
+      font-size:14.5px;
+      font-weight:800;
       cursor:pointer;
       transition:.2s ease;
+      line-height:1.2;
     }
 
     .btn:hover{
@@ -318,24 +410,24 @@
 
     .btn-full{
       width:100%;
-      margin-top:12px;
+      margin-top:10px;
     }
 
     .progress-wrap{
       background:#fff;
       border:1px solid var(--line);
       border-radius:18px;
-      padding:12px;
-      margin-top:14px;
+      padding:11px;
+      margin-top:10px;
     }
 
     .progress-bar-bg{
       width:100%;
-      height:12px;
+      height:10px;
       background:#eee2d4;
       border-radius:999px;
       overflow:hidden;
-      margin-bottom:10px;
+      margin-bottom:9px;
     }
 
     .progress-bar{
@@ -349,13 +441,13 @@
     .steps{
       display:flex;
       flex-wrap:wrap;
-      gap:8px;
+      gap:6px;
     }
 
     .step{
-      font-size:12px;
-      font-weight:700;
-      padding:7px 10px;
+      font-size:11.5px;
+      font-weight:800;
+      padding:6px 8px;
       border-radius:999px;
       border:1px solid #d8ccbf;
       background:#fff;
@@ -1091,7 +1183,78 @@
     }
 
     @media (max-width:740px){
-      .grid-2,.grid-3,.mini-grid,.daily-grid,.opening-cards{ grid-template-columns:1fr; }
+      .app-shell{
+        padding:12px;
+        padding-bottom:92px;
+      }
+
+      .app-header{
+        border-radius:20px;
+        padding:18px 18px;
+        margin-bottom:12px;
+      }
+
+      .app-header h1{
+        font-size:28px;
+      }
+
+      .app-header p{
+        font-size:13.5px;
+      }
+
+      .left-panel,
+      .right-panel{
+        padding:12px;
+        border-radius:20px;
+      }
+
+      .grid-2,
+      .grid-3,
+      .mini-grid,
+      .daily-grid,
+      .opening-cards{
+        grid-template-columns:1fr;
+      }
+
+      .type-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .type-option{
+        padding:9px 9px;
+        min-height:46px;
+      }
+
+      .type-name{
+        font-size:12.5px;
+      }
+
+      .primary-actions{
+        position:fixed;
+        left:10px;
+        right:10px;
+        bottom:10px;
+        z-index:999;
+        background:rgba(255,250,244,.96);
+        border:1px solid var(--line);
+        box-shadow:0 14px 40px rgba(40,20,10,.22);
+        border-radius:22px;
+        padding:9px;
+        grid-template-columns:1.2fr 1fr 1fr;
+        margin:0;
+        backdrop-filter:blur(8px);
+      }
+
+      .primary-actions .btn-primary{
+        grid-column:auto;
+      }
+
+      .primary-actions .btn{
+        font-size:12.5px;
+        padding:12px 8px;
+        border-radius:15px;
+      }
+
       .page-title{ font-size:28px; }
       .lesson-hero h1{ font-size:28px; }
       .lesson-cover-header h1{ font-size:30px; }
@@ -1099,6 +1262,18 @@
       .cover-subtitle{ font-size:18px; }
       .cover-content{ padding:18px; }
       .cover-frame{ padding:22px; }
+
+      .preview-header{
+        margin-top:12px;
+      }
+
+      .result{
+        min-height:420px;
+      }
+
+      .placeholder{
+        min-height:380px;
+      }
     }
 
     @media print{
@@ -1327,96 +1502,6 @@
 
     <div class="layout">
       <aside class="panel left-panel">
-        <div class="top-note">
-          <strong>Nova lógica EBD:</strong><br>
-          <strong>1)</strong> Gere primeiro a <strong>Revista do Aluno</strong> completa.<br>
-          <strong>2)</strong> Depois gere a <strong>Revista do Professor</strong> baseada na Revista do Aluno.<br>
-          <strong>3)</strong> Por fim gere o <strong>Livro de Apoio</strong> baseado na Revista do Professor.
-        </div>
-
-        <div class="top-note">
-          <strong>Correção v10.4.3:</strong><br>
-          Texto Áureo agora deve vir com <strong>um único versículo escrito por extenso</strong>, sem explicação extra. A leitura diária evita frases genéricas, o conteúdo evita repetição e a capa tenta variar conforme o tema da revista.
-        </div>
-
-        <div class="top-note">
-          <strong>Regra de segurança:</strong><br>
-          O código não inventa lição universal repetitiva. Se uma parte falhar, ele mostra erro claro naquela parte e permite tentar novamente.
-        </div>
-
-        <div class="unlock-box">
-          <div class="field">
-            <label for="adminCode">Código de liberação</label>
-            <input id="adminCode" type="text" placeholder="Digite o código para liberar recursos reservados" />
-          </div>
-
-          <div id="lockedNote" class="status">
-            Para liberar Revista EBD, E-book, Livro, Curso e Prompt automático, digite o código de acesso.
-          </div>
-        </div>
-
-        <input type="hidden" id="contentType" value="sermao" />
-
-        <div class="section-title">Tipo de material</div>
-
-        <div class="type-grid">
-          <button type="button" class="type-option active" data-type="sermao" data-reserved="false">
-            <div class="type-icon">🎙️</div>
-            <div>
-              <div class="type-name">Sermão</div>
-              <div class="type-desc">Introdução, tópicos, conclusão e apelo.</div>
-            </div>
-          </button>
-
-          <button type="button" class="type-option" data-type="devocional" data-reserved="false">
-            <div class="type-icon">🕊️</div>
-            <div>
-              <div class="type-name">Devocional</div>
-              <div class="type-desc">Reflexão bíblica curta com aplicação e oração.</div>
-            </div>
-          </button>
-
-          <button type="button" class="type-option" data-type="estudo" data-reserved="false">
-            <div class="type-icon">📖</div>
-            <div>
-              <div class="type-name">Estudo Bíblico</div>
-              <div class="type-desc">Explicação, contexto, desenvolvimento e conclusão.</div>
-            </div>
-          </button>
-
-          <button type="button" class="type-option" data-type="revista" data-reserved="true">
-            <div class="type-icon">📚</div>
-            <div>
-              <div class="type-name">Revista EBD</div>
-              <div class="type-desc">Revista do aluno, revista do professor ou livro de apoio.</div>
-            </div>
-          </button>
-
-          <button type="button" class="type-option" data-type="ebook" data-reserved="true">
-            <div class="type-icon">📘</div>
-            <div>
-              <div class="type-name">E-book</div>
-              <div class="type-desc">Material cristão organizado em capítulos.</div>
-            </div>
-          </button>
-
-          <button type="button" class="type-option" data-type="livro" data-reserved="true">
-            <div class="type-icon">📕</div>
-            <div>
-              <div class="type-name">Livro</div>
-              <div class="type-desc">Livro cristão simples e estruturado.</div>
-            </div>
-          </button>
-
-          <button type="button" class="type-option" data-type="curso" data-reserved="true">
-            <div class="type-icon">🎓</div>
-            <div>
-              <div class="type-name">Curso</div>
-              <div class="type-desc">Módulos, aulas e atividades organizadas.</div>
-            </div>
-          </button>
-        </div>
-
         <div class="field">
           <label for="title">Título</label>
           <input id="title" type="text" placeholder="Digite o título do material" />
@@ -1437,260 +1522,362 @@
           <input id="biblicalBase" type="text" placeholder="Ex: João 3.16; Romanos 8.28" />
         </div>
 
+        <details class="accordion" open>
+          <summary>Tipo de material</summary>
+          <div class="accordion-body tight">
+            <input type="hidden" id="contentType" value="sermao" />
+
+            <div class="type-grid">
+              <button type="button" class="type-option active" data-type="sermao" data-reserved="false">
+                <div class="type-icon">🎙️</div>
+                <div>
+                  <div class="type-name">Sermão</div>
+                  <div class="type-desc">Mensagem bíblica.</div>
+                </div>
+              </button>
+
+              <button type="button" class="type-option" data-type="devocional" data-reserved="false">
+                <div class="type-icon">🕊️</div>
+                <div>
+                  <div class="type-name">Devocional</div>
+                  <div class="type-desc">Reflexão bíblica.</div>
+                </div>
+              </button>
+
+              <button type="button" class="type-option" data-type="estudo" data-reserved="false">
+                <div class="type-icon">📖</div>
+                <div>
+                  <div class="type-name">Estudo</div>
+                  <div class="type-desc">Estudo bíblico.</div>
+                </div>
+              </button>
+
+              <button type="button" class="type-option" data-type="revista" data-reserved="true">
+                <div class="type-icon">📚</div>
+                <div>
+                  <div class="type-name">Revista EBD</div>
+                  <div class="type-desc">Aluno, professor e apoio.</div>
+                </div>
+              </button>
+
+              <button type="button" class="type-option" data-type="ebook" data-reserved="true">
+                <div class="type-icon">📘</div>
+                <div>
+                  <div class="type-name">E-book</div>
+                  <div class="type-desc">Capítulos.</div>
+                </div>
+              </button>
+
+              <button type="button" class="type-option" data-type="livro" data-reserved="true">
+                <div class="type-icon">📕</div>
+                <div>
+                  <div class="type-name">Livro</div>
+                  <div class="type-desc">Obra estruturada.</div>
+                </div>
+              </button>
+
+              <button type="button" class="type-option" data-type="curso" data-reserved="true">
+                <div class="type-icon">🎓</div>
+                <div>
+                  <div class="type-name">Curso</div>
+                  <div class="type-desc">Aulas e módulos.</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </details>
+
         <div class="grid-2">
           <div class="field">
             <label for="targetAudience">Público-alvo</label>
-            <input id="targetAudience" type="text" placeholder="Ex: igreja em geral, jovens, adultos..." />
+            <input id="targetAudience" type="text" placeholder="Ex: igreja em geral, jovens..." />
           </div>
 
           <div class="field">
             <label for="tone">Tom do material</label>
-            <input id="tone" type="text" placeholder="Ex: bíblico, pastoral, didático..." />
+            <input id="tone" type="text" placeholder="Ex: bíblico, pastoral..." />
           </div>
         </div>
 
-        <div class="grid-2">
-          <div class="field">
-            <label for="author">Autor / comentarista</label>
-            <input id="author" type="text" placeholder="Digite o nome do autor" />
-          </div>
-
-          <div class="field">
-            <label for="ministry">Editora / ministério</label>
-            <input id="ministry" type="text" placeholder="Ex: CPID — Casa Publicadora..." />
-          </div>
+        <div class="primary-actions">
+          <button id="btnGenerate" class="btn btn-primary" type="button">Gerar material</button>
+          <button id="btnPrint" class="btn btn-green" type="button">Salvar PDF</button>
+          <button id="btnClear" class="btn btn-light" type="button">Limpar</button>
         </div>
 
-        <div class="grid-2">
-          <div class="field">
-            <label for="depthLevel">Profundidade</label>
-            <select id="depthLevel">
-              <option value="simples">Simples</option>
-              <option value="médio">Médio</option>
-              <option value="profundo" selected>Profundo</option>
-              <option value="muito-profundo">Muito profundo</option>
-            </select>
+        <details class="accordion">
+          <summary>Configurações do material</summary>
+          <div class="accordion-body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="author">Autor / comentarista</label>
+                <input id="author" type="text" placeholder="Digite o nome do autor" />
+              </div>
+
+              <div class="field">
+                <label for="ministry">Editora / ministério</label>
+                <input id="ministry" type="text" placeholder="Ex: CPID — Casa Publicadora..." />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="depthLevel">Profundidade</label>
+                <select id="depthLevel">
+                  <option value="simples">Simples</option>
+                  <option value="médio">Médio</option>
+                  <option value="profundo" selected>Profundo</option>
+                  <option value="muito-profundo">Muito profundo</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="coverMode">Capa</label>
+                <select id="coverMode">
+                  <option value="sem-capa">Sem capa</option>
+                  <option value="com-capa">Com capa</option>
+                </select>
+              </div>
+            </div>
           </div>
+        </details>
 
-          <div class="field">
-            <label for="coverMode">Capa</label>
-            <select id="coverMode">
-              <option value="sem-capa">Sem capa</option>
-              <option value="com-capa">Com capa</option>
-            </select>
+        <details id="sermaoFields" class="accordion">
+          <summary>Opções do sermão</summary>
+          <div class="accordion-body">
+            <div class="grid-3">
+              <div class="field">
+                <label for="sermonPoints">Tópicos</label>
+                <select id="sermonPoints">
+                  <option value="3">3</option>
+                  <option value="4" selected>4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="sermonType">Tipo</label>
+                <select id="sermonType">
+                  <option value="temático" selected>Temático</option>
+                  <option value="expositivo">Expositivo</option>
+                  <option value="textual">Textual</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="sermonAppeal">Apelo</label>
+                <select id="sermonAppeal">
+                  <option value="com apelo espiritual forte" selected>Com apelo</option>
+                  <option value="sem apelo">Sem apelo</option>
+                </select>
+              </div>
+            </div>
           </div>
-        </div>
+        </details>
 
-        <div id="sermaoFields">
-          <div class="section-title">Opções do sermão</div>
+        <details id="devocionalFields" class="accordion hidden">
+          <summary>Opções do devocional</summary>
+          <div class="accordion-body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="devotionalStyle">Estilo</label>
+                <select id="devotionalStyle">
+                  <option value="reflexivo e bíblico" selected>Reflexivo e bíblico</option>
+                  <option value="acolhedor">Acolhedor</option>
+                  <option value="objetivo">Objetivo</option>
+                </select>
+              </div>
 
-          <div class="grid-3">
+              <div class="field">
+                <label for="devotionalTime">Tamanho</label>
+                <select id="devotionalTime">
+                  <option value="3 minutos">3 minutos</option>
+                  <option value="5 minutos" selected>5 minutos</option>
+                  <option value="10 minutos">10 minutos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details id="estudoFields" class="accordion hidden">
+          <summary>Opções do estudo bíblico</summary>
+          <div class="accordion-body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="studyDepth">Modelo</label>
+                <select id="studyDepth">
+                  <option value="com explicação, aplicações e perguntas" selected>Explicação + aplicação</option>
+                  <option value="mais acadêmico">Mais acadêmico</option>
+                  <option value="mais pastoral">Mais pastoral</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="studyQuestions">Perguntas</label>
+                <select id="studyQuestions">
+                  <option value="com perguntas e respostas" selected>Com respostas</option>
+                  <option value="com perguntas sem respostas">Sem respostas</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details id="revistaFields" class="accordion hidden">
+          <summary>Opções da Revista EBD</summary>
+          <div class="accordion-body">
+            <div class="compact-flow">
+              <strong>Fluxo:</strong> Revista do Aluno → Revista do Professor → Livro de Apoio.
+            </div>
+
+            <div class="status-mini-grid">
+              <div id="baseAlunoStatus" class="status-mini warn">Aluno: base não salva.</div>
+              <div id="baseProfessorStatus" class="status-mini warn">Professor: base não salva.</div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="revistaTipo">Tipo de material EBD</label>
+                <select id="revistaTipo">
+                  <option value="aluno" selected>Revista do aluno</option>
+                  <option value="professor">Revista do professor</option>
+                  <option value="apoio-professor">Livro de apoio para o professor</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="revistaClasse">Classe / público</label>
+                <select id="revistaClasse">
+                  <option value="adultos" selected>Adultos</option>
+                  <option value="jovens">Jovens</option>
+                  <option value="adolescentes">Adolescentes</option>
+                  <option value="crianças">Crianças</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="revistaMes">Mês</label>
+                <select id="revistaMes">
+                  <option>Janeiro</option>
+                  <option>Fevereiro</option>
+                  <option>Março</option>
+                  <option>Abril</option>
+                  <option>Maio</option>
+                  <option>Junho</option>
+                  <option>Julho</option>
+                  <option selected>Agosto</option>
+                  <option>Setembro</option>
+                  <option>Outubro</option>
+                  <option>Novembro</option>
+                  <option>Dezembro</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="revistaAno">Ano</label>
+                <input id="revistaAno" type="number" value="2026" />
+              </div>
+            </div>
+
             <div class="field">
-              <label for="sermonPoints">Tópicos</label>
-              <select id="sermonPoints">
-                <option value="3">3</option>
-                <option value="4" selected>4</option>
-                <option value="5">5</option>
+              <label for="revistaObservacao">Direção das 4 lições do mês</label>
+              <textarea id="revistaObservacao" placeholder="Ex: Lição 1: ...&#10;Texto base: ...&#10;Tópico 1: ...&#10;Subtópicos: ..."></textarea>
+              <div class="chip-note">
+                Opcional, mas recomendado. Se você escrever as 4 lições aqui, o app deve obedecer os títulos, tópicos e subtópicos informados.
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Bases EBD</summary>
+          <div class="accordion-body">
+            <div class="actions-grid" style="margin-top:0;">
+              <button id="btnSaveAlunoBase" class="btn btn-gold" type="button">Salvar base do aluno</button>
+              <button id="btnSaveProfessorBase" class="btn btn-gold" type="button">Salvar base do professor</button>
+              <button id="btnClearAlunoBase" class="btn btn-red" type="button">Apagar base do aluno</button>
+              <button id="btnClearProfessorBase" class="btn btn-red" type="button">Apagar base do professor</button>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Impressão</summary>
+          <div class="accordion-body">
+            <div class="field">
+              <label for="printFormat">Formato de impressão</label>
+              <select id="printFormat">
+                <option value="a4" selected>A4 normal — PDF padrão</option>
+                <option value="a3-livreto">A3 paisagem — estilo livreto / encadernação</option>
               </select>
+              <div class="chip-note">
+                Para livreto dobrável perfeito, escolha A3 paisagem e use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
+              </div>
             </div>
+          </div>
+        </details>
 
+        <details id="bookFields" class="accordion hidden">
+          <summary>Material longo</summary>
+          <div class="accordion-body">
+            <div class="grid-2">
+              <div class="field">
+                <label for="quantity">Quantidade</label>
+                <input id="quantity" type="number" value="10" />
+              </div>
+
+              <div class="field">
+                <label for="quantityType">Formato</label>
+                <select id="quantityType">
+                  <option value="capítulos" selected>Capítulos</option>
+                  <option value="módulos">Módulos</option>
+                  <option value="aulas">Aulas</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Observações extras</summary>
+          <div class="accordion-body">
             <div class="field">
-              <label for="sermonType">Tipo</label>
-              <select id="sermonType">
-                <option value="temático" selected>Temático</option>
-                <option value="expositivo">Expositivo</option>
-                <option value="textual">Textual</option>
-              </select>
+              <label for="extraNotes">Observações adicionais</label>
+              <textarea id="extraNotes" placeholder="Ex: quero referências bíblicas completas, linguagem pastoral, perguntas com respostas, aplicações para a igreja atual..."></textarea>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Ferramentas extras</summary>
+          <div class="accordion-body">
+            <div class="actions-grid" style="margin-top:0;">
+              <button id="btnEdit" class="btn btn-gold" type="button">Editar material</button>
+              <button id="btnFinishEdit" class="btn btn-light" type="button" disabled>Finalizar edição</button>
+              <button id="btnTest" class="btn btn-light" type="button">Preencher teste</button>
+              <button id="btnCopy" class="btn btn-light" type="button">Copiar texto</button>
             </div>
 
+            <button id="btnPrompt" class="btn btn-light btn-full" type="button">Gerar prompt automático</button>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary>Acesso</summary>
+          <div class="accordion-body">
             <div class="field">
-              <label for="sermonAppeal">Apelo</label>
-              <select id="sermonAppeal">
-                <option value="com apelo espiritual forte" selected>Com apelo</option>
-                <option value="sem apelo">Sem apelo</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div id="devocionalFields" class="hidden">
-          <div class="section-title">Opções do devocional</div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="devotionalStyle">Estilo</label>
-              <select id="devotionalStyle">
-                <option value="reflexivo e bíblico" selected>Reflexivo e bíblico</option>
-                <option value="acolhedor">Acolhedor</option>
-                <option value="objetivo">Objetivo</option>
-              </select>
+              <label for="adminCode">Código de liberação</label>
+              <input id="adminCode" type="text" placeholder="Digite o código para liberar recursos reservados" />
             </div>
 
-            <div class="field">
-              <label for="devotionalTime">Tamanho</label>
-              <select id="devotionalTime">
-                <option value="3 minutos">3 minutos</option>
-                <option value="5 minutos" selected>5 minutos</option>
-                <option value="10 minutos">10 minutos</option>
-              </select>
+            <div id="lockedNote" class="status">
+              Recursos reservados precisam do código de acesso.
             </div>
           </div>
-        </div>
-
-        <div id="estudoFields" class="hidden">
-          <div class="section-title">Opções do estudo bíblico</div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="studyDepth">Modelo</label>
-              <select id="studyDepth">
-                <option value="com explicação, aplicações e perguntas" selected>Explicação + aplicação</option>
-                <option value="mais acadêmico">Mais acadêmico</option>
-                <option value="mais pastoral">Mais pastoral</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="studyQuestions">Perguntas</label>
-              <select id="studyQuestions">
-                <option value="com perguntas e respostas" selected>Com respostas</option>
-                <option value="com perguntas sem respostas">Sem respostas</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div id="revistaFields" class="hidden">
-          <div class="section-title">Opções da Revista EBD</div>
-
-          <div class="top-note">
-            <strong>Fluxo recomendado:</strong><br>
-            <strong>1)</strong> Revista do aluno — cria a lição-base compacta.<br>
-            <strong>2)</strong> Revista do professor — usa a revista do aluno e acrescenta subsídios.<br>
-            <strong>3)</strong> Livro de apoio — usa a revista do professor e aprofunda mais.
-          </div>
-
-          <div id="baseAlunoStatus" class="base-note warn">
-            Nenhuma Revista do Aluno salva como base ainda.
-          </div>
-
-          <div id="baseProfessorStatus" class="base-note warn">
-            Nenhuma Revista do Professor salva como base ainda.
-          </div>
-
-          <div class="actions-grid" style="margin-top:0;margin-bottom:10px;">
-            <button id="btnSaveAlunoBase" class="btn btn-gold" type="button">Salvar como base do aluno</button>
-            <button id="btnSaveProfessorBase" class="btn btn-gold" type="button">Salvar como base do professor</button>
-          </div>
-
-          <div class="actions-grid" style="margin-top:0;margin-bottom:14px;">
-            <button id="btnClearAlunoBase" class="btn btn-red" type="button">Apagar base do aluno</button>
-            <button id="btnClearProfessorBase" class="btn btn-red" type="button">Apagar base do professor</button>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="revistaTipo">Tipo de material EBD</label>
-              <select id="revistaTipo">
-                <option value="aluno" selected>Revista do aluno</option>
-                <option value="professor">Revista do professor</option>
-                <option value="apoio-professor">Livro de apoio para o professor</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="revistaClasse">Classe / público</label>
-              <select id="revistaClasse">
-                <option value="adultos" selected>Adultos</option>
-                <option value="jovens">Jovens</option>
-                <option value="adolescentes">Adolescentes</option>
-                <option value="crianças">Crianças</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="printFormat">Formato de impressão</label>
-            <select id="printFormat">
-              <option value="a4" selected>A4 normal — PDF padrão</option>
-              <option value="a3-livreto">A3 paisagem — estilo livreto / encadernação</option>
-            </select>
-            <div class="chip-note">
-              Para livreto dobrável perfeito, escolha A3 paisagem e use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
-            </div>
-          </div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="revistaMes">Mês</label>
-              <select id="revistaMes">
-                <option>Janeiro</option>
-                <option>Fevereiro</option>
-                <option>Março</option>
-                <option>Abril</option>
-                <option>Maio</option>
-                <option>Junho</option>
-                <option>Julho</option>
-                <option selected>Agosto</option>
-                <option>Setembro</option>
-                <option>Outubro</option>
-                <option>Novembro</option>
-                <option>Dezembro</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="revistaAno">Ano</label>
-              <input id="revistaAno" type="number" value="2026" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="revistaObservacao">Direção das 4 lições do mês</label>
-            <textarea id="revistaObservacao" placeholder="Ex: Lição 1: ...&#10;Texto base: ...&#10;Tópico 1: ...&#10;Subtópicos: ..."></textarea>
-            <div class="chip-note">
-              Opcional, mas recomendado. Se você escrever as 4 lições aqui, o app deve obedecer os títulos, tópicos e subtópicos informados.
-            </div>
-          </div>
-        </div>
-
-        <div id="bookFields" class="hidden">
-          <div class="section-title">Opções do material longo</div>
-
-          <div class="grid-2">
-            <div class="field">
-              <label for="quantity">Quantidade</label>
-              <input id="quantity" type="number" value="10" />
-            </div>
-
-            <div class="field">
-              <label for="quantityType">Formato</label>
-              <select id="quantityType">
-                <option value="capítulos" selected>Capítulos</option>
-                <option value="módulos">Módulos</option>
-                <option value="aulas">Aulas</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="extraNotes">Observações adicionais</label>
-          <textarea id="extraNotes" placeholder="Ex: quero referências bíblicas completas, linguagem pastoral, perguntas com respostas, aplicações para a igreja atual..."></textarea>
-        </div>
-
-        <button id="btnGenerate" class="btn btn-primary btn-full" type="button">Gerar material</button>
-
-        <div class="actions-grid">
-          <button id="btnPrint" class="btn btn-green" type="button">Salvar / imprimir PDF</button>
-          <button id="btnClear" class="btn btn-light" type="button">Limpar tudo</button>
-          <button id="btnEdit" class="btn btn-gold" type="button">Editar material</button>
-          <button id="btnFinishEdit" class="btn btn-light" type="button" disabled>Finalizar edição</button>
-          <button id="btnTest" class="btn btn-light" type="button">Preencher teste</button>
-          <button id="btnCopy" class="btn btn-light" type="button">Copiar texto</button>
-        </div>
-
-        <button id="btnPrompt" class="btn btn-light btn-full" type="button">Gerar prompt automático</button>
+        </details>
 
         <div class="progress-wrap">
           <div class="progress-bar-bg">
@@ -1747,11 +1934,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1043";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1043";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1044";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1044";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1043";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1043";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1044";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1044";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1941,10 +2128,10 @@
       btnPrompt.style.opacity = unlocked ? "1" : "0.55";
 
       if(unlocked){
-        lockedNote.textContent = "Recursos reservados liberados: Revista EBD, Livro de Apoio, E-book, Livro, Curso e Prompt automático.";
+        lockedNote.textContent = "Recursos reservados liberados.";
         lockedNote.className = "status ok";
       }else{
-        lockedNote.textContent = "Para liberar Revista EBD, E-book, Livro, Curso e Prompt automático, digite o código de acesso.";
+        lockedNote.textContent = "Recursos reservados precisam do código de acesso.";
         lockedNote.className = "status";
 
         if(isReservedType(currentType)){
@@ -1968,9 +2155,17 @@
 
       hideDynamicFields();
 
-      if(type === "sermao") sermaoFields.classList.remove("hidden");
-      if(type === "devocional") devocionalFields.classList.remove("hidden");
-      if(type === "estudo") estudoFields.classList.remove("hidden");
+      if(type === "sermao"){
+        sermaoFields.classList.remove("hidden");
+      }
+
+      if(type === "devocional"){
+        devocionalFields.classList.remove("hidden");
+      }
+
+      if(type === "estudo"){
+        estudoFields.classList.remove("hidden");
+      }
 
       if(type === "revista"){
         revistaFields.classList.remove("hidden");
@@ -2318,13 +2513,13 @@
         const metaAluno = obterMetaAluno();
 
         if(!htmlAluno){
-          baseAlunoStatus.className = "base-note warn";
-          baseAlunoStatus.textContent = "Nenhuma Revista do Aluno salva como base ainda. Gere primeiro a Revista do Aluno.";
+          baseAlunoStatus.className = "status-mini warn";
+          baseAlunoStatus.textContent = "Aluno: base não salva.";
         }else{
           const textoAluno = extrairTextoDeHtml(htmlAluno);
-          baseAlunoStatus.className = "base-note";
+          baseAlunoStatus.className = "status-mini ok";
           baseAlunoStatus.textContent =
-            `Revista do Aluno salva como base textual: ${metaAluno.title || "sem título"} • ${metaAluno.mes || ""} ${metaAluno.ano || ""} • ${textoAluno.length.toLocaleString("pt-BR")} caracteres.`;
+            `Aluno: base salva • ${metaAluno.mes || ""} ${metaAluno.ano || ""} • ${textoAluno.length.toLocaleString("pt-BR")} caracteres.`;
         }
       }
 
@@ -2333,13 +2528,13 @@
         const metaProfessor = obterMetaProfessor();
 
         if(!htmlProfessor){
-          baseProfessorStatus.className = "base-note warn";
-          baseProfessorStatus.textContent = "Nenhuma Revista do Professor salva como base ainda. Gere a Revista do Professor depois da Revista do Aluno.";
+          baseProfessorStatus.className = "status-mini warn";
+          baseProfessorStatus.textContent = "Professor: base não salva.";
         }else{
           const textoProfessor = extrairTextoDeHtml(htmlProfessor);
-          baseProfessorStatus.className = "base-note";
+          baseProfessorStatus.className = "status-mini ok";
           baseProfessorStatus.textContent =
-            `Revista do Professor salva como base textual: ${metaProfessor.title || "sem título"} • ${metaProfessor.mes || ""} ${metaProfessor.ano || ""} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
+            `Professor: base salva • ${metaProfessor.mes || ""} ${metaProfessor.ano || ""} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
         }
       }
     }
@@ -2745,10 +2940,6 @@
         .replace(/\s+/g," ")
         .replace(/\.$/,"")
         .trim();
-    }
-
-    function referenciaTemIntervalo(ref){
-      return /\d+\s*[.-]\s*\d+/.test(String(ref || ""));
     }
 
     function reduzirParaUmVersiculo(ref){
