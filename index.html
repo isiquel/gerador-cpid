@@ -1162,8 +1162,8 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção de linguagem:</strong><br>
-          A Revista do Aluno agora mantém profundidade, mas remove linguagem de professor, como “o professor deve”, “conduza a classe” ou “explique aos alunos”.
+          <strong>Correção de salvamento:</strong><br>
+          Agora a base da Revista do Aluno e da Revista do Professor é salva em modo leve, sem imagem pesada da capa. Assim a capa pode aparecer bonita, mas não trava o Livro de Apoio.
         </div>
 
         <div class="unlock-box">
@@ -1569,11 +1569,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v5";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v5";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v6";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v6";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v5";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v5";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v6";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v6";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1930,6 +1930,50 @@
       return clean.slice(0,limite) + "\n\n[BASE RECORTADA PELO APP PARA CABER NA JANELA DA IA]";
     }
 
+    function prepararHtmlBaseLeve(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      temp.querySelectorAll("img").forEach(img => img.remove());
+      temp.querySelectorAll(".cover-page").forEach(page => page.remove());
+      temp.querySelectorAll(".back-cover-page").forEach(page => page.remove());
+
+      temp.querySelectorAll("[style]").forEach(el => {
+        const style = String(el.getAttribute("style") || "");
+        if(style.includes("base64") || style.length > 1000){
+          el.removeAttribute("style");
+        }
+      });
+
+      let limpo = temp.innerHTML;
+
+      limpo = limpo.replace(/data:image\/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/=]+/g,"");
+      limpo = limpo.replace(/<img[^>]*>/gi,"");
+
+      return limpo;
+    }
+
+    function salvarStorageSeguro(chave,valor){
+      try{
+        localStorage.setItem(chave,valor);
+        return true;
+      }catch(error){
+        console.warn("Falha ao salvar no localStorage:",error);
+
+        try{
+          localStorage.removeItem(STORAGE_REVISTA_ALUNO_BASE);
+          localStorage.removeItem(STORAGE_REVISTA_ALUNO_META);
+          localStorage.removeItem(STORAGE_REVISTA_PROFESSOR_BASE);
+          localStorage.removeItem(STORAGE_REVISTA_PROFESSOR_META);
+          localStorage.setItem(chave,valor);
+          return true;
+        }catch(error2){
+          console.warn("Falha final ao salvar no localStorage:",error2);
+          return false;
+        }
+      }
+    }
+
     function obterBaseAluno(){
       return localStorage.getItem(STORAGE_REVISTA_ALUNO_BASE) || "";
     }
@@ -1960,8 +2004,8 @@
         return;
       }
 
-      const html = result.innerHTML;
-      const texto = extrairTextoDeHtml(html);
+      const htmlLeve = prepararHtmlBaseLeve(result.innerHTML);
+      const texto = extrairTextoDeHtml(htmlLeve);
 
       if(texto.length < 5000){
         setStatus("O material atual parece curto demais para servir como base da Revista do Aluno.","error");
@@ -1971,18 +2015,24 @@
       const base = buildBase();
       const info = montarInfoRevista(base);
 
-      localStorage.setItem(STORAGE_REVISTA_ALUNO_BASE,html);
-      localStorage.setItem(STORAGE_REVISTA_ALUNO_META,JSON.stringify({
+      const okBase = salvarStorageSeguro(STORAGE_REVISTA_ALUNO_BASE,htmlLeve);
+      const okMeta = salvarStorageSeguro(STORAGE_REVISTA_ALUNO_META,JSON.stringify({
         title:base.title,
         visibleTheme:base.visibleTheme,
         mes:info.revistaMes,
         ano:info.revistaAno,
         savedAt:new Date().toISOString(),
-        tamanho:texto.length
+        tamanho:texto.length,
+        modo:"base leve sem imagens"
       }));
 
       atualizarStatusBasesEBD();
-      setStatus("Revista do Aluno salva como base para a Revista do Professor.","ok");
+
+      if(okBase && okMeta){
+        setStatus("Revista do Aluno salva como base leve para a Revista do Professor.","ok");
+      }else{
+        setStatus("Não foi possível salvar a base. O navegador está sem espaço de armazenamento.","error");
+      }
     }
 
     function salvarBaseProfessorManual(){
@@ -1991,8 +2041,8 @@
         return;
       }
 
-      const html = result.innerHTML;
-      const texto = extrairTextoDeHtml(html);
+      const htmlLeve = prepararHtmlBaseLeve(result.innerHTML);
+      const texto = extrairTextoDeHtml(htmlLeve);
 
       if(texto.length < 6000){
         setStatus("O material atual parece curto demais para servir como base do Livro de Apoio.","error");
@@ -2002,58 +2052,70 @@
       const base = buildBase();
       const info = montarInfoRevista(base);
 
-      localStorage.setItem(STORAGE_REVISTA_PROFESSOR_BASE,html);
-      localStorage.setItem(STORAGE_REVISTA_PROFESSOR_META,JSON.stringify({
+      const okBase = salvarStorageSeguro(STORAGE_REVISTA_PROFESSOR_BASE,htmlLeve);
+      const okMeta = salvarStorageSeguro(STORAGE_REVISTA_PROFESSOR_META,JSON.stringify({
         title:base.title,
         visibleTheme:base.visibleTheme,
         mes:info.revistaMes,
         ano:info.revistaAno,
         savedAt:new Date().toISOString(),
-        tamanho:texto.length
+        tamanho:texto.length,
+        modo:"base leve sem imagens"
       }));
 
       atualizarStatusBasesEBD();
-      setStatus("Revista do Professor salva como base para o Livro de Apoio.","ok");
+
+      if(okBase && okMeta){
+        setStatus("Revista do Professor salva como base leve para o Livro de Apoio.","ok");
+      }else{
+        setStatus("Não foi possível salvar a base. O navegador está sem espaço de armazenamento.","error");
+      }
     }
 
     function salvarBaseAlunoAutomatico(base,info,html){
-      if(!info || !info.isStudent || info.isSupportBook) return;
-      if(!html) return;
+      if(!info || !info.isStudent || info.isSupportBook) return false;
+      if(!html) return false;
 
-      const texto = extrairTextoDeHtml(html);
-      if(texto.length < 5000) return;
+      const htmlLeve = prepararHtmlBaseLeve(html);
+      const texto = extrairTextoDeHtml(htmlLeve);
+      if(texto.length < 5000) return false;
 
-      localStorage.setItem(STORAGE_REVISTA_ALUNO_BASE,html);
-      localStorage.setItem(STORAGE_REVISTA_ALUNO_META,JSON.stringify({
+      const okBase = salvarStorageSeguro(STORAGE_REVISTA_ALUNO_BASE,htmlLeve);
+      const okMeta = salvarStorageSeguro(STORAGE_REVISTA_ALUNO_META,JSON.stringify({
         title:base.title,
         visibleTheme:base.visibleTheme,
         mes:info.revistaMes,
         ano:info.revistaAno,
         savedAt:new Date().toISOString(),
-        tamanho:texto.length
+        tamanho:texto.length,
+        modo:"base leve sem imagens"
       }));
 
       atualizarStatusBasesEBD();
+      return okBase && okMeta;
     }
 
     function salvarBaseProfessorAutomatico(base,info,html){
-      if(!info || !info.isTeacher || info.isSupportBook || info.isStudent) return;
-      if(!html) return;
+      if(!info || !info.isTeacher || info.isSupportBook || info.isStudent) return false;
+      if(!html) return false;
 
-      const texto = extrairTextoDeHtml(html);
-      if(texto.length < 6000) return;
+      const htmlLeve = prepararHtmlBaseLeve(html);
+      const texto = extrairTextoDeHtml(htmlLeve);
+      if(texto.length < 6000) return false;
 
-      localStorage.setItem(STORAGE_REVISTA_PROFESSOR_BASE,html);
-      localStorage.setItem(STORAGE_REVISTA_PROFESSOR_META,JSON.stringify({
+      const okBase = salvarStorageSeguro(STORAGE_REVISTA_PROFESSOR_BASE,htmlLeve);
+      const okMeta = salvarStorageSeguro(STORAGE_REVISTA_PROFESSOR_META,JSON.stringify({
         title:base.title,
         visibleTheme:base.visibleTheme,
         mes:info.revistaMes,
         ano:info.revistaAno,
         savedAt:new Date().toISOString(),
-        tamanho:texto.length
+        tamanho:texto.length,
+        modo:"base leve sem imagens"
       }));
 
       atualizarStatusBasesEBD();
+      return okBase && okMeta;
     }
 
     function apagarBaseAluno(){
@@ -2082,7 +2144,7 @@
           const textoAluno = extrairTextoDeHtml(htmlAluno);
           baseAlunoStatus.className = "base-note";
           baseAlunoStatus.textContent =
-            `Revista do Aluno salva como base: ${metaAluno.title || "sem título"} • ${metaAluno.mes || ""} ${metaAluno.ano || ""} • ${textoAluno.length.toLocaleString("pt-BR")} caracteres.`;
+            `Revista do Aluno salva como base leve: ${metaAluno.title || "sem título"} • ${metaAluno.mes || ""} ${metaAluno.ano || ""} • ${textoAluno.length.toLocaleString("pt-BR")} caracteres.`;
         }
       }
 
@@ -2097,7 +2159,7 @@
           const textoProfessor = extrairTextoDeHtml(htmlProfessor);
           baseProfessorStatus.className = "base-note";
           baseProfessorStatus.textContent =
-            `Revista do Professor salva como base: ${metaProfessor.title || "sem título"} • ${metaProfessor.mes || ""} ${metaProfessor.ano || ""} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
+            `Revista do Professor salva como base leve: ${metaProfessor.title || "sem título"} • ${metaProfessor.mes || ""} ${metaProfessor.ano || ""} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
         }
       }
     }
@@ -2961,9 +3023,10 @@ Use HTML com:
     function promptContracapa(base,info,licoes){
       return `${montarPromptBaseRevista(base,info,licoes)}
 
-ETAPA: CONTRACAPA
+ETAPA: TEXTO FINAL DA CONTRACAPA
 
-Crie uma contracapa editorial, elegante e pastoral.
+Crie uma sinopse editorial curta, elegante e pastoral.
+Não escreva a palavra "contracapa".
 Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
@@ -3057,72 +3120,7 @@ Mateus 24.35:
       return { titulo, ps:paragrafos };
     }
 
-    function textoAlunoOuProfessor(info,textoAluno,textoProfessor){
-      return info && info.isTeacher ? textoProfessor : textoAluno;
-    }
-
     function topicosProfundosBibliologia(dados,info = { isTeacher:false }){
-      const t = String(dados.titulo || "").toLowerCase();
-
-      if(t.includes("o que é a bíblia") || t.includes("o que é a biblia")){
-        return [
-          {
-            titulo:"A Bíblia é a Palavra de Deus",
-            subs:[
-              criarSubtopico("A origem divina da Escritura",[
-                `A Bíblia não nasceu da tentativa humana de alcançar Deus por meio da imaginação religiosa. Ela nasce da iniciativa do próprio Deus de revelar-se ao homem. Isso muda completamente a forma como nos aproximamos das Escrituras, porque não estamos diante de opiniões humanas sobre o sagrado, mas diante da revelação divina registrada em linguagem humana.`,
-                `Quando Paulo afirma que “toda Escritura é divinamente inspirada” ${refInline("2Tm 3.16")}, ele declara que a fonte última da Bíblia é Deus. A palavra inspiração aponta para a ação sobrenatural do Espírito Santo conduzindo a produção da mensagem bíblica. Deus não apenas acompanhou o processo; Ele garantiu que sua vontade fosse comunicada de maneira fiel.`,
-                `Esse ensino impede dois erros. O primeiro é tratar a Bíblia como simples literatura religiosa, no mesmo nível de qualquer tradição humana. O segundo é imaginar que a Bíblia caiu pronta do céu sem história, sem autores e sem contexto. A fé cristã afirma as duas verdades: Deus é o autor final, e homens reais foram instrumentos na escrita.`,
-                `A origem divina da Escritura exige reverência. Quem abre a Bíblia não está apenas abrindo um livro antigo, mas se colocando diante da voz de Deus registrada para instruir, corrigir, consolar e transformar. Uma igreja que perde essa convicção perde também temor, direção e firmeza espiritual.`,
-                `Por isso, a primeira pergunta diante da Bíblia não deve ser: “o que eu acho deste texto?”, mas: “o que Deus está revelando aqui?”. Essa postura muda a leitura bíblica de curiosidade religiosa para submissão espiritual.`
-              ]),
-              criarSubtopico("A inspiração pelo Espírito Santo",[
-                `A doutrina da inspiração ensina que o Espírito Santo atuou sobre os escritores bíblicos de modo que aquilo que escreveram expressasse fielmente a mensagem de Deus. Pedro afirma que “homens santos de Deus falaram inspirados pelo Espírito Santo” ${refInline("2Pe 1.21")}. Isso mostra que a Bíblia possui origem divina sem negar a participação humana.`,
-                `Deus usou autores diferentes, com vocabulário, personalidade, cultura, profissão e contexto histórico próprios. Moisés escreveu como líder e legislador, Davi como rei e adorador, Lucas como pesquisador cuidadoso, Paulo como apóstolo e teólogo. Mesmo assim, a Escritura mantém unidade espiritual porque o mesmo Espírito conduziu a mensagem.`,
-                `A inspiração não deve ser confundida com ditado mecânico em todos os casos. Deus não anulou a mente dos escritores. Ele os guiou soberanamente. Por isso a Bíblia possui estilos literários diferentes, mas uma autoridade comum. Há poesia, narrativa, profecia, lei, evangelho, epístola e apocalipse, mas uma só mensagem redentora.`,
-                `Esse entendimento fortalece a confiança da igreja. Quando lemos a Escritura, não dependemos de especulações soltas. Temos uma Palavra inspirada, segura e suficiente para conduzir a fé. Jesus mesmo tratou as Escrituras como autoridade final ao responder à tentação dizendo: “Está escrito” ${refInline("Mt 4.4")}.`,
-                `A inspiração também chama o crente à obediência. Se a Bíblia é Palavra inspirada, ela não deve ser apenas estudada como informação, mas recebida como direção divina para a vida.`
-              ]),
-              criarSubtopico("Autoridade para a fé e para a prática",[
-                `A Bíblia é regra de fé porque define aquilo que o cristão deve crer. Ela revela quem Deus é, quem somos, o que é o pecado, quem é Cristo, como somos salvos e qual é a esperança da igreja. Sem as Escrituras, a fé se torna refém de sentimentos, tradições e opiniões humanas.`,
-                `A Bíblia também é regra de prática porque orienta como devemos viver. Paulo afirma que a Escritura é proveitosa para ensinar, redarguir, corrigir e instruir em justiça ${refInline("2Tm 3.16")}. Isso significa que ela não apenas informa a mente, mas corrige o caminho, disciplina o coração e forma o caráter.`,
-                `A autoridade bíblica confronta a cultura quando a cultura se afasta de Deus. Em uma geração marcada por relativismo, onde cada pessoa quer construir sua própria verdade, a igreja proclama que a Palavra de Deus permanece. Jesus declarou: “a tua palavra é a verdade” ${refInline("Jo 17.17")}.`,
-                `Essa autoridade não deve ser usada com arrogância, mas com fidelidade. O cristão não está acima da Palavra; está debaixo dela. O professor, o pastor, o aluno e a igreja precisam ser corrigidos, ensinados e guiados pela mesma Escritura.`,
-                `Quando uma igreja honra a Bíblia como autoridade, ela amadurece. Quando a abandona, perde discernimento. Por isso, a EBD existe para formar crentes que não apenas carregam a Bíblia nas mãos, mas permitem que a Bíblia governe a vida.`
-              ])
-            ],
-            sinopse:"A Bíblia é Palavra de Deus porque procede de Deus, foi inspirada pelo Espírito Santo e possui autoridade para conduzir a fé e a prática cristã."
-          },
-          {
-            titulo:"A Bíblia revela Deus ao homem",
-            subs:[
-              criarSubtopico("Deus se dá a conhecer",[
-                `A Bíblia mostra que Deus não permaneceu escondido em silêncio absoluto. Ele decidiu revelar-se. A revelação bíblica não começa com o homem procurando respostas, mas com Deus falando, chamando, orientando e conduzindo a história.`,
-                `Desde Gênesis, Deus se revela como Criador, Senhor, Juiz, Redentor e Pai. Ele fala com Adão, chama Abraão, entrega sua lei a Moisés, levanta profetas e, na plenitude dos tempos, revela-se de modo supremo em Cristo ${refInline("Hb 1.1-2")}.`,
-                `Isso significa que a Bíblia não é apenas um livro de regras. Ela é a história da revelação de Deus. Nela conhecemos seu caráter, sua santidade, sua misericórdia, sua justiça, sua fidelidade e seu plano de salvação.`,
-                `Sem revelação, o ser humano cria ídolos à sua própria imagem. A Bíblia corrige essa tendência, mostrando Deus como Ele é, e não como gostaríamos que Ele fosse.`,
-                `Conhecer a Bíblia é conhecer melhor o Deus que fala por meio dela. Por isso, estudar as Escrituras é um ato de adoração.`
-              ]),
-              criarSubtopico("Cristo no centro da revelação",[
-                `A Bíblia possui diversidade de livros, mas não é uma coleção desorganizada de textos religiosos. Sua mensagem converge para Cristo. Jesus afirmou que as Escrituras testificam dele ${refInline("Jo 5.39")}.`,
-                `Na Lei, nos Profetas e nos Salmos, encontramos promessas, sombras, figuras e anúncios que apontam para a obra redentora de Cristo. Ele é o cumprimento da promessa feita desde o princípio, o Cordeiro de Deus, o Mediador, o Rei e o Salvador.`,
-                `Isso ajuda o estudante a ler a Bíblia com unidade. O Antigo Testamento prepara, anuncia e aponta. O Novo Testamento apresenta, explica e proclama a consumação da obra de Cristo.`,
-                `Uma leitura bíblica sem Cristo pode virar moralismo, curiosidade histórica ou religião sem evangelho. Mas quando Cristo está no centro, a Escritura revela a graça de Deus e chama o homem à salvação.`,
-                `Por isso, toda lição bíblica deve conduzir o estudante não apenas a conhecer fatos, mas a perceber como a Palavra revela o Senhor e fortalece a fé em Cristo.`
-              ]),
-              criarSubtopico("A revelação que transforma",[
-                `A Bíblia não foi dada apenas para satisfazer curiosidade. Ela foi dada para transformar. O salmista declara: “Lâmpada para os meus pés é tua palavra e luz para o meu caminho” ${refInline("Sl 119.105")}. A Palavra ilumina decisões, corrige rumos e dá direção.`,
-                `Quando a Palavra alcança o coração, ela revela pecados escondidos, consola dores profundas, fortalece a esperança e orienta a caminhada. Hebreus afirma que a Palavra é viva e eficaz ${refInline("Hb 4.12")}.`,
-                `A transformação bíblica não acontece por acúmulo de informação apenas. Ela acontece quando a verdade é recebida com fé, entendida com humildade e praticada com obediência.`,
-                `A EBD precisa preservar esse equilíbrio. Estudamos doutrina, história e contexto, mas tudo isso deve conduzir à vida prática. O estudante pode saber muitos detalhes sobre a Bíblia e ainda assim precisar obedecê-la no cotidiano.`,
-                `O alvo final do estudo é formar discípulos que amam a Palavra, vivem a Palavra e anunciam a Palavra.`
-              ])
-            ],
-            sinopse:"A Bíblia revela Deus, aponta para Cristo e transforma o homem que recebe sua mensagem com fé e obediência."
-          }
-        ];
-      }
-
       return [
         {
           titulo:`O fundamento bíblico de ${dados.titulo}`,
@@ -3443,11 +3441,9 @@ Mateus 24.35:
           <div class="cover-overlay"></div>
           <div class="cover-content">
             <div class="cover-frame">
-              <div class="cover-top">
-                <span class="cover-badge">Contracapa</span>
-              </div>
+              <div class="cover-top"></div>
               <div class="cover-main">
-                <h1 class="cover-title">${info.isSupportBook ? "Preparado para ensinar com profundidade" : "Que a Palavra produza fruto"}</h1>
+                <h1 class="cover-title">${info.isSupportBook ? "PREPARADO PARA ENSINAR COM PROFUNDIDADE" : "QUE A PALAVRA PRODUZA FRUTO"}</h1>
                 <p class="cover-subtitle">${info.isSupportBook ? "Um material de bastidor para o professor dominar o assunto." : "Material preparado para ensino, edificação e fortalecimento da fé cristã."}</p>
               </div>
               <div class="cover-footer">
@@ -3720,22 +3716,6 @@ Mateus 24.35:
       }
 
       html += renderPage(apendices,"appendix-page");
-
-      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa do livro de apoio");
-      contracapa = limparMarkdownHtml(contracapa);
-
-      if(!validarRespostaIA(contracapa,400)){
-        contracapa = `
-          <h1 class="page-title">Contracapa</h1>
-          <p class="subtitle">${escapeHtml(base.title)}</p>
-          <div class="summary-box">
-            <h4>Sinopse</h4>
-            ${paragraph(`Este livro de apoio aprofunda o tema "${base.visibleTheme}", partindo da Revista do Professor para oferecer subsídios bíblicos, teológicos, históricos e didáticos.`)}
-          </div>
-        `;
-      }
-
-      html += renderPage(contracapa,"back-text-page");
       html += renderBackCover(base,info);
       html += `</div>`;
 
@@ -3789,7 +3769,7 @@ Mateus 24.35:
           <p class="subtitle">${escapeHtml(base.title)}</p>
           <div class="block">
             <h3>Apresentação da Revista</h3>
-            ${paragraph("Nesta revista mensal, estudaremos " + base.visibleTheme + ". O objetivo é conduzir a classe a compreender o tema à luz da Palavra de Deus.")}
+            ${paragraph("Nesta revista mensal, estudaremos " + base.visibleTheme + ". O objetivo é compreender o tema à luz da Palavra de Deus.")}
             ${paragraph("Cada lição foi organizada para unir conhecimento bíblico, clareza doutrinária, aplicação prática e crescimento espiritual.")}
           </div>
         `;
@@ -3853,6 +3833,16 @@ Mateus 24.35:
         renderGenerated(html + `</div>`);
       }
 
+      let salvouBase = false;
+
+      if(info.isStudent){
+        salvouBase = salvarBaseAlunoAutomatico(base,info,html + `</div>`);
+      }
+
+      if(info.isTeacher){
+        salvouBase = salvarBaseProfessorAutomatico(base,info,html + `</div>`);
+      }
+
       await pause(900);
       setStep(6,"Gerando arte profissional da capa...");
 
@@ -3866,37 +3856,32 @@ Mateus 24.35:
 
       await pause(700);
 
-      setStep(7,"Gerando contracapa...");
-      let contracapa = await chamarTextoIA(promptContracapa(base,info,licoes),"Contracapa");
-      contracapa = limparMarkdownHtml(contracapa);
-
-      if(!validarRespostaIA(contracapa,400)){
-        contracapa = `
-          <h1 class="page-title">Contracapa</h1>
-          <p class="subtitle">${escapeHtml(base.title)}</p>
-          <div class="summary-box">
-            <h4>Sinopse</h4>
-            ${paragraph("Esta revista conduz a classe ao estudo de " + base.visibleTheme + ", apresentando fundamentos bíblicos, aplicações práticas e orientações pastorais.")}
-          </div>
-        `;
-      }
-
-      if(info.isStudent){
-        contracapa = limparLinguagemAluno(contracapa);
-      }
-
-      html += renderPage(contracapa,"back-text-page");
+      setStep(7,"Gerando fechamento da revista...");
       html += renderBackCover(base,info);
       html += `</div>`;
 
       renderGenerated(html);
 
       if(info.isStudent){
-        salvarBaseAlunoAutomatico(base,info,html);
-        finishSteps("Revista do Aluno gerada e salva automaticamente como base para a Revista do Professor.");
+        if(!salvouBase){
+          salvouBase = salvarBaseAlunoAutomatico(base,info,html);
+        }
+
+        if(salvouBase){
+          finishSteps("Revista do Aluno gerada e salva como base leve para a Revista do Professor.");
+        }else{
+          finishSteps("Revista do Aluno gerada. Use o botão “Salvar como base do aluno” antes de gerar a Revista do Professor.");
+        }
       }else if(info.isTeacher){
-        salvarBaseProfessorAutomatico(base,info,html);
-        finishSteps("Revista do Professor gerada baseada na Revista do Aluno e salva como base para o Livro de Apoio.");
+        if(!salvouBase){
+          salvouBase = salvarBaseProfessorAutomatico(base,info,html);
+        }
+
+        if(salvouBase){
+          finishSteps("Revista do Professor gerada e salva como base leve para o Livro de Apoio.");
+        }else{
+          finishSteps("Revista do Professor gerada. Use o botão “Salvar como base do professor” antes de gerar o Livro de Apoio.");
+        }
       }else{
         finishSteps("Revista EBD mensal gerada com sucesso.");
       }
@@ -4052,7 +4037,7 @@ Mateus 24.35:
         result.scrollIntoView({ behavior:"smooth", block:"start" });
       }catch(error){
         console.error(error);
-        setStatus("Erro ao gerar material. Verifique a API ou tente novamente.","error");
+        setStatus("Erro ao gerar material. A geração pode ter terminado parcialmente. Tente salvar a base manualmente se o conteúdo apareceu na tela.","error");
       }finally{
         isGenerating = false;
         btnGenerate.disabled = false;
