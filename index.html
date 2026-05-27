@@ -1060,11 +1060,6 @@
         break-before:page;
       }
 
-      .lesson-page:first-of-type{
-        page-break-before:always;
-        break-before:page;
-      }
-
       .cover-page,
       .back-cover-page{
         box-shadow:none;
@@ -1227,8 +1222,8 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção v8:</strong><br>
-          A revista agora trabalha com progressão pedagógica real: tese da lição, tópicos encadeados, subtópicos com função, professor com método de ensino e PDF com menos espaços vazios.
+          <strong>Correção v9:</strong><br>
+          A revista agora é universal de verdade. O app obedece ao tema e às lições que você escreveu no prompt. Bibliologia só será usada se você pedir Bibliologia.
         </div>
 
         <div class="unlock-box">
@@ -1536,7 +1531,7 @@
             <label for="revistaObservacao">Direção das 4 lições do mês</label>
             <textarea id="revistaObservacao" placeholder="Ex: Lição 1: ...&#10;Lição 2: ...&#10;Lição 3: ...&#10;Lição 4: ..."></textarea>
             <div class="chip-note">
-              Para Bibliologia / O Livro que Carregamos, o app usa automaticamente os dados corretos das 4 lições.
+              Opcional. Se você escrever as 4 lições aqui ou no prompt, o app deve obedecer exatamente.
             </div>
           </div>
         </div>
@@ -1634,11 +1629,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v8";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v8";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v9";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v9";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v8";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v8";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v9";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v9";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1923,7 +1918,12 @@
 
       if(parecePromptGrande){
         if(titulo) return titulo;
-        return "Tema mensal da Escola Bíblica Dominical";
+        const primeiraLinhaTema = texto
+          .split(/\n+/)
+          .map(l => l.trim())
+          .find(l => l.length > 4 && l.length < 90 && !/^crie/i.test(l));
+
+        return primeiraLinhaTema || "Tema mensal da Escola Bíblica Dominical";
       }
 
       if(texto) return texto;
@@ -2500,6 +2500,8 @@
         .replace(/^[-•*]\s*/,"")
         .replace(/^li[cç][aã]o\s*\d+\s*[:\-–—]\s*/i,"")
         .replace(/^\d+\s*[:\.\-–—]\s*/,"")
+        .replace(/texto\s+base\s*:.*/i,"")
+        .replace(/objetivo\s*:.*/i,"")
         .trim();
 
       return limpo || `Lição ${indice}`;
@@ -2507,6 +2509,115 @@
 
     function gerarFocoGenerico(titulo,base){
       return `o estudo bíblico, doutrinário, histórico e prático de "${titulo}" dentro do tema mensal "${base.visibleTheme}"`;
+    }
+
+    function montarLicaoUniversal(titulo,index,base,extra = ""){
+      const tema = base.visibleTheme || base.title || base.theme || "tema bíblico";
+
+      return {
+        titulo,
+        tese:`A lição "${titulo}" deve conduzir o aluno a compreender o tema "${tema}" a partir da Escritura, desenvolver convicção doutrinária e responder com prática cristã.`,
+        progressao:[
+          "Primeiro, a lição apresenta o fundamento bíblico do assunto.",
+          "Depois, desenvolve a doutrina, o significado espiritual e a importância para a fé cristã.",
+          "Por fim, conduz o aluno à aplicação prática, à obediência e ao compromisso com Deus."
+        ],
+        foco:extra || gerarFocoGenerico(titulo,base),
+        textoAureo:`Lâmpada para os meus pés é tua palavra e luz, para o meu caminho. (Salmo 119.105)`,
+        verdadePratica:`A verdade estudada nesta lição deve conduzir o aluno a compreender ${titulo.toLowerCase()} à luz das Escrituras e praticar a vontade de Deus.`,
+        leituraClasse:base.biblicalBase || "Salmo 119.105",
+        palavraChave:titulo.split(" ").filter(Boolean)[0] || "Lição",
+        termos:["fundamento bíblico","doutrina","aplicação","vida cristã"],
+        topicos:[
+          {
+            titulo:`O fundamento bíblico de ${titulo}`,
+            funcao:"mostrar onde o assunto nasce na Escritura e preparar o aluno para compreender a doutrina.",
+            subtitulos:["A Palavra como ponto de partida","A verdade revelada no texto bíblico","A importância de interpretar corretamente"]
+          },
+          {
+            titulo:`A importância doutrinária e espiritual de ${titulo}`,
+            funcao:"desenvolver o ensino bíblico, mostrando sua relevância para a fé cristã.",
+            subtitulos:["O valor doutrinário do tema","O crescimento espiritual produzido pela Palavra","A igreja fortalecida pelo ensino"]
+          },
+          {
+            titulo:`A resposta prática diante de ${titulo}`,
+            funcao:"conduzir o aluno à obediência, à aplicação pessoal e à prática cristã.",
+            subtitulos:["A verdade aplicada ao coração","A verdade aplicada à vida diária","A verdade produzindo fruto"]
+          }
+        ],
+        perguntas:[
+          ["Qual é a verdade central desta lição?","A verdade central deve ser entendida a partir da Escritura, aplicada à vida cristã e vivida com obediência."],
+          ["Como aplicar esta lição à igreja atual?","Aplicamos quando permitimos que a Palavra corrija pensamentos, atitudes, prioridades e decisões."],
+          ["Por que este assunto é importante para a fé cristã?","Porque ajuda o aluno a compreender melhor a revelação de Deus e a viver de modo fiel à Palavra."],
+          ["Que resposta prática Deus espera de nós?","Deus espera fé, obediência, reverência e compromisso com sua vontade."]
+        ],
+        leituraDiaria:[
+          ["Segunda","Sl 119.105","A Palavra de Deus ilumina o caminho."],
+          ["Terça","2Tm 3.16","Toda Escritura é inspirada por Deus."],
+          ["Quarta","Rm 15.4","As Escrituras foram escritas para nosso ensino."],
+          ["Quinta","Hb 4.12","A Palavra de Deus é viva e eficaz."],
+          ["Sexta","Tg 1.22","Devemos ser praticantes da Palavra."],
+          ["Sábado","Js 1.8","A meditação na Palavra conduz à obediência."]
+        ]
+      };
+    }
+
+    function extrairLicoesDoTexto(texto,base){
+      const raw = String(texto || "").replace(/\r/g,"\n");
+
+      const regex = /li[cç][aã]o\s*([1-4])\s*[:\-–—]\s*([^\n]+)/gi;
+      const encontradas = [];
+      let match;
+
+      while((match = regex.exec(raw)) !== null){
+        const numero = Number(match[1]);
+        const titulo = extrairTituloLicao(match[2],numero);
+
+        const inicio = match.index;
+        const proximo = raw.slice(inicio + 10).search(/li[cç][aã]o\s*[1-4]\s*[:\-–—]/i);
+        const fim = proximo >= 0 ? inicio + 10 + proximo : inicio + 1200;
+        const bloco = raw.slice(inicio,fim);
+
+        const textoBaseMatch = bloco.match(/texto\s*base\s*[:\-–—]\s*([^\n]+)/i);
+        const objetivoMatch = bloco.match(/objetivo\s*[:\-–—]\s*([^\n]+)/i);
+
+        const licao = montarLicaoUniversal(
+          titulo,
+          numero,
+          base,
+          objetivoMatch ? objetivoMatch[1].trim() : ""
+        );
+
+        if(textoBaseMatch){
+          licao.leituraClasse = textoBaseMatch[1].trim();
+          licao.textoAureo = `Texto base da lição: ${textoBaseMatch[1].trim()}`;
+        }
+
+        encontradas[numero - 1] = licao;
+      }
+
+      const filtradas = encontradas.filter(Boolean);
+
+      if(filtradas.length === 4){
+        return filtradas;
+      }
+
+      return [];
+    }
+
+    function gerarLicoesUniversaisDoTema(base){
+      const tema = base.visibleTheme || base.title || base.theme || "Tema bíblico";
+      const temaLimpo = tema
+        .replace(/^tema\s*[:\-–—]\s*/i,"")
+        .replace(/^sobre\s+/i,"")
+        .trim();
+
+      return [
+        montarLicaoUniversal(`O Fundamento Bíblico de ${temaLimpo}`,1,base,`a base bíblica e doutrinária do tema "${temaLimpo}"`),
+        montarLicaoUniversal(`O Desenvolvimento Doutrinário de ${temaLimpo}`,2,base,`o desenvolvimento doutrinário, espiritual e histórico do tema "${temaLimpo}"`),
+        montarLicaoUniversal(`Os Desafios e Aplicações de ${temaLimpo}`,3,base,`os desafios, correções e aplicações práticas do tema "${temaLimpo}" na vida cristã`),
+        montarLicaoUniversal(`Vivendo ${temaLimpo} com Fidelidade`,4,base,`a resposta prática, espiritual e pastoral do cristão diante do tema "${temaLimpo}"`)
+      ];
     }
 
     function dadosLicoesBibliologia(){
@@ -2544,7 +2655,7 @@
           ],
           perguntas:[
             ["O que é inspiração verbal?","Inspiração verbal é o ensino de que a ação do Espírito Santo alcançou não apenas as ideias gerais, mas também as palavras usadas pelos escritores sagrados, de modo que a mensagem registrada comunica fielmente a vontade de Deus."],
-            ["O que é inspiração plenária?","Inspiração plenária significa que toda a Escritura é inspirada por Deus, e não apenas algumas partes consideradas mais espirituais. Doutrina, história, profecia, poesia, evangelhos e epístolas estão debaixo da autoridade divina."],
+            ["O que é inspiração plenária?","Inspiração plenária significa que toda a Escritura é inspirada por Deus, e não apenas algumas partes consideradas mais espirituais."],
             ["Deus anulou a personalidade dos escritores bíblicos?","Não. Deus usou autores reais, com estilo, vocabulário, contexto e personalidade próprios, mas os guiou soberanamente pelo Espírito Santo."],
             ["Qual a diferença entre revelação, inspiração e iluminação?","Revelação é Deus se dando a conhecer; inspiração é a ação do Espírito na produção das Escrituras; iluminação é a ação do Espírito ajudando o crente a compreender e aplicar a Palavra."]
           ],
@@ -2697,89 +2808,37 @@
         }
       ];
     }
-        function dadosLicoesMensais(base,info){
-      const direcao = String(info.revistaObservacao || "").trim();
-      const temaLower = `${base.visibleTheme} ${base.theme} ${base.title} ${base.subtitle}`.toLowerCase();
 
-      const ehBibliologia =
+    function dadosLicoesMensais(base,info){
+      const textoCompleto = `
+${base.title}
+${base.subtitle}
+${base.theme}
+${info.revistaObservacao}
+${base.extraNotes}
+      `.trim();
+
+      const licoesDoPrompt = extrairLicoesDoTexto(textoCompleto,base);
+
+      if(licoesDoPrompt.length === 4){
+        return licoesDoPrompt;
+      }
+
+      const temaLower = `${base.visibleTheme} ${base.title} ${base.subtitle} ${base.theme}`.toLowerCase();
+
+      const pediuBibliologiaClaramente =
         temaLower.includes("bibliologia") ||
-        temaLower.includes("bíblia") ||
-        temaLower.includes("biblia") ||
         temaLower.includes("livro que carregamos") ||
-        temaLower.includes("origem, formação, preservação") ||
-        temaLower.includes("formação, preservação e transmissão");
+        temaLower.includes("origem, formação, preservação e transmissão da bíblia") ||
+        temaLower.includes("origem, formacao, preservacao e transmissao da biblia");
 
-      if(ehBibliologia){
+      if(pediuBibliologiaClaramente){
         return dadosLicoesBibliologia();
       }
 
-      if(direcao){
-        const linhas = direcao
-          .split(/\n+/)
-          .map(l => l.trim())
-          .filter(Boolean);
-
-        let licoesExtraidas = linhas
-          .filter(l => /li[cç][aã]o\s*\d+/i.test(l) || /^\d+\s*[:\.\-–—]/.test(l))
-          .slice(0,4)
-          .map((linha,index) => {
-            const titulo = extrairTituloLicao(linha,index + 1);
-
-            return {
-              titulo,
-              tese:`A lição "${titulo}" deve conduzir o aluno a compreender a verdade bíblica, perceber sua importância doutrinária e responder com prática cristã.`,
-              progressao:[
-                "Primeiro, a lição apresenta o fundamento bíblico do assunto.",
-                "Depois, desenvolve a importância doutrinária e espiritual do tema.",
-                "Por fim, conduz o aluno à aplicação prática e à obediência."
-              ],
-              foco:gerarFocoGenerico(titulo,base),
-              textoAureo:`Lâmpada para os meus pés é tua palavra e luz, para o meu caminho. (Salmo 119.105)`,
-              verdadePratica:`A verdade estudada nesta lição deve conduzir o aluno a compreender ${titulo.toLowerCase()} à luz das Escrituras e praticar a vontade de Deus.`,
-              leituraClasse:base.biblicalBase || "Salmo 119.105",
-              palavraChave:titulo.split(" ").filter(Boolean)[0] || "Lição",
-              termos:["fundamento bíblico","doutrina","aplicação","vida cristã"],
-              topicos:[
-                {
-                  titulo:`O fundamento bíblico de ${titulo}`,
-                  funcao:"mostrar onde o assunto nasce na Escritura.",
-                  subtitulos:["A Palavra como ponto de partida","A verdade revelada no texto bíblico","A importância de interpretar corretamente"]
-                },
-                {
-                  titulo:`A importância espiritual de ${titulo}`,
-                  funcao:"desenvolver a doutrina e preparar o aluno para a aplicação.",
-                  subtitulos:["O valor doutrinário do tema","O crescimento espiritual produzido pela Palavra","A igreja fortalecida pelo ensino"]
-                },
-                {
-                  titulo:`A resposta prática diante de ${titulo}`,
-                  funcao:"conduzir o aluno à obediência e à prática cristã.",
-                  subtitulos:["A verdade aplicada ao coração","A verdade aplicada à vida diária","A verdade produzindo fruto"]
-                }
-              ],
-              perguntas:[
-                ["Qual é a verdade central desta lição?","A verdade central deve ser entendida a partir da Escritura, aplicada à vida cristã e vivida com obediência."],
-                ["Como aplicar esta lição à igreja atual?","Aplicamos quando permitimos que a Palavra corrija pensamentos, atitudes, prioridades e decisões."]
-              ],
-              leituraDiaria:[
-                ["Segunda","Sl 119.105","A Palavra de Deus ilumina o caminho."],
-                ["Terça","2Tm 3.16","Toda Escritura é inspirada por Deus."],
-                ["Quarta","Rm 15.4","As Escrituras foram escritas para nosso ensino."],
-                ["Quinta","Hb 4.12","A Palavra de Deus é viva e eficaz."],
-                ["Sexta","Tg 1.22","Devemos ser praticantes da Palavra."],
-                ["Sábado","Js 1.8","A meditação na Palavra conduz à obediência."]
-              ]
-            };
-          });
-
-        if(licoesExtraidas.length === 4){
-          return licoesExtraidas;
-        }
-      }
-
-      return dadosLicoesBibliologia();
+      return gerarLicoesUniversaisDoTema(base);
     }
-
-    function montarPromptBaseRevista(base,info,licoes){
+        function montarPromptBaseRevista(base,info,licoes){
       const listaLicoes = (licoes || [])
         .map((l,i) => `
 Lição ${i + 1}: ${l.titulo}
@@ -2798,6 +2857,14 @@ Você é um comentarista de Escola Bíblica Dominical, teólogo pentecostal, esc
 Crie conteúdo para material de EBD mensal.
 A revista sempre deve ter 4 lições completas, correspondendo aos 4 domingos do mês.
 
+REGRA PRINCIPAL:
+O tema e as lições devem obedecer ao pedido do usuário.
+Não use tema pré-definido.
+Não use Bibliologia, a menos que o usuário peça claramente Bibliologia.
+Não use “O Que é a Bíblia?” como lição 1, a menos que o usuário tenha pedido esse tema.
+Se o usuário escreveu 4 lições, use exatamente essas 4 lições.
+Se o usuário escreveu apenas o tema, desenvolva as 4 lições com base nesse tema.
+
 DADOS DO MATERIAL
 Título: ${base.title}
 Subtítulo: ${base.subtitle}
@@ -2815,7 +2882,7 @@ Profundidade: ${base.depthLevel}
 Observações extras: ${base.extraNotes}
 Direção original das 4 lições: ${info.revistaObservacao}
 
-TEMAS DEFINIDOS PARA ESTE MÊS
+4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
 
 REGRA CENTRAL DE PROGRESSÃO PEDAGÓGICA
@@ -2883,13 +2950,19 @@ REGRAS DA REVISTA DO PROFESSOR
         .join("\n");
 
       return `
-Você é um teólogo pentecostal clássico, professor de Escola Bíblica Dominical, escritor cristão, editor teológico e especialista em Bibliologia.
+Você é um teólogo pentecostal clássico, professor de Escola Bíblica Dominical, escritor cristão, editor teológico e especialista em doutrina bíblica.
 
 TAREFA:
 Criar um LIVRO DE APOIO PARA O PROFESSOR DA EBD a partir da REVISTA DO PROFESSOR já gerada.
 
 A revista é a aula organizada.
 O livro de apoio é o bastidor teológico, histórico, doutrinário e didático da aula.
+
+REGRA PRINCIPAL:
+O livro deve obedecer ao tema pedido pelo usuário.
+Não force Bibliologia se o usuário pediu outro tema.
+Não use temas prontos.
+Expanda as lições reais da revista do professor.
 
 DADOS DO MATERIAL
 Título: ${base.title}
@@ -2937,6 +3010,7 @@ ETAPA: APRESENTAÇÃO DA REVISTA
 Crie uma apresentação pastoral e editorial para a revista.
 A apresentação deve explicar o valor do tema mensal e mostrar que as 4 lições caminham em progressão.
 Não faça apresentação curta demais.
+Não use Bibliologia se o tema do usuário for outro.
 
 Use HTML com:
 <h1 class="page-title">
@@ -3014,6 +3088,7 @@ REGRAS DA REVISTA DO ALUNO:
 - Use expressões como: “nesta lição estudaremos”, “a Palavra nos ensina”, “somos conduzidos a compreender”.
 - Não entregar subtópico com apenas 2 ou 3 linhas.
 - Não escreva conteúdo genérico. Escreva conteúdo específico da tese da lição.
+- Obedeça ao tema do usuário.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -3096,7 +3171,8 @@ Use HTML com:
 <div class="knowledge-box">
 <div class="teacher-help">`;
     }
-        function promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto){
+
+    function promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto){
       return `${montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto)}
 
 ETAPA: ABERTURA DO LIVRO DE APOIO AO PROFESSOR
@@ -3173,11 +3249,12 @@ ESTRUTURA OBRIGATÓRIA:
 15. Resumo final.
 
 REGRAS:
-- Explique termos como inspiração verbal, inspiração plenária, revelação, iluminação, cânon, preservação, transmissão, manuscritos, tradução e autoridade bíblica quando forem ligados à lição.
+- Não use tema diferente do pedido pelo usuário.
 - Não seja superficial.
 - Não entregue apenas tópicos.
 - Cada seção deve ter parágrafos argumentativos.
 - As perguntas difíceis devem ter respostas desenvolvidas.
+- O capítulo deve ajudar o professor a chegar na sala sabendo o que fazer.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -3199,6 +3276,7 @@ ETAPA: CAPÍTULO ESPECIAL — RESPOSTAS NA PONTA DA LÍNGUA
 Crie pelo menos 30 perguntas e respostas diferentes para o professor.
 As perguntas devem ser reais, difíceis e úteis em sala.
 As respostas devem ser bíblicas, doutrinárias, pastorais e didáticas.
+As perguntas precisam estar ligadas ao tema real da revista.
 
 Use HTML com:
 <h1 class="page-title">
@@ -3213,7 +3291,8 @@ Use HTML com:
 ETAPA: BIBLIOGRAFIA RECOMENDADA
 
 Crie bibliografia recomendada para o professor.
-Inclua bibliologia, teologia sistemática, hermenêutica, comentários bíblicos, dicionários bíblicos e Bíblias de estudo.
+Inclua teologia sistemática, teologia bíblica, hermenêutica, comentários bíblicos, dicionários bíblicos e Bíblias de estudo.
+A bibliografia deve combinar com o tema real da revista.
 
 Use HTML com:
 <h1 class="page-title">
@@ -3233,6 +3312,8 @@ Crie:
 3. Sugestões didáticas.
 4. Recursos visuais.
 5. Conclusão pastoral.
+
+Tudo deve estar ligado ao tema real pedido pelo usuário.
 
 Use HTML com:
 <h1 class="page-title">
@@ -3265,8 +3346,7 @@ TEMA VISUAL: ${base.visibleTheme}
 Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial premium, sem letras, sem logotipos, vertical 2:3.
       `.trim();
     }
-
-    function scriptureText(ref){
+        function scriptureText(ref){
       const key = String(ref || "").trim();
 
       const textos = {
@@ -3588,24 +3668,10 @@ Mateus 24.35:
         "autoridade bíblica":"Autoridade bíblica significa que a Escritura é a norma final para fé, doutrina, conduta e prática da igreja.",
         "suficiência das Escrituras":"Suficiência das Escrituras significa que a Bíblia contém tudo que Deus julgou necessário revelar para salvação, fé, vida cristã e obediência.",
         "cânon":"Cânon é o conjunto de livros reconhecidos pelo povo de Deus como Escritura inspirada, normativa e autoritativa.",
-        "papiro":"Papiro era um material de escrita produzido a partir de uma planta, muito utilizado no mundo antigo antes do uso amplo do pergaminho.",
-        "pergaminho":"Pergaminho era material de escrita feito a partir de pele preparada de animais, mais resistente que o papiro.",
-        "rolos":"Rolos eram formatos antigos de manuscritos, enrolados em torno de hastes, usados antes da forma de códice.",
-        "autógrafos":"Autógrafos são os escritos originais produzidos pelos autores bíblicos, hoje não mais existentes.",
-        "cópias manuscritas":"Cópias manuscritas são reproduções feitas à mão dos textos bíblicos antes da imprensa.",
-        "transmissão":"Transmissão é o processo pelo qual o texto bíblico foi copiado, preservado, lido e passado ao longo das gerações.",
-        "preservação":"Preservação é o cuidado providencial de Deus para que sua Palavra permanecesse acessível ao seu povo através da história.",
-        "manuscritos":"Manuscritos são cópias antigas escritas à mão que testemunham a transmissão do texto bíblico.",
-        "variantes textuais":"Variantes textuais são pequenas diferenças entre manuscritos. A maioria é de grafia ou ordem de palavras e não compromete doutrinas essenciais.",
-        "traduções":"Traduções são versões da Bíblia em diferentes línguas, feitas para tornar a Palavra acessível aos povos.",
-        "capítulos":"Capítulos são divisões posteriores acrescentadas para facilitar leitura e localização.",
-        "versículos":"Versículos são divisões menores acrescentadas posteriormente para facilitar referência e estudo.",
-        "crítica textual":"Crítica textual é o estudo técnico dos manuscritos para identificar com máxima segurança o texto bíblico transmitido.",
-        "meditação bíblica":"Meditação bíblica é a reflexão reverente, contínua e obediente sobre a Palavra de Deus.",
-        "obediência":"Obediência é a resposta prática de fé àquilo que Deus revelou em sua Palavra.",
-        "disciplina devocional":"Disciplina devocional é a prática regular de leitura, oração, meditação e aplicação da Palavra.",
-        "memorização":"Memorização é o exercício de guardar a Palavra no coração para orientar pensamentos, decisões e atitudes.",
-        "aplicação":"Aplicação é o ato de trazer a verdade bíblica para a vida concreta, permitindo que ela corrija e transforme."
+        "aliança":"Aliança é o compromisso soberano estabelecido por Deus com seu povo, envolvendo promessa, relacionamento, responsabilidade e fidelidade.",
+        "redenção":"Redenção é o ato de Deus libertar seu povo do domínio do pecado e da escravidão, apontando para a obra perfeita de Cristo.",
+        "santidade":"Santidade é separação para Deus e vida conformada ao seu caráter.",
+        "escatologia":"Escatologia é o estudo bíblico das últimas coisas, incluindo volta de Cristo, ressurreição, juízo, reino e eternidade."
       };
 
       return mapa[String(termo).toLowerCase()] || `Este termo deve ser explicado a partir da Escritura, mostrando sua importância para a compreensão da lição e sua aplicação à vida cristã.`;
@@ -3660,15 +3726,15 @@ Mateus 24.35:
         <div class="knowledge-box">
           <h4>2. Ampliação bíblica</h4>
           ${paragraphHtml(`A Escritura deve ser tratada como autoridade final. Paulo afirma que toda Escritura é inspirada por Deus ${refInline("2Tm 3.16")}, mostrando que o ensino cristão precisa nascer da revelação divina.`)}
-          ${paragraphHtml(`Pedro declara que os homens santos falaram inspirados pelo Espírito Santo ${refInline("2Pe 1.21")}. Isso ajuda o professor a explicar a relação entre ação divina e participação humana.`)}
+          ${paragraphHtml(`A Palavra de Deus não apenas informa; ela corrige, ensina e prepara o servo de Deus para toda boa obra ${refInline("2Tm 3.17")}.`)}
           ${paragraphHtml(`Jesus tratou a Escritura como autoridade decisiva ao responder à tentação dizendo: “Está escrito” ${refInline("Mt 4.4")}. A igreja deve seguir o mesmo princípio.`)}
         </div>
 
         <div class="knowledge-box">
           <h4>3. Explicação teológica e pentecostal clássica</h4>
-          ${paragraph("Dentro do pentecostalismo clássico, a Bíblia é recebida como Palavra de Deus inspirada, autoridade final para fé e prática, e fundamento seguro para doutrina, vida cristã e experiência espiritual. A ação do Espírito Santo não substitui a Escritura; pelo contrário, conduz o crente a amar, compreender e obedecer à Palavra.")}
-          ${paragraph("A experiência espiritual precisa ser julgada pela Escritura. O Espírito que inspirou a Palavra não contradiz a Palavra que inspirou. Por isso, dons, profecias, impressões espirituais e experiências congregacionais devem ser avaliadas à luz da Bíblia.")}
-          ${paragraph("Esse equilíbrio protege a igreja de dois extremos: o intelectualismo frio, que estuda sem vida espiritual, e o emocionalismo sem fundamento, que busca experiências sem submissão bíblica. O professor pentecostal ensina com Bíblia aberta, oração, dependência do Espírito e fidelidade doutrinária.")}
+          ${paragraph("Dentro do pentecostalismo clássico, a Bíblia é recebida como Palavra de Deus inspirada, autoridade final para fé e prática, e fundamento seguro para doutrina, vida cristã e experiência espiritual.")}
+          ${paragraph("A experiência espiritual precisa ser julgada pela Escritura. O Espírito que inspirou a Palavra não contradiz a Palavra que inspirou.")}
+          ${paragraph("Esse equilíbrio protege a igreja de dois extremos: o intelectualismo frio, que estuda sem vida espiritual, e o emocionalismo sem fundamento, que busca experiências sem submissão bíblica.")}
         </div>
 
         <div class="block">
@@ -3689,7 +3755,7 @@ Mateus 24.35:
         <div class="teacher-help">
           <h4>6. Erros comuns que o professor deve evitar</h4>
           ${unorderedList([
-            "Tratar o tema apenas como curiosidade histórica, sem aplicação espiritual.",
+            "Tratar o tema apenas como curiosidade, sem aplicação espiritual.",
             "Usar termos teológicos sem explicá-los com clareza.",
             "Falar de doutrina sem mostrar o texto bíblico que a fundamenta.",
             "Criar oposição entre estudo bíblico e ação do Espírito Santo.",
@@ -3702,7 +3768,7 @@ Mateus 24.35:
           <h4>7. Como ensinar este assunto em sala</h4>
           ${paragraph("Comece lendo o texto bíblico da lição. Em seguida, apresente a tese e mostre aos alunos o caminho que a aula seguirá: fundamento, doutrina e aplicação.")}
           ${paragraph("Explique os termos principais de forma progressiva. Primeiro dê uma definição simples; depois mostre um exemplo bíblico; por fim, aplique à vida da igreja.")}
-          ${paragraph("Ao final, faça perguntas práticas: como essa verdade muda nossa forma de ler a Bíblia? Como fortalece nossa fé? Que erro ela corrige? Que atitude Deus espera de nós?")}
+          ${paragraph("Ao final, faça perguntas práticas: como essa verdade fortalece nossa fé? Que erro ela corrige? Que atitude Deus espera de nós?")}
         </div>
 
         <div class="personal-application">
@@ -3820,16 +3886,6 @@ Mateus 24.35:
           ${paragraph(`O tema "${base.visibleTheme}" exige mais do que uma leitura superficial. O professor precisa conhecer fundamentos bíblicos, termos teológicos, desenvolvimento histórico e aplicações pastorais.`)}
           ${paragraph("Este material foi preparado para ampliar a Revista do Professor, oferecendo definições, explicações, perguntas difíceis, respostas doutrinárias e sugestões didáticas.")}
         </div>
-        <div class="summary-box">
-          <h4>Propósito do material</h4>
-          ${unorderedList([
-            "Ajudar o professor a compreender o tema com mais profundidade.",
-            "Expandir os argumentos apresentados na Revista do Professor.",
-            "Oferecer base bíblica, teológica e histórica para a exposição da aula.",
-            "Preparar respostas para dúvidas comuns dos alunos.",
-            "Fortalecer a segurança do professor diante da classe."
-          ])}
-        </div>
       `;
     }
 
@@ -3844,10 +3900,6 @@ Mateus 24.35:
         <div class="block">
           <h3>Parte 2 — Expansão das Lições</h3>
           ${orderedList(licoes.map((l,i) => `Capítulo ${i + 1}: Expansão da Lição ${i + 1} — ${l.titulo}.`))}
-        </div>
-        <div class="knowledge-box">
-          <h4>Parte 3 — Ferramentas do Professor</h4>
-          ${paragraph("Perguntas difíceis, glossário teológico, linha do tempo, sugestões didáticas, erros comuns e bibliografia recomendada.")}
         </div>
       `;
     }
@@ -3976,7 +4028,6 @@ Mateus 24.35:
               "Teologia Sistemática — Stanley Horton.",
               "Teologia Sistemática — Wayne Grudem.",
               "Teologia Sistemática — Millard Erickson.",
-              "Introdução Bíblica — Norman Geisler e William Nix.",
               "Entendes o que Lês? — Gordon Fee e Douglas Stuart.",
               "Como Ler a Bíblia Livro por Livro — Gordon Fee e Douglas Stuart.",
               "Dicionários bíblicos, Bíblias de estudo e comentários bíblicos confiáveis."
@@ -3994,12 +4045,8 @@ Mateus 24.35:
         apendices = `
           <h1 class="page-title">Apêndices</h1>
           <div class="knowledge-box">
-            <h4>Linha do tempo resumida</h4>
-            ${orderedList(["Deus se revela ao seu povo.","A revelação é registrada por escrito.","As Escrituras são preservadas em manuscritos.","As traduções ampliam o acesso à Palavra.","A Bíblia chega até nós impressa e digital."])}
-          </div>
-          <div class="book-note">
             <h4>Glossário básico</h4>
-            ${paragraph("Bibliologia, revelação, inspiração, inspiração verbal, inspiração plenária, iluminação, cânon, manuscrito, papiro, pergaminho, tradução, versão, hermenêutica, exegese e autoridade bíblica.")}
+            ${paragraph("Fundamento bíblico, doutrina, aplicação, vida cristã, interpretação, obediência, fé e prática.")}
           </div>
         `;
       }
@@ -4075,7 +4122,7 @@ Mateus 24.35:
           <div class="block">
             <h3>Apresentação da Revista</h3>
             ${paragraph("Nesta revista mensal, estudaremos " + base.visibleTheme + ".")}
-            ${paragraph("As quatro lições foram organizadas para conduzir o aluno em progressão: fundamento, compreensão, preservação e prática da Palavra de Deus.")}
+            ${paragraph("As quatro lições foram organizadas para conduzir o aluno em progressão: fundamento, doutrina, aplicação e compromisso com a Palavra de Deus.")}
           </div>
         `;
       }
@@ -4098,10 +4145,6 @@ Mateus 24.35:
           <div class="block">
             <h3>Lições do Mês</h3>
             ${orderedList(licoes.map((l,i) => `Lição ${i + 1} — ${l.titulo}. Texto base: ${l.leituraClasse}.`))}
-          </div>
-          <div class="knowledge-box">
-            <h4>Progressão do mês</h4>
-            ${paragraph("A revista começa explicando o que é a Bíblia, avança para sua formação, mostra como ela chegou até nós e conclui chamando o aluno a valorizar e obedecer à Palavra de Deus.")}
           </div>
         `;
       }
@@ -4511,10 +4554,10 @@ Mateus 24.35:
       const type = currentType;
 
       if(type === "revista"){
-        setValue("title","O Livro que Carregamos");
-        setValue("subtitle","A origem, formação, preservação e transmissão da Bíblia até os nossos dias");
-        setValue("theme","Bibliologia: O Livro que Carregamos — a origem, formação, preservação e transmissão da Bíblia até os nossos dias.");
-        setValue("biblicalBase","2 Timóteo 3.16-17; 2 Pedro 1.20-21; Isaías 40.8; Mateus 24.35; Salmo 119.105");
+        setValue("title","O Pentateuco");
+        setValue("subtitle","Os fundamentos da fé, da aliança e da adoração");
+        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical com o tema: O Pentateuco. A revista deve tratar dos fundamentos da fé, da aliança e da adoração nos cinco primeiros livros da Bíblia.");
+        setValue("biblicalBase","Gênesis 1.1; Êxodo 3.7-12; Levítico 19.1-2; Deuteronômio 6.4-9");
         setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
         setValue("tone","bíblico, pastoral, pentecostal, teológico, didático e acessível");
         setValue("author","Isiquel Rodrigues");
@@ -4525,8 +4568,8 @@ Mateus 24.35:
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
-        setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada tópico deve preparar o próximo. Cada subtópico deve ter conteúdo real. Na Revista do Aluno não use linguagem de professor. No Livro de Apoio, aprofunde termos como inspiração verbal, inspiração plenária, cânon, preservação, transmissão e autoridade bíblica.");
+        setValue("revistaObservacao","Lição 1: Gênesis — O Deus Criador e o Início de Todas as Coisas\nLição 2: Êxodo — O Deus Libertador e a Formação do Seu Povo\nLição 3: Levítico e Números — Santidade, Adoração e Caminhada no Deserto\nLição 4: Deuteronômio — A Renovação da Aliança e o Chamado à Obediência");
+        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada tópico deve preparar o próximo. Cada subtópico deve ter conteúdo real. Na Revista do Aluno não use linguagem de professor. No Livro de Apoio, aprofunde termos ligados ao tema real da revista.");
       }
 
       if(type === "sermao"){
@@ -4562,6 +4605,12 @@ Para EBD, siga esta lógica:
 1. Revista do Aluno: lição-base completa.
 2. Revista do Professor: mesma lição-base do aluno, com subsídios e respostas.
 3. Livro de Apoio: expansão profunda da Revista do Professor.
+
+Exigência de universalidade:
+- Obedeça ao tema pedido pelo usuário.
+- Não use tema pré-definido.
+- Não use Bibliologia, a menos que o usuário peça Bibliologia.
+- Se o usuário escreveu 4 lições, use exatamente essas 4 lições.
 
 Exigência de progressão:
 - Cada lição deve ter uma tese central.
