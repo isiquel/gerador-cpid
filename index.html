@@ -1162,8 +1162,8 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção v6:</strong><br>
-          A base agora é salva sem imagem pesada. Capa e contracapa não travam mais o fluxo. O Livro de Apoio não para no capítulo 1 se a IA devolver conteúdo fraco.
+          <strong>Correção v7:</strong><br>
+          O Livro de Apoio agora aprofunda a Revista do Professor com termos teológicos, perguntas difíceis, respostas doutrinárias, explicação pentecostal clássica e orientação didática.
         </div>
 
         <div class="unlock-box">
@@ -1569,11 +1569,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v6";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v6";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v7";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v7";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v6";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v6";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v7";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v7";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1957,11 +1957,8 @@
         try{
           const temp = document.createElement("div");
           temp.innerHTML = String(valor || "");
-
           temp.querySelectorAll("img,.cover-page,.back-cover-page,.back-text-page").forEach(el => el.remove());
-
-          const textoSeguro = temp.innerHTML;
-          localStorage.setItem(chave,textoSeguro);
+          localStorage.setItem(chave,temp.innerHTML);
           return true;
         }catch(error2){
           console.error("Falha total ao salvar base:",error2);
@@ -2000,8 +1997,7 @@
         return;
       }
 
-      const htmlOriginal = result.innerHTML;
-      const html = removerCapasEImagensPesadas(htmlOriginal);
+      const html = removerCapasEImagensPesadas(result.innerHTML);
       const texto = extrairTextoDeHtml(html);
 
       if(texto.length < 5000){
@@ -2028,7 +2024,7 @@
       if(okBase && okMeta){
         setStatus("Revista do Aluno salva como base textual, sem imagem pesada.","ok");
       }else{
-        setStatus("Não foi possível salvar a base do aluno. Tente copiar o texto e gerar novamente.","error");
+        setStatus("Não foi possível salvar a base do aluno.","error");
       }
     }
 
@@ -2038,8 +2034,7 @@
         return;
       }
 
-      const htmlOriginal = result.innerHTML;
-      const html = removerCapasEImagensPesadas(htmlOriginal);
+      const html = removerCapasEImagensPesadas(result.innerHTML);
       const texto = extrairTextoDeHtml(html);
 
       if(texto.length < 6000){
@@ -2066,7 +2061,7 @@
       if(okBase && okMeta){
         setStatus("Revista do Professor salva como base textual para o Livro de Apoio.","ok");
       }else{
-        setStatus("Não foi possível salvar a base do professor. Tente copiar o texto e gerar novamente.","error");
+        setStatus("Não foi possível salvar a base do professor.","error");
       }
     }
 
@@ -2458,6 +2453,13 @@
           verdadePratica:"A Bíblia é a Palavra de Deus revelada aos homens e deve governar a fé, a conduta e a esperança do cristão.",
           leituraClasse:"2 Timóteo 3.14-17",
           palavraChave:"Inspiração",
+          termos:["revelação","inspiração","inspiração verbal","inspiração plenária","iluminação","autoridade bíblica","suficiência das Escrituras"],
+          perguntas:[
+            ["O que é inspiração verbal?","Inspiração verbal é o ensino de que a ação do Espírito Santo alcançou não apenas as ideias gerais, mas também as palavras usadas pelos escritores sagrados, de modo que a mensagem registrada comunica fielmente a vontade de Deus."],
+            ["O que é inspiração plenária?","Inspiração plenária significa que toda a Escritura é inspirada por Deus, e não apenas algumas partes consideradas mais espirituais. Doutrina, história, profecia, poesia, evangelhos e epístolas estão debaixo da autoridade divina."],
+            ["Deus anulou a personalidade dos escritores bíblicos?","Não. Deus usou autores reais, com estilo, vocabulário, contexto e personalidade próprios, mas os guiou soberanamente pelo Espírito Santo."],
+            ["Qual a diferença entre revelação, inspiração e iluminação?","Revelação é Deus se dando a conhecer; inspiração é a ação do Espírito na produção das Escrituras; iluminação é a ação do Espírito ajudando o crente a compreender e aplicar a Palavra."]
+          ],
           leituraDiaria:[
             ["Segunda","2Tm 3.16","A Escritura é inspirada por Deus."],
             ["Terça","Jo 17.17","A Palavra de Deus é a verdade."],
@@ -2474,6 +2476,13 @@
           verdadePratica:"Deus usou homens, épocas, idiomas e circunstâncias diferentes para comunicar uma única mensagem fiel e verdadeira.",
           leituraClasse:"2 Pedro 1.19-21",
           palavraChave:"Composição",
+          termos:["cânon","papiro","pergaminho","rolos","autógrafos","cópias manuscritas","Antigo Testamento","Novo Testamento"],
+          perguntas:[
+            ["O que é cânon bíblico?","Cânon é o conjunto de livros reconhecidos pelo povo de Deus como Escritura inspirada e normativa para a fé e a prática."],
+            ["A igreja criou a Bíblia?","A igreja não criou a inspiração dos livros; ela reconheceu os escritos que já possuíam autoridade espiritual, apostolicidade, coerência doutrinária e uso entre o povo de Deus."],
+            ["A Bíblia caiu pronta do céu?","Não. Deus conduziu um processo histórico, usando autores, idiomas, materiais, comunidades e circunstâncias, sem perder o controle soberano da revelação."],
+            ["Por que há Antigo e Novo Testamento?","O Antigo Testamento prepara e anuncia a promessa; o Novo Testamento apresenta o cumprimento em Cristo e a expansão da mensagem apostólica."]
+          ],
           leituraDiaria:[
             ["Segunda","2Pe 1.21","Homens santos falaram inspirados pelo Espírito."],
             ["Terça","Êx 24.4","Moisés escreveu as palavras do Senhor."],
@@ -2490,6 +2499,13 @@
           verdadePratica:"Deus preservou sua Palavra através da história para que hoje pudéssemos conhecê-la, estudá-la e obedecê-la.",
           leituraClasse:"Isaías 40.6-8; Mateus 24.35",
           palavraChave:"Preservação",
+          termos:["transmissão","preservação","manuscritos","variantes textuais","traduções","capítulos","versículos","crítica textual"],
+          perguntas:[
+            ["Podemos confiar na Bíblia que temos hoje?","Sim. Deus preservou sua Palavra através da história, e a abundância de manuscritos permite confirmar com segurança o conteúdo bíblico recebido."],
+            ["O que são variantes textuais?","São pequenas diferenças entre cópias manuscritas. A maioria envolve grafia, ordem de palavras ou detalhes que não alteram doutrinas essenciais da fé cristã."],
+            ["Quem colocou capítulos e versículos na Bíblia?","As divisões em capítulos e versículos foram adicionadas posteriormente para facilitar localização, leitura e estudo, sem fazer parte do texto original inspirado."],
+            ["Por que existem traduções diferentes?","Porque as línguas mudam, os públicos são diferentes e há escolhas de tradução. Uma boa tradução busca fidelidade ao texto original e clareza ao leitor."]
+          ],
           leituraDiaria:[
             ["Segunda","Is 40.8","A Palavra de Deus permanece eternamente."],
             ["Terça","Mt 24.35","As palavras de Cristo não passarão."],
@@ -2506,6 +2522,13 @@
           verdadePratica:"Ter a Bíblia em mãos é uma bênção que exige gratidão, reverência, leitura constante e obediência fiel.",
           leituraClasse:"Salmo 119.97-105",
           palavraChave:"Obediência",
+          termos:["meditação bíblica","iluminação","obediência","disciplina devocional","leitura pública","memorização","aplicação"],
+          perguntas:[
+            ["Qual a diferença entre ler e meditar na Bíblia?","Ler é entrar em contato com o texto; meditar é permanecer nele, refletindo, orando e permitindo que a Palavra molde pensamentos, decisões e atitudes."],
+            ["Por que muitos têm Bíblia, mas não são transformados por ela?","Porque possuir a Bíblia não substitui leitura, fé, reverência e obediência. A transformação ocorre quando a Palavra é recebida e praticada."],
+            ["Como criar disciplina de leitura bíblica?","Comece com um plano simples, horário definido, oração, anotações e compromisso de aplicar uma verdade por dia."],
+            ["Como usar a Bíblia na família?","A família pode separar momentos de leitura, oração, conversa sobre o texto e aplicação prática na rotina da casa."]
+          ],
           leituraDiaria:[
             ["Segunda","Sl 119.97","O amor pela Palavra deve marcar o servo de Deus."],
             ["Terça","Sl 119.99","A meditação na Palavra produz entendimento."],
@@ -2553,6 +2576,11 @@
               verdadePratica:`A verdade estudada nesta lição deve conduzir o aluno a compreender ${titulo.toLowerCase()} à luz das Escrituras e praticar a vontade de Deus.`,
               leituraClasse:base.biblicalBase || "Salmo 119.105",
               palavraChave:titulo.split(" ").filter(Boolean)[0] || "Lição",
+              termos:["fundamento bíblico","doutrina","aplicação","vida cristã"],
+              perguntas:[
+                ["Qual é a verdade central desta lição?","A verdade central deve ser entendida a partir da Escritura, aplicada à vida cristã e vivida com obediência."],
+                ["Como aplicar esta lição à igreja atual?","Aplicamos quando permitimos que a Palavra corrija pensamentos, atitudes, prioridades e decisões."]
+              ],
               leituraDiaria:[
                 ["Segunda","Sl 119.105","A Palavra de Deus ilumina o caminho."],
                 ["Terça","2Tm 3.16","Toda Escritura é inspirada por Deus."],
@@ -2651,18 +2679,18 @@ REGRAS DA REVISTA DO PROFESSOR
 
     function montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto){
       const listaLicoes = (licoes || [])
-        .map((l,i) => `Lição ${i + 1}: ${l.titulo} — foco: ${l.foco}`)
+        .map((l,i) => `Lição ${i + 1}: ${l.titulo} — foco: ${l.foco} — termos importantes: ${(l.termos || []).join(", ")}`)
         .join("\n");
 
       return `
-Você é um teólogo pentecostal, professor de Escola Bíblica Dominical, escritor cristão, editor teológico e especialista em Bibliologia.
+Você é um teólogo pentecostal clássico, professor de Escola Bíblica Dominical, escritor cristão, editor teológico e especialista em Bibliologia.
 
 TAREFA:
 Criar um LIVRO DE APOIO PARA O PROFESSOR DA EBD a partir da REVISTA DO PROFESSOR já gerada.
 
 Este livro deve nascer da REVISTA DO PROFESSOR COMPLETA que está abaixo como base.
-A revista é a aula.
-O livro de apoio é o bastidor, o aprofundamento, o manual de preparo do professor.
+A revista é a aula organizada.
+O livro de apoio é o bastidor teológico, histórico, doutrinário e didático da aula.
 
 DADOS DO MATERIAL
 Título: ${base.title}
@@ -2693,7 +2721,11 @@ REGRAS PARA O LIVRO DE APOIO
 - Não economizar argumentos.
 - Expandir tópicos, subtópicos, auxílios, aplicações, perguntas e textos bíblicos da revista.
 - Acrescentar explicações teológicas, históricas, doutrinárias e didáticas.
+- Explicar termos importantes com clareza e profundidade.
+- Explicar dentro da tradição do pentecostalismo clássico quando o tema permitir.
 - Acrescentar perguntas difíceis e respostas reais.
+- Acrescentar exemplos que o professor possa usar em sala.
+- Acrescentar erros comuns que o professor deve evitar.
 - Acrescentar bibliografia recomendada.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
@@ -2849,7 +2881,13 @@ Use HTML com:
 
 ETAPA: ABERTURA DO LIVRO DE APOIO AO PROFESSOR
 
-Crie a abertura do livro com apresentação pastoral, prefácio ao professor e introdução geral.
+Crie a abertura do livro com:
+- apresentação pastoral;
+- prefácio ao professor;
+- como usar este livro junto com a revista;
+- explicação de que o livro aprofunda a revista;
+- visão do professor como ensinador da Palavra.
+
 Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
@@ -2865,6 +2903,8 @@ Use HTML com:
 ETAPA: SUMÁRIO DO LIVRO DE APOIO AO PROFESSOR
 
 Monte um sumário de livro, não de revista.
+Inclua capítulos principais, perguntas difíceis, glossário, linha do tempo e bibliografia.
+
 Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
@@ -2887,26 +2927,36 @@ Foco: ${dados.foco}
 Texto áureo: ${dados.textoAureo}
 Verdade prática: ${dados.verdadePratica}
 Leitura bíblica: ${dados.leituraClasse}
+Termos importantes: ${(dados.termos || []).join(", ")}
 
 TRECHO REAL DA LIÇÃO ${numero} NA REVISTA DO PROFESSOR:
 ${trechoLicao}
 
-Crie um capítulo de livro mais profundo que a lição da revista.
+Crie um capítulo de livro muito mais profundo que a lição da revista.
 
-ESTRUTURA:
+ESTRUTURA OBRIGATÓRIA:
 1. Cabeçalho do capítulo.
 2. Introdução robusta.
 3. O que a revista ensina resumidamente.
 4. Ampliação bíblica.
 5. Explicação teológica.
-6. Explicação histórica.
-7. Termos importantes.
-8. Perguntas que os alunos podem fazer.
-9. Respostas prontas.
-10. Erros comuns.
-11. Aplicações pastorais.
-12. Sugestões de leitura.
-13. Resumo final.
+6. Explicação dentro do pentecostalismo clássico.
+7. Contexto histórico.
+8. Termos importantes explicados.
+9. Perguntas difíceis que podem surgir em sala.
+10. Respostas prontas para o professor.
+11. Erros comuns que o professor deve evitar.
+12. Aplicações pastorais.
+13. Como ensinar esse assunto em sala.
+14. Sugestões de leitura.
+15. Resumo final.
+
+REGRAS:
+- Explique termos como inspiração verbal, inspiração plenária, revelação, iluminação, cânon, preservação, transmissão, manuscritos, tradução e autoridade bíblica quando forem ligados à lição.
+- Não seja superficial.
+- Não entregue apenas tópicos.
+- Cada seção deve ter parágrafos argumentativos.
+- As perguntas difíceis devem ter respostas desenvolvidas.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -2916,7 +2966,8 @@ Use HTML com:
 <div class="teacher-help">
 <div class="summary-box">
 <div class="personal-application">
-<div class="bibliography-box">`;
+<div class="bibliography-box">
+<div class="question-answer">`;
     }
 
     function promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -2925,6 +2976,9 @@ Use HTML com:
 ETAPA: CAPÍTULO ESPECIAL — RESPOSTAS NA PONTA DA LÍNGUA
 
 Crie pelo menos 30 perguntas e respostas diferentes para o professor.
+As perguntas devem ser reais, difíceis e úteis em sala.
+As respostas devem ser bíblicas, doutrinárias, pastorais e didáticas.
+
 Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
@@ -2938,6 +2992,8 @@ Use HTML com:
 ETAPA: BIBLIOGRAFIA RECOMENDADA
 
 Crie bibliografia recomendada para o professor.
+Inclua bibliologia, teologia sistemática, hermenêutica, comentários bíblicos, dicionários bíblicos e Bíblias de estudo.
+
 Use HTML com:
 <h1 class="page-title">
 <div class="bibliography-box">
@@ -2950,7 +3006,13 @@ Use HTML com:
 
 ETAPA: APÊNDICES DO LIVRO
 
-Crie linha do tempo, glossário, sugestões didáticas e conclusão pastoral.
+Crie:
+1. Linha do tempo.
+2. Glossário teológico.
+3. Sugestões didáticas.
+4. Recursos visuais.
+5. Conclusão pastoral.
+
 Use HTML com:
 <h1 class="page-title">
 <div class="block">
@@ -3310,7 +3372,55 @@ Mateus 24.35:
       `;
     }
 
+    function termosExplicadosLivro(dados){
+      const termos = dados.termos || ["fundamento bíblico","doutrina","aplicação"];
+      return termos.map((termo,index) => `
+        <div class="question-answer">
+          <strong>${index + 1}. ${escapeHtml(capitalize(termo))}</strong><br>
+          ${escapeHtml(explicarTermo(termo))}
+        </div>
+      `).join("");
+    }
+
+    function explicarTermo(termo){
+      const mapa = {
+        "revelação":"Revelação é o ato pelo qual Deus se dá a conhecer ao ser humano. Não se trata de descoberta humana, mas de iniciativa divina. A Bíblia registra a revelação especial de Deus, culminando em Cristo.",
+        "inspiração":"Inspiração é a ação sobrenatural do Espírito Santo sobre os autores bíblicos, garantindo que a mensagem escrita comunicasse fielmente a vontade de Deus.",
+        "inspiração verbal":"Inspiração verbal é o ensino de que a ação do Espírito Santo alcançou as palavras utilizadas pelos escritores sagrados, sem anular seu estilo, vocabulário ou personalidade.",
+        "inspiração plenária":"Inspiração plenária significa que toda a Escritura é inspirada por Deus. Não apenas partes doutrinárias, mas toda a Escritura possui autoridade divina.",
+        "iluminação":"Iluminação é a ação do Espírito Santo ajudando o crente a compreender, receber e aplicar a Palavra de Deus.",
+        "autoridade bíblica":"Autoridade bíblica significa que a Escritura é a norma final para fé, doutrina, conduta e prática da igreja.",
+        "suficiência das Escrituras":"Suficiência das Escrituras significa que a Bíblia contém tudo que Deus julgou necessário revelar para salvação, fé, vida cristã e obediência.",
+        "cânon":"Cânon é o conjunto de livros reconhecidos pelo povo de Deus como Escritura inspirada, normativa e autoritativa.",
+        "papiro":"Papiro era um material de escrita produzido a partir de uma planta, muito utilizado no mundo antigo antes do uso amplo do pergaminho.",
+        "pergaminho":"Pergaminho era material de escrita feito a partir de pele preparada de animais, mais resistente que o papiro.",
+        "rolos":"Rolos eram formatos antigos de manuscritos, enrolados em torno de hastes, usados antes da forma de códice.",
+        "autógrafos":"Autógrafos são os escritos originais produzidos pelos autores bíblicos, hoje não mais existentes.",
+        "cópias manuscritas":"Cópias manuscritas são reproduções feitas à mão dos textos bíblicos antes da imprensa.",
+        "transmissão":"Transmissão é o processo pelo qual o texto bíblico foi copiado, preservado, lido e passado ao longo das gerações.",
+        "preservação":"Preservação é o cuidado providencial de Deus para que sua Palavra permanecesse acessível ao seu povo através da história.",
+        "manuscritos":"Manuscritos são cópias antigas escritas à mão que testemunham a transmissão do texto bíblico.",
+        "variantes textuais":"Variantes textuais são pequenas diferenças entre manuscritos. A maioria é de grafia ou ordem de palavras e não compromete doutrinas essenciais.",
+        "traduções":"Traduções são versões da Bíblia em diferentes línguas, feitas para tornar a Palavra acessível aos povos.",
+        "capítulos":"Capítulos são divisões posteriores acrescentadas para facilitar leitura e localização.",
+        "versículos":"Versículos são divisões menores acrescentadas posteriormente para facilitar referência e estudo.",
+        "crítica textual":"Crítica textual é o estudo técnico dos manuscritos para identificar com máxima segurança o texto bíblico transmitido.",
+        "meditação bíblica":"Meditação bíblica é a reflexão reverente, contínua e obediente sobre a Palavra de Deus.",
+        "obediência":"Obediência é a resposta prática de fé àquilo que Deus revelou em sua Palavra.",
+        "disciplina devocional":"Disciplina devocional é a prática regular de leitura, oração, meditação e aplicação da Palavra.",
+        "memorização":"Memorização é o exercício de guardar a Palavra no coração para orientar pensamentos, decisões e atitudes.",
+        "aplicação":"Aplicação é o ato de trazer a verdade bíblica para a vida concreta, permitindo que ela corrija e transforme."
+      };
+
+      return mapa[String(termo).toLowerCase()] || `Este termo deve ser explicado a partir da Escritura, mostrando sua importância para a compreensão da lição e sua aplicação à vida cristã.`;
+    }
+
     function fallbackCapituloLivroApoio(base,info,numero,dados){
+      const perguntas = dados.perguntas || [
+        ["Qual é a pergunta principal desta lição?","A pergunta principal deve ser respondida a partir da Escritura, com fidelidade bíblica e aplicação prática."],
+        ["Como ensinar esse assunto sem superficialidade?","O professor deve explicar o texto bíblico, trabalhar os termos principais e conduzir a aplicação pastoral."]
+      ];
+
       return `
         <div class="lesson-hero">
           <div class="number">Capítulo ${numero} • Livro de Apoio ao Professor</div>
@@ -3321,48 +3431,84 @@ Mateus 24.35:
         <div class="book-note">
           <h4>Propósito deste capítulo</h4>
           ${paragraph(`Este capítulo foi preparado para ajudar o professor a dominar a Lição ${numero}: "${dados.titulo}". O objetivo é ampliar a compreensão bíblica, doutrinária, histórica e prática do tema antes da exposição em sala.`)}
+          ${paragraph(`A revista oferece a aula organizada; este livro oferece o bastidor. Aqui o professor encontra termos, respostas, exemplos, cuidados doutrinários e orientação pedagógica para ensinar com mais segurança.`)}
         </div>
 
         <div class="block">
           <h3>1. O que a revista ensina</h3>
-          ${paragraph(`A revista apresenta ${dados.foco}. Esse assunto precisa ser compreendido não apenas como informação, mas como fundamento para uma fé bíblica madura.`)}
-          ${paragraph(`O texto de referência, ${dados.leituraClasse}, oferece a base para a exposição. O professor deve mostrar como o texto bíblico sustenta a doutrina apresentada.`)}
+          ${paragraph(`A Revista do Professor apresenta ${dados.foco}. Esse assunto precisa ser entendido como parte da formação espiritual da igreja, e não apenas como informação religiosa.`)}
+          ${paragraph(`O texto de referência, ${dados.leituraClasse}, oferece a base da exposição. O professor deve mostrar como o texto bíblico sustenta a doutrina apresentada e como essa doutrina conduz à prática cristã.`)}
+          ${paragraph(`O ponto central é que o aluno compreenda a verdade, perceba sua importância e responda com fé e obediência. O professor não ensina apenas para preencher tempo de aula, mas para formar convicções bíblicas.`)}
         </div>
 
         <div class="knowledge-box">
-          <h4>2. Ampliação bíblica e teológica</h4>
+          <h4>2. Ampliação bíblica</h4>
           ${paragraphHtml(`A Escritura deve ser tratada como autoridade final. Paulo afirma que toda Escritura é inspirada por Deus ${refInline("2Tm 3.16")}, mostrando que o ensino cristão precisa nascer da revelação divina.`)}
           ${paragraphHtml(`Pedro declara que os homens santos falaram inspirados pelo Espírito Santo ${refInline("2Pe 1.21")}. Isso ajuda o professor a explicar a relação entre ação divina e participação humana.`)}
-          ${paragraph("A teologia não deve ser apresentada como algo frio, mas como organização fiel da verdade revelada. Ela protege a igreja contra erros e fortalece a fé dos alunos.")}
+          ${paragraphHtml(`Jesus tratou a Escritura como autoridade decisiva ao responder à tentação dizendo: “Está escrito” ${refInline("Mt 4.4")}. A igreja deve seguir o mesmo princípio.`)}
         </div>
 
-        <div class="teacher-help">
-          <h4>3. Orientações para a aula</h4>
-          ${unorderedList([
-            "Comece com a leitura bíblica em classe.",
-            "Explique a palavra-chave da lição.",
-            "Mostre como o texto bíblico sustenta o assunto.",
-            "Use exemplos simples, mas não rasos.",
-            "Faça perguntas que levem os alunos a pensar biblicamente.",
-            "Conclua com uma aplicação prática."
-          ])}
+        <div class="knowledge-box">
+          <h4>3. Explicação teológica e pentecostal clássica</h4>
+          ${paragraph("Dentro do pentecostalismo clássico, a Bíblia é recebida como Palavra de Deus inspirada, autoridade final para fé e prática, e fundamento seguro para doutrina, vida cristã e experiência espiritual. A ação do Espírito Santo não substitui a Escritura; pelo contrário, conduz o crente a amar, compreender e obedecer à Palavra.")}
+          ${paragraph("A experiência espiritual precisa ser julgada pela Escritura. O Espírito que inspirou a Palavra não contradiz a Palavra que inspirou. Por isso, dons, profecias, impressões espirituais e experiências congregacionais devem ser avaliadas à luz da Bíblia.")}
+          ${paragraph("Esse equilíbrio protege a igreja de dois extremos: o intelectualismo frio, que estuda sem vida espiritual, e o emocionalismo sem fundamento, que busca experiências sem submissão bíblica. O professor pentecostal ensina com Bíblia aberta, oração, dependência do Espírito e fidelidade doutrinária.")}
+        </div>
+
+        <div class="block">
+          <h3>4. Termos importantes explicados</h3>
+          ${termosExplicadosLivro(dados)}
         </div>
 
         <div class="summary-box">
-          <h4>4. Perguntas difíceis e respostas</h4>
-          <div class="question-answer"><strong>1. Como explicar este tema de forma clara?</strong><br>Resposta: Comece pelo texto bíblico, depois mostre a doutrina e, por fim, aplique à vida cristã.</div>
-          <div class="question-answer"><strong>2. Como evitar uma aula superficial?</strong><br>Resposta: Trabalhe o contexto, explique os termos importantes e mostre implicações práticas.</div>
-          <div class="question-answer"><strong>3. Como manter a atenção dos alunos?</strong><br>Resposta: Faça perguntas, use exemplos reais e mostre por que o assunto importa hoje.</div>
+          <h4>5. Perguntas difíceis que podem surgir em sala</h4>
+          ${perguntas.map((q,i) => `
+            <div class="question-answer">
+              <strong>${i + 1}. ${escapeHtml(q[0])}</strong><br>
+              <strong>Resposta:</strong> ${escapeHtml(q[1])}
+            </div>
+          `).join("")}
+        </div>
+
+        <div class="teacher-help">
+          <h4>6. Erros comuns que o professor deve evitar</h4>
+          ${unorderedList([
+            "Tratar o tema apenas como curiosidade histórica, sem aplicação espiritual.",
+            "Usar termos teológicos sem explicá-los com clareza.",
+            "Falar de doutrina sem mostrar o texto bíblico que a fundamenta.",
+            "Criar oposição entre estudo bíblico e ação do Espírito Santo.",
+            "Transformar a aula em opinião pessoal, sem submissão à Escritura.",
+            "Entregar respostas simplistas para perguntas complexas."
+          ])}
+        </div>
+
+        <div class="teacher-help">
+          <h4>7. Como ensinar este assunto em sala</h4>
+          ${paragraph("Comece lendo o texto bíblico da lição. Em seguida, apresente a palavra-chave e pergunte à classe o que ela entende sobre o assunto. Depois, corrija ideias incompletas com base na Escritura.")}
+          ${paragraph("Explique os termos principais de forma progressiva. Primeiro dê uma definição simples; depois mostre um exemplo bíblico; por fim, aplique à vida da igreja. Essa progressão evita que o aluno se perca no vocabulário teológico.")}
+          ${paragraph("Ao final, faça perguntas práticas: como essa verdade muda nossa forma de ler a Bíblia? Como fortalece nossa fé? Que erro ela corrige? Que atitude Deus espera de nós?")}
+        </div>
+
+        <div class="personal-application">
+          <h4>8. Aplicação pastoral</h4>
+          ${paragraph("O professor deve conduzir a aula com temor, humildade e convicção. O objetivo não é apenas explicar conceitos, mas fortalecer a fé da classe na Palavra de Deus.")}
+          ${paragraph("Quando o aluno entende a doutrina e percebe sua aplicação, a aula deixa de ser informação e se torna formação espiritual.")}
         </div>
 
         <div class="bibliography-box">
-          <h4>5. Sugestões de aprofundamento</h4>
+          <h4>9. Sugestões de aprofundamento</h4>
           ${unorderedList([
             "Teologia Sistemática — Stanley Horton.",
             "Introdução Bíblica — Norman Geisler e William Nix.",
             "Entendes o que Lês? — Gordon Fee e Douglas Stuart.",
-            "Dicionários bíblicos e Bíblias de estudo confiáveis."
+            "Como Ler a Bíblia Livro por Livro — Gordon Fee e Douglas Stuart.",
+            "Dicionários bíblicos, Bíblias de estudo e comentários bíblicos confiáveis."
           ])}
+        </div>
+
+        <div class="block">
+          <h3>10. Resumo final para o professor</h3>
+          ${paragraph(`Ao ensinar "${dados.titulo}", lembre-se de que o conteúdo deve partir da Bíblia, passar pela doutrina, alcançar a mente do aluno e terminar em aplicação prática. O professor deve ensinar com profundidade, mas também com clareza pastoral.`)}
         </div>
       `;
     }
@@ -3451,10 +3597,12 @@ Mateus 24.35:
         <div class="book-note">
           <h4>Livro de Apoio para o Professor</h4>
           ${paragraph(`Este livro de apoio acompanha a ${base.title}, servindo como material de bastidor para o professor da Escola Bíblica Dominical.`)}
+          ${paragraph("A revista organiza a aula; este livro aprofunda os fundamentos que sustentam a aula.")}
         </div>
         <div class="block">
           <h3>Apresentação</h3>
           ${paragraph(`O tema "${base.visibleTheme}" exige mais do que uma leitura superficial. O professor precisa conhecer fundamentos bíblicos, termos teológicos, desenvolvimento histórico e aplicações pastorais.`)}
+          ${paragraph("Este material foi preparado para ampliar a Revista do Professor, oferecendo definições, explicações, perguntas difíceis, respostas doutrinárias e sugestões didáticas.")}
         </div>
         <div class="summary-box">
           <h4>Propósito do material</h4>
@@ -3462,7 +3610,8 @@ Mateus 24.35:
             "Ajudar o professor a compreender o tema com mais profundidade.",
             "Expandir os argumentos apresentados na Revista do Professor.",
             "Oferecer base bíblica, teológica e histórica para a exposição da aula.",
-            "Preparar respostas para dúvidas comuns dos alunos."
+            "Preparar respostas para dúvidas comuns dos alunos.",
+            "Fortalecer a segurança do professor diante da classe."
           ])}
         </div>
       `;
@@ -3479,6 +3628,10 @@ Mateus 24.35:
         <div class="block">
           <h3>Parte 2 — Expansão das Lições</h3>
           ${orderedList(licoes.map((l,i) => `Capítulo ${i + 1}: Expansão da Lição ${i + 1} — ${l.titulo}.`))}
+        </div>
+        <div class="knowledge-box">
+          <h4>Parte 3 — Ferramentas do Professor</h4>
+          ${paragraph("Perguntas difíceis, glossário teológico, linha do tempo, sugestões didáticas, erros comuns e bibliografia recomendada.")}
         </div>
       `;
     }
@@ -3536,7 +3689,7 @@ Mateus 24.35:
         const dados = licoes[i];
 
         await pause(900);
-        setStep(i + 2,`Expandindo a Lição ${numero} da revista em capítulo denso...`);
+        setStep(i + 2,`Expandindo a Lição ${numero} da revista em capítulo profundo...`);
 
         let capitulo = await chamarTextoIA(
           promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto),
@@ -3545,9 +3698,9 @@ Mateus 24.35:
 
         capitulo = limparMarkdownHtml(capitulo);
 
-        if(!validarRespostaIA(capitulo,1400)){
+        if(!validarRespostaIA(capitulo,1800)){
           capitulo = fallbackCapituloLivroApoio(base,info,numero,dados);
-          setStatus(`A IA falhou no capítulo ${numero}; o app usou capítulo reserva robusto e continuou.`,"ok");
+          setStatus(`A IA falhou no capítulo ${numero}; o app usou capítulo reserva teológico e continuou.`,"ok");
         }
 
         html += renderPage(capitulo,"lesson-page");
@@ -3578,10 +3731,17 @@ Mateus 24.35:
           <p class="subtitle">Perguntas para preparo do professor</p>
           <div class="summary-box">
             <h4>Perguntas essenciais</h4>
-            ${renderReviewQuestions(true,licoes[0])}
-            ${renderReviewQuestions(true,licoes[1])}
-            ${renderReviewQuestions(true,licoes[2])}
-            ${renderReviewQuestions(true,licoes[3])}
+            ${licoes.map((l,li) => `
+              <div class="block">
+                <h3>Lição ${li + 1} — ${escapeHtml(l.titulo)}</h3>
+                ${(l.perguntas || []).map((q,i) => `
+                  <div class="question-answer">
+                    <strong>${i + 1}. ${escapeHtml(q[0])}</strong><br>
+                    <strong>Resposta:</strong> ${escapeHtml(q[1])}
+                  </div>
+                `).join("")}
+              </div>
+            `).join("")}
           </div>
         `;
       }
@@ -3599,8 +3759,10 @@ Mateus 24.35:
             ${unorderedList([
               "Teologia Sistemática — Stanley Horton.",
               "Teologia Sistemática — Wayne Grudem.",
+              "Teologia Sistemática — Millard Erickson.",
               "Introdução Bíblica — Norman Geisler e William Nix.",
               "Entendes o que Lês? — Gordon Fee e Douglas Stuart.",
+              "Como Ler a Bíblia Livro por Livro — Gordon Fee e Douglas Stuart.",
               "Dicionários bíblicos, Bíblias de estudo e comentários bíblicos confiáveis."
             ])}
           </div>
@@ -3621,7 +3783,7 @@ Mateus 24.35:
           </div>
           <div class="book-note">
             <h4>Glossário básico</h4>
-            ${paragraph("Bibliologia, revelação, inspiração, iluminação, cânon, manuscrito, papiro, pergaminho, tradução, versão, hermenêutica, exegese e autoridade bíblica.")}
+            ${paragraph("Bibliologia, revelação, inspiração, inspiração verbal, inspiração plenária, iluminação, cânon, manuscrito, papiro, pergaminho, tradução, versão, hermenêutica, exegese e autoridade bíblica.")}
           </div>
         `;
       }
@@ -4143,7 +4305,7 @@ Mateus 24.35:
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada subtópico deve ter conteúdo real. Na Revista do Aluno não use linguagem de professor.");
+        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada subtópico deve ter conteúdo real. Na Revista do Aluno não use linguagem de professor. No Livro de Apoio, aprofunde termos como inspiração verbal, inspiração plenária, cânon, preservação, transmissão e autoridade bíblica.");
       }
 
       if(type === "sermao"){
@@ -4190,6 +4352,14 @@ Regra para Revista do Aluno:
 - Não usar linguagem de professor.
 - Não escrever “o professor deve”.
 - Falar diretamente com o aluno.
+
+Regra para Livro de Apoio:
+- Usar a Revista do Professor como base.
+- Expandir cada lição em capítulo.
+- Explicar termos teológicos importantes.
+- Trazer perguntas difíceis e respostas.
+- Explicar a posição bíblica dentro do pentecostalismo clássico.
+- Trazer contexto histórico, erros comuns e orientação didática.
       `.trim();
 
       setValue("theme",prompt);
