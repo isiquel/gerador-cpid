@@ -1231,8 +1231,13 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção v10.2:</strong><br>
-          A IA é a fonte do conteúdo. O código organiza, valida e tenta novamente quando falhar. Se a IA não conseguir gerar uma lição, o app não inventa lição universal repetitiva. Ele avisa com clareza para tentar novamente.
+          <strong>Correção v10.3:</strong><br>
+          A IA agora é chamada por partes. Em vez de pedir uma lição inteira de uma vez, o app monta cada lição em blocos: cabeçalho, leitura diária, introdução, tópico 1, tópico 2, tópico 3, aplicação, conclusão e revisão.
+        </div>
+
+        <div class="top-note">
+          <strong>Regra de segurança:</strong><br>
+          O código não inventa lição universal repetitiva. Se uma parte falhar, ele mostra erro claro naquela parte e permite tentar novamente, sem fingir que a IA gerou conteúdo bom.
         </div>
 
         <div class="unlock-box">
@@ -1638,11 +1643,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v102";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v102";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v103";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v103";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v102";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v102";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v103";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v103";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1913,13 +1918,9 @@
       const parecePromptGrande =
         texto.length > 350 ||
         texto.toLowerCase().includes("crie uma revista") ||
-        texto.toLowerCase().includes("crie um livro") ||
         texto.toLowerCase().includes("livro de apoio") ||
-        texto.toLowerCase().includes("estrutura obrigatória") ||
         texto.toLowerCase().includes("cada lição deve") ||
         texto.toLowerCase().includes("a revista deve") ||
-        texto.toLowerCase().includes("o livro deve") ||
-        texto.toLowerCase().includes("capítulo 1") ||
         texto.toLowerCase().includes("lição 1") ||
         texto.toLowerCase().includes("lição 2") ||
         texto.toLowerCase().includes("lição 3") ||
@@ -2362,13 +2363,15 @@
         "explique aos alunos",
         "mostre à classe",
         "o professor deve",
-        "o professor precisa"
+        "o professor precisa",
+        "o aluno é levado",
+        "ajuda o aluno"
       ];
 
       return proibidos.some(p => limpo.includes(p));
     }
 
-    function validarRespostaIA(texto,minimo = 600,opcoes = {}){
+    function validarRespostaIA(texto,minimo = 500,opcoes = {}){
       const original = String(texto || "").trim();
       const limpo = original.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
 
@@ -2395,18 +2398,11 @@
         return false;
       }
 
-      const temEstruturaHtml =
-        /<h1|<h2|<h3|<div|<p|<ul|<ol/i.test(original);
-
       const temConteudoBiblico =
         /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|aliança|oração|missão|família|salvação|cristão|servo/i.test(limpo);
 
-      const temEstruturaDeLicao =
-        /Introdução|Conclusão|Verdade Prática|Texto Áureo|Leitura Bíblica|Tópico|Revisando|Aplicação|Objetivos|Lição/i.test(limpo);
-
       if(limpo.length >= minimo && temConteudoBiblico) return true;
-      if(limpo.length >= 450 && temEstruturaHtml && temConteudoBiblico) return true;
-      if(limpo.length >= 500 && temEstruturaDeLicao) return true;
+      if(limpo.length >= 280 && temConteudoBiblico && opcoes.partePequena) return true;
 
       return false;
     }
@@ -2435,8 +2431,8 @@
           if(typeof window[fnName] === "function"){
             const res = await window[fnName](prompt,payload);
             const normalized = normalizeAIResponse(res);
-            if(validarRespostaIA(normalized,opcoes.minimo || 500,opcoes)){
-              return normalized;
+            if(validarRespostaIA(normalized,opcoes.minimo || 400,opcoes)){
+              return limparMarkdownHtml(normalized);
             }
           }
         }catch(error){
@@ -2472,8 +2468,8 @@
             normalized = normalizeAIResponse(text);
           }
 
-          if(validarRespostaIA(normalized,opcoes.minimo || 500,opcoes)){
-            return normalized;
+          if(validarRespostaIA(normalized,opcoes.minimo || 400,opcoes)){
+            return limparMarkdownHtml(normalized);
           }
         }catch(error){
           console.warn("Endpoint indisponível:",endpoint,error);
@@ -2490,11 +2486,11 @@
         const tentativa = await chamarTextoIA(lista[i],`${etapa} — tentativa ${i + 1}`,opcoes);
         const limpo = limparMarkdownHtml(tentativa);
 
-        if(validarRespostaIA(limpo,opcoes.minimo || 500,opcoes)){
+        if(validarRespostaIA(limpo,opcoes.minimo || 400,opcoes)){
           return limpo;
         }
 
-        await pause(450);
+        await pause(350);
       }
 
       return "";
@@ -2620,7 +2616,7 @@
         return objetivo.replace(/\.$/,"") + ".";
       }
 
-      return `A lição "${titulo}" conduz o estudante a compreender o tema "${base.visibleTheme}" à luz das Escrituras, formando convicção bíblica e prática cristã equilibrada.`;
+      return `A lição "${titulo}" conduz o cristão a compreender o tema "${base.visibleTheme}" à luz das Escrituras, formando convicção bíblica e prática cristã equilibrada.`;
     }
 
     function dividirReferenciasBiblicas(texto){
@@ -2760,17 +2756,17 @@
         termos:["doutrina bíblica","princípio cristão","discernimento","obediência"],
         topicos:[
           {
-            titulo:"A Palavra de Deus como fundamento",
+            titulo:"O fundamento bíblico da lição",
             funcao:"Mostrar que toda verdade espiritual precisa começar na revelação bíblica.",
             subtitulos:["A Escritura orienta a fé cristã","A verdade bíblica protege a igreja","A obediência nasce da Palavra"]
           },
           {
-            titulo:"O ensino bíblico aplicado ao tema da lição",
+            titulo:"O desenvolvimento doutrinário do tema",
             funcao:"Desenvolver o significado espiritual e doutrinário do assunto estudado.",
             subtitulos:["A doutrina forma convicções","O discernimento evita extremos","A fé amadurece com equilíbrio"]
           },
           {
-            titulo:"Vivendo esta verdade na prática",
+            titulo:"A aplicação prática para a vida cristã",
             funcao:"Conduzir o cristão à aplicação pessoal, espiritual e comunitária.",
             subtitulos:["A verdade alcança o coração","A prática revela maturidade","A vida cristã glorifica a Deus"]
           }
@@ -2785,7 +2781,6 @@
       };
 
       dados.leituraDiaria = criarLeituraDiariaUniversal(base,dados,textoDaLicao);
-
       return dados;
     }
 
@@ -2813,7 +2808,6 @@
         const objetivo = objetivoMatch ? objetivoMatch[1].trim() : "";
 
         const licao = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase);
-
         encontradas[numero - 1] = licao;
       }
 
@@ -2955,6 +2949,7 @@ FORMATO:
         if(json && Array.isArray(json.licoes) && json.licoes.length === 4){
           return json.licoes.map((l,i) => {
             const fallback = licoesExtraidas[i] || montarLicaoUniversal(l.titulo || `Lição ${i + 1}`,i + 1,base);
+
             const merged = {
               ...fallback,
               ...l,
@@ -3002,7 +2997,6 @@ O tema e o conteúdo devem obedecer ao que o usuário escreveu no aplicativo.
 Não use tema pré-definido.
 Não use conteúdo pronto.
 Não use Bibliologia, a menos que o usuário tenha pedido Bibliologia.
-Não gere “O Que é a Bíblia?”, “Como a Bíblia Foi Formada?”, “Como a Bíblia Chegou Até Nós?” ou “O Privilégio de Ter a Bíblia em Mãos”, a menos que o usuário tenha pedido exatamente esse assunto.
 Se o usuário escreveu 4 lições, use exatamente essas 4 lições.
 Se o usuário escreveu apenas o tema, desenvolva tudo baseado exclusivamente nesse tema.
 
@@ -3026,7 +3020,7 @@ Direção original das 4 lições: ${info.revistaObservacao}
 4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
 
-REGRA CENTRAL DE PROGRESSÃO PEDAGÓGICA
+REGRA CENTRAL DE PROGRESSÃO
 - Cada lição precisa ter uma tese central.
 - Cada tópico precisa preparar o próximo tópico.
 - O tópico 1 apresenta o fundamento bíblico.
@@ -3035,26 +3029,14 @@ REGRA CENTRAL DE PROGRESSÃO PEDAGÓGICA
 - Cada subtópico deve cumprir uma função dentro da progressão.
 - Não escreva tópicos soltos.
 - Não escreva parágrafos repetitivos.
-- A lição deve construir conhecimento passo a passo.
 
 REGRAS DE QUALIDADE
-- Cada lição precisa ser robusta, profunda, progressiva e ensinável.
-- Cada tópico principal precisa desenvolver uma linha de raciocínio clara.
-- Cada subtópico deve ter conteúdo real.
-- Não entregue tópicos com 2 ou 3 linhas.
-- Use explicação bíblica, doutrinária, histórica, pastoral e prática.
-- As referências bíblicas devem entrar dentro da argumentação.
-- Não colocar referências apenas como etiquetas soltas.
-- O conteúdo deve ensinar de verdade, despertando interesse e aumentando conhecimento bíblico.
-
-REGRAS IMPORTANTES
-- Não copiar material de editoras.
-- Produzir material original.
+- Conteúdo original.
 - Linguagem bíblica, pastoral, pentecostal, teológica, didática e acessível.
-- Nunca copiar o prompt do usuário dentro do conteúdo final.
+- Referências bíblicas devem entrar dentro da argumentação.
+- Não copie conteúdo de nenhuma editora.
+- Nunca copie o prompt do usuário dentro do conteúdo final.
 - Quando mencionar o tema, use somente o tema visível do material.
-- A Revista do Aluno é a lição-base.
-- A Revista do Professor deve manter o mesmo conteúdo-base da Revista do Aluno e acrescentar subsídios, respostas, auxílios teológicos e orientação didática.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
     }
@@ -3096,9 +3078,6 @@ Você é um teólogo pentecostal clássico, professor de Escola Bíblica Dominic
 TAREFA:
 Criar um LIVRO DE APOIO PARA O PROFESSOR DA EBD a partir da REVISTA DO PROFESSOR já gerada.
 
-A revista é a aula organizada.
-O livro de apoio é o bastidor teológico, histórico, doutrinário e didático da aula.
-
 REGRA ABSOLUTA:
 O livro deve obedecer ao tema pedido pelo usuário.
 Não force tema pronto.
@@ -3131,11 +3110,8 @@ REGRAS PARA O LIVRO DE APOIO
 - O livro deve ser muito mais profundo que a revista do professor.
 - Não escrever como revista.
 - Não escrever como lição de aluno.
-- Não escrever como resumo.
-- Não economizar argumentos.
 - Expandir tópicos, subtópicos, auxílios, aplicações, perguntas e textos bíblicos da revista.
 - Explicar termos importantes com clareza e profundidade.
-- Explicar dentro da tradição do pentecostalismo clássico quando o tema permitir.
 - Acrescentar perguntas difíceis e respostas reais.
 - Acrescentar exemplos que o professor possa usar em sala.
 - Acrescentar erros comuns que o professor deve evitar.
@@ -3155,9 +3131,10 @@ Não faça apresentação curta demais.
 Não use outro tema além do que o usuário pediu.
 
 Se for Revista do Aluno:
-- Fale com o estudante cristão.
+- Fale com o cristão.
 - Não use linguagem de professor.
 - Não escreva “o professor deve”.
+- Não escreva “o aluno é levado”.
 
 Se for Revista do Professor:
 - Pode falar diretamente com o professor.
@@ -3166,7 +3143,6 @@ Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
 <div class="block">
-<div class="teacher-help">
 <div class="summary-box">`;
     }
 
@@ -3189,203 +3165,64 @@ Use HTML com:
 <div class="knowledge-box">`;
     }
 
-    function promptLicaoAluno(base,info,licoes,numero,dados){
+    function promptParteAluno(base,info,licoes,numero,dados,parte,extra = ""){
       return `${montarPromptBaseRevista(base,info,licoes)}
 
-ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO ALUNO
-
-Crie a lição-base completa, profunda e bem organizada.
-
-DADOS:
-Título: ${dados.titulo}
-Tese da lição: ${dados.tese}
-Progressão interna:
-${(dados.progressao || []).map((p,i) => `${i + 1}. ${p}`).join("\n")}
-Foco: ${dados.foco}
-Texto áureo: ${dados.textoAureo}
-Verdade prática: ${dados.verdadePratica}
-Leitura bíblica: ${dados.leituraClasse}
-Palavra-chave: ${dados.palavraChave}
-Leitura diária:
-${(dados.leituraDiaria || []).map(item => `${item[0]} — ${item[1]} — ${item[2]}`).join("\n")}
-Tópicos obrigatórios:
-${(dados.topicos || []).map((t,i) => `${i + 1}. ${t.titulo} — subtópicos: ${(t.subtitulos || []).join("; ")}`).join("\n")}
-
-ESTRUTURA:
-1. Cabeçalho visual da lição.
-2. Leitura Diária com referências bíblicas reais.
-3. Texto Áureo ou Para Memorizar.
-4. Verdade Prática.
-5. Leitura Bíblica em Classe.
-6. Objetivos.
-7. Tese da lição.
-8. Caminho da lição, mostrando a progressão de forma natural.
-9. Introdução exclusiva.
-10. Três tópicos principais obrigatórios.
-11. Cada tópico com três subtópicos obrigatórios.
-12. Referências bíblicas integradas no argumento.
-13. Sinopse em cada tópico.
-14. Aplicação pessoal.
-15. Conclusão.
-16. Revisando o conteúdo com perguntas sem resposta.
-
-REGRAS DA REVISTA DO ALUNO:
-- Escreva como conteúdo final para o cristão estudar.
-- Não escreva bastidor editorial.
-- Não escreva plano de aula.
-- Não escreva orientação técnica.
-- Não use expressões como: “este tópico aprofunda”, “este subtópico ajuda”, “função deste tópico”, “progressão pedagógica”, “conduzir a classe”, “o professor deve”.
-- Não use “o professor deve”.
-- Não use “professor”, “conduza a classe”, “explique aos alunos”, “mostre à classe” ou “oriente a turma”.
-- Não coloque auxílio ao professor.
-- Não coloque resposta das perguntas.
-- Não use a expressão “o aluno é levado”.
-- Não use a expressão “ajuda o aluno”.
-- Prefira: “o cristão”, “o servo de Deus”, “a igreja”, “somos chamados”, “nós aprendemos”.
-- Fale com linguagem natural, espiritual e bíblica.
-- Evite repetir a mesma frase no início de cada subtópico.
-- Cada subtópico deve começar de modo diferente.
-- Obedeça ao tema do usuário.
-
-Use HTML com:
-<div class="lesson-hero">
-<div class="daily-reading">
-<div class="memory-verse">
-<div class="scripture-box">
-<div class="mini-grid">
-<div class="lesson-topic">
-<div class="subtopic">
-<span class="bible-ref">
-<div class="synopsis">
-<div class="personal-application">
-<div class="summary-box">`;
-    }
-
-    function promptLicaoAlunoCurto(base,info,licoes,numero,dados){
-      return `${montarPromptBaseRevista(base,info,licoes)}
-
-TENTE NOVAMENTE.
-
-Crie a LIÇÃO ${numero} da REVISTA DO ALUNO de forma mais direta, porém completa.
-
+REVISTA DO ALUNO — LIÇÃO ${numero}
 Título: ${dados.titulo}
 Tese: ${dados.tese}
-Texto base: ${dados.leituraClasse}
+Texto bíblico: ${dados.leituraClasse}
 Verdade prática: ${dados.verdadePratica}
-Tópicos:
-${(dados.topicos || []).map((t,i) => `${i + 1}. ${t.titulo}: ${(t.subtitulos || []).join("; ")}`).join("\n")}
+Palavra-chave: ${dados.palavraChave}
+
+PARTE A GERAR AGORA:
+${parte}
 
 REGRAS:
-- Revista do Aluno.
+- Gere SOMENTE esta parte.
+- Não gere a lição inteira.
 - Não use linguagem de professor.
+- Não escreva “o professor deve”.
+- Não escreva “conduza a classe”.
+- Não escreva “explique aos alunos”.
+- Não escreva “função pedagógica”.
+- Não escreva “este tópico aprofunda”.
+- Não escreva “este subtópico ajuda”.
 - Não escreva “o aluno é levado”.
 - Não escreva “ajuda o aluno”.
-- Use “o cristão”, “o servo de Deus”, “a igreja”, “nós somos chamados”.
-- Não repita a mesma frase em todos os subtópicos.
-- Escreva HTML interno.
-- Faça: introdução, leitura diária, texto áureo, verdade prática, leitura bíblica, objetivos, tópicos, subtópicos, aplicação, conclusão e revisando o conteúdo sem respostas.`;
+- Use “o cristão”, “o servo de Deus”, “a igreja”, “nós aprendemos”, “somos chamados”.
+- Linguagem natural, bíblica, pastoral e ensinável.
+- Evite repetir abertura de parágrafo.
+- Entregue somente HTML interno.
+
+${extra}`;
     }
-        function promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto){
+
+    function promptParteProfessor(base,info,licoes,numero,dados,revistaAlunoTexto,parte,extra = ""){
       const trechoAluno = extrairTrechoDaLicaoBase(revistaAlunoTexto,numero,dados.titulo);
 
       return `${montarPromptProfessorBaseadoAluno(base,info,licoes,revistaAlunoTexto)}
 
-ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO PROFESSOR
-
-DADOS DA LIÇÃO
-Número: ${numero}
+REVISTA DO PROFESSOR — LIÇÃO ${numero}
 Título: ${dados.titulo}
 Tese: ${dados.tese}
-Progressão:
-${(dados.progressao || []).map((p,i) => `${i + 1}. ${p}`).join("\n")}
-Foco: ${dados.foco}
-Texto áureo obrigatório: ${dados.textoAureo}
-Verdade prática obrigatória: ${dados.verdadePratica}
-Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
-Palavra-chave obrigatória: ${dados.palavraChave}
-Leitura diária obrigatória:
-${(dados.leituraDiaria || []).map(item => `${item[0]} — ${item[1]} — ${item[2]}`).join("\n")}
-Tópicos obrigatórios:
-${(dados.topicos || []).map((t,i) => `${i + 1}. ${t.titulo} — função: ${t.funcao}`).join("\n")}
-
-TRECHO REAL DA LIÇÃO ${numero} NA REVISTA DO ALUNO:
-${trechoAluno}
-
-TAREFA:
-Transforme esta lição do aluno em Revista do Professor.
-Mantenha a mesma lição-base e acrescente subsídios.
-
-ESTRUTURA:
-1. Cabeçalho visual da lição.
-2. Leitura Diária.
-3. Texto Áureo.
-4. Verdade Prática.
-5. Leitura Bíblica em Classe.
-6. Objetivos.
-7. Tese da lição.
-8. Caminho pedagógico da aula.
-9. Plano de aula.
-10. Introdução central.
-11. Três tópicos principais.
-12. Cada tópico com subtópicos robustos.
-13. Em cada tópico, inclua “Como explicar este ponto”.
-14. Em cada tópico, inclua “Pergunta para abrir diálogo”.
-15. Sinopse em cada tópico.
-16. Aplicação pessoal.
-17. Conclusão.
-18. Revisando o conteúdo com perguntas e respostas.
-19. Ampliando o conhecimento.
-20. Auxílio teológico.
-21. Auxílio didático.
-22. Orientação ao professor.
-
-REGRAS:
-- A Revista do Professor pode ter linguagem de professor.
-- Pode usar: “o professor deve”, “conduza a classe”, “explique aos alunos”.
-- Mas não deve mudar a lição-base do aluno.
-- Deve aprofundar, orientar e responder.
-- Deve manter o mesmo tema pedido pelo usuário.
-
-Use HTML com:
-<div class="lesson-hero">
-<div class="daily-reading">
-<div class="memory-verse">
-<div class="scripture-box">
-<div class="mini-grid">
-<div class="lesson-topic">
-<div class="subtopic">
-<span class="bible-ref">
-<div class="synopsis">
-<div class="personal-application">
-<div class="summary-box">
-<div class="knowledge-box">
-<div class="teacher-help">`;
-    }
-
-    function promptLicaoProfessorCurto(base,info,licoes,numero,dados,revistaAlunoTexto){
-      const trechoAluno = extrairTrechoDaLicaoBase(revistaAlunoTexto,numero,dados.titulo);
-
-      return `${montarPromptProfessorBaseadoAluno(base,info,licoes,revistaAlunoTexto)}
-
-TENTE NOVAMENTE.
-
-Crie a LIÇÃO ${numero} da REVISTA DO PROFESSOR de forma mais direta, porém completa.
-
-Título: ${dados.titulo}
-Tese: ${dados.tese}
-Texto base: ${dados.leituraClasse}
+Texto bíblico: ${dados.leituraClasse}
 Verdade prática: ${dados.verdadePratica}
 
-BASE DO ALUNO:
+TRECHO DA LIÇÃO DO ALUNO:
 ${trechoAluno}
 
+PARTE A GERAR AGORA:
+${parte}
+
 REGRAS:
-- Preserve a lição do aluno.
-- Acrescente orientação ao professor.
-- Acrescente respostas.
-- Acrescente auxílio teológico e didático.
-- Escreva HTML interno.
-- Não crie outro tema.`;
+- Gere SOMENTE esta parte.
+- Não gere a lição inteira.
+- Preserve a mesma linha do aluno.
+- Acrescente orientação de professor quando couber.
+- Entregue somente HTML interno.
+
+${extra}`;
     }
 
     function promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -3448,30 +3285,21 @@ ${trechoLicao}
 
 Crie um capítulo de livro muito mais profundo que a lição da revista.
 
-ESTRUTURA OBRIGATÓRIA:
+ESTRUTURA:
 1. Cabeçalho do capítulo.
 2. Introdução robusta.
 3. O que a revista ensina resumidamente.
 4. Ampliação bíblica.
 5. Explicação teológica.
-6. Explicação dentro do pentecostalismo clássico.
-7. Contexto histórico.
-8. Termos importantes explicados.
-9. Perguntas difíceis que podem surgir em sala.
-10. Respostas prontas para o professor.
-11. Erros comuns que o professor deve evitar.
-12. Aplicações pastorais.
-13. Como ensinar esse assunto em sala.
-14. Sugestões de leitura.
-15. Resumo final.
-
-REGRAS:
-- Não use tema diferente do pedido pelo usuário.
-- Não seja superficial.
-- Não entregue apenas tópicos.
-- Cada seção deve ter parágrafos argumentativos.
-- As perguntas difíceis devem ter respostas desenvolvidas.
-- O capítulo deve ajudar o professor a chegar na sala sabendo o que fazer.
+6. Contexto histórico.
+7. Termos importantes explicados.
+8. Perguntas difíceis.
+9. Respostas prontas.
+10. Erros comuns.
+11. Aplicações pastorais.
+12. Como ensinar.
+13. Sugestões de leitura.
+14. Resumo final.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -3483,36 +3311,6 @@ Use HTML com:
 <div class="personal-application">
 <div class="bibliography-box">
 <div class="question-answer">`;
-    }
-
-    function promptCapituloLivroApoioCurto(base,info,licoes,numero,dados,revistaProfessorTexto){
-      const trechoLicao = extrairTrechoDaLicaoBase(revistaProfessorTexto,numero,dados.titulo);
-
-      return `${montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto)}
-
-TENTE NOVAMENTE.
-
-Crie o CAPÍTULO ${numero} do LIVRO DE APOIO de modo mais direto.
-
-Título: ${dados.titulo}
-Tese: ${dados.tese}
-Texto base: ${dados.leituraClasse}
-
-BASE DA REVISTA DO PROFESSOR:
-${trechoLicao}
-
-Inclua:
-- introdução;
-- ampliação bíblica;
-- explicação teológica;
-- termos importantes;
-- perguntas difíceis com respostas;
-- erros a evitar;
-- como ensinar;
-- aplicação pastoral;
-- resumo final.
-
-HTML interno apenas.`;
     }
 
     function promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -3594,13 +3392,12 @@ A imagem deve obedecer ao tema informado pelo usuário.
 Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial premium, sem letras, sem logotipos, vertical 2:3.
       `.trim();
     }
-
-    function renderScriptureBox(ref){
+        function renderScriptureBox(ref){
       return `
         <div class="scripture-box">
           <h4>Leitura Bíblica em Classe</h4>
           <span class="scripture-ref">${escapeHtml(ref)}</span>
-          ${paragraph("Leia o texto bíblico indicado na versão adotada pela igreja. O desenvolvimento da lição deve partir desta passagem e manter fidelidade ao tema solicitado.")}
+          ${paragraph("Leia o texto bíblico indicado na versão adotada pela igreja. A lição deve partir desta passagem e manter fidelidade ao tema solicitado.")}
         </div>
       `;
     }
@@ -3656,6 +3453,8 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         [/O aluno é levado/gi,"O cristão é chamado"],
         [/ajuda o aluno a compreender/gi,"ajuda o cristão a compreender"],
         [/Ajuda o aluno a compreender/gi,"Ajuda o cristão a compreender"],
+        [/ajuda o aluno/gi,"ajuda o cristão"],
+        [/Ajuda o aluno/gi,"Ajuda o cristão"],
         [/o aluno compreende/gi,"o cristão compreende"],
         [/O aluno compreende/gi,"O cristão compreende"],
         [/o estudante cristão/gi,"o cristão"],
@@ -3669,6 +3468,16 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       return out;
     }
 
+    function blocoErroParte(base,numero,dados,nomeParte){
+      return `
+        <div class="summary-box">
+          <h4>Parte não gerada: ${escapeHtml(nomeParte)}</h4>
+          ${paragraph("A IA não conseguiu entregar esta parte com qualidade suficiente. O app não criou conteúdo artificial para preencher espaço.")}
+          ${paragraph(`Tema: ${base.visibleTheme}. Lição ${numero}: ${dados.titulo}.`)}
+        </div>
+      `;
+    }
+
     function paginaErroLicao(base,info,numero,dados,tipo = "lição"){
       return `
         <section class="page error-page">
@@ -3677,7 +3486,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
           <div class="summary-box">
             <h4>A IA não conseguiu entregar conteúdo aproveitável nesta etapa</h4>
-            ${paragraph("O app tentou gerar o conteúdo completo e tentou novamente com um comando menor. Mesmo assim, a IA/API não devolveu material suficiente ou devolveu conteúdo inadequado.")}
+            ${paragraph("O app tentou gerar o conteúdo por partes. Mesmo assim, a IA/API não devolveu material suficiente ou devolveu conteúdo inadequado.")}
             ${paragraph("Para evitar uma revista artificial, repetitiva ou genérica, o VERBO IA não inventou uma lição universal no lugar da IA.")}
           </div>
 
@@ -3685,9 +3494,9 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
             <h3>O que fazer agora</h3>
             ${orderedList([
               "Clique em Gerar material novamente.",
-              "Se continuar falhando, reduza um pouco o prompt ou gere a Revista do Aluno primeiro com menos exigências.",
+              "Se continuar falhando, reduza um pouco o prompt.",
               "Confira se suas chaves de IA no Vercel estão ativas e com limite disponível.",
-              "Depois que a Revista do Aluno sair bem, gere a Revista do Professor e o Livro de Apoio."
+              "Gere primeiro a Revista do Aluno. Depois gere a Revista do Professor. Depois o Livro de Apoio."
             ])}
           </div>
 
@@ -3702,36 +3511,393 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       `;
     }
 
-    function fallbackAberturaLivroApoio(base,info,licoes){
-      return `
-        <h1 class="page-title">${escapeHtml(base.title)}</h1>
-        <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-        <div class="book-note">
-          <h4>Livro de Apoio para o Professor</h4>
-          ${paragraph(`Este livro de apoio acompanha a ${base.title}, servindo como material de bastidor para o professor da Escola Bíblica Dominical.`)}
-          ${paragraph("A revista organiza a aula; este livro aprofunda os fundamentos que sustentam a aula.")}
-        </div>
-        <div class="block">
-          <h3>Apresentação</h3>
-          ${paragraph(`O tema "${base.visibleTheme}" exige mais do que uma leitura superficial. O professor precisa conhecer fundamentos bíblicos, termos teológicos, desenvolvimento histórico e aplicações pastorais.`)}
-          ${paragraph("Este material foi preparado para ampliar a Revista do Professor, oferecendo definições, explicações, perguntas difíceis, respostas doutrinárias e sugestões didáticas.")}
-        </div>
-      `;
+    async function gerarParteAluno(base,info,licoes,numero,dados,nomeParte,extra,minimo = 280){
+      const prompt = promptParteAluno(base,info,licoes,numero,dados,nomeParte,extra);
+
+      const html = await chamarTextoIAComTentativas(
+        [prompt],
+        `Lição ${numero} do aluno — ${nomeParte}`,
+        {
+          minimo,
+          partePequena:true,
+          isStudent:true,
+          minQuality:"parte da Revista do Aluno, linguagem natural, bíblica e sem bastidor editorial"
+        }
+      );
+
+      if(!html) return "";
+
+      return limparLinguagemAluno(html);
     }
 
-    function fallbackSumarioLivroApoio(base,info,licoes){
-      return `
-        <h1 class="page-title">Sumário do Livro de Apoio</h1>
-        <p class="subtitle">${escapeHtml(base.title)} — apoio ao professor da EBD</p>
-        <div class="block">
-          <h3>Parte 1 — Fundamentos</h3>
-          ${orderedList(["Apresentação do livro de apoio.","Como usar este material junto com a Revista do Professor.","A importância do preparo bíblico, teológico e didático do professor."])}
+    async function gerarParteProfessor(base,info,licoes,numero,dados,revistaAlunoTexto,nomeParte,extra,minimo = 280){
+      const prompt = promptParteProfessor(base,info,licoes,numero,dados,revistaAlunoTexto,nomeParte,extra);
+
+      const html = await chamarTextoIAComTentativas(
+        [prompt],
+        `Lição ${numero} do professor — ${nomeParte}`,
+        {
+          minimo,
+          partePequena:true,
+          minQuality:"parte da Revista do Professor baseada na Revista do Aluno"
+        }
+      );
+
+      return html || "";
+    }
+
+    async function gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados){
+      const partes = [];
+
+      partes.push(`
+        <div class="lesson-hero">
+          <div class="number">Lição ${numero} • ${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</div>
+          <h1>${escapeHtml(dados.titulo)}</h1>
+          <div class="meta">${escapeHtml(info.label)} • Classe: ${escapeHtml(info.revistaClasse)} • Palavra-chave: ${escapeHtml(dados.palavraChave || "Lição")}</div>
         </div>
-        <div class="block">
-          <h3>Parte 2 — Expansão das Lições</h3>
-          ${orderedList(licoes.map((l,i) => `Capítulo ${i + 1}: Expansão da Lição ${i + 1} — ${l.titulo}.`))}
+      `);
+
+      partes.push(renderDailyReading(numero,dados));
+
+      partes.push(`
+        <div class="memory-verse">
+          <h3>Para Memorizar</h3>
+          ${paragraph(dados.textoAureo || "Texto-chave definido conforme o tema da lição.")}
         </div>
-      `;
+
+        <div class="block">
+          <h3>Verdade Prática</h3>
+          ${paragraph(dados.verdadePratica || "A Palavra de Deus orienta a vida cristã com verdade, equilíbrio e santidade.")}
+        </div>
+
+        ${renderScriptureBox(dados.leituraClasse)}
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <h3>Objetivos</h3>
+            ${unorderedList([
+              "Compreender a verdade central da lição.",
+              "Analisar o ensino bíblico com reverência e discernimento.",
+              "Aplicar a Palavra de Deus à vida cristã diária."
+            ])}
+          </div>
+
+          <div class="mini-card">
+            <h3>Caminho da Lição</h3>
+            ${orderedList(dados.progressao || [
+              "Fundamento bíblico.",
+              "Desenvolvimento doutrinário.",
+              "Aplicação prática."
+            ])}
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <h4>Tese da Lição</h4>
+          ${paragraph(dados.tese || dados.foco || "A lição apresenta uma verdade bíblica para orientar a vida cristã.")}
+        </div>
+      `);
+
+      const intro = await gerarParteAluno(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        "Introdução da lição",
+        `
+Crie apenas a introdução da lição.
+A introdução deve ter 4 a 6 parágrafos.
+Não repita frases genéricas.
+Mostre o problema central da lição, o valor bíblico do assunto e prepare o cristão para os tópicos.
+Use <div class="block"><h3>Introdução</h3>...</div>.
+        `,
+        450
+      );
+
+      partes.push(intro || blocoErroParte(base,numero,dados,"Introdução"));
+
+      const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
+
+      for(let i = 0; i < 3; i++){
+        const topico = topicos[i] || {
+          titulo:`Tópico ${i + 1}`,
+          subtitulos:["Subtópico 1","Subtópico 2","Subtópico 3"]
+        };
+
+        const topicoHtml = await gerarParteAluno(
+          base,
+          info,
+          licoes,
+          numero,
+          dados,
+          `Tópico ${i + 1}: ${topico.titulo}`,
+          `
+Crie somente o Tópico ${i + 1}.
+Título obrigatório: ${topico.titulo}
+Subtópicos obrigatórios:
+${(topico.subtitulos || []).map((s,idx) => `${idx + 1}. ${s}`).join("\n")}
+
+Regras:
+- Use <div class="lesson-topic">.
+- Use <h3>${roman(i + 1)}. ${topico.titulo}</h3>.
+- Cada subtópico deve usar <div class="subtopic"><h4>...</h4>.
+- Cada subtópico deve ter 3 a 5 parágrafos.
+- Não repita a mesma abertura nos subtópicos.
+- Integre referências bíblicas dentro da explicação.
+- No final, inclua <div class="synopsis"><h4>Sinopse ${roman(i + 1)}</h4>...</div>.
+- Linguagem de Revista do Aluno: fale com o cristão, não com professor.
+          `,
+          700
+        );
+
+        partes.push(topicoHtml || blocoErroParte(base,numero,dados,`Tópico ${i + 1}`));
+      }
+
+      const aplicacao = await gerarParteAluno(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        "Aplicação pessoal",
+        `
+Crie somente a aplicação pessoal.
+Mostre como o cristão deve aplicar a verdade da lição na vida pessoal, familiar, congregacional e espiritual.
+Use <div class="personal-application"><h4>Aplicação Pessoal</h4>...</div>.
+        `,
+        320
+      );
+
+      partes.push(aplicacao || blocoErroParte(base,numero,dados,"Aplicação pessoal"));
+
+      const conclusao = await gerarParteAluno(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        "Conclusão",
+        `
+Crie somente a conclusão.
+A conclusão deve retomar a tese, ligar os tópicos e chamar o cristão à obediência.
+Use <div class="block"><h3>Conclusão</h3>...</div>.
+        `,
+        320
+      );
+
+      partes.push(conclusao || blocoErroParte(base,numero,dados,"Conclusão"));
+
+      const revisao = await gerarParteAluno(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        "Revisando o conteúdo",
+        `
+Crie somente a seção Revisando o Conteúdo.
+Faça 4 ou 5 perguntas.
+Não coloque respostas, pois esta é Revista do Aluno.
+Use <div class="summary-box"><h4>Revisando o Conteúdo</h4>.
+Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong><div class="student-space">Resposta:</div></div>.
+        `,
+        260
+      );
+
+      partes.push(revisao || `
+        <div class="summary-box">
+          <h4>Revisando o Conteúdo</h4>
+          ${(dados.perguntas || []).slice(0,5).map((q,i) => `
+            <div class="question-answer">
+              <strong>${i + 1}. ${escapeHtml(q[0] || "Pergunta da lição")}</strong>
+              <div class="student-space">Resposta:</div>
+            </div>
+          `).join("")}
+        </div>
+      `);
+
+      const final = limparLinguagemAluno(partes.join("\n"));
+      return final;
+    }
+
+    async function gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto){
+      const partes = [];
+
+      partes.push(`
+        <div class="lesson-hero">
+          <div class="number">Lição ${numero} • ${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</div>
+          <h1>${escapeHtml(dados.titulo)}</h1>
+          <div class="meta">${escapeHtml(info.label)} • Classe: ${escapeHtml(info.revistaClasse)} • Palavra-chave: ${escapeHtml(dados.palavraChave || "Lição")}</div>
+        </div>
+      `);
+
+      partes.push(renderDailyReading(numero,dados));
+
+      partes.push(`
+        <div class="memory-verse">
+          <h3>Texto Áureo</h3>
+          ${paragraph(dados.textoAureo || "Texto-chave definido conforme o tema da lição.")}
+        </div>
+
+        <div class="block">
+          <h3>Verdade Prática</h3>
+          ${paragraph(dados.verdadePratica || "A Palavra de Deus orienta a vida cristã com verdade, equilíbrio e santidade.")}
+        </div>
+
+        ${renderScriptureBox(dados.leituraClasse)}
+
+        <div class="mini-grid">
+          <div class="mini-card">
+            <h3>Objetivos</h3>
+            ${unorderedList([
+              "Compreender a verdade central da lição.",
+              "Explicar o ensino bíblico com clareza e fidelidade.",
+              "Conduzir a classe à aplicação prática da Palavra."
+            ])}
+          </div>
+
+          <div class="mini-card">
+            <h3>Plano de Aula</h3>
+            ${orderedList([
+              "Ore e leia a passagem bíblica em classe.",
+              "Apresente a tese da lição.",
+              "Explique os três tópicos em progressão.",
+              "Conclua com revisão, aplicação e oração."
+            ])}
+          </div>
+        </div>
+
+        <div class="summary-box">
+          <h4>Tese da Lição</h4>
+          ${paragraph(dados.tese || dados.foco || "A lição apresenta uma verdade bíblica para orientar a vida cristã.")}
+        </div>
+      `);
+
+      const intro = await gerarParteProfessor(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        revistaAlunoTexto,
+        "Introdução da lição do professor",
+        `
+Crie somente a introdução da Revista do Professor.
+Preserve a linha da Revista do Aluno, mas acrescente orientação ao professor.
+Use <div class="block"><h3>Introdução</h3>...</div> e, se necessário, <div class="teacher-help"><h4>Orientação Inicial ao Professor</h4>...</div>.
+        `,
+        450
+      );
+
+      partes.push(intro || blocoErroParte(base,numero,dados,"Introdução do professor"));
+
+      const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
+
+      for(let i = 0; i < 3; i++){
+        const topico = topicos[i] || {
+          titulo:`Tópico ${i + 1}`,
+          subtitulos:["Subtópico 1","Subtópico 2","Subtópico 3"]
+        };
+
+        const topicoHtml = await gerarParteProfessor(
+          base,
+          info,
+          licoes,
+          numero,
+          dados,
+          revistaAlunoTexto,
+          `Tópico ${i + 1}: ${topico.titulo}`,
+          `
+Crie somente o Tópico ${i + 1} da Revista do Professor.
+Título obrigatório: ${topico.titulo}
+Subtópicos obrigatórios:
+${(topico.subtitulos || []).map((s,idx) => `${idx + 1}. ${s}`).join("\n")}
+
+Regras:
+- Use <div class="lesson-topic">.
+- Use <h3>${roman(i + 1)}. ${topico.titulo}</h3>.
+- Cada subtópico deve ser profundo.
+- Preserve a mesma linha do aluno.
+- Acrescente “Como explicar este ponto”.
+- Acrescente “Pergunta para abrir diálogo”.
+- Acrescente sinopse.
+- Pode usar linguagem de professor.
+          `,
+          750
+        );
+
+        partes.push(topicoHtml || blocoErroParte(base,numero,dados,`Tópico ${i + 1} do professor`));
+      }
+
+      const aplicacao = await gerarParteProfessor(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        revistaAlunoTexto,
+        "Aplicação e auxílios finais",
+        `
+Crie somente:
+1. Aplicação pessoal.
+2. Ampliando o conhecimento.
+3. Auxílio teológico.
+4. Auxílio didático.
+5. Orientação ao professor.
+
+Use as classes:
+<div class="personal-application">
+<div class="knowledge-box">
+<div class="teacher-help">
+        `,
+        650
+      );
+
+      partes.push(aplicacao || blocoErroParte(base,numero,dados,"Aplicação e auxílios finais"));
+
+      const conclusao = await gerarParteProfessor(
+        base,
+        info,
+        licoes,
+        numero,
+        dados,
+        revistaAlunoTexto,
+        "Conclusão e revisão",
+        `
+Crie somente:
+1. Conclusão.
+2. Revisando o conteúdo com perguntas e respostas.
+
+Use <div class="block"><h3>Conclusão</h3>.
+Use <div class="summary-box"><h4>Revisando o Conteúdo</h4>.
+Cada pergunta deve ter resposta.
+        `,
+        450
+      );
+
+      if(conclusao){
+        partes.push(conclusao);
+      }else{
+        partes.push(`
+          <div class="block">
+            <h3>Conclusão</h3>
+            ${paragraph("A lição conduz o professor a ensinar com fidelidade bíblica, clareza doutrinária e aplicação prática.")}
+          </div>
+
+          <div class="summary-box">
+            <h4>Revisando o Conteúdo</h4>
+            ${(dados.perguntas || []).slice(0,5).map((q,i) => `
+              <div class="question-answer">
+                <strong>${i + 1}. ${escapeHtml(q[0] || "Pergunta da lição")}</strong><br>
+                <strong>Resposta:</strong> ${escapeHtml(q[1] || "Resposta conforme o desenvolvimento da lição.")}
+              </div>
+            `).join("")}
+          </div>
+        `);
+      }
+
+      return partes.join("\n");
     }
 
     function renderCover(base,info,imageData){
@@ -3793,39 +3959,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         </section>
       `;
     }
-
-    async function gerarLicaoAlunoComIA(base,info,licoes,numero,dados){
-      const prompts = [
-        promptLicaoAluno(base,info,licoes,numero,dados),
-        promptLicaoAlunoCurto(base,info,licoes,numero,dados)
-      ];
-
-      const html = await chamarTextoIAComTentativas(prompts,`Lição ${numero} do aluno`,{
-        minimo:700,
-        isStudent:true,
-        minQuality:"Revista do Aluno com linguagem natural, sem bastidor editorial"
-      });
-
-      if(!html) return "";
-
-      return limparLinguagemAluno(html);
-    }
-
-    async function gerarLicaoProfessorComIA(base,info,licoes,numero,dados,revistaAlunoTexto){
-      const prompts = [
-        promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto),
-        promptLicaoProfessorCurto(base,info,licoes,numero,dados,revistaAlunoTexto)
-      ];
-
-      const html = await chamarTextoIAComTentativas(prompts,`Lição ${numero} do professor`,{
-        minimo:700,
-        minQuality:"Revista do Professor baseada na Revista do Aluno"
-      });
-
-      return html || "";
-    }
-
-    async function generateSupportBookAsync(base,info,licoes){
+        async function generateSupportBookAsync(base,info,licoes){
       const revistaProfessorHtml = obterBaseProfessor();
       const revistaProfessorTexto = extrairTextoDeHtml(revistaProfessorHtml);
 
@@ -3850,6 +3984,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       let html = `<div class="doc">`;
 
       setStep(0,"Gerando abertura baseada na Revista do Professor salva...");
+
       let abertura = await chamarTextoIAComTentativas(
         [promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Abertura do livro de apoio",
@@ -3857,7 +3992,14 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       );
 
       if(!abertura){
-        abertura = fallbackAberturaLivroApoio(base,info,licoes);
+        abertura = `
+          <h1 class="page-title">${escapeHtml(base.title)}</h1>
+          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+          <div class="book-note">
+            <h4>Livro de Apoio para o Professor</h4>
+            ${paragraph("A IA não conseguiu gerar uma abertura completa nesta tentativa. O professor pode editar esta página manualmente depois.")}
+          </div>
+        `;
       }
 
       html += renderPage(abertura,"intro-page");
@@ -3866,14 +4008,22 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       await pause(700);
 
       setStep(1,"Gerando sumário baseado na revista salva...");
+
       let sumario = await chamarTextoIAComTentativas(
         [promptSumarioLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Sumário do livro de apoio",
-        { minimo:700 }
+        { minimo:500 }
       );
 
       if(!sumario){
-        sumario = fallbackSumarioLivroApoio(base,info,licoes);
+        sumario = `
+          <h1 class="page-title">Sumário do Livro de Apoio</h1>
+          <p class="subtitle">${escapeHtml(base.title)} — apoio ao professor da EBD</p>
+          <div class="block">
+            <h3>Expansão das Lições</h3>
+            ${orderedList(licoes.map((l,i) => `Capítulo ${i + 1}: Expansão da Lição ${i + 1} — ${l.titulo}.`))}
+          </div>
+        `;
       }
 
       html += renderPage(sumario,"summary-page");
@@ -3887,10 +4037,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         setStep(i + 2,`Expandindo a Lição ${numero} da revista em capítulo profundo...`);
 
         const capitulo = await chamarTextoIAComTentativas(
-          [
-            promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto),
-            promptCapituloLivroApoioCurto(base,info,licoes,numero,dados,revistaProfessorTexto)
-          ],
+          [promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto)],
           `Capítulo ${numero} do livro de apoio`,
           { minimo:900 }
         );
@@ -3906,6 +4053,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       }
 
       await pause(900);
+
       setStep(6,"Gerando arte profissional da capa...");
 
       const imageData = await chamarImagemIA(promptCapaImagem(base,info),{
@@ -3920,7 +4068,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
       setStep(7,"Gerando respostas, bibliografia, apêndices e contracapa...");
 
-      let respostas = await chamarTextoIAComTentativas(
+      const respostas = await chamarTextoIAComTentativas(
         [promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Respostas na ponta da língua",
         { minimo:800 }
@@ -3930,7 +4078,7 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         html += renderPage(respostas,"support-qa-page");
       }
 
-      let bibliografia = await chamarTextoIAComTentativas(
+      const bibliografia = await chamarTextoIAComTentativas(
         [promptBibliografiaLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Bibliografia recomendada",
         { minimo:400 }
@@ -3940,24 +4088,33 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         html += renderPage(bibliografia,"bibliography-page");
       }
 
-      let apendices = await chamarTextoIAComTentativas(
+      const apendices = await chamarTextoIAComTentativas(
         [promptApendicesLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Apêndices do livro de apoio",
-        { minimo:600 }
+        { minimo:500 }
       );
 
       if(apendices){
         html += renderPage(apendices,"appendix-page");
       }
 
-      let contracapa = await chamarTextoIAComTentativas(
+      const contracapa = await chamarTextoIAComTentativas(
         [promptContracapa(base,info,licoes)],
         "Contracapa do livro de apoio",
-        { minimo:350 }
+        { minimo:300 }
       );
 
       if(contracapa){
         html += renderPage(contracapa,"back-text-page");
+      }else{
+        html += renderPage(`
+          <h1 class="page-title">${escapeHtml(base.title)}</h1>
+          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+          <div class="summary-box">
+            <h4>Observação editorial</h4>
+            ${paragraph("A IA não conseguiu gerar a contracapa textual nesta tentativa. Esta página pode ser editada manualmente antes da impressão.")}
+          </div>
+        `,"back-text-page");
       }
 
       html += renderBackCover(base,info);
@@ -3966,7 +4123,8 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       renderGenerated(html);
       finishSteps("Livro de apoio finalizado. Revise possíveis páginas de erro antes de imprimir.");
     }
-        async function generateMagazineAsync(base){
+
+    async function generateMagazineAsync(base){
       const info = montarInfoRevista(base);
 
       setStep(0,"Organizando estrutura das 4 lições com base no seu prompt...");
@@ -4009,7 +4167,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       let apresentacao = await chamarTextoIAComTentativas(
         [promptApresentacaoRevista(base,info,licoes)],
         "Apresentação da revista",
-        { minimo:450, isStudent:info.isStudent }
+        {
+          minimo:420,
+          isStudent:info.isStudent
+        }
       );
 
       if(apresentacao && info.isStudent){
@@ -4018,11 +4179,11 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
 
       if(!apresentacao){
         apresentacao = `
-          <h1 class="page-title">Não foi possível gerar a apresentação</h1>
+          <h1 class="page-title">Apresentação</h1>
           <p class="subtitle">${escapeHtml(base.title)}</p>
           <div class="summary-box">
-            <h4>A IA não entregou uma apresentação aproveitável</h4>
-            ${paragraph("O app continuará tentando gerar as lições. Depois você pode clicar novamente em Gerar material para tentar refazer a apresentação.")}
+            <h4>A IA não conseguiu gerar a apresentação</h4>
+            ${paragraph("O app continuará gerando as lições por partes. Depois você pode editar esta apresentação manualmente ou tentar gerar novamente.")}
           </div>
         `;
       }
@@ -4037,7 +4198,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       let sumario = await chamarTextoIAComTentativas(
         [promptSumarioRevista(base,info,licoes)],
         "Sumário da revista",
-        { minimo:350, isStudent:info.isStudent }
+        {
+          minimo:330,
+          isStudent:info.isStudent
+        }
       );
 
       if(sumario && info.isStudent){
@@ -4051,10 +4215,6 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
           <div class="block">
             <h3>Lições do Mês</h3>
             ${orderedList(licoes.map((l,i) => `Lição ${i + 1} — ${l.titulo}. Texto base: ${l.leituraClasse}.`))}
-          </div>
-          <div class="summary-box">
-            <h4>Observação</h4>
-            ${paragraph("O sumário foi montado a partir da estrutura das lições, pois a IA não devolveu um sumário editorial aproveitável.")}
           </div>
         `;
       }
@@ -4073,28 +4233,32 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
         setStep(
           i + 2,
           info.isTeacher
-            ? `Gerando Lição ${numero} do professor baseada na Revista do Aluno...`
-            : `Gerando Lição ${numero} do aluno...`
+            ? `Gerando Lição ${numero} do professor por partes...`
+            : `Gerando Lição ${numero} do aluno por partes...`
         );
 
         let licao = "";
 
         if(info.isTeacher){
-          licao = await gerarLicaoProfessorComIA(base,info,licoes,numero,dados,revistaAlunoTexto);
+          licao = await gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto);
         }else{
-          licao = await gerarLicaoAlunoComIA(base,info,licoes,numero,dados);
+          licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
         }
 
-        if(!licao){
+        if(!licao || extrairTextoDeHtml(licao).trim().length < 1200){
           todasLicoesOk = false;
           html += paginaErroLicao(base,info,numero,dados,"lição");
-          setStatus(`A IA não conseguiu gerar a Lição ${numero}. O app não inventou conteúdo universal.`,"error");
+          setStatus(`A IA não conseguiu gerar a Lição ${numero} com qualidade suficiente.`,"error");
         }else{
           if(info.isStudent){
             licao = limparLinguagemAluno(licao);
           }
 
           html += renderPage(licao,"lesson-page");
+
+          if(licao.includes("Parte não gerada")){
+            todasLicoesOk = false;
+          }
         }
 
         renderGenerated(html + `</div>`);
@@ -4129,7 +4293,10 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       let contracapa = await chamarTextoIAComTentativas(
         [promptContracapa(base,info,licoes)],
         "Contracapa",
-        { minimo:350, isStudent:info.isStudent }
+        {
+          minimo:300,
+          isStudent:info.isStudent
+        }
       );
 
       if(contracapa && info.isStudent){
@@ -4155,11 +4322,11 @@ Bíblia aberta, luz dourada, atmosfera reverente, visual cristão editorial prem
       renderGenerated(html);
 
       if(todasLicoesOk && info.isStudent){
-        finishSteps("Revista do Aluno gerada com sucesso e base textual salva para a Revista do Professor.");
+        finishSteps("Revista do Aluno gerada por partes com sucesso e base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
-        finishSteps("Revista do Professor gerada com sucesso e base textual salva para o Livro de Apoio.");
+        finishSteps("Revista do Professor gerada por partes com sucesso e base textual salva para o Livro de Apoio.");
       }else{
-        finishSteps("Geração finalizada com páginas de erro. Revise antes de imprimir e tente gerar novamente as partes que falharam.");
+        finishSteps("Geração finalizada com uma ou mais partes não geradas. Revise antes de imprimir e tente novamente se necessário.");
       }
     }
 
