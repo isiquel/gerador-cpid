@@ -1162,8 +1162,8 @@
         </div>
 
         <div class="top-note">
-          <strong>Correção de profundidade:</strong><br>
-          Agora as lições devem ter tópicos mais robustos, progressivos e com conteúdo real. O app não deve aceitar subtópicos rasos de poucas linhas como material final.
+          <strong>Correção de linguagem:</strong><br>
+          A Revista do Aluno agora mantém profundidade, mas remove linguagem de professor, como “o professor deve”, “conduza a classe” ou “explique aos alunos”.
         </div>
 
         <div class="unlock-box">
@@ -1569,11 +1569,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v4";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v4";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v5";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v5";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v4";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v4";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v5";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v5";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -2730,11 +2730,13 @@ ESTRUTURA:
 14. Conclusão.
 15. Revisando o conteúdo com perguntas sem resposta.
 
-REGRAS:
+REGRAS ESPECÍFICAS DA REVISTA DO ALUNO:
 - Não use frases como “o professor deve”.
+- Não use “professor”, “conduza a classe”, “explique aos alunos”, “mostre à classe” ou “oriente a turma”.
 - Não coloque auxílio ao professor.
 - Não coloque resposta das perguntas.
 - Fale diretamente com o aluno.
+- Use expressões como: “nesta lição estudaremos”, “a Palavra nos ensina”, “o estudante é chamado a refletir”, “somos conduzidos a compreender”.
 - Não entregue tópico raso.
 - Não entregue subtópico com apenas 2 ou 3 linhas.
 - Cada subtópico precisa ensinar, explicar, aplicar e conduzir o aluno a entender melhor.
@@ -3055,7 +3057,11 @@ Mateus 24.35:
       return { titulo, ps:paragrafos };
     }
 
-    function topicosProfundosBibliologia(dados){
+    function textoAlunoOuProfessor(info,textoAluno,textoProfessor){
+      return info && info.isTeacher ? textoProfessor : textoAluno;
+    }
+
+    function topicosProfundosBibliologia(dados,info = { isTeacher:false }){
       const t = String(dados.titulo || "").toLowerCase();
 
       if(t.includes("o que é a bíblia") || t.includes("o que é a biblia")){
@@ -3100,15 +3106,15 @@ Mateus 24.35:
               criarSubtopico("Cristo no centro da revelação",[
                 `A Bíblia possui diversidade de livros, mas não é uma coleção desorganizada de textos religiosos. Sua mensagem converge para Cristo. Jesus afirmou que as Escrituras testificam dele ${refInline("Jo 5.39")}.`,
                 `Na Lei, nos Profetas e nos Salmos, encontramos promessas, sombras, figuras e anúncios que apontam para a obra redentora de Cristo. Ele é o cumprimento da promessa feita desde o princípio, o Cordeiro de Deus, o Mediador, o Rei e o Salvador.`,
-                `Isso ajuda o aluno a ler a Bíblia com unidade. O Antigo Testamento prepara, anuncia e aponta. O Novo Testamento apresenta, explica e proclama a consumação da obra de Cristo.`,
+                `Isso ajuda o estudante a ler a Bíblia com unidade. O Antigo Testamento prepara, anuncia e aponta. O Novo Testamento apresenta, explica e proclama a consumação da obra de Cristo.`,
                 `Uma leitura bíblica sem Cristo pode virar moralismo, curiosidade histórica ou religião sem evangelho. Mas quando Cristo está no centro, a Escritura revela a graça de Deus e chama o homem à salvação.`,
-                `Por isso, toda lição bíblica deve conduzir o aluno não apenas a conhecer fatos, mas a perceber como a Palavra revela o Senhor e fortalece a fé em Cristo.`
+                `Por isso, toda lição bíblica deve conduzir o estudante não apenas a conhecer fatos, mas a perceber como a Palavra revela o Senhor e fortalece a fé em Cristo.`
               ]),
               criarSubtopico("A revelação que transforma",[
                 `A Bíblia não foi dada apenas para satisfazer curiosidade. Ela foi dada para transformar. O salmista declara: “Lâmpada para os meus pés é tua palavra e luz para o meu caminho” ${refInline("Sl 119.105")}. A Palavra ilumina decisões, corrige rumos e dá direção.`,
                 `Quando a Palavra alcança o coração, ela revela pecados escondidos, consola dores profundas, fortalece a esperança e orienta a caminhada. Hebreus afirma que a Palavra é viva e eficaz ${refInline("Hb 4.12")}.`,
                 `A transformação bíblica não acontece por acúmulo de informação apenas. Ela acontece quando a verdade é recebida com fé, entendida com humildade e praticada com obediência.`,
-                `A EBD precisa preservar esse equilíbrio. Estudamos doutrina, história e contexto, mas tudo isso deve conduzir à vida prática. Uma classe pode saber muitos detalhes sobre a Bíblia e ainda assim não obedecê-la.`,
+                `A EBD precisa preservar esse equilíbrio. Estudamos doutrina, história e contexto, mas tudo isso deve conduzir à vida prática. O estudante pode saber muitos detalhes sobre a Bíblia e ainda assim precisar obedecê-la no cotidiano.`,
                 `O alvo final do estudo é formar discípulos que amam a Palavra, vivem a Palavra e anunciam a Palavra.`
               ])
             ],
@@ -3124,23 +3130,23 @@ Mateus 24.35:
             criarSubtopico("A verdade revelada nas Escrituras",[
               `O tema "${dados.titulo}" não pode ser tratado apenas como informação religiosa. Ele precisa ser compreendido a partir da autoridade das Escrituras, pois a fé cristã nasce daquilo que Deus revelou, e não daquilo que o homem imaginou.`,
               `Quando Paulo afirma que toda Escritura é inspirada por Deus ${refInline("2Tm 3.16")}, ele nos ensina que o estudo bíblico deve começar pela submissão à Palavra. A Bíblia interpreta a experiência, corrige a tradição e orienta a prática.`,
-              `Isso é importante porque muitos assuntos cristãos são tratados hoje de maneira superficial, emocional ou baseada em frases prontas. A EBD tem a responsabilidade de formar alunos que saibam pensar biblicamente.`,
-              `O professor precisa conduzir a classe a perguntar: qual é o fundamento bíblico deste assunto? Onde a Escritura ensina isso? Como esse ensino aparece no plano geral de Deus?`,
-              `Quando o aluno aprende a buscar fundamento na Palavra, ele se torna menos vulnerável a modismos, exageros e interpretações sem base.`
+              `Isso é importante porque muitos assuntos cristãos são tratados hoje de maneira superficial, emocional ou baseada em frases prontas. O estudo bíblico sério forma estudantes que aprendem a pensar biblicamente.`,
+              `A própria lição nos leva a perguntar: qual é o fundamento bíblico deste assunto? Onde a Escritura ensina isso? Como esse ensino aparece no plano geral de Deus?`,
+              `Quando o estudante aprende a buscar fundamento na Palavra, ele se torna menos vulnerável a modismos, exageros e interpretações sem base.`
             ]),
             criarSubtopico("A importância doutrinária do tema",[
               `Toda verdade bíblica possui valor doutrinário. Doutrina não é um peso frio nem uma palavra reservada para especialistas. Doutrina é ensino saudável, fundamento da fé e proteção contra o erro.`,
               `A igreja primitiva perseverava na doutrina dos apóstolos ${refInline("At 2.42")}. Isso mostra que o crescimento espiritual da igreja sempre esteve ligado ao ensino fiel da Palavra.`,
-              `No tema "${dados.titulo}", o aluno deve perceber que a doutrina organiza o pensamento cristão. Ela nos ajuda a compreender Deus, a salvação, a igreja, a missão e a vida cristã com coerência.`,
+              `No tema "${dados.titulo}", o estudante deve perceber que a doutrina organiza o pensamento cristão. Ela nos ajuda a compreender Deus, a salvação, a igreja, a missão e a vida cristã com coerência.`,
               `Sem doutrina, a fé se torna instável. A pessoa pode ser sincera, mas facilmente conduzida por qualquer ensino. Paulo alerta sobre ventos de doutrina que levam os crentes à instabilidade ${refInline("Ef 4.14")}.`,
-              `Por isso, uma lição profunda não apenas emociona; ela firma convicções. O alvo é que o aluno saia da aula sabendo no que crê, por que crê e como viver essa verdade.`
+              `Por isso, uma lição profunda não apenas emociona; ela firma convicções. O alvo é que o estudante saia da aula sabendo no que crê, por que crê e como viver essa verdade.`
             ]),
             criarSubtopico("Aplicação para a igreja atual",[
               `A Palavra de Deus nunca deve ser estudada apenas como conteúdo antigo. Ela precisa alcançar a vida da igreja hoje. Tiago ensina que devemos ser praticantes da Palavra, e não somente ouvintes ${refInline("Tg 1.22")}.`,
               `Aplicar o tema "${dados.titulo}" significa perguntar como essa verdade corrige nossa maneira de pensar, falar, decidir, servir e adorar. Toda doutrina bíblica deve produzir vida piedosa.`,
-              `Na igreja atual, há muitos desafios: pressa, distração, superficialidade, relativismo e pouco compromisso com o ensino. Por isso, a EBD precisa ser um lugar de formação séria e espiritual.`,
-              `A aplicação também deve ser pastoral. O aluno precisa perceber que a verdade bíblica não é distante de sua família, trabalho, sofrimento, tentações e decisões diárias.`,
-              `Quando a lição une Bíblia, doutrina e aplicação, ela deixa de ser apenas uma aula e se torna instrumento de edificação para toda a igreja.`
+              `Na igreja atual, há muitos desafios: pressa, distração, superficialidade, relativismo e pouco compromisso com o ensino. Por isso, o estudo da Palavra precisa formar cristãos firmes, maduros e obedientes.`,
+              `A aplicação também deve alcançar a vida real. A verdade bíblica não é distante da família, do trabalho, do sofrimento, das tentações e das decisões diárias.`,
+              `Quando a lição une Bíblia, doutrina e aplicação, ela deixa de ser apenas conteúdo e se torna instrumento de edificação para toda a igreja.`
             ])
           ],
           sinopse:`O primeiro tópico mostra que "${dados.titulo}" deve ser compreendido a partir da Escritura, com doutrina saudável e aplicação prática para a igreja.`
@@ -3150,8 +3156,8 @@ Mateus 24.35:
           subs:[
             criarSubtopico("Conhecimento que produz maturidade",[
               `O conhecimento bíblico não é um fim em si mesmo. Ele deve produzir maturidade espiritual. Paulo ora para que os crentes cresçam no pleno conhecimento da vontade de Deus ${refInline("Cl 1.9-10")}.`,
-              `Ao estudar "${dados.titulo}", a classe precisa perceber que Deus usa sua Palavra para formar convicções profundas, corrigir pensamentos errados e fortalecer a fé.`,
-              `Maturidade não é apenas saber responder perguntas. É viver de modo coerente com aquilo que se aprendeu. O aluno maduro não apenas conhece a verdade; ele se submete a ela.`,
+              `Ao estudar "${dados.titulo}", somos chamados a perceber que Deus usa sua Palavra para formar convicções profundas, corrigir pensamentos errados e fortalecer a fé.`,
+              `Maturidade não é apenas saber responder perguntas. É viver de modo coerente com aquilo que se aprendeu. O cristão maduro não apenas conhece a verdade; ele se submete a ela.`,
               `Esse processo exige tempo, repetição, meditação e prática. A EBD contribui para esse crescimento porque oferece ensino organizado, contínuo e comunitário.`,
               `Quando a igreja valoriza o ensino, ela prepara crentes mais firmes para enfrentar crises, tentações e confusões doutrinárias.`
             ]),
@@ -3159,15 +3165,15 @@ Mateus 24.35:
               `Toda lição bíblica precisa sair da sala e alcançar o cotidiano. A verdade estudada deve iluminar a casa, o trabalho, os relacionamentos e as decisões do aluno.`,
               `Jesus comparou aquele que ouve e pratica suas palavras ao homem prudente que edificou a casa sobre a rocha ${refInline("Mt 7.24")}. Isso mostra que ouvir sem praticar é construir sobre base frágil.`,
               `Aplicar o tema "${dados.titulo}" envolve examinar hábitos, prioridades e atitudes. A Palavra não apenas informa o que é certo; ela nos chama a andar no caminho certo.`,
-              `O professor deve ajudar a classe a perceber que a Bíblia fala com a vida real. Ela alcança dúvidas, dores, escolhas e responsabilidades do cristão.`,
+              `O estudante é levado a perceber que a Bíblia fala com a vida real. Ela alcança dúvidas, dores, escolhas e responsabilidades do cristão.`,
               `Quando a aplicação é clara, o aluno entende que estudar a Bíblia não é cumprir uma obrigação religiosa, mas receber direção de Deus para viver melhor diante dele.`
             ]),
             criarSubtopico("A igreja fortalecida pela Palavra",[
               `Uma igreja forte é uma igreja ensinada. O crescimento saudável não depende apenas de eventos, emoção ou movimento, mas da permanência na Palavra.`,
               `Os bereanos foram elogiados porque examinavam diariamente as Escrituras para conferir o ensino recebido ${refInline("At 17.11")}. Esse exemplo mostra que maturidade espiritual envolve amor pela verdade e discernimento.`,
               `No contexto atual, a igreja precisa de crentes que saibam avaliar mensagens, costumes, ideias e práticas à luz da Bíblia. Isso evita manipulação, exageros e confusão.`,
-              `O tema "${dados.titulo}" deve ajudar a igreja a crescer em firmeza. Cada verdade estudada deve gerar mais reverência, mais compromisso e mais discernimento.`,
-              `Quando a Palavra ocupa o centro, a igreja se torna mais saudável, mais missionária, mais santa e mais preparada para servir.`
+              `O tema "${dados.titulo}" deve despertar interesse, responder dúvidas e conduzir o estudante a uma postura de obediência.`,
+              `O estudo da Palavra deve unir clareza e profundidade. Uma verdade bíblica pode ser explicada de modo acessível sem perder sua riqueza espiritual e doutrinária.`
             ])
           ],
           sinopse:`O segundo tópico mostra como o ensino de "${dados.titulo}" produz maturidade, aplicação diária e fortalecimento da igreja.`
@@ -3182,12 +3188,12 @@ Mateus 24.35:
               `O propósito do ensino não é apenas transmitir informação religiosa, mas produzir discernimento, santidade, amor, serviço e perseverança na caminhada cristã.`,
               `Quando o aluno compreende o propósito espiritual da lição, ele deixa de estudar apenas para responder perguntas e passa a estudar para obedecer ao Senhor.`
             ]),
-            criarSubtopico("O crescimento espiritual da classe",[
+            criarSubtopico("O crescimento espiritual do aluno e da igreja",[
               `A Escola Bíblica Dominical existe para formar discípulos. Por isso, a lição precisa alcançar mente, coração e prática. O aluno precisa compreender, crer e viver a verdade estudada.`,
               `O crescimento espiritual acontece quando a Palavra é recebida com fé. Paulo ensina que a fé vem pelo ouvir, e o ouvir pela Palavra de Deus ${refInline("Rm 10.17")}.`,
-              `Uma classe bem conduzida não apenas acumula informações, mas cresce em comunhão, diálogo, reverência e compromisso. O ensino bíblico fortalece a vida comunitária da igreja.`,
-              `O tema "${dados.titulo}" deve ser apresentado de maneira que desperte interesse, responda dúvidas e conduza os alunos a uma postura de obediência.`,
-              `O professor deve buscar clareza, mas também profundidade. Ensino simples não precisa ser raso. É possível explicar verdades profundas com linguagem acessível.`
+              `Um estudo bíblico bem recebido não apenas acumula informações, mas gera comunhão, diálogo, reverência e compromisso. O ensino bíblico fortalece a vida comunitária da igreja.`,
+              `O tema "${dados.titulo}" deve despertar interesse, responder dúvidas e conduzir o estudante a uma postura de obediência.`,
+              `O estudo da Palavra deve buscar clareza, mas também profundidade. Ensino simples não precisa ser raso. É possível compreender verdades profundas com linguagem acessível.`
             ]),
             criarSubtopico("A resposta prática do aluno",[
               `Toda lição precisa terminar perguntando: o que faremos com a verdade recebida? Conhecimento sem resposta prática pode produzir orgulho espiritual.`,
@@ -3227,7 +3233,7 @@ Mateus 24.35:
           ${paragraph(`A lição "${dados.titulo}" ocupa lugar importante dentro do tema mensal "${base.visibleTheme}". Ela não deve ser estudada como uma informação isolada, mas como parte de uma caminhada de formação bíblica, doutrinária e espiritual.`)}
           ${paragraph(`O foco desta lição é ${dados.foco}. Isso significa que o estudo precisa ir além de definições rápidas. É necessário compreender o fundamento bíblico, perceber a importância doutrinária, aplicar a verdade à vida cristã e reconhecer como esse ensino fortalece a igreja.`)}
           ${paragraph(`A leitura bíblica em classe, ${dados.leituraClasse}, oferece a base para o desenvolvimento do assunto. O texto bíblico deve conduzir a reflexão, corrigir ideias equivocadas e orientar a resposta prática dos alunos.`)}
-          ${paragraph(`Ao estudar esta lição, a classe será chamada a crescer em conhecimento e reverência. A Palavra de Deus não apenas informa; ela ilumina, corrige, consola e transforma.`)}
+          ${paragraph(`Ao estudar esta lição, somos chamados a crescer em conhecimento e reverência. A Palavra de Deus não apenas informa; ela ilumina, corrige, consola e transforma.`)}
           ${isTeacher ? paragraph("Na Revista do Professor, esta introdução também serve como orientação para conduzir a aula com profundidade, clareza e aplicação pastoral.") : ""}
         </div>
       `;
@@ -3278,9 +3284,49 @@ Mateus 24.35:
       `;
     }
 
+    function limparLinguagemAluno(html){
+      let out = String(html || "");
+
+      const trocas = [
+        [/O professor deve buscar clareza, mas também profundidade\.\s*Ensino simples não precisa ser raso\.\s*É possível explicar verdades profundas com linguagem acessível\./gi,"O estudo da Palavra deve unir clareza e profundidade. Uma verdade bíblica pode ser explicada de modo acessível sem perder sua riqueza espiritual e doutrinária."],
+        [/O professor deve conduzir a classe a/gi,"A lição nos conduz a"],
+        [/O professor deve conduzir/gi,"A lição deve conduzir"],
+        [/O professor deve mostrar/gi,"A lição mostra"],
+        [/O professor deve explicar/gi,"A lição explica"],
+        [/O professor deve ajudar a classe a perceber que/gi,"A lição nos ajuda a perceber que"],
+        [/O professor deve ajudar a classe a perceber/gi,"A lição nos ajuda a perceber"],
+        [/O professor precisa conduzir a classe a perguntar/gi,"O estudo nos leva a perguntar"],
+        [/O professor precisa conduzir a classe/gi,"A lição nos conduz"],
+        [/O professor precisa/gi,"O estudante precisa"],
+        [/Professor,\s*/gi,""],
+        [/Explique aos alunos/gi,"Observe"],
+        [/Mostre aos alunos/gi,"Observe"],
+        [/Mostre à classe/gi,"Observe"],
+        [/conduza a classe/gi,"considere"],
+        [/conduzir a classe/gi,"conduzir o estudo"],
+        [/A classe precisa perceber/gi,"O estudante precisa perceber"],
+        [/a classe precisa perceber/gi,"o estudante precisa perceber"],
+        [/A classe será chamada/gi,"Somos chamados"],
+        [/a classe será chamada/gi,"somos chamados"],
+        [/O crescimento espiritual da classe/gi,"O crescimento espiritual do aluno e da igreja"],
+        [/Uma classe bem conduzida não apenas acumula informações/gi,"Um estudo bíblico bem recebido não apenas acumula informações"],
+        [/O tema "([^"]+)" deve ser apresentado de maneira que desperte interesse, responda dúvidas e conduza os alunos a uma postura de obediência\./gi,"O tema \"$1\" deve despertar interesse, responder dúvidas e conduzir o estudante a uma postura de obediência."],
+        [/A lição deve conduzir a classe a examinar/gi,"A lição nos conduz a examinar"],
+        [/a lição deve conduzir a classe a examinar/gi,"a lição nos conduz a examinar"],
+        [/classe/gi,"igreja"],
+        [/turma/gi,"igreja"]
+      ];
+
+      trocas.forEach(([padrao, substituto]) => {
+        out = out.replace(padrao, substituto);
+      });
+
+      return out;
+    }
+
     function fallbackLicaoRobusta(base,info,numero,dados){
       const isTeacher = info.isTeacher;
-      const topicos = topicosProfundosBibliologia(dados);
+      const topicos = topicosProfundosBibliologia(dados,info);
 
       return `
         <div class="lesson-hero">
@@ -3423,9 +3469,7 @@ Mateus 24.35:
         "Desenvolva esta parte",
         "Como explicar este tema com clareza?",
         "Explique a partir da Bíblia, use exemplos simples",
-        "Este capítulo aprofunda o tema",
-        "O tema \"",
-        "precisa ser estudado a partir da autoridade das Escrituras"
+        "Este capítulo aprofunda o tema"
       ];
 
       const repetitivo = sinaisFallback.filter(sinal => limpo.includes(sinal)).length >= 2;
@@ -3751,6 +3795,10 @@ Mateus 24.35:
         `;
       }
 
+      if(info.isStudent){
+        apresentacao = limparLinguagemAluno(apresentacao);
+      }
+
       html += renderPage(apresentacao,"intro-page");
       renderGenerated(html + `</div>`);
 
@@ -3769,6 +3817,10 @@ Mateus 24.35:
             ${orderedList(licoes.map((l,i) => `Lição ${i + 1} — ${l.titulo}. Texto base: ${l.leituraClasse}.`))}
           </div>
         `;
+      }
+
+      if(info.isStudent){
+        sumario = limparLinguagemAluno(sumario);
       }
 
       html += renderPage(sumario,"summary-page");
@@ -3791,6 +3843,10 @@ Mateus 24.35:
         if(!validarRespostaIA(licao,2200)){
           licao = fallbackLicaoRobusta(base,info,numero,dados);
           setStatus(`A IA entregou conteúdo fraco na Lição ${numero}; o app usou uma lição reserva mais robusta.`,"ok");
+        }
+
+        if(info.isStudent){
+          licao = limparLinguagemAluno(licao);
         }
 
         html += renderPage(licao,"lesson-page");
@@ -3823,6 +3879,10 @@ Mateus 24.35:
             ${paragraph("Esta revista conduz a classe ao estudo de " + base.visibleTheme + ", apresentando fundamentos bíblicos, aplicações práticas e orientações pastorais.")}
           </div>
         `;
+      }
+
+      if(info.isStudent){
+        contracapa = limparLinguagemAluno(contracapa);
       }
 
       html += renderPage(contracapa,"back-text-page");
@@ -4177,7 +4237,7 @@ Mateus 24.35:
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada subtópico deve ter conteúdo real, com explicação bíblica, contexto, doutrina e aplicação. Não quero tópicos rasos de poucas linhas.");
+        setValue("extraNotes","Quero uma revista bíblica, robusta, profunda e progressiva. Cada subtópico deve ter conteúdo real, com explicação bíblica, contexto, doutrina e aplicação. Na Revista do Aluno não use linguagem de professor.");
       }
 
       if(type === "sermao"){
@@ -4223,6 +4283,12 @@ Exigência de profundidade:
 - Cada subtópico deve ter 4 a 6 parágrafos substanciais.
 - Não entregar subtópicos de 2 ou 3 linhas.
 - Não repetir a mesma estrutura genérica nas lições.
+
+Regra para Revista do Aluno:
+- Não usar linguagem de professor.
+- Não escrever “o professor deve”.
+- Não escrever “explique aos alunos”.
+- Falar diretamente com o aluno.
       `.trim();
 
       setValue("theme",prompt);
