@@ -127,13 +127,19 @@
       padding:12px 14px;
       font-size:13px;
       line-height:1.45;
-      margin-bottom:14px;
+      margin-bottom:10px;
     }
 
     .base-note.warn{
       background:#fff7e6;
       border-color:#e6ca84;
       color:#7c5924;
+    }
+
+    .base-note.danger{
+      background:#fff0f0;
+      border-color:#e1b2b2;
+      color:#8a2a2a;
     }
 
     .unlock-box{
@@ -1149,15 +1155,16 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Gerador de material cristão com foco em sermões, estudos e revista EBD mensal do professor, do aluno e livro de apoio.</p>
+      <p>Gerador de material cristão com foco em sermões, estudos e revista EBD mensal do aluno, do professor e livro de apoio.</p>
     </header>
 
     <div class="layout">
       <aside class="panel left-panel">
         <div class="top-note">
-          <strong>Importante:</strong> o <strong>Livro de Apoio para o Professor</strong> agora nasce da
-          <strong>Revista do Professor gerada e salva como base</strong>. Assim ele expande a revista real,
-          em vez de criar um material raso do zero.
+          <strong>Nova lógica EBD:</strong><br>
+          <strong>1)</strong> Gere primeiro a <strong>Revista do Aluno</strong> bem completa.<br>
+          <strong>2)</strong> Depois gere a <strong>Revista do Professor</strong> baseada na Revista do Aluno.<br>
+          <strong>3)</strong> Por fim gere o <strong>Livro de Apoio</strong> baseado na Revista do Professor.
         </div>
 
         <div class="unlock-box">
@@ -1204,7 +1211,7 @@
             <div class="type-icon">📚</div>
             <div>
               <div class="type-name">Revista EBD</div>
-              <div class="type-desc">Revista do professor, do aluno ou livro de apoio do professor.</div>
+              <div class="type-desc">Revista do aluno, revista do professor ou livro de apoio.</div>
             </div>
           </button>
 
@@ -1380,28 +1387,36 @@
           <div class="section-title">Opções da Revista EBD</div>
 
           <div class="top-note">
-            Fluxo recomendado:
-            <strong>1)</strong> Gere a Revista do Professor.
-            <strong>2)</strong> O app salva automaticamente como base.
-            <strong>3)</strong> Troque para Livro de apoio para o professor.
-            <strong>4)</strong> O app expande a revista salva em livro denso.
+            <strong>Fluxo recomendado:</strong><br>
+            <strong>1)</strong> Revista do aluno — cria a lição-base.<br>
+            <strong>2)</strong> Revista do professor — usa a revista do aluno e acrescenta subsídios.<br>
+            <strong>3)</strong> Livro de apoio — usa a revista do professor e aprofunda mais.
+          </div>
+
+          <div id="baseAlunoStatus" class="base-note warn">
+            Nenhuma Revista do Aluno salva como base ainda.
           </div>
 
           <div id="baseProfessorStatus" class="base-note warn">
-            Nenhuma revista do professor salva como base ainda.
+            Nenhuma Revista do Professor salva como base ainda.
+          </div>
+
+          <div class="actions-grid" style="margin-top:0;margin-bottom:10px;">
+            <button id="btnSaveAlunoBase" class="btn btn-gold" type="button">Salvar como base do aluno</button>
+            <button id="btnSaveProfessorBase" class="btn btn-gold" type="button">Salvar como base do professor</button>
           </div>
 
           <div class="actions-grid" style="margin-top:0;margin-bottom:14px;">
-            <button id="btnSaveProfessorBase" class="btn btn-gold" type="button">Salvar material atual como base</button>
-            <button id="btnClearProfessorBase" class="btn btn-red" type="button">Apagar base salva</button>
+            <button id="btnClearAlunoBase" class="btn btn-red" type="button">Apagar base do aluno</button>
+            <button id="btnClearProfessorBase" class="btn btn-red" type="button">Apagar base do professor</button>
           </div>
 
           <div class="grid-2">
             <div class="field">
               <label for="revistaTipo">Tipo de material EBD</label>
               <select id="revistaTipo">
-                <option value="professor" selected>Revista do professor</option>
-                <option value="aluno">Revista do aluno</option>
+                <option value="aluno" selected>Revista do aluno</option>
+                <option value="professor">Revista do professor</option>
                 <option value="apoio-professor">Livro de apoio para o professor</option>
               </select>
             </div>
@@ -1555,8 +1570,11 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v2";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v2";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v3";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v3";
+
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v3";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v3";
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -1570,6 +1588,8 @@
     const progressBar = document.getElementById("progressBar");
     const stepsBox = document.getElementById("steps");
     const editWarning = document.getElementById("editWarning");
+
+    const baseAlunoStatus = document.getElementById("baseAlunoStatus");
     const baseProfessorStatus = document.getElementById("baseProfessorStatus");
 
     const btnGenerate = document.getElementById("btnGenerate");
@@ -1580,6 +1600,9 @@
     const btnTest = document.getElementById("btnTest");
     const btnCopy = document.getElementById("btnCopy");
     const btnPrompt = document.getElementById("btnPrompt");
+
+    const btnSaveAlunoBase = document.getElementById("btnSaveAlunoBase");
+    const btnClearAlunoBase = document.getElementById("btnClearAlunoBase");
     const btnSaveProfessorBase = document.getElementById("btnSaveProfessorBase");
     const btnClearProfessorBase = document.getElementById("btnClearProfessorBase");
 
@@ -1786,7 +1809,7 @@
       }
 
       updateSteps(type);
-      atualizarStatusBaseProfessor();
+      atualizarStatusBasesEBD();
       setStatus("Modo selecionado: " + getTypeLabel(type) + ".","ok");
     }
         function defaultTitle(type){
@@ -1911,11 +1934,23 @@
       return clean.slice(0,limite) + "\n\n[BASE RECORTADA PELO APP PARA CABER NA JANELA DA IA]";
     }
 
-    function obterRevistaProfessorBase(){
+    function obterBaseAluno(){
+      return localStorage.getItem(STORAGE_REVISTA_ALUNO_BASE) || "";
+    }
+
+    function obterBaseProfessor(){
       return localStorage.getItem(STORAGE_REVISTA_PROFESSOR_BASE) || "";
     }
 
-    function obterMetaRevistaProfessor(){
+    function obterMetaAluno(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_REVISTA_ALUNO_META) || "{}");
+      }catch(error){
+        return {};
+      }
+    }
+
+    function obterMetaProfessor(){
       try{
         return JSON.parse(localStorage.getItem(STORAGE_REVISTA_PROFESSOR_META) || "{}");
       }catch(error){
@@ -1923,7 +1958,38 @@
       }
     }
 
-    function salvarRevistaProfessorBaseManual(){
+    function salvarBaseAlunoManual(){
+      if(!result.innerText.trim() || result.querySelector(".placeholder")){
+        setStatus("Gere ou abra a Revista do Aluno antes de salvar como base.","error");
+        return;
+      }
+
+      const html = result.innerHTML;
+      const texto = extrairTextoDeHtml(html);
+
+      if(texto.length < 3000){
+        setStatus("O material atual parece curto demais para servir como base da Revista do Aluno.","error");
+        return;
+      }
+
+      const base = buildBase();
+      const info = montarInfoRevista(base);
+
+      localStorage.setItem(STORAGE_REVISTA_ALUNO_BASE,html);
+      localStorage.setItem(STORAGE_REVISTA_ALUNO_META,JSON.stringify({
+        title:base.title,
+        visibleTheme:base.visibleTheme,
+        mes:info.revistaMes,
+        ano:info.revistaAno,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length
+      }));
+
+      atualizarStatusBasesEBD();
+      setStatus("Revista do Aluno salva como base para a Revista do Professor.","ok");
+    }
+
+    function salvarBaseProfessorManual(){
       if(!result.innerText.trim() || result.querySelector(".placeholder")){
         setStatus("Gere ou abra a Revista do Professor antes de salvar como base.","error");
         return;
@@ -1933,7 +1999,7 @@
       const texto = extrairTextoDeHtml(html);
 
       if(texto.length < 3000){
-        setStatus("O material atual parece curto demais para servir como base do livro de apoio.","error");
+        setStatus("O material atual parece curto demais para servir como base do Livro de Apoio.","error");
         return;
       }
 
@@ -1950,16 +2016,35 @@
         tamanho:texto.length
       }));
 
-      atualizarStatusBaseProfessor();
+      atualizarStatusBasesEBD();
       setStatus("Revista do Professor salva como base para o Livro de Apoio.","ok");
     }
 
-    function salvarRevistaProfessorBaseAutomatico(base,info,html){
+    function salvarBaseAlunoAutomatico(base,info,html){
+      if(!info || !info.isStudent || info.isSupportBook) return;
+      if(!html) return;
+
+      const texto = extrairTextoDeHtml(html);
+      if(texto.length < 3000) return;
+
+      localStorage.setItem(STORAGE_REVISTA_ALUNO_BASE,html);
+      localStorage.setItem(STORAGE_REVISTA_ALUNO_META,JSON.stringify({
+        title:base.title,
+        visibleTheme:base.visibleTheme,
+        mes:info.revistaMes,
+        ano:info.revistaAno,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length
+      }));
+
+      atualizarStatusBasesEBD();
+    }
+
+    function salvarBaseProfessorAutomatico(base,info,html){
       if(!info || !info.isTeacher || info.isSupportBook || info.isStudent) return;
       if(!html) return;
 
       const texto = extrairTextoDeHtml(html);
-
       if(texto.length < 3000) return;
 
       localStorage.setItem(STORAGE_REVISTA_PROFESSOR_BASE,html);
@@ -1972,33 +2057,53 @@
         tamanho:texto.length
       }));
 
-      atualizarStatusBaseProfessor();
+      atualizarStatusBasesEBD();
     }
 
-    function apagarRevistaProfessorBase(){
+    function apagarBaseAluno(){
+      localStorage.removeItem(STORAGE_REVISTA_ALUNO_BASE);
+      localStorage.removeItem(STORAGE_REVISTA_ALUNO_META);
+      atualizarStatusBasesEBD();
+      setStatus("Base da Revista do Aluno apagada.","ok");
+    }
+
+    function apagarBaseProfessor(){
       localStorage.removeItem(STORAGE_REVISTA_PROFESSOR_BASE);
       localStorage.removeItem(STORAGE_REVISTA_PROFESSOR_META);
-      atualizarStatusBaseProfessor();
+      atualizarStatusBasesEBD();
       setStatus("Base da Revista do Professor apagada.","ok");
     }
 
-    function atualizarStatusBaseProfessor(){
-      if(!baseProfessorStatus) return;
+    function atualizarStatusBasesEBD(){
+      if(baseAlunoStatus){
+        const htmlAluno = obterBaseAluno();
+        const metaAluno = obterMetaAluno();
 
-      const html = obterRevistaProfessorBase();
-      const meta = obterMetaRevistaProfessor();
-
-      if(!html){
-        baseProfessorStatus.className = "base-note warn";
-        baseProfessorStatus.textContent = "Nenhuma revista do professor salva como base ainda. Gere primeiro a Revista do Professor.";
-        return;
+        if(!htmlAluno){
+          baseAlunoStatus.className = "base-note warn";
+          baseAlunoStatus.textContent = "Nenhuma Revista do Aluno salva como base ainda. Gere primeiro a Revista do Aluno.";
+        }else{
+          const textoAluno = extrairTextoDeHtml(htmlAluno);
+          baseAlunoStatus.className = "base-note";
+          baseAlunoStatus.textContent =
+            `Revista do Aluno salva como base: ${metaAluno.title || "sem título"} • ${metaAluno.mes || ""} ${metaAluno.ano || ""} • ${textoAluno.length.toLocaleString("pt-BR")} caracteres.`;
+        }
       }
 
-      const texto = extrairTextoDeHtml(html);
+      if(baseProfessorStatus){
+        const htmlProfessor = obterBaseProfessor();
+        const metaProfessor = obterMetaProfessor();
 
-      baseProfessorStatus.className = "base-note";
-      baseProfessorStatus.textContent =
-        `Revista do Professor salva como base: ${meta.title || "sem título"} • ${meta.mes || ""} ${meta.ano || ""} • ${texto.length.toLocaleString("pt-BR")} caracteres.`;
+        if(!htmlProfessor){
+          baseProfessorStatus.className = "base-note warn";
+          baseProfessorStatus.textContent = "Nenhuma Revista do Professor salva como base ainda. Gere a Revista do Professor depois da Revista do Aluno.";
+        }else{
+          const textoProfessor = extrairTextoDeHtml(htmlProfessor);
+          baseProfessorStatus.className = "base-note";
+          baseProfessorStatus.textContent =
+            `Revista do Professor salva como base: ${metaProfessor.title || "sem título"} • ${metaProfessor.mes || ""} ${metaProfessor.ano || ""} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
+        }
+      }
     }
 
     function escapeRegex(text){
@@ -2248,15 +2353,15 @@
     }
 
     function montarInfoRevista(base){
-      const revistaTipo = getValue("revistaTipo") || "professor";
+      const revistaTipo = getValue("revistaTipo") || "aluno";
       const revistaClasse = getValue("revistaClasse") || "adultos";
       const revistaMes = getValue("revistaMes") || "Agosto";
       const revistaAno = getValue("revistaAno") || String(new Date().getFullYear());
       const revistaObservacao = getValue("revistaObservacao") || "";
       const printFormat = getValue("printFormat") || "a4";
 
-      let label = "Revista do professor";
-      if(revistaTipo === "aluno") label = "Revista do aluno";
+      let label = "Revista do aluno";
+      if(revistaTipo === "professor") label = "Revista do professor";
       if(revistaTipo === "apoio-professor") label = "Livro de apoio para o professor";
 
       return {
@@ -2420,7 +2525,7 @@
 Você é um comentarista de Escola Bíblica Dominical, teólogo pentecostal, escritor cristão, professor experiente e editor de materiais cristãos.
 
 Crie conteúdo para material de EBD mensal.
-Se for revista, deve ter 4 lições completas.
+A revista sempre deve ter 4 lições completas, correspondendo aos 4 domingos do mês.
 
 DADOS DO MATERIAL
 Título: ${base.title}
@@ -2453,12 +2558,39 @@ REGRAS IMPORTANTES
 - Texto Áureo, Verdade Prática, Leitura Bíblica em Classe e Leitura Diária devem continuar separados e bem organizados.
 - Cada lição deve possuir uma introdução exclusiva, diretamente ligada ao título, ao foco, ao texto áureo e à leitura bíblica em classe daquela lição.
 - Não repetir a mesma introdução nas quatro lições.
-- O conteúdo-base da Revista do Aluno e da Revista do Professor deve seguir a mesma linha de exposição.
-- A Revista do Professor deve conter a mesma lição-base, porém com subsídios, respostas, auxílios teológicos e orientação didática a mais.
+- A Revista do Aluno é a lição-base.
+- A Revista do Professor deve manter o mesmo conteúdo-base da Revista do Aluno e apenas acrescentar subsídios, respostas, auxílios teológicos e orientação didática.
+- A Revista do Professor não pode trocar os tópicos centrais da Revista do Aluno.
+- A Revista do Professor não pode mudar a linha de exposição da Revista do Aluno.
 - Nos tópicos e subtópicos, não coloque referências bíblicas apenas como etiquetas soltas.
 - As referências bíblicas dos tópicos devem entrar dentro da argumentação.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
+    }
+
+    function montarPromptProfessorBaseadoAluno(base,info,licoes,revistaAlunoTexto){
+      return `${montarPromptBaseRevista(base,info,licoes)}
+
+BASE REAL DA REVISTA DO ALUNO
+Use esta base como fundamento obrigatório.
+A Revista do Professor deve ensinar a mesma lição, com a mesma linha de exposição, acrescentando subsídios.
+
+${limitarTexto(revistaAlunoTexto,26000)}
+
+REGRAS ESPECÍFICAS PARA A REVISTA DO PROFESSOR
+- Não crie uma nova revista diferente.
+- Preserve o conteúdo-base da Revista do Aluno.
+- Preserve a ordem das lições.
+- Preserve a essência dos tópicos e subtópicos.
+- Acrescente respostas no Revisando o Conteúdo.
+- Acrescente Orientação ao Professor.
+- Acrescente Auxílio Teológico.
+- Acrescente Auxílio Didático.
+- Acrescente Ampliando o Conhecimento.
+- Acrescente explicações bíblicas mais maduras.
+- Acrescente observações pastorais e didáticas.
+- Não remova a estrutura principal da Revista do Aluno.
+- Entregar somente HTML interno, sem markdown.`;
     }
 
     function montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -2554,6 +2686,122 @@ Use HTML com:
 <div class="knowledge-box">`;
     }
 
+    function promptLicaoAluno(base,info,licoes,numero,dados){
+      return `${montarPromptBaseRevista(base,info,licoes)}
+
+ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO ALUNO
+
+Crie a lição-base completa e bem organizada.
+Essa lição será a base que depois a Revista do Professor vai expandir.
+Por isso, a lição precisa estar clara, consistente, bonita e completa.
+
+DADOS:
+Título: ${dados.titulo}
+Foco: ${dados.foco}
+Texto áureo: ${dados.textoAureo}
+Verdade prática: ${dados.verdadePratica}
+Leitura bíblica: ${dados.leituraClasse}
+Palavra-chave: ${dados.palavraChave}
+
+ESTRUTURA:
+1. Cabeçalho visual da lição.
+2. Leitura Diária logo depois do cabeçalho visual.
+3. Texto Áureo ou Para Memorizar.
+4. Verdade Prática.
+5. Leitura Bíblica em Classe.
+6. Objetivos.
+7. Introdução exclusiva.
+8. Três tópicos principais.
+9. Cada tópico com três subtópicos.
+10. Referências bíblicas integradas no argumento.
+11. Sinopse em cada tópico.
+12. Aplicação pessoal.
+13. Conclusão.
+14. Revisando o conteúdo com perguntas sem resposta.
+
+REGRAS:
+- Não use frases como “o professor deve”.
+- Não coloque auxílio ao professor.
+- Não coloque resposta das perguntas.
+- Fale diretamente com o aluno.
+- A lição deve estar completa o suficiente para servir de base à Revista do Professor.
+
+Use HTML com:
+<div class="lesson-hero">
+<div class="daily-reading">
+<div class="memory-verse">
+<div class="scripture-box">
+<div class="mini-grid">
+<div class="lesson-topic">
+<div class="subtopic">
+<span class="bible-ref">
+<div class="synopsis">
+<div class="personal-application">
+<div class="summary-box">`;
+    }
+
+    function promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto){
+      const trechoAluno = extrairTrechoDaLicaoBase(revistaAlunoTexto,numero,dados.titulo);
+
+      return `${montarPromptProfessorBaseadoAluno(base,info,licoes,revistaAlunoTexto)}
+
+ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO PROFESSOR BASEADA NA REVISTA DO ALUNO
+
+DADOS DA LIÇÃO
+Número: ${numero}
+Título: ${dados.titulo}
+Foco: ${dados.foco}
+Texto áureo obrigatório: ${dados.textoAureo}
+Verdade prática obrigatória: ${dados.verdadePratica}
+Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
+Palavra-chave obrigatória: ${dados.palavraChave}
+
+TRECHO REAL DA LIÇÃO ${numero} NA REVISTA DO ALUNO:
+${trechoAluno}
+
+TAREFA:
+Transforme esta lição do aluno em Revista do Professor.
+Mantenha a mesma lição-base.
+Não troque a exposição.
+Não invente outra linha.
+Acrescente subsídios, respostas, auxílios e orientações.
+
+ESTRUTURA:
+1. Cabeçalho visual da lição.
+2. Leitura Diária.
+3. Texto Áureo.
+4. Verdade Prática.
+5. Leitura Bíblica em Classe.
+6. Objetivos.
+7. Plano de aula.
+8. Introdução central mantendo a linha do aluno.
+9. Três tópicos principais mantendo a linha do aluno.
+10. Cada tópico com subtópicos.
+11. Sinopse em cada tópico.
+12. Aplicação pessoal.
+13. Conclusão.
+14. Revisando o conteúdo com 5 perguntas e respostas.
+15. Ampliando o conhecimento.
+16. Auxílio teológico.
+17. Auxílio didático.
+18. Orientação ao professor.
+
+Use HTML com:
+<div class="lesson-hero">
+<div class="daily-reading">
+<div class="memory-verse">
+<div class="scripture-box">
+<div class="mini-grid">
+<div class="lesson-topic">
+<div class="subtopic">
+<span class="bible-ref">
+<div class="synopsis">
+<div class="personal-application">
+<div class="summary-box">
+<div class="knowledge-box">
+<div class="teacher-help">`;
+    }
+
     function promptAberturaLivroApoio(base,info,licoes,revistaProfessorTexto){
       return `${montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto)}
 
@@ -2595,166 +2843,6 @@ Use HTML com:
 <ol class="list">
 <div class="knowledge-box">
 <div class="bibliography-box">`;
-    }
-
-    function fallbackAberturaLivroApoio(base,info,licoes){
-      return `
-        <h1 class="page-title">${escapeHtml(base.title)}</h1>
-        <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-
-        <div class="book-note">
-          <h4>Livro de Apoio para o Professor</h4>
-          ${paragraph(`Este livro de apoio foi preparado para acompanhar a ${base.title}, servindo como material de bastidor para o professor da Escola Bíblica Dominical.`)}
-          ${paragraph("A revista é o roteiro da aula. Este livro é o aprofundamento que ajuda o professor a dominar o assunto antes de ensiná-lo à classe.")}
-        </div>
-
-        <div class="block">
-          <h3>Apresentação</h3>
-          ${paragraph(`O tema "${base.visibleTheme}" exige mais do que uma leitura superficial. O professor precisa conhecer os fundamentos bíblicos, compreender os termos teológicos, perceber o desenvolvimento histórico do assunto e saber responder às dúvidas que podem surgir durante a aula.`)}
-          ${paragraph("A Escola Bíblica Dominical não é apenas um momento de transmissão de informações religiosas. Ela é um espaço de formação espiritual, doutrinária e prática. Por isso, o professor precisa estudar antes de ensinar, meditar antes de expor e orar antes de conduzir a classe.")}
-          ${paragraph("Este livro foi organizado para ampliar o conteúdo da Revista do Professor, oferecendo explicações mais densas, aplicações pastorais, perguntas respondidas, orientações didáticas, glossário e sugestões de leitura.")}
-        </div>
-
-        <div class="teacher-help">
-          <h4>Como usar este livro</h4>
-          ${paragraph("Leia primeiro a lição correspondente na Revista do Professor. Depois, use o capítulo deste livro para aprofundar o tema, organizar a explicação, selecionar exemplos e preparar respostas para possíveis perguntas dos alunos.")}
-          ${paragraph("Não é necessário ler todo o conteúdo em sala. Este livro é um reservatório de preparo. O professor usa na aula aquilo que for mais necessário para conduzir a classe com segurança, clareza e fidelidade bíblica.")}
-        </div>
-
-        <div class="summary-box">
-          <h4>Propósito do material</h4>
-          ${unorderedList([
-            "Ajudar o professor a compreender o tema com mais profundidade.",
-            "Expandir os argumentos apresentados na Revista do Professor.",
-            "Oferecer base bíblica, teológica e histórica para a exposição da aula.",
-            "Preparar respostas para dúvidas comuns dos alunos.",
-            "Fortalecer a segurança do professor diante da classe.",
-            "Conduzir o ensino à aplicação espiritual e prática."
-          ])}
-        </div>
-
-        <div class="block">
-          <h3>As quatro lições da revista</h3>
-          ${orderedList(licoes.map((l,i) => `Lição ${i + 1}: ${l.titulo} — ${l.foco}.`))}
-        </div>
-      `;
-    }
-
-    function fallbackSumarioLivroApoio(base,info,licoes){
-      return `
-        <h1 class="page-title">Sumário do Livro de Apoio</h1>
-        <p class="subtitle">${escapeHtml(base.title)} — apoio ao professor da EBD</p>
-
-        <div class="block">
-          <h3>Parte 1 — Fundamentos</h3>
-          ${orderedList([
-            "Apresentação do livro de apoio.",
-            "Como usar este material junto com a Revista do Professor.",
-            "A importância do preparo bíblico, teológico e didático do professor."
-          ])}
-        </div>
-
-        <div class="block">
-          <h3>Parte 2 — Expansão das Lições</h3>
-          ${orderedList(licoes.map((l,i) => `Capítulo ${i + 1}: Expansão da Lição ${i + 1} — ${l.titulo}.`))}
-        </div>
-
-        <div class="knowledge-box">
-          <h4>Parte 3 — Ferramentas para o Professor</h4>
-          ${paragraph("Esta parte reúne perguntas difíceis respondidas, orientações didáticas, glossário, linha do tempo e sugestões de leitura para aprofundamento.")}
-        </div>
-
-        <div class="bibliography-box">
-          <h4>Parte 4 — Bibliografia e Apêndices</h4>
-          ${paragraph("O professor encontrará indicações de obras de teologia sistemática, introdução bíblica, hermenêutica e materiais de apoio para melhor preparo das aulas.")}
-        </div>
-      `;
-    }
-
-    function promptLicaoProfessor(base,info,licoes,numero,dados){
-      return `${montarPromptBaseRevista(base,info,licoes)}
-
-ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO PROFESSOR
-
-DADOS DA LIÇÃO
-Número: ${numero}
-Título: ${dados.titulo}
-Foco: ${dados.foco}
-Texto áureo obrigatório: ${dados.textoAureo}
-Verdade prática obrigatória: ${dados.verdadePratica}
-Leitura bíblica em classe obrigatória: ${dados.leituraClasse}
-Palavra-chave obrigatória: ${dados.palavraChave}
-
-Crie uma LIÇÃO COMPLETA, ROBUSTA, PROFUNDA, TEOLÓGICA, BÍBLICA E DIDÁTICA.
-
-ESTRUTURA OBRIGATÓRIA:
-1. Cabeçalho visual da lição.
-2. Leitura Diária logo depois do cabeçalho visual.
-3. Texto Áureo.
-4. Verdade Prática.
-5. Leitura Bíblica em Classe.
-6. Objetivos.
-7. Plano de aula.
-8. Introdução exclusiva da lição.
-9. Três tópicos principais.
-10. Cada tópico com três subtópicos.
-11. Referências bíblicas integradas dentro da argumentação.
-12. Sinopse em cada tópico.
-13. Aplicação pessoal.
-14. Conclusão.
-15. Revisando o conteúdo com 5 perguntas e respostas.
-16. Ampliando o conhecimento.
-17. Auxílio teológico.
-18. Auxílio ao professor.
-
-REGRA:
-A lição-base precisa ser a mesma que a Revista do Aluno, mas a Revista do Professor deve trazer subsídios extras.
-
-Use HTML com:
-<div class="lesson-hero">
-<div class="daily-reading">
-<div class="memory-verse">
-<div class="scripture-box">
-<div class="mini-grid">
-<div class="lesson-topic">
-<div class="subtopic">
-<span class="bible-ref">
-<div class="synopsis">
-<div class="personal-application">
-<div class="summary-box">
-<div class="knowledge-box">
-<div class="teacher-help">`;
-    }
-
-    function promptLicaoAluno(base,info,licoes,numero,dados){
-      return `${montarPromptBaseRevista(base,info,licoes)}
-
-ETAPA: LIÇÃO ${numero} COMPLETA — REVISTA DO ALUNO
-
-Crie a mesma lição-base da Revista do Professor, porém sem os subsídios extras do professor.
-Não use frases como “o professor deve”.
-Fale diretamente com o aluno.
-
-DADOS:
-Título: ${dados.titulo}
-Foco: ${dados.foco}
-Texto áureo: ${dados.textoAureo}
-Verdade prática: ${dados.verdadePratica}
-Leitura bíblica: ${dados.leituraClasse}
-Palavra-chave: ${dados.palavraChave}
-
-Use HTML com:
-<div class="lesson-hero">
-<div class="daily-reading">
-<div class="memory-verse">
-<div class="scripture-box">
-<div class="mini-grid">
-<div class="lesson-topic">
-<div class="subtopic">
-<span class="bible-ref">
-<div class="synopsis">
-<div class="personal-application">
-<div class="summary-box">`;
     }
 
     function promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto){
@@ -2948,12 +3036,13 @@ Mateus 24.35:
       `;
     }
 
-    function gerarIntroducaoLicao(base,dados){
+    function gerarIntroducaoLicao(base,dados,isTeacher = false){
       return `
         <div class="block">
           <h3>Introdução</h3>
           ${paragraph(`Nesta lição, estudaremos ${dados.foco}. O tema será desenvolvido a partir da Palavra de Deus, mostrando sua importância para a fé, para a doutrina e para a vida cristã.`)}
-          ${paragraph(`A leitura bíblica principal, ${dados.leituraClasse}, conduz a classe ao fundamento do assunto. O objetivo é compreender a verdade revelada, aplicá-la à vida e crescer em obediência ao Senhor.`)}
+          ${paragraph(`A leitura bíblica principal, ${dados.leituraClasse}, conduz o estudo ao fundamento do assunto. O objetivo é compreender a verdade revelada, aplicá-la à vida e crescer em obediência ao Senhor.`)}
+          ${isTeacher ? paragraph("Na Revista do Professor, esta introdução serve como ponto de partida para conduzir a aula, ampliar a explicação e aplicar o ensino com clareza didática.") : ""}
         </div>
       `;
     }
@@ -3060,7 +3149,12 @@ Mateus 24.35:
         </div>
 
         <div class="teacher-help">
-          <h4>Auxílio ao Professor</h4>
+          <h4>Auxílio Didático</h4>
+          ${paragraph("Use perguntas simples para conduzir a turma. Primeiro, pergunte o que os alunos já sabem sobre o tema. Depois, apresente o texto bíblico e mostre como a doutrina nasce da própria Escritura.")}
+        </div>
+
+        <div class="teacher-help">
+          <h4>Orientação ao Professor</h4>
           ${paragraphHtml(`Professor, prepare esta lição com oração e leitura cuidadosa. Tiago ensina que devemos ser praticantes da Palavra, e não somente ouvintes ${refInline("Tg 1.22")}.`)}
         </div>
       `;
@@ -3101,17 +3195,22 @@ Mateus 24.35:
           </div>
 
           <div class="mini-card">
-            <h3>Plano de Aula</h3>
-            ${unorderedList([
+            <h3>${isTeacher ? "Plano de Aula" : "Para Refletir"}</h3>
+            ${isTeacher ? unorderedList([
               "Inicie com oração e leitura bíblica em classe.",
               "Apresente a palavra-chave: " + dados.palavraChave + ".",
               "Explique os tópicos com participação da classe.",
               "Conclua com revisão, aplicação e compromisso prático."
+            ]) : unorderedList([
+              "Leia o texto bíblico com atenção.",
+              "Anote as palavras que chamarem sua atenção.",
+              "Responda as perguntas com suas próprias palavras.",
+              "Ore pedindo a Deus entendimento e obediência."
             ])}
           </div>
         </div>
 
-        ${gerarIntroducaoLicao(base,dados)}
+        ${gerarIntroducaoLicao(base,dados,isTeacher)}
         ${renderTopicos(gerarTopicosGenericos(base,dados))}
 
         <div class="personal-application">
@@ -3203,8 +3302,7 @@ Mateus 24.35:
         "Desenvolva esta parte",
         "Como explicar este tema com clareza?",
         "Explique a partir da Bíblia, use exemplos simples",
-        "Este capítulo aprofunda o tema",
-        "O professor da Escola Bíblica Dominical não precisa apenas repetir"
+        "Este capítulo aprofunda o tema"
       ];
 
       return !sinaisFallback.some(sinal => limpo.includes(sinal));
@@ -3225,8 +3323,74 @@ Mateus 24.35:
       `;
     }
 
+    function fallbackAberturaLivroApoio(base,info,licoes){
+      return `
+        <h1 class="page-title">${escapeHtml(base.title)}</h1>
+        <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+
+        <div class="book-note">
+          <h4>Livro de Apoio para o Professor</h4>
+          ${paragraph(`Este livro de apoio foi preparado para acompanhar a ${base.title}, servindo como material de bastidor para o professor da Escola Bíblica Dominical.`)}
+          ${paragraph("A revista é o roteiro da aula. Este livro é o aprofundamento que ajuda o professor a dominar o assunto antes de ensiná-lo à classe.")}
+        </div>
+
+        <div class="block">
+          <h3>Apresentação</h3>
+          ${paragraph(`O tema "${base.visibleTheme}" exige mais do que uma leitura superficial. O professor precisa conhecer os fundamentos bíblicos, compreender os termos teológicos, perceber o desenvolvimento histórico do assunto e saber responder às dúvidas que podem surgir durante a aula.`)}
+          ${paragraph("Este livro foi organizado para ampliar o conteúdo da Revista do Professor, oferecendo explicações mais densas, aplicações pastorais, perguntas respondidas, orientações didáticas, glossário e sugestões de leitura.")}
+        </div>
+
+        <div class="teacher-help">
+          <h4>Como usar este livro</h4>
+          ${paragraph("Leia primeiro a lição correspondente na Revista do Professor. Depois, use o capítulo deste livro para aprofundar o tema, organizar a explicação, selecionar exemplos e preparar respostas para possíveis perguntas dos alunos.")}
+        </div>
+
+        <div class="summary-box">
+          <h4>Propósito do material</h4>
+          ${unorderedList([
+            "Ajudar o professor a compreender o tema com mais profundidade.",
+            "Expandir os argumentos apresentados na Revista do Professor.",
+            "Oferecer base bíblica, teológica e histórica para a exposição da aula.",
+            "Preparar respostas para dúvidas comuns dos alunos.",
+            "Fortalecer a segurança do professor diante da classe."
+          ])}
+        </div>
+
+        <div class="block">
+          <h3>As quatro lições da revista</h3>
+          ${orderedList(licoes.map((l,i) => `Lição ${i + 1}: ${l.titulo} — ${l.foco}.`))}
+        </div>
+      `;
+    }
+
+    function fallbackSumarioLivroApoio(base,info,licoes){
+      return `
+        <h1 class="page-title">Sumário do Livro de Apoio</h1>
+        <p class="subtitle">${escapeHtml(base.title)} — apoio ao professor da EBD</p>
+
+        <div class="block">
+          <h3>Parte 1 — Fundamentos</h3>
+          ${orderedList([
+            "Apresentação do livro de apoio.",
+            "Como usar este material junto com a Revista do Professor.",
+            "A importância do preparo bíblico, teológico e didático do professor."
+          ])}
+        </div>
+
+        <div class="block">
+          <h3>Parte 2 — Expansão das Lições</h3>
+          ${orderedList(licoes.map((l,i) => `Capítulo ${i + 1}: Expansão da Lição ${i + 1} — ${l.titulo}.`))}
+        </div>
+
+        <div class="knowledge-box">
+          <h4>Parte 3 — Ferramentas para o Professor</h4>
+          ${paragraph("Esta parte reúne perguntas difíceis respondidas, orientações didáticas, glossário, linha do tempo e sugestões de leitura para aprofundamento.")}
+        </div>
+      `;
+    }
+
     async function generateSupportBookAsync(base,info,licoes){
-      const revistaProfessorHtml = obterRevistaProfessorBase();
+      const revistaProfessorHtml = obterBaseProfessor();
       const revistaProfessorTexto = extrairTextoDeHtml(revistaProfessorHtml);
 
       if(!revistaProfessorHtml || revistaProfessorTexto.length < 3000){
@@ -3236,8 +3400,8 @@ Mateus 24.35:
               <h1 class="page-title">Revista do Professor não encontrada</h1>
               <p class="subtitle">O Livro de Apoio precisa nascer da Revista do Professor completa.</p>
               <div class="summary-box">
-                <h4>Gere primeiro a Revista do Professor</h4>
-                ${paragraph("Primeiro escolha Revista do Professor, gere a revista completa e deixe o app salvar automaticamente como base. Depois troque para Livro de apoio para o professor.")}
+                <h4>Gere primeiro a Revista do Aluno e depois a Revista do Professor</h4>
+                ${paragraph("O fluxo correto agora é: Revista do Aluno → Revista do Professor → Livro de Apoio. Primeiro gere a Revista do Aluno. Depois gere a Revista do Professor usando a base do aluno. Só então gere o Livro de Apoio.")}
               </div>
             `)}
           </div>
@@ -3302,8 +3466,7 @@ Mateus 24.35:
       await pause(900);
       setStep(6,"Gerando capa profissional do livro de apoio...");
 
-      const imagePrompt = promptCapaImagem(base,info);
-      const imageData = await chamarImagemIA(imagePrompt,{
+      const imageData = await chamarImagemIA(promptCapaImagem(base,info),{
         etapa:"Capa do livro de apoio",
         tipo:"livro-apoio-ebd"
       });
@@ -3419,9 +3582,34 @@ Mateus 24.35:
         return;
       }
 
+      let revistaAlunoTexto = "";
+
+      if(info.isTeacher){
+        const revistaAlunoHtml = obterBaseAluno();
+        revistaAlunoTexto = extrairTextoDeHtml(revistaAlunoHtml);
+
+        if(!revistaAlunoHtml || revistaAlunoTexto.length < 3000){
+          renderGenerated(`
+            <div class="doc">
+              ${renderPage(`
+                <h1 class="page-title">Revista do Aluno não encontrada</h1>
+                <p class="subtitle">A Revista do Professor precisa nascer da Revista do Aluno completa.</p>
+                <div class="summary-box">
+                  <h4>Gere primeiro a Revista do Aluno</h4>
+                  ${paragraph("O fluxo correto agora é: Revista do Aluno → Revista do Professor → Livro de Apoio. Primeiro escolha Revista do Aluno, gere a revista completa e deixe o app salvar automaticamente como base. Depois troque para Revista do Professor.")}
+                </div>
+              `)}
+            </div>
+          `);
+
+          finishSteps("Geração bloqueada: falta a Revista do Aluno salva como base.");
+          return;
+        }
+      }
+
       let html = `<div class="doc">`;
 
-      setStep(0,"Gerando apresentação da revista...");
+      setStep(0,info.isTeacher ? "Gerando apresentação do professor baseada na Revista do Aluno..." : "Gerando apresentação da Revista do Aluno...");
       let apresentacao = await chamarTextoIA(promptApresentacaoRevista(base,info,licoes),"Apresentação da revista");
       apresentacao = limparMarkdownHtml(apresentacao);
 
@@ -3464,10 +3652,10 @@ Mateus 24.35:
         const dados = licoes[i];
 
         await pause(900);
-        setStep(i + 2,`Gerando Lição ${numero}...`);
+        setStep(i + 2,info.isTeacher ? `Gerando Lição ${numero} do professor baseada na Revista do Aluno...` : `Gerando Lição ${numero} do aluno...`);
 
         const prompt = info.isTeacher
-          ? promptLicaoProfessor(base,info,licoes,numero,dados)
+          ? promptLicaoProfessorBaseadaAluno(base,info,licoes,numero,dados,revistaAlunoTexto)
           : promptLicaoAluno(base,info,licoes,numero,dados);
 
         let licao = await chamarTextoIA(prompt,`Lição ${numero}`);
@@ -3484,8 +3672,7 @@ Mateus 24.35:
       await pause(900);
       setStep(6,"Gerando arte profissional da capa...");
 
-      const imagePrompt = promptCapaImagem(base,info);
-      const imageData = await chamarImagemIA(imagePrompt,{
+      const imageData = await chamarImagemIA(promptCapaImagem(base,info),{
         etapa:"Capa da revista",
         tipo:"revista-ebd"
       });
@@ -3516,9 +3703,12 @@ Mateus 24.35:
 
       renderGenerated(html);
 
-      if(info.isTeacher){
-        salvarRevistaProfessorBaseAutomatico(base,info,html);
-        finishSteps("Revista do Professor gerada e salva automaticamente como base para o Livro de Apoio.");
+      if(info.isStudent){
+        salvarBaseAlunoAutomatico(base,info,html);
+        finishSteps("Revista do Aluno gerada e salva automaticamente como base para a Revista do Professor.");
+      }else if(info.isTeacher){
+        salvarBaseProfessorAutomatico(base,info,html);
+        finishSteps("Revista do Professor gerada baseada na Revista do Aluno e salva como base para o Livro de Apoio.");
       }else{
         finishSteps("Revista EBD mensal gerada com sucesso.");
       }
@@ -3768,7 +3958,7 @@ Mateus 24.35:
       setValue("sermonPoints","4");
       setValue("sermonType","temático");
       setValue("sermonAppeal","com apelo espiritual forte");
-      setValue("revistaTipo","professor");
+      setValue("revistaTipo","aluno");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
       setValue("revistaAno","2026");
@@ -3794,8 +3984,8 @@ Mateus 24.35:
       `;
 
       updateSteps(currentType);
-      atualizarStatusBaseProfessor();
-      setStatus("Campos limpos. Aguardando geração.","ok");
+      atualizarStatusBasesEBD();
+      setStatus("Campos limpos. As bases salvas continuam guardadas no navegador.","ok");
     }
 
     function ativarEdicao(){
@@ -3853,13 +4043,13 @@ Mateus 24.35:
         setValue("author","Isiquel Rodrigues");
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
-        setValue("revistaTipo","professor");
+        setValue("revistaTipo","aluno");
         setValue("revistaClasse","adultos");
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: O Que é a Bíblia?\nLição 2: Como a Bíblia Foi Formada?\nLição 3: Como a Bíblia Chegou Até Nós?\nLição 4: O Privilégio de Ter a Bíblia em Mãos");
-        setValue("extraNotes","Quero uma revista bíblica, robusta e profunda. Cada lição precisa ter introdução própria, referências bíblicas integradas no argumento e aplicação prática.");
+        setValue("extraNotes","Quero uma revista bíblica, robusta e profunda. A Revista do Aluno deve ser a lição-base completa. Depois a Revista do Professor deve usar essa base e acrescentar subsídios sem mudar a exposição.");
       }
 
       if(type === "sermao"){
@@ -3893,6 +4083,11 @@ Não copie conteúdo de nenhuma editora.
 Explique os versículos com fidelidade ao contexto.
 As referências bíblicas devem entrar naturalmente na argumentação.
 Cada introdução deve ser exclusiva do assunto trabalhado.
+
+Para EBD, siga esta lógica:
+1. Revista do Aluno: lição-base completa.
+2. Revista do Professor: mesma lição-base do aluno, com subsídios e respostas.
+3. Livro de Apoio: expansão profunda da Revista do Professor.
       `.trim();
 
       setValue("theme",prompt);
@@ -3912,11 +4107,14 @@ Cada introdução deve ser exclusiva do assunto trabalhado.
     btnCopy.addEventListener("click",copiarTexto);
     btnTest.addEventListener("click",preencherTeste);
     btnPrompt.addEventListener("click",gerarPromptAutomatico);
-    btnSaveProfessorBase.addEventListener("click",salvarRevistaProfessorBaseManual);
-    btnClearProfessorBase.addEventListener("click",apagarRevistaProfessorBase);
+
+    btnSaveAlunoBase.addEventListener("click",salvarBaseAlunoManual);
+    btnClearAlunoBase.addEventListener("click",apagarBaseAluno);
+    btnSaveProfessorBase.addEventListener("click",salvarBaseProfessorManual);
+    btnClearProfessorBase.addEventListener("click",apagarBaseProfessor);
 
     updateReservedState();
-    atualizarStatusBaseProfessor();
+    atualizarStatusBasesEBD();
     setContentType("sermao");
   </script>
 </body>
