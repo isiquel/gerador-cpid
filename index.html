@@ -113,6 +113,21 @@
       color:#5a3b1e;
     }
 
+    .truth-note{
+      background:#effaf3;
+      border:1px solid #9fd1ad;
+      color:#235f38;
+      border-radius:16px;
+      padding:10px 12px;
+      font-size:13px;
+      line-height:1.45;
+      margin-bottom:12px;
+    }
+
+    .truth-note strong{
+      color:#174e2c;
+    }
+
     .status-mini-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -588,6 +603,34 @@
 
     .list li{
       margin-bottom:7px;
+    }
+
+    .safe-bibliography-alert{
+      background:linear-gradient(180deg,#effaf3,#e1f5e8);
+      border:1px solid #87bf98;
+      border-left:7px solid #238b45;
+      border-radius:18px;
+      padding:15px;
+      margin-bottom:14px;
+    }
+
+    .safe-bibliography-alert h4{
+      margin:0 0 9px;
+      color:#1f6f38;
+    }
+
+    .reference-alert{
+      background:linear-gradient(180deg,#fff7e6,#fff0cd);
+      border:1px solid #d2ac55;
+      border-left:7px solid #b88700;
+      border-radius:18px;
+      padding:15px;
+      margin-bottom:14px;
+    }
+
+    .reference-alert h4{
+      margin:0 0 9px;
+      color:#765000;
     }
 
     .mini-grid{
@@ -1377,6 +1420,8 @@
       .synopsis,
       .book-note,
       .bibliography-box,
+      .safe-bibliography-alert,
+      .reference-alert,
       .manual-placeholder{
         break-inside:avoid;
         page-break-inside:avoid;
@@ -1399,7 +1444,9 @@
       .lesson-synthesis,
       .daily-reading,
       .book-note,
-      .bibliography-box{
+      .bibliography-box,
+      .safe-bibliography-alert,
+      .reference-alert{
         padding:10px !important;
         margin-bottom:8px !important;
       }
@@ -1499,7 +1546,7 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Gerador de material cristão com foco em sermões, estudos e revista EBD mensal do aluno, do professor e livro de apoio.</p>
+      <p>Gerador de material cristão com revista EBD mensal, professor e livro de apoio com controle de fidelidade bíblica.</p>
     </header>
 
     <div class="layout">
@@ -1733,6 +1780,10 @@
               <strong>Fluxo:</strong> Revista do Aluno → Revista do Professor → Livro de Apoio.
             </div>
 
+            <div class="truth-note">
+              <strong>v10.4.6:</strong> bibliografia segura, referências bíblicas mais fiéis e Livro de Apoio com opção expandida.
+            </div>
+
             <div class="status-mini-grid">
               <div id="baseAlunoStatus" class="status-mini warn">Aluno: base não salva.</div>
               <div id="baseProfessorStatus" class="status-mini warn">Professor: base não salva.</div>
@@ -1781,6 +1832,31 @@
               <div class="field">
                 <label for="revistaAno">Ano</label>
                 <input id="revistaAno" type="number" value="2026" />
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="supportBookDepth">Livro de Apoio</label>
+                <select id="supportBookDepth">
+                  <option value="normal">Normal — 35 a 45 páginas</option>
+                  <option value="expandido" selected>Expandido — 45 a 60 páginas</option>
+                  <option value="muito-expandido">Muito expandido — 60 a 75 páginas</option>
+                </select>
+                <div class="chip-note">
+                  Essa opção vale principalmente para o Livro de Apoio do Professor.
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="bibliographyMode">Bibliografia</label>
+                <select id="bibliographyMode">
+                  <option value="segura" selected>Somente obras seguras</option>
+                  <option value="segura-com-revisao">Segura + aviso de revisão</option>
+                </select>
+                <div class="chip-note">
+                  Não inventar livros, Bíblias, comentários, autores ou editoras.
+                </div>
               </div>
             </div>
 
@@ -1936,11 +2012,204 @@
       "admin"
     ];
 
-    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1045";
-    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1045";
+    const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1046";
+    const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1046";
 
-    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1045";
-    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1045";
+    const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1046";
+    const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1046";
+
+    const SAFE_BIBLIOGRAPHY = [
+      {
+        titulo:"Bíblia de Estudo Pentecostal",
+        autor:"Donald C. Stamps, editor geral",
+        editora:"CPAD",
+        categoria:"Bíblia de estudo",
+        uso:"Notas de orientação pentecostal, doutrinária e devocional para o estudo bíblico."
+      },
+      {
+        titulo:"Bíblia de Estudo Aplicação Pessoal",
+        autor:"Equipe editorial",
+        editora:"CPAD",
+        categoria:"Bíblia de estudo",
+        uso:"Aplicações práticas do texto bíblico à vida cristã."
+      },
+      {
+        titulo:"Bíblia de Estudo NVI",
+        autor:"Equipe editorial",
+        editora:"Editora Vida",
+        categoria:"Bíblia de estudo",
+        uso:"Notas introdutórias, mapas, comentários e recursos de estudo em linguagem clara."
+      },
+      {
+        titulo:"Bíblia de Estudo Almeida",
+        autor:"Equipe editorial",
+        editora:"Sociedade Bíblica do Brasil",
+        categoria:"Bíblia de estudo",
+        uso:"Apoio ao estudo do texto bíblico em tradição Almeida."
+      },
+      {
+        titulo:"Dicionário Bíblico Wycliffe",
+        autor:"Charles F. Pfeiffer, Howard F. Vos e John Rea, editores",
+        editora:"CPAD",
+        categoria:"Dicionário bíblico",
+        uso:"Consulta de termos, personagens, lugares e temas bíblicos."
+      },
+      {
+        titulo:"Dicionário Vine",
+        autor:"W. E. Vine",
+        editora:"CPAD",
+        categoria:"Léxico / dicionário expositivo",
+        uso:"Estudo de palavras bíblicas do Antigo e do Novo Testamento."
+      },
+      {
+        titulo:"Nova Concordância Exaustiva da Bíblia",
+        autor:"James Strong",
+        editora:"SBB",
+        categoria:"Concordância bíblica",
+        uso:"Pesquisa de palavras, ocorrências e termos bíblicos."
+      },
+      {
+        titulo:"Teologia Sistemática",
+        autor:"Stanley M. Horton, editor",
+        editora:"CPAD",
+        categoria:"Teologia sistemática pentecostal",
+        uso:"Apoio doutrinário em perspectiva pentecostal clássica."
+      },
+      {
+        titulo:"Teologia Sistemática Pentecostal",
+        autor:"Vários autores",
+        editora:"CPAD",
+        categoria:"Teologia sistemática pentecostal",
+        uso:"Aprofundamento doutrinário em temas centrais da fé cristã."
+      },
+      {
+        titulo:"Conhecendo as Doutrinas da Bíblia",
+        autor:"Myer Pearlman",
+        editora:"Editora Vida",
+        categoria:"Doutrina bíblica",
+        uso:"Introdução clara às principais doutrinas cristãs."
+      },
+      {
+        titulo:"Manual Bíblico de Halley",
+        autor:"Henry H. Halley",
+        editora:"Editora Vida",
+        categoria:"Manual bíblico",
+        uso:"Panorama histórico, geográfico e devocional dos livros bíblicos."
+      },
+      {
+        titulo:"Comentário Bíblico Beacon",
+        autor:"Vários autores",
+        editora:"CPAD",
+        categoria:"Comentário bíblico",
+        uso:"Comentário expositivo e teológico para apoio ao professor."
+      },
+      {
+        titulo:"Comentário Bíblico Moody",
+        autor:"Vários autores",
+        editora:"Editora Batista Regular",
+        categoria:"Comentário bíblico",
+        uso:"Comentário panorâmico e explicativo de livros bíblicos."
+      },
+      {
+        titulo:"Comentário Bíblico Pentecostal do Novo Testamento",
+        autor:"French L. Arrington e Roger Stronstad, editores",
+        editora:"CPAD",
+        categoria:"Comentário bíblico pentecostal",
+        uso:"Apoio exegético e pentecostal ao estudo do Novo Testamento."
+      },
+      {
+        titulo:"Comentário Bíblico Pentecostal do Antigo Testamento",
+        autor:"Vários autores",
+        editora:"CPAD",
+        categoria:"Comentário bíblico pentecostal",
+        uso:"Apoio exegético e pentecostal ao estudo do Antigo Testamento."
+      },
+      {
+        titulo:"Comentário Histórico-Cultural do Novo Testamento",
+        autor:"Craig S. Keener",
+        editora:"Vida Nova",
+        categoria:"Contexto histórico-cultural",
+        uso:"Compreensão do pano de fundo histórico, social e cultural do Novo Testamento."
+      },
+      {
+        titulo:"Comentário Histórico-Cultural da Bíblia",
+        autor:"John H. Walton, Victor H. Matthews e Mark W. Chavalas",
+        editora:"Vida Nova",
+        categoria:"Contexto histórico-cultural",
+        uso:"Compreensão do pano de fundo histórico e cultural do Antigo Testamento."
+      }
+    ];
+
+    const REFERENCE_GUIDE = [
+      {
+        ref:"Mateus 24.12",
+        assunto:"esfriamento do amor por causa da multiplicação da iniquidade"
+      },
+      {
+        ref:"Mateus 24.13",
+        assunto:"perseverança até o fim"
+      },
+      {
+        ref:"2 Timóteo 3.16",
+        assunto:"inspiração divina e utilidade das Escrituras"
+      },
+      {
+        ref:"2 Timóteo 3.14-17",
+        assunto:"permanecer naquilo que foi aprendido e reconhecer a suficiência das Escrituras"
+      },
+      {
+        ref:"João 17.17",
+        assunto:"santificação pela verdade da Palavra de Deus"
+      },
+      {
+        ref:"Romanos 12.1-2",
+        assunto:"não conformação com o mundo e renovação da mente"
+      },
+      {
+        ref:"Gálatas 1.6-10",
+        assunto:"perigo de outro evangelho"
+      },
+      {
+        ref:"2 Timóteo 4.1-5",
+        assunto:"pregação fiel da Palavra e rejeição da sã doutrina"
+      },
+      {
+        ref:"1 Pedro 1.13-16",
+        assunto:"chamado à santidade"
+      },
+      {
+        ref:"Judas 1.20-25",
+        assunto:"edificação na fé, vigilância espiritual e preservação em Deus"
+      },
+      {
+        ref:"Provérbios 13.20",
+        assunto:"influência das companhias sábias"
+      },
+      {
+        ref:"1 Coríntios 15.33",
+        assunto:"más companhias corrompem bons costumes"
+      },
+      {
+        ref:"Salmo 1.1-3",
+        assunto:"caminho do justo e prazer na lei do Senhor"
+      },
+      {
+        ref:"Daniel 1.8",
+        assunto:"decisão de não se contaminar"
+      },
+      {
+        ref:"1 Timóteo 4.12",
+        assunto:"jovem cristão como exemplo na fé, conduta e pureza"
+      },
+      {
+        ref:"Salmo 119.9",
+        assunto:"purificação do caminho do jovem pela Palavra"
+      },
+      {
+        ref:"Josué 24.15",
+        assunto:"decisão de servir ao Senhor"
+      }
+    ];
 
     const typeButtons = document.querySelectorAll(".type-option");
     const contentTypeInput = document.getElementById("contentType");
@@ -2160,23 +2429,28 @@
 
       if(type === "sermao"){
         sermaoFields.classList.remove("hidden");
+        sermaoFields.open = true;
       }
 
       if(type === "devocional"){
         devocionalFields.classList.remove("hidden");
+        devocionalFields.open = true;
       }
 
       if(type === "estudo"){
         estudoFields.classList.remove("hidden");
+        estudoFields.open = true;
       }
 
       if(type === "revista"){
         revistaFields.classList.remove("hidden");
+        revistaFields.open = true;
         setValue("coverMode","com-capa");
       }
 
       if(["ebook","livro","curso"].includes(type)){
         bookFields.classList.remove("hidden");
+        bookFields.open = true;
       }
 
       updateSteps(type);
@@ -2668,6 +2942,32 @@
       return proibidos.some(p => limpo.includes(p));
     }
 
+    function contemBibliografiaInventada(texto){
+      const limpo = String(texto || "").toLowerCase();
+
+      const sinais = [
+        "nvi pentecostal",
+        "bíblia de estudo nvi pentecostal",
+        "biblía de estudo nvi pentecostal",
+        "comentário bíblico pentecostal. editora cpid",
+        "comentários bíblicos pentecostais. editora cpid",
+        "editora cpid esclarece",
+        "jude 1 comentário",
+        "jude 1 coment",
+        "comentário de jude 1",
+        "comentário bíblico cpid",
+        "comentário cpid",
+        "cpid comentário",
+        "editora vida. cnote",
+        "cnote",
+        "vida nova essencial para o estudo detalhado",
+        "léxico do novo testamento. editora vida nova",
+        "bÍblia de estudo nvi pentecostal"
+      ];
+
+      return sinais.some(s => limpo.includes(s));
+    }
+
     function validarRespostaIA(texto,minimo = 220,opcoes = {}){
       const original = String(texto || "").trim();
       const limpo = original.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
@@ -2695,12 +2995,17 @@
         return false;
       }
 
+      if(opcoes.bibliografiaSegura && contemBibliografiaInventada(limpo)){
+        return false;
+      }
+
       const temConteudoBiblico =
         /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino|oração|pecado|graça|obediência|verdade|adolescente|jovem/i.test(limpo);
 
       if(limpo.length >= minimo && temConteudoBiblico) return true;
       if(opcoes.aceitarCurto && limpo.length >= 80 && temConteudoBiblico) return true;
       if(opcoes.aceitarMuitoCurto && limpo.length >= 55 && temConteudoBiblico) return true;
+      if(opcoes.bibliografiaSegura && limpo.length >= 120) return true;
 
       return false;
     }
@@ -2956,6 +3261,8 @@ Etapa: ${etapa}
       const revistaAno = getValue("revistaAno") || String(new Date().getFullYear());
       const revistaObservacao = getValue("revistaObservacao") || "";
       const printFormat = getValue("printFormat") || "a4";
+      const supportBookDepth = getValue("supportBookDepth") || "expandido";
+      const bibliographyMode = getValue("bibliographyMode") || "segura";
 
       let label = "Revista do aluno";
       if(revistaTipo === "professor") label = "Revista do professor";
@@ -2968,12 +3275,94 @@ Etapa: ${etapa}
         revistaAno,
         revistaObservacao,
         printFormat,
+        supportBookDepth,
+        bibliographyMode,
         isTeacher:revistaTipo === "professor",
         isStudent:revistaTipo === "aluno",
         isSupportBook:revistaTipo === "apoio-professor",
         label,
         monthInfo:`${revistaMes} de ${revistaAno} • Material EBD`
       };
+    }
+
+    function descricaoProfundidadeLivro(info){
+      const modo = info.supportBookDepth || "expandido";
+
+      if(modo === "normal"){
+        return `
+MODO DO LIVRO DE APOIO: NORMAL
+Meta editorial: 35 a 45 páginas.
+Cada capítulo deve ser claro, completo e objetivo.
+Evite alongar além do necessário.
+        `.trim();
+      }
+
+      if(modo === "muito-expandido"){
+        return `
+MODO DO LIVRO DE APOIO: MUITO EXPANDIDO
+Meta editorial: 60 a 75 páginas.
+Cada capítulo deve ser bem profundo, com ampliação bíblica, teológica, histórica, pastoral, didática e perguntas difíceis.
+Cuidado: profundidade não é repetição.
+Não inventar informação.
+Não criar bibliografia falsa.
+        `.trim();
+      }
+
+      return `
+MODO DO LIVRO DE APOIO: EXPANDIDO
+Meta editorial: 45 a 60 páginas.
+Cada capítulo deve ser mais profundo que a revista do professor.
+Amplie com conteúdo real: contexto bíblico, explicação dos textos, termos importantes, perguntas difíceis, respostas pastorais, erros comuns, como ensinar e aplicações.
+Não encher linguiça.
+Não repetir o mesmo argumento em seções diferentes.
+Não inventar bibliografia.
+      `.trim();
+    }
+
+    function bibliografiaSeguraTexto(){
+      return SAFE_BIBLIOGRAPHY.map((item,index) => {
+        return `${index + 1}. ${item.titulo} — ${item.autor}. ${item.editora}. Categoria: ${item.categoria}. Uso: ${item.uso}`;
+      }).join("\n");
+    }
+
+    function guiaReferenciasTexto(){
+      return REFERENCE_GUIDE.map(item => {
+        return `${item.ref} — usar somente para: ${item.assunto}.`;
+      }).join("\n");
+    }
+
+    function renderBibliografiaSegura(base,info){
+      const itens = SAFE_BIBLIOGRAPHY;
+
+      return `
+        <section class="page bibliography-page">
+          <h1 class="page-title">Bibliografia Recomendada</h1>
+          <p class="subtitle">Obras reais e seguras para consulta do professor.</p>
+
+          <div class="safe-bibliography-alert">
+            <h4>Nota editorial</h4>
+            <p class="text">Esta bibliografia foi organizada a partir de uma lista segura de obras conhecidas. Recomenda-se ao professor conferir edição, ano e disponibilidade antes de citar em aula ou em material impresso final.</p>
+          </div>
+
+          <div class="bibliography-box">
+            <h4>Bíblias de Estudo, Dicionários, Teologia e Comentários</h4>
+            <ul class="list">
+              ${itens.map(item => `
+                <li>
+                  <strong>${escapeHtml(item.titulo)}</strong> — ${escapeHtml(item.autor)}.
+                  ${escapeHtml(item.editora)}.
+                  <em>${escapeHtml(item.uso)}</em>
+                </li>
+              `).join("")}
+            </ul>
+          </div>
+
+          <div class="reference-alert">
+            <h4>Cuidado com referências bíblicas</h4>
+            <p class="text">Ao ensinar, cada referência bíblica deve ser usada de acordo com seu sentido. Não se deve citar um versículo para defender uma ideia que pertence a outro texto. A fidelidade bíblica é mais importante que a quantidade de citações.</p>
+          </div>
+        </section>
+      `;
     }
 
     function extrairTituloLicao(linha,indice){
@@ -3061,6 +3450,14 @@ Etapa: ${etapa}
           texto:"Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida."
         },
         {
+          teste:["provérbios 13.20","pv 13.20"],
+          texto:"Anda com os sábios e serás sábio, mas o companheiro dos tolos será afligido."
+        },
+        {
+          teste:["1 coríntios 15.33","1co 15.33","1 co 15.33"],
+          texto:"Não vos enganeis: as más conversações corrompem os bons costumes."
+        },
+        {
           teste:["1 timóteo 4.12","1tm 4.12","1 tm 4.12"],
           texto:"Ninguém despreze a tua mocidade; mas sê o exemplo dos fiéis, na palavra, no trato, na caridade, no espírito, na fé, na pureza."
         },
@@ -3113,6 +3510,10 @@ Etapa: ${etapa}
           texto:"Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor."
         },
         {
+          teste:["mateus 24.12","mt 24.12"],
+          texto:"E, por se multiplicar a iniquidade, o amor de muitos se esfriará."
+        },
+        {
           teste:["mateus 24.13","mt 24.13"],
           texto:"Mas aquele que perseverar até ao fim será salvo."
         },
@@ -3127,35 +3528,17 @@ Etapa: ${etapa}
         {
           teste:["joão 14.1","jo 14.1"],
           texto:"Não se turbe o vosso coração; credes em Deus, crede também em mim."
-        },
-        {
-          teste:["atos 1.11","at 1.11"],
-          texto:"Esse Jesus, que dentre vós foi recebido em cima no céu, há de vir assim como para o céu o vistes ir."
-        },
-        {
-          teste:["tito 2.13","tt 2.13"],
-          texto:"Aguardando a bem-aventurada esperança e o aparecimento da glória do grande Deus e nosso Senhor Jesus Cristo."
-        },
-        {
-          teste:["1 tessalonicenses 4.16","1ts 4.16","1 ts 4.16"],
-          texto:"Porque o mesmo Senhor descerá do céu com alarido, e com voz de arcanjo, e com a trombeta de Deus."
-        },
-        {
-          teste:["1 coríntios 15.52","1co 15.52","1 co 15.52"],
-          texto:"Num momento, num abrir e fechar de olhos, ante a última trombeta; porque a trombeta soará, e os mortos ressuscitarão incorruptíveis."
-        },
-        {
-          teste:["apocalipse 21.4","ap 21.4"],
-          texto:"E Deus limpará de seus olhos toda lágrima; e não haverá mais morte, nem pranto, nem clamor, nem dor."
-        },
-        {
-          teste:["2 pedro 3.13","2pe 3.13","2 pe 3.13"],
-          texto:"Mas nós, segundo a sua promessa, aguardamos novos céus e nova terra, em que habita a justiça."
         }
       ];
 
       const encontrado = mapa.find(item => item.teste.some(t => r.includes(t)));
       return encontrado ? encontrado.texto : "";
+    }
+
+    function assuntoCorretoDaReferencia(ref){
+      const r = String(ref || "").toLowerCase().replace(":",".").trim();
+      const item = REFERENCE_GUIDE.find(g => r.includes(g.ref.toLowerCase()));
+      return item ? item.assunto : "";
     }
 
     async function obterTextoAureoCompleto(base,info,licoes,numero,dados){
@@ -3245,6 +3628,46 @@ FORMATO:
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
 
+      if(r.includes("mateus 24.12") || r.includes("mt 24.12")){
+        return "Jesus alerta que a multiplicação da iniquidade pode esfriar o amor.";
+      }
+
+      if(r.includes("mateus 24.13") || r.includes("mt 24.13")){
+        return "A perseverança até o fim acompanha os que permanecem fiéis.";
+      }
+
+      if(r.includes("2 timóteo 3.16") || r.includes("2tm 3.16") || r.includes("2 tm 3.16")){
+        return "Toda a Escritura é inspirada por Deus e útil para formar o servo do Senhor.";
+      }
+
+      if(r.includes("2 timóteo 3") || r.includes("2tm 3") || r.includes("2 tm 3")){
+        return "A Escritura forma o servo de Deus para permanecer na verdade.";
+      }
+
+      if(r.includes("joão 17") || r.includes("jo 17")){
+        return "A verdade de Deus santifica o seu povo.";
+      }
+
+      if(r.includes("gálatas 1") || r.includes("gl 1")){
+        return "Outro evangelho não pode substituir a mensagem de Cristo.";
+      }
+
+      if(r.includes("2 timóteo 4") || r.includes("2tm 4") || r.includes("2 tm 4")){
+        return "A Palavra deve ser pregada com fidelidade em todo tempo.";
+      }
+
+      if(r.includes("1 pedro 1") || r.includes("1pe 1") || r.includes("1 pe 1")){
+        return "Deus chama o seu povo para uma vida santa.";
+      }
+
+      if(r.includes("romanos 12") || r.includes("rm 12")){
+        return "A mente renovada não se conforma com este mundo.";
+      }
+
+      if(r.includes("judas") || r.includes("jd")){
+        return "A igreja deve edificar-se na fé e guardar-se no amor de Deus.";
+      }
+
       if(r.includes("daniel 1") || r.includes("dn 1")){
         return "Daniel decidiu permanecer fiel a Deus mesmo em ambiente de pressão.";
       }
@@ -3281,80 +3704,8 @@ FORMATO:
         return "Servir ao Senhor exige decisão pessoal e firme.";
       }
 
-      if(r.includes("2 timóteo 3") || r.includes("2tm 3") || r.includes("2 tm 3")){
-        return "A Escritura forma o servo de Deus para permanecer na verdade.";
-      }
-
-      if(r.includes("joão 17") || r.includes("jo 17")){
-        return "A verdade de Deus santifica o seu povo.";
-      }
-
       if(r.includes("salmo 119") || r.includes("sl 119")){
         return "A Palavra ilumina e purifica o caminho do cristão.";
-      }
-
-      if(r.includes("gálatas 1") || r.includes("gl 1")){
-        return "O evangelho de Cristo não pode ser substituído por outra mensagem.";
-      }
-
-      if(r.includes("mateus 7") || r.includes("mt 7")){
-        return "A fé verdadeira ouve e pratica as palavras de Jesus.";
-      }
-
-      if(r.includes("2 timóteo 4") || r.includes("2tm 4") || r.includes("2 tm 4")){
-        return "A Palavra deve ser pregada com fidelidade em todo tempo.";
-      }
-
-      if(r.includes("1 pedro 1") || r.includes("1pe 1") || r.includes("1 pe 1")){
-        return "Deus chama o seu povo para uma vida santa.";
-      }
-
-      if(r.includes("romanos 12") || r.includes("rm 12")){
-        return "A mente renovada não se conforma com este mundo.";
-      }
-
-      if(r.includes("hebreus 12") || r.includes("hb 12")){
-        return "A santificação acompanha aqueles que desejam ver o Senhor.";
-      }
-
-      if(r.includes("mateus 24") || r.includes("mt 24")){
-        return "A perseverança sustenta a igreja em tempos de esfriamento.";
-      }
-
-      if(r.includes("apocalipse 3") || r.includes("ap 3")){
-        return "Cristo chama sua igreja a guardar a Palavra e permanecer fiel.";
-      }
-
-      if(r.includes("judas") || r.includes("jd")){
-        return "A igreja deve edificar-se na fé e guardar-se no amor de Deus.";
-      }
-
-      if(r.includes("joão 14") || r.includes("jo 14")){
-        return "Jesus prometeu preparar lugar e voltar para receber os seus.";
-      }
-
-      if(r.includes("atos 1") || r.includes("at 1")){
-        return "Cristo voltará de modo real, visível e glorioso.";
-      }
-
-      if(r.includes("tito 2")){
-        return "A graça nos ensina a viver aguardando a bendita esperança.";
-      }
-
-      if(r.includes("filipenses 3") || r.includes("fp 3")){
-        return "Nossa cidadania está nos céus, de onde aguardamos o Salvador.";
-      }
-
-      if(r.includes("apocalipse 20") || r.includes("ap 20")){
-        return "O juízo final revela a seriedade da eternidade.";
-      }
-
-      if(r.includes("apocalipse 21") || r.includes("ap 21")){
-        return "Deus fará novas todas as coisas e habitará com seu povo.";
-      }
-
-      if(r.includes("2 pedro 3") || r.includes("2pe 3") || r.includes("2 pe 3")){
-        return "A esperança futura deve produzir vida santa no presente.";
       }
 
       return "A Palavra de Deus chama o cristão à fé, à obediência e à perseverança.";
@@ -3378,11 +3729,11 @@ FORMATO:
       });
 
       const refsGerais = [
-        "Daniel 1.8",
-        "Provérbios 4.23",
-        "1 Timóteo 4.12",
-        "Salmo 119.9",
-        "Romanos 12.1-2",
+        "2 Timóteo 3.16",
+        "João 17.17",
+        "Romanos 12.2",
+        "Mateus 24.12",
+        "Judas 1.20",
         "Josué 24.15"
       ];
 
@@ -3395,7 +3746,7 @@ FORMATO:
       const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
 
       return dias.map((dia,index) => {
-        const ref = refsUnicas[index] || refsGerais[index] || "2 Timóteo 3.14-17";
+        const ref = refsUnicas[index] || refsGerais[index] || "2 Timóteo 3.16";
         return [dia,ref,resumoDaReferencia(ref,tema)];
       });
     }
@@ -3602,7 +3953,7 @@ ${base.extraNotes}
       merged.leituraDiaria = Array.isArray(l.leituraDiaria) && l.leituraDiaria.length === 6
         ? l.leituraDiaria.map(item => {
             const dia = item[0] || "Dia";
-            const ref = item[1] || "2 Timóteo 3.14-17";
+            const ref = item[1] || "2 Timóteo 3.16";
             const resumo = item[2] || resumoDaReferencia(ref,base.visibleTheme);
             const generico = /verdade bíblica para meditação|meditação e aplicação espiritual|palavra de deus orienta/i.test(resumo);
             return [dia,ref,generico ? resumoDaReferencia(ref,base.visibleTheme) : resumo];
@@ -3642,8 +3993,15 @@ REGRAS ABSOLUTAS:
 - Não coloque bloco grande no Texto Áureo.
 - Não use várias referências no Texto Áureo.
 - A leitura diária precisa ter referências bíblicas reais e frases específicas, nunca genéricas.
+- Cada referência bíblica precisa combinar com o assunto explicado.
+- Não use Mateus 24.12 para falar da inspiração das Escrituras.
+- Não use 2 Timóteo 3.16 para falar do esfriamento do amor.
+- Não misture referência bíblica com assunto de outro texto.
 - Cada tópico precisa acrescentar algo novo, sem repetição artificial.
 - Responda SOMENTE em JSON válido, sem markdown.
+
+GUIA DE REFERÊNCIAS:
+${guiaReferenciasTexto()}
 
 FORMATO:
 {
@@ -3652,7 +4010,7 @@ FORMATO:
       "titulo": "",
       "sintese": "",
       "foco": "",
-      "textoAureoRef": "Uma única referência, exemplo: 2 Timóteo 3.14",
+      "textoAureoRef": "Uma única referência, exemplo: 2 Timóteo 3.16",
       "textoAureoTexto": "Texto do versículo escrito por extenso, sem explicação",
       "leituraClasse": "",
       "palavraChave": "",
@@ -3752,6 +4110,19 @@ Direção original das 4 lições: ${info.revistaObservacao}
 4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
 
+REGRAS DE FIDELIDADE BÍBLICA:
+- Toda referência bíblica citada deve combinar diretamente com o assunto explicado.
+- Não use referência bíblica apenas para enfeitar o texto.
+- Não misture o sentido de um versículo com outro.
+- Mateus 24.12 deve tratar do esfriamento do amor por causa da multiplicação da iniquidade.
+- 2 Timóteo 3.16 deve tratar da inspiração e utilidade das Escrituras.
+- João 17.17 deve tratar da santificação pela verdade.
+- Romanos 12.2 deve tratar da não conformação com o mundo e renovação da mente.
+- Gálatas 1.6-10 deve tratar do perigo de outro evangelho.
+
+GUIA DE REFERÊNCIAS:
+${guiaReferenciasTexto()}
+
 REGRAS DE QUALIDADE:
 - Conteúdo original.
 - Linguagem bíblica, pastoral, pentecostal, teológica, didática e acessível.
@@ -3835,6 +4206,8 @@ REGRAS:
 - Não escreva “ajuda o aluno”.
 - Use “o cristão”, “o servo de Deus”, “a igreja”, “nós aprendemos”, “somos chamados”.
 - Linguagem natural, bíblica, pastoral e ensinável.
+- Toda referência bíblica deve estar relacionada corretamente ao assunto.
+- Não use referência bíblica fora de contexto.
 - Evite repetir abertura de parágrafo.
 - Evite repetir a mesma ideia apenas para preencher espaço.
 - Seja profundo, mas compacto como revista EBD.
@@ -3892,6 +4265,7 @@ REGRAS DA REVISTA DO PROFESSOR:
 - Acrescente Auxílio Didático.
 - Acrescente Plano de Aula.
 - Seja mais completa que a Revista do Aluno, mas evite repetição desnecessária.
+- Toda referência bíblica precisa ser usada de acordo com seu sentido.
 - Entregar somente HTML interno, sem markdown.`;
     }
 
@@ -3915,6 +4289,8 @@ REGRAS:
 - Preserve a mesma linha do aluno.
 - Acrescente orientação de professor quando couber.
 - Seja completo, mas sem repetir blocos já gerados.
+- Não use referência bíblica fora de contexto.
+- Não misture sentido de um versículo com outro.
 - Entregue somente HTML interno.
 
 ${extra}`;
@@ -3951,6 +4327,8 @@ Tom: ${base.tone}
 Profundidade: ${base.depthLevel}
 Observações extras: ${base.extraNotes}
 
+${descricaoProfundidadeLivro(info)}
+
 4 LIÇÕES DA REVISTA
 ${listaLicoes}
 
@@ -3966,8 +4344,25 @@ REGRAS PARA O LIVRO DE APOIO
 - Acrescentar perguntas difíceis e respostas reais.
 - Acrescentar exemplos que o professor possa usar em sala.
 - Acrescentar erros comuns que o professor deve evitar.
-- Acrescentar bibliografia recomendada.
+- Acrescentar orientação didática prática.
+- Acrescentar aplicações pastorais.
+- Não inventar livros.
+- Não inventar Bíblias de estudo.
+- Não inventar comentários bíblicos.
+- Não inventar autores.
+- Não inventar editoras.
+- Não atribuir comentários ou obras à CPID, a menos que o usuário tenha informado que tal obra existe.
+- Toda referência bíblica citada deve combinar diretamente com o assunto explicado.
+- Não usar referência bíblica apenas para enfeitar o texto.
+- Não misturar o sentido de um versículo com outro.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+
+BIBLIOGRAFIA SEGURA PERMITIDA:
+Use somente estas obras caso precise citar bibliografia:
+${bibliografiaSeguraTexto()}
+
+GUIA DE REFERÊNCIAS BÍBLICAS:
+${guiaReferenciasTexto()}
       `.trim();
     }
 
@@ -3981,7 +4376,8 @@ Crie a abertura do livro com:
 - prefácio ao professor;
 - como usar este livro junto com a revista;
 - explicação de que o livro aprofunda a revista;
-- visão do professor como ensinador da Palavra.
+- visão do professor como ensinador da Palavra;
+- aviso editorial de fidelidade bíblica.
 
 Seja profundo, mas sem alongar demais a abertura.
 
@@ -3991,7 +4387,8 @@ Use HTML com:
 <div class="block">
 <div class="book-note">
 <div class="teacher-help">
-<div class="summary-box">`;
+<div class="summary-box">
+<div class="reference-alert">`;
     }
 
     function promptSumarioLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -4000,7 +4397,7 @@ Use HTML com:
 ETAPA: SUMÁRIO DO LIVRO DE APOIO AO PROFESSOR
 
 Monte um sumário de livro, não de revista.
-Inclua capítulos principais, perguntas difíceis, glossário, linha do tempo e bibliografia.
+Inclua capítulos principais, perguntas difíceis, glossário, orientação didática e bibliografia segura.
 Tudo deve obedecer ao tema real do usuário.
 
 Use HTML com:
@@ -4009,7 +4406,7 @@ Use HTML com:
 <div class="block">
 <ol class="list">
 <div class="knowledge-box">
-<div class="bibliography-box">`;
+<div class="safe-bibliography-alert">`;
     }
 
     function promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto){
@@ -4030,26 +4427,36 @@ ${trechoLicao}
 
 Crie um capítulo de livro mais profundo que a lição da revista.
 
-ESTRUTURA:
+ESTRUTURA OBRIGATÓRIA:
 1. Cabeçalho do capítulo.
-2. Introdução robusta.
-3. O que a revista ensina resumidamente.
-4. Ampliação bíblica.
-5. Explicação teológica.
-6. Contexto histórico.
-7. Termos importantes explicados.
-8. Perguntas difíceis.
-9. Respostas prontas.
-10. Erros comuns.
-11. Aplicações pastorais.
-12. Como ensinar.
-13. Sugestões de leitura.
-14. Resumo final.
+2. Visão geral da lição.
+3. Texto bíblico principal explicado.
+4. O que a revista ensina resumidamente.
+5. Ampliação bíblica.
+6. Explicação teológica.
+7. Contexto histórico e cultural.
+8. Termos importantes explicados.
+9. Pontos sensíveis para ensinar.
+10. Perguntas difíceis que podem surgir em sala.
+11. Respostas bíblicas e pastorais.
+12. Erros comuns a evitar.
+13. Aplicações para a igreja atual.
+14. Como conduzir a aula.
+15. Sugestões didáticas simples.
+16. Resumo final para o professor.
 
 REGRA DE TAMANHO:
-- O Livro de Apoio pode ser mais extenso, mas deve ser bem organizado.
-- Evite repetir o mesmo argumento em seções diferentes.
-- Escreva com profundidade e clareza.
+- Se o modo for normal, escreva de forma completa e objetiva.
+- Se o modo for expandido, aprofunde cada seção com conteúdo real.
+- Se o modo for muito expandido, acrescente mais densidade bíblica e pastoral, mas sem repetição.
+- Não aumentar o texto inventando fontes.
+- Não repetir o mesmo argumento em seções diferentes.
+
+REGRAS DE REFERÊNCIA BÍBLICA:
+- Toda referência deve ser explicada conforme seu sentido correto.
+- Não use Mateus 24.12 para falar de inspiração bíblica.
+- Não use 2 Timóteo 3.16 para falar de esfriamento do amor.
+- Não cite referência só para decorar o texto.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -4059,7 +4466,7 @@ Use HTML com:
 <div class="teacher-help">
 <div class="summary-box">
 <div class="personal-application">
-<div class="bibliography-box">
+<div class="reference-alert">
 <div class="question-answer">`;
     }
 
@@ -4073,27 +4480,17 @@ As perguntas devem ser reais, difíceis e úteis em sala.
 As respostas devem ser bíblicas, doutrinárias, pastorais e didáticas.
 As perguntas precisam estar ligadas ao tema real da revista.
 
+REGRAS:
+- Não inventar fatos históricos.
+- Não inventar citações de autores.
+- Não citar livro que não esteja na bibliografia segura.
+- Toda referência bíblica precisa estar ligada ao argumento.
+
 Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
 <div class="summary-box">
 <div class="question-answer">`;
-    }
-
-    function promptBibliografiaLivroApoio(base,info,licoes,revistaProfessorTexto){
-      return `${montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto)}
-
-ETAPA: BIBLIOGRAFIA RECOMENDADA
-
-Crie bibliografia recomendada para o professor.
-Inclua teologia sistemática, teologia bíblica, hermenêutica, comentários bíblicos, dicionários bíblicos e Bíblias de estudo.
-A bibliografia deve combinar com o tema real da revista.
-
-Use HTML com:
-<h1 class="page-title">
-<div class="bibliography-box">
-<div class="block">
-<ul class="list">`;
     }
 
     function promptApendicesLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -4102,13 +4499,19 @@ Use HTML com:
 ETAPA: APÊNDICES DO LIVRO
 
 Crie:
-1. Linha do tempo.
-2. Glossário teológico.
-3. Sugestões didáticas.
-4. Recursos visuais.
+1. Glossário teológico.
+2. Sugestões didáticas.
+3. Recursos visuais simples.
+4. Checklist de preparação do professor.
 5. Conclusão pastoral.
 
 Tudo deve estar ligado ao tema real pedido pelo usuário.
+
+REGRAS:
+- Não inventar bibliografia.
+- Não inventar dados históricos.
+- Não criar afirmações sem base bíblica.
+- Usar linguagem pastoral e confiável.
 
 Use HTML com:
 <h1 class="page-title">
@@ -4306,6 +4709,26 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
       return out;
     }
 
+    function limparBibliografiaInventada(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      const texto = temp.innerText || "";
+
+      if(!contemBibliografiaInventada(texto)){
+        return html;
+      }
+
+      temp.querySelectorAll("li,p,div").forEach(el => {
+        const t = el.innerText || "";
+        if(contemBibliografiaInventada(t)){
+          el.remove();
+        }
+      });
+
+      return temp.innerHTML;
+    }
+
     function blocoManualVazio(tipo,titulo,subtitulo = ""){
       manualPlaceholdersCount++;
 
@@ -4462,6 +4885,7 @@ Regras:
 - Não transforme o subtópico em capítulo de livro.
 - Use linguagem de revista EBD: profunda, clara, compacta e econômica para impressão.
 - Integre pelo menos uma referência bíblica no argumento quando couber.
+- Toda referência deve estar relacionada corretamente ao assunto.
 - Não repita ideias que já pertencem à introdução ou ao tópico anterior.
 - Não escreva sinopse aqui.
 - Não escreva orientação ao professor.
@@ -4705,6 +5129,7 @@ Regras:
 - Inclua sinopse.
 - Pode usar linguagem de professor.
 - Evite repetição e alongamento desnecessário.
+- Toda referência bíblica deve estar correta em relação ao assunto.
           `,
           350
         );
@@ -4797,7 +5222,7 @@ Seja completo, mas sem desperdiçar páginas.
               <div class="cover-top"></div>
               <div class="cover-main">
                 <h1 class="cover-title">${info.isSupportBook ? "Preparado para ensinar com profundidade" : "Que a Palavra produza fruto"}</h1>
-                <p class="cover-subtitle">${info.isSupportBook ? "Um material de bastidor para o professor dominar o assunto." : "Material preparado para ensino, edificação e fortalecimento da fé cristã."}</p>
+                <p class="cover-subtitle">${info.isSupportBook ? "Um material de bastidor para o professor dominar o assunto com fidelidade bíblica." : "Material preparado para ensino, edificação e fortalecimento da fé cristã."}</p>
               </div>
               <div class="cover-footer">
                 <p>${escapeHtml(base.title)}</p>
@@ -4883,7 +5308,7 @@ Seja completo, mas sem desperdiçar páginas.
         const capitulo = await chamarTextoIAComTentativas(
           [promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto)],
           `Capítulo ${numero} do livro de apoio`,
-          { minimo:650, aceitarCurto:true, aceitarMuitoCurto:true }
+          { minimo:info.supportBookDepth === "muito-expandido" ? 900 : 650, aceitarCurto:true, aceitarMuitoCurto:true }
         );
 
         if(!capitulo){
@@ -4909,7 +5334,7 @@ Seja completo, mas sem desperdiçar páginas.
 
       await pause(700);
 
-      setStep(7,"Gerando respostas, bibliografia, apêndices e contracapa...");
+      setStep(7,"Gerando respostas, apêndices, bibliografia segura e contracapa...");
 
       const respostas = await chamarTextoIAComTentativas(
         [promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto)],
@@ -4923,16 +5348,6 @@ Seja completo, mas sem desperdiçar páginas.
         html += renderPage(blocoManualVazio("block","Respostas na ponta da língua"),"support-qa-page");
       }
 
-      const bibliografia = await chamarTextoIAComTentativas(
-        [promptBibliografiaLivroApoio(base,info,licoes,revistaProfessorTexto)],
-        "Bibliografia recomendada",
-        { minimo:300, aceitarCurto:true, aceitarMuitoCurto:true }
-      );
-
-      if(bibliografia){
-        html += renderPage(bibliografia,"bibliography-page");
-      }
-
       const apendices = await chamarTextoIAComTentativas(
         [promptApendicesLivroApoio(base,info,licoes,revistaProfessorTexto)],
         "Apêndices do livro de apoio",
@@ -4942,6 +5357,8 @@ Seja completo, mas sem desperdiçar páginas.
       if(apendices){
         html += renderPage(apendices,"appendix-page");
       }
+
+      html += renderBibliografiaSegura(base,info);
 
       const contracapa = await chamarTextoIAComTentativas(
         [promptContracapa(base,info,licoes)],
@@ -4956,13 +5373,15 @@ Seja completo, mas sem desperdiçar páginas.
       html += renderBackCover(base,info);
       html += `</div>`;
 
+      html = limparBibliografiaInventada(html);
+
       const htmlFinal = html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`);
       renderGenerated(htmlFinal);
 
       if(manualPlaceholdersCount > 0){
         finishSteps(`Livro de apoio finalizado com ${manualPlaceholdersCount} espaço(s) em branco para edição manual.`);
       }else{
-        finishSteps("Livro de apoio finalizado. Revise antes de imprimir.");
+        finishSteps("Livro de apoio finalizado com bibliografia segura. Revise antes de imprimir.");
       }
     }
 
@@ -5086,8 +5505,8 @@ Seja completo, mas sem desperdiçar páginas.
         setStep(
           i + 2,
           info.isTeacher
-            ? `Gerando Lição ${numero} do professor com insistência inteligente...`
-            : `Gerando Lição ${numero} do aluno com insistência inteligente...`
+            ? `Gerando Lição ${numero} do professor com conferência bíblica...`
+            : `Gerando Lição ${numero} do aluno com conferência bíblica...`
         );
 
         let licao = "";
@@ -5438,6 +5857,8 @@ Seja completo, mas sem desperdiçar páginas.
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
       setValue("revistaAno","2026");
+      setValue("supportBookDepth","expandido");
+      setValue("bibliographyMode","segura");
       setValue("printFormat","a4");
       setValue("quantityType","capítulos");
 
@@ -5511,22 +5932,24 @@ Seja completo, mas sem desperdiçar páginas.
       const type = currentType;
 
       if(type === "revista"){
-        setValue("title","Escolhas que Definem o Futuro");
-        setValue("subtitle","Como o adolescente cristão pode permanecer firme em Deus em uma geração de pressão, distrações e confusão");
-        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical para adolescentes com o tema: Escolhas que Definem o Futuro. A revista deve ensinar adolescentes cristãos a tomarem decisões sábias diante das pressões desta geração, como amizades, internet, redes sociais, identidade, pureza, obediência, fé, família, escola, tentações e compromisso com Deus. A linguagem deve ser bíblica, pastoral, pentecostal, clara, atual, respeitosa e direta. Não infantilizar os adolescentes, mas também não usar linguagem adulta demais. O conteúdo deve conversar com a realidade deles, usando exemplos práticos, perguntas de reflexão e aplicações para o dia a dia. A Revista do Aluno deve seguir o modelo editorial de livreto EBD: profunda, compacta, econômica para impressão, progressiva, bíblica e ensinável. O Texto Áureo deve ter um único versículo escrito por extenso, sem explicação extra.");
-        setValue("biblicalBase","Daniel 1.8; Provérbios 4.23; 1 Timóteo 4.12; Romanos 12.1-2; Salmo 119.9; 1 Coríntios 10.13; Efésios 6.10-18; Josué 24.15");
-        setValue("targetAudience","Adolescentes da Escola Bíblica Dominical");
-        setValue("tone","bíblico, pastoral, pentecostal, atual, didático, direto, acolhedor, prático e reflexivo");
+        setValue("title","A Igreja em Tempos de Confusão");
+        setValue("subtitle","Guardando a fé, a santidade e a verdade em uma geração marcada por engano, relativismo e esfriamento espiritual");
+        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical para adultos com o tema: A Igreja em Tempos de Confusão. A revista deve tratar de um assunto atual e urgente para a Igreja de Deus: como permanecer firme em Cristo em uma geração marcada por confusão doutrinária, relativismo moral, esfriamento espiritual, evangelho raso, ataques à família, perda do temor de Deus, distrações digitais, secularismo e afastamento da verdade bíblica. A abordagem deve ser bíblica, pastoral, pentecostal, doutrinária, didática, profunda, firme e esperançosa. O Texto Áureo deve ter apenas um versículo, com o texto bíblico escrito por extenso, sem explicação extra. A revista deve ser mensal, com exatamente 4 lições.");
+        setValue("biblicalBase","2 Timóteo 3.14-17; João 17.17; Gálatas 1.6-10; 2 Timóteo 4.1-5; 1 Pedro 1.13-16; Romanos 12.1-2; Mateus 24.12-13; Judas 1.20-25");
+        setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
+        setValue("tone","bíblico, pastoral, pentecostal, doutrinário, didático, atual, profundo, firme e esperançoso");
         setValue("author","Isiquel Rodrigues");
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
         setValue("revistaTipo","aluno");
-        setValue("revistaClasse","adolescentes");
+        setValue("revistaClasse","adultos");
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
+        setValue("supportBookDepth","expandido");
+        setValue("bibliographyMode","segura");
         setValue("printFormat","a4");
-        setValue("revistaObservacao","Lição 1: Decidindo Permanecer Fiel a Deus\nTexto base: Daniel 1.8; Romanos 12.1-2; Provérbios 4.23\nObjetivo: mostrar que o adolescente cristão precisa decidir no coração permanecer fiel a Deus, mesmo quando está cercado por pressões contrárias à fé.\n\nTópico 1: Uma decisão tomada no coração\nSubtópicos: Daniel decidiu antes da pressão; O coração precisa ser guardado; A fidelidade começa em escolhas internas.\n\nTópico 2: Pressões que tentam moldar o adolescente\nSubtópicos: A cultura tenta formar pensamentos e desejos; Nem tudo que parece normal agrada a Deus; O cristão não deve se conformar com este mundo.\n\nTópico 3: Permanecendo firme sem perder a identidade\nSubtópicos: Ser diferente não é motivo de vergonha; Deus honra quem escolhe obedecer; A fidelidade hoje prepara o futuro.\n\n\nLição 2: Amizades, Influências e Conselhos\nTexto base: Provérbios 13.20; 1 Coríntios 15.33; Salmo 1.1-3\nObjetivo: ensinar que amizades e influências têm poder sobre pensamentos, atitudes e decisões, por isso o adolescente cristão deve escolher bem quem ouve e com quem caminha.\n\nTópico 1: A força das influências\nSubtópicos: Ninguém caminha sem ser influenciado; Boas companhias fortalecem a fé; Más companhias podem enfraquecer valores.\n\nTópico 2: Conselhos que aproximam ou afastam de Deus\nSubtópicos: Nem todo conselho é sábio; A Palavra de Deus deve orientar as decisões; O adolescente cristão precisa discernir vozes.\n\nTópico 3: Escolhendo amizades que edificam\nSubtópicos: Amizade verdadeira não empurra para o pecado; Bons amigos ajudam na caminhada com Deus; Cristo deve ser o centro das relações.\n\n\nLição 3: Santidade em Tempos de Internet e Pressão\nTexto base: Salmo 119.9; 1 Timóteo 4.12; 1 Coríntios 10.13\nObjetivo: mostrar que a santidade continua sendo possível e necessária, mesmo em uma geração marcada por internet, exposição, tentações, comparação e pressão social.\n\nTópico 1: Guardando o caminho pela Palavra\nSubtópicos: A Palavra limpa a mente e orienta os passos; O adolescente precisa alimentar a fé; Santidade começa no coração.\n\nTópico 2: Lidando com tentações reais\nSubtópicos: A tentação não deve ser tratada como brincadeira; Deus sempre oferece escape; Fugir do pecado também é sinal de força.\n\nTópico 3: Testemunho cristão na vida diária\nSubtópicos: O adolescente pode ser exemplo; Santidade aparece nas palavras, escolhas e atitudes; A vida cristã deve ser visível dentro e fora da igreja.\n\n\nLição 4: Escolhendo Servir ao Senhor\nTexto base: Josué 24.15; Efésios 6.10-18; Mateus 6.33\nObjetivo: conduzir o adolescente a entender que servir a Deus é uma decisão diária, consciente e corajosa, que envolve prioridade, perseverança e compromisso.\n\nTópico 1: Uma escolha pessoal e consciente\nSubtópicos: Ninguém pode decidir por nós; Servir a Deus exige posicionamento; A fé precisa ser assumida com responsabilidade.\n\nTópico 2: Fortalecidos para vencer as batalhas\nSubtópicos: A vida cristã envolve lutas espirituais; A armadura de Deus protege o cristão; A oração fortalece o adolescente.\n\nTópico 3: Colocando Deus em primeiro lugar\nSubtópicos: Prioridades revelam o coração; Buscar o Reino muda as decisões; Quem escolhe Deus constrói um futuro com propósito.");
-        setValue("extraNotes","A revista deve ser para adolescentes, não para crianças e não para adultos. Usar linguagem clara, atual e próxima da realidade dos adolescentes, sem gírias exageradas e sem infantilizar. O conteúdo deve ser bíblico, profundo na medida certa, direto ao ponto e aplicável à vida real. O Texto Áureo deve ter apenas um versículo escrito por extenso, sem explicação extra. A revista deve ter cerca de 28 a 32 páginas no total. A capa deve ser voltada para adolescentes, com visual cristão atual, bonito, respeitoso e reverente.");
+        setValue("revistaObservacao","Lição 1: Uma Geração Confusa e a Verdade da Palavra\nTexto base: 2 Timóteo 3.14-17; João 17.17; Salmo 119.105\nObjetivo: mostrar que, em tempos de confusão espiritual e moral, a igreja precisa permanecer firmada na verdade da Palavra de Deus.\n\nTópico 1: A confusão de uma geração sem absolutos\nSubtópicos: A verdade tem sido relativizada; A opinião humana tem ocupado o lugar da Palavra; A igreja precisa discernir o espírito do tempo.\n\nTópico 2: A Palavra de Deus como fundamento da verdade\nSubtópicos: Toda a Escritura é inspirada por Deus; A Palavra santifica o povo de Deus; A Escritura ilumina o caminho do cristão.\n\nTópico 3: A igreja guardando a verdade em amor\nSubtópicos: Defender a verdade sem perder a graça; Ensinar a Palavra com fidelidade; Viver a verdade diante de uma geração confusa.\n\n\nLição 2: O Perigo do Evangelho Raso\nTexto base: Gálatas 1.6-10; Mateus 7.21-27; 2 Timóteo 4.1-5\nObjetivo: alertar a igreja sobre os perigos de um evangelho sem cruz, sem arrependimento, sem santidade e sem compromisso real com Cristo.\n\nTópico 1: Quando o evangelho é esvaziado\nSubtópicos: Um evangelho sem arrependimento; Uma fé sem obediência; Uma mensagem que agrada o homem, mas não transforma o coração.\n\nTópico 2: O perigo de ouvir apenas o que agrada\nSubtópicos: A rejeição da sã doutrina; A busca por mensagens convenientes; O risco de confundir emoção com conversão.\n\nTópico 3: Voltando ao evangelho de Cristo\nSubtópicos: Cristo é o centro da mensagem; A cruz confronta o pecado; O verdadeiro evangelho produz fruto e perseverança.\n\n\nLição 3: Santidade em Tempos de Relativismo\nTexto base: 1 Pedro 1.13-16; Romanos 12.1-2; Hebreus 12.14\nObjetivo: ensinar que a santidade continua sendo uma exigência bíblica para o povo de Deus, mesmo em uma cultura que tenta normalizar o pecado.\n\nTópico 1: O chamado bíblico à santidade\nSubtópicos: Deus é santo e chama seu povo à santidade; A santidade envolve mente, corpo e conduta; A graça não anula a obediência.\n\nTópico 2: O perigo da conformação com o mundo\nSubtópicos: O mundo tenta moldar os valores da igreja; A mente precisa ser renovada pela Palavra; O cristão não pode negociar princípios eternos.\n\nTópico 3: Uma vida santa em uma geração impura\nSubtópicos: Santidade no falar, no pensar e no agir; Santidade na família e nos relacionamentos; Santidade como testemunho diante do mundo.\n\n\nLição 4: Uma Igreja Firme Até a Volta de Cristo\nTexto base: Mateus 24.12-13; Apocalipse 3.7-13; Judas 1.20-25\nObjetivo: mostrar que, mesmo diante do esfriamento espiritual e da multiplicação do engano, a igreja deve permanecer fiel, vigilante e esperançosa até a volta de Cristo.\n\nTópico 1: O perigo do esfriamento espiritual\nSubtópicos: O amor de muitos se esfriará; A rotina religiosa pode substituir a vida com Deus; A vigilância espiritual não pode ser abandonada.\n\nTópico 2: Perseverando em fidelidade\nSubtópicos: Guardar a Palavra de Cristo; Permanecer firme mesmo com pouca força; Não negociar a fé diante da pressão.\n\nTópico 3: A esperança que sustenta a igreja\nSubtópicos: Cristo guarda os que permanecem fiéis; A volta de Jesus fortalece a perseverança; A igreja deve edificar-se na fé até o fim.");
+        setValue("extraNotes","A revista deve ser para adultos da Escola Bíblica Dominical. Não usar tom agressivo, político-partidário ou sensacionalista. O tom deve ser firme, bíblico, espiritual, pastoral e esperançoso. O Texto Áureo deve ter apenas um versículo escrito por extenso, sem explicação extra. O Livro de Apoio deve ser expandido, profundo e confiável. Não inventar bibliografia. Não inventar editoras. Não usar referência bíblica fora de contexto.");
       }
 
       if(type === "sermao"){
@@ -5600,6 +6023,11 @@ Regra para Livro de Apoio:
 - Explicar termos teológicos importantes.
 - Trazer perguntas difíceis e respostas.
 - Trazer contexto histórico, erros comuns e orientação didática.
+- Não inventar bibliografia.
+- Não inventar Bíblias, comentários, autores ou editoras.
+- Usar somente obras reais e conhecidas.
+- Toda referência bíblica citada deve combinar com o assunto explicado.
+- Não usar referência bíblica fora de contexto.
       `.trim();
 
       setValue("theme",prompt);
