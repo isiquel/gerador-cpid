@@ -850,6 +850,84 @@
       color:#2d256e;
     }
 
+
+    /* ESTUDOS BÍBLICOS — visual mais limpo, menos parecido com Revista EBD */
+    .study-article{
+      background:#fff;
+      border:1px solid #e3d8cc;
+      border-radius:20px;
+      padding:24px;
+      margin-bottom:16px;
+      box-shadow:0 6px 18px rgba(50,30,20,.035);
+    }
+
+    .study-title-clean{
+      margin:0 0 8px;
+      color:#3f3128;
+      font-size:30px;
+      line-height:1.15;
+      letter-spacing:-.2px;
+    }
+
+    .study-ref-clean{
+      display:block;
+      margin:0 0 18px;
+      color:#6e5b50;
+      font-size:15px;
+      line-height:1.5;
+      font-weight:700;
+    }
+
+    .study-section{
+      padding:0;
+      margin:0 0 22px;
+      border:none;
+      background:transparent;
+    }
+
+    .study-section h3,
+    .study-section h4{
+      margin:0 0 10px;
+      color:#4e3324;
+      font-size:23px;
+      line-height:1.25;
+    }
+
+    .study-section .text{
+      font-size:17px;
+      line-height:1.78;
+      text-align:left;
+      margin-bottom:14px;
+    }
+
+    .study-divider{
+      height:1px;
+      background:#eadfd4;
+      margin:20px 0;
+    }
+
+    .study-note-line{
+      background:#fffaf2;
+      border-left:5px solid #b88c3a;
+      padding:12px 14px;
+      border-radius:0 14px 14px 0;
+      margin:16px 0;
+      color:#4b372b;
+      line-height:1.65;
+      font-size:16px;
+    }
+
+    .study-question-clean{
+      border-bottom:1px solid #eadfd4;
+      padding:12px 0;
+      margin:0;
+      line-height:1.65;
+    }
+
+    .study-question-clean:last-child{
+      border-bottom:none;
+    }
+
     .mini-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -1710,6 +1788,26 @@
         min-height:130px;
       }
 
+      .study-article,
+      .study-section,
+      .study-note-line,
+      .study-question-clean{
+        width:100% !important;
+        max-width:100% !important;
+        box-sizing:border-box !important;
+        overflow-wrap:break-word !important;
+      }
+
+      .study-article{
+        padding:18px 14px !important;
+        border-radius:18px !important;
+      }
+
+      .study-title-clean{
+        font-size:25px !important;
+        line-height:1.18 !important;
+      }
+
       table{
         width:100% !important;
         max-width:100% !important;
@@ -1840,7 +1938,9 @@
       .reference-alert,
       .manual-placeholder,
       .theology-box,
-      .study-header{
+      .study-header,
+      .study-article,
+      .study-section{
         break-inside:avoid;
         page-break-inside:avoid;
       }
@@ -1889,7 +1989,8 @@
       .safe-bibliography-alert,
       .reference-alert,
       .theology-box,
-      .study-header{
+      .study-header,
+      .study-article{
         padding:10px !important;
         margin-bottom:8px !important;
       }
@@ -2474,7 +2575,7 @@
           <div class="accordion-body">
             <div class="field">
               <label for="adminCode">Código de liberação</label>
-              <input id="adminCode" type="text" placeholder="Digite o código para liberar recursos reservados" />
+              <input id="adminCode" type="password" inputmode="text" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="Digite o código para liberar recursos reservados" />
             </div>
 
             <div id="lockedNote" class="status">
@@ -2529,15 +2630,33 @@
   </div>
 
   <script>
-    const ADMIN_CODES = [
-      "1234",
-      "VERBOIA",
-      "verboia",
-      "CPID",
-      "cpid",
-      "israel123",
-      "admin"
+    /*
+      Segurança do código de liberação:
+      - O campo agora é password, para não mostrar o que está sendo digitado.
+      - Os códigos não ficam mais escritos em texto puro no HTML.
+      Observação: por ser um app 100% em HTML/JS no navegador, isso dificulta a exposição casual,
+      mas segurança total só existe com validação em servidor/backend.
+    */
+    const ADMIN_CODE_SALT = "VERBO_IA_ACESSO_2026";
+    const ADMIN_CODE_HASHES = [
+      "7e097fba",
+      "daf2abd6",
+      "9e213476",
+      "34b4e830",
+      "376317f0",
+      "4c1091ce",
+      "8f6b6d7d"
     ];
+
+    function hashAdminCode(value){
+      const text = ADMIN_CODE_SALT + "::" + String(value || "").trim();
+      let hash = 2166136261;
+      for(let i = 0; i < text.length; i++){
+        hash ^= text.charCodeAt(i);
+        hash = Math.imul(hash, 16777619);
+      }
+      return (hash >>> 0).toString(16).padStart(8,"0");
+    }
 
     const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1046";
     const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1046";
@@ -2837,7 +2956,7 @@
     }
 
     function isAdminUnlocked(){
-      return ADMIN_CODES.includes(getValue("adminCode"));
+      return ADMIN_CODE_HASHES.includes(hashAdminCode(getValue("adminCode")));
     }
 
     function isReservedType(type){
@@ -5442,6 +5561,33 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       };
     }
 
+
+
+    function regrasVisuaisStudy(info){
+      if(info.isBiblicalStudy || info.isTheologicalStudy){
+        return `
+FORMATO VISUAL OBRIGATÓRIO PARA ESTUDO BÍBLICO/TEOLÓGICO:
+- Não imitar Revista EBD.
+- Não transformar o estudo em várias caixas coloridas.
+- Não usar estrutura de lição EBD com muitos cards, muitos quadros ou aparência de revista.
+- Priorizar leitura contínua, limpa e elegante, como estudo bíblico/apostila teológica séria.
+- Usar seções com títulos claros e parágrafos bem desenvolvidos.
+- Usar no máximo 1 ou 2 destaques discretos por etapa, somente quando realmente necessário.
+- Preferir as classes: study-article, study-section, study-title-clean, study-ref-clean, study-note-line, study-question-clean e study-divider.
+- Evitar usar em excesso: knowledge-box, summary-box, teacher-help, theology-box, lesson-hero e personal-application.
+- O conteúdo deve parecer estudo bíblico organizado, não revista de EBD.
+        `.trim();
+      }
+
+      return `
+FORMATO VISUAL PARA APOSTILA:
+- Pode usar quadros didáticos, mas sem excesso.
+- A Apostila do Aluno deve ser limpa e acompanhável.
+- A Apostila do Professor pode usar blocos de subsídio, orientação e respostas.
+- Mesmo na apostila, evitar poluição visual e repetição de caixas desnecessárias.
+      `.trim();
+    }
+
     function montarPromptBaseStudy(base,info,baseAlunoTexto = ""){
       const baseAluno = baseAlunoTexto
         ? `
@@ -5491,7 +5637,8 @@ REGRAS GERAIS:
 - Não usar referência bíblica fora de contexto.
 - Explicar os conceitos com clareza.
 - Usar linguagem bíblica, teológica, pastoral, didática e formativa.
-- Organizar com títulos, subtítulos, quadros didáticos, perguntas e respostas.
+- Organizar com títulos, subtítulos, explicações, perguntas e respostas, respeitando o formato visual indicado abaixo.
+${regrasVisuaisStudy(info)}
 - O conteúdo deve ser profundo, mas compreensível.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
 
@@ -5533,7 +5680,23 @@ Se for Apostila do Professor, acrescente também:
 - Objetivos gerais do professor.
 - Como usar a apostila em sala.
 
-Use HTML:
+Use HTML conforme o tipo:
+${info.isBiblicalStudy || info.isTheologicalStudy ? `
+<div class="study-article">
+  <h2 class="study-title-clean">${base.title}</h2>
+  <span class="study-ref-clean">Texto Bíblico Base: ${base.biblicalBase}</span>
+  <section class="study-section">
+    <h3>Introdução</h3>
+    <p class="text">...</p>
+  </section>
+  <div class="study-divider"></div>
+  <section class="study-section">
+    <h3>Importância do Tema</h3>
+    <p class="text">...</p>
+  </section>
+  <p class="study-note-line">Destaque discreto, se necessário.</p>
+</div>
+` : `
 <div class="study-header">
   <h3>${base.title}</h3>
   <span class="ref">Texto Bíblico Base: ${base.biblicalBase}</span>
@@ -5547,6 +5710,7 @@ Use HTML:
   <h4>Por que este tema é importante?</h4>
   <p class="text">...</p>
 </div>
+`}
 
 Gere somente esta etapa.`;
     }
@@ -5574,12 +5738,28 @@ Se for Apostila do Professor, acrescente:
 - como explicar o tema para alunos;
 - pontos de atenção do professor.
 
-Use HTML com:
-<div class="block">
-<div class="knowledge-box">
-<div class="theology-box">
-<div class="teacher-help">
-<div class="summary-box">
+Use HTML conforme o tipo:
+${info.isBiblicalStudy || info.isTheologicalStudy ? `
+<div class="study-article">
+  <section class="study-section">
+    <h3>Explicação Principal</h3>
+    <p class="text">...</p>
+    <p class="text">...</p>
+  </section>
+  <div class="study-divider"></div>
+  <section class="study-section">
+    <h3>Fundamento Bíblico</h3>
+    <p class="text">...</p>
+  </section>
+  <p class="study-note-line">Síntese discreta do ponto principal.</p>
+</div>
+` : `
+<div class="block">...</div>
+<div class="knowledge-box">...</div>
+<div class="theology-box">...</div>
+<div class="teacher-help">...</div>
+<div class="summary-box">...</div>
+`}
 
 Gere somente esta etapa.`;
     }
@@ -5611,7 +5791,22 @@ Se for Apostila do Professor:
 - acrescente erros comuns a evitar.
 - acrescente sugestão de condução da aula.
 
-Use HTML:
+Use HTML conforme o tipo:
+${info.isBiblicalStudy || info.isTheologicalStudy ? `
+<div class="study-article">
+  <h2 class="study-title-clean">Unidade ${numero} — Título da unidade</h2>
+  <span class="study-ref-clean">Texto bíblico e objetivo da unidade</span>
+  <section class="study-section">
+    <h3>Desenvolvimento Bíblico</h3>
+    <p class="text">...</p>
+  </section>
+  <section class="study-section">
+    <h3>Aplicação Cristã</h3>
+    <p class="text">...</p>
+  </section>
+  <p class="study-note-line">Síntese final da unidade.</p>
+</div>
+` : `
 <div class="lesson-hero">
   <div class="number">Unidade ${numero}</div>
   <h1>Título da unidade</h1>
@@ -5621,6 +5816,7 @@ Use HTML:
 <div class="theology-box">...</div>
 <div class="personal-application">...</div>
 <div class="summary-box">...</div>
+`}
 
 Gere somente esta unidade.`;
     }
@@ -5649,11 +5845,22 @@ Se for Apostila do Professor, acrescente:
 - perguntas para diálogo;
 - cuidados pastorais.
 
-Use HTML:
+Use HTML conforme o tipo:
+${info.isBiblicalStudy || info.isTheologicalStudy ? `
+<div class="study-article">
+  <section class="study-section">
+    <h3>Aplicações Bíblicas e Práticas</h3>
+    <p class="text">...</p>
+    <p class="text">...</p>
+  </section>
+  <p class="study-note-line">Aplicação central para guardar.</p>
+</div>
+` : `
 <div class="personal-application">
   <h4>Aplicações Bíblicas e Práticas</h4>
   ...
 </div>
+`}
 
 Gere somente esta etapa.`;
     }
@@ -5677,7 +5884,20 @@ Se for Apostila do Professor:
 - acrescente perguntas difíceis que os alunos podem fazer.
 - acrescente respostas bíblicas e pastorais.
 
-Use HTML:
+Use HTML conforme o tipo:
+${info.isBiblicalStudy || info.isTheologicalStudy ? `
+<div class="study-article">
+  <section class="study-section">
+    <h3>Perguntas para Revisão</h3>
+    <div class="study-question-clean"><strong>1. Pergunta...</strong><p class="text">Resposta...</p></div>
+  </section>
+  <div class="study-divider"></div>
+  <section class="study-section">
+    <h3>Glossário</h3>
+    <p class="text"><strong>Termo:</strong> explicação...</p>
+  </section>
+</div>
+` : `
 <div class="summary-box">
   <h4>Perguntas para Revisão</h4>
   <div class="question-answer"><strong>1. Pergunta...</strong><p class="text">Resposta...</p></div>
@@ -5687,6 +5907,7 @@ Use HTML:
   <h4>Glossário</h4>
   ...
 </div>
+`}
 
 Gere somente esta etapa.`;
     }
@@ -5712,11 +5933,21 @@ REGRAS:
 - Não criar chamada ao altar.
 - A conclusão deve ser bíblica, formativa e pastoral.
 
-Use HTML:
+Use HTML conforme o tipo:
+${info.isBiblicalStudy || info.isTheologicalStudy ? `
+<div class="study-article">
+  <section class="study-section">
+    <h3>Conclusão</h3>
+    <p class="text">...</p>
+    <p class="text">...</p>
+  </section>
+</div>
+` : `
 <div class="summary-box">
   <h4>Conclusão</h4>
   <p class="text">...</p>
 </div>
+`}
 
 Gere somente esta etapa.`;
     }
@@ -7270,28 +7501,185 @@ Seja completo, mas sem desperdiçar páginas.
       }
 
       const format = getValue("printFormat") || "a4";
+      const isMobile = window.matchMedia("(max-width: 768px)").matches || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
 
       document.body.classList.remove("print-a4","print-a3-livreto");
 
       if(format === "a3-livreto"){
         document.body.classList.add("print-a3-livreto");
-        setStatus("Modo A3 paisagem ativado. Na tela de impressão, escolha A3 e paisagem.","ok");
       }else{
         document.body.classList.add("print-a4");
-        setStatus("Abrindo impressão do navegador. No celular, escolha ‘Salvar como PDF’.","ok");
       }
 
       printArea.innerHTML = result.innerHTML;
 
-      /* IMPORTANTE:
-         O print precisa ser chamado pelo clique do usuário.
-         Em muitos celulares, chamadas muito atrasadas ou depois de await podem não abrir nada.
-         Por isso usamos a impressão nativa do navegador de forma direta. */
+      if(isMobile){
+        const abriu = abrirJanelaImpressaoMobile(format);
+
+        if(abriu){
+          setStatus("Abri uma tela própria para impressão. Se a janela de PDF não aparecer sozinha, toque no botão verde ‘Imprimir / salvar PDF’ dentro da nova tela.","ok");
+        }else{
+          setStatus("O navegador bloqueou a abertura da impressão. Abra este arquivo no Chrome e toque novamente em Salvar / imprimir PDF.","error");
+          alert("O navegador bloqueou a abertura da impressão. Abra este arquivo no Chrome e toque novamente em Salvar / imprimir PDF.");
+        }
+
+        setTimeout(() => {
+          document.body.classList.remove("print-a4","print-a3-livreto");
+        },1200);
+
+        return;
+      }
+
+      setStatus("Abrindo impressão do navegador. Escolha ‘Salvar como PDF’.","ok");
+
       window.print();
 
       setTimeout(() => {
         document.body.classList.remove("print-a4","print-a3-livreto");
       },1200);
+    }
+
+    function abrirJanelaImpressaoMobile(format){
+      const conteudo = printArea.innerHTML || result.innerHTML;
+
+      if(!conteudo.trim()){
+        return false;
+      }
+
+      const estilos = Array.from(document.querySelectorAll("style"))
+        .map(style => style.innerHTML)
+        .join("\n");
+
+      const classeFormato = format === "a3-livreto" ? "print-a3-livreto" : "print-a4";
+      const titulo = cleanText(getValue("title")) || "VERBO IA";
+
+      const janela = window.open("","_blank");
+
+      if(!janela){
+        return false;
+      }
+
+      janela.document.open();
+      janela.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>${escapeHTML(titulo)} — Impressão</title>
+  <style>
+    ${estilos}
+
+    html,
+    body{
+      background:#ffffff !important;
+      margin:0 !important;
+      padding:0 !important;
+      overflow-x:hidden !important;
+    }
+
+    #printArea{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      padding:14px !important;
+      box-sizing:border-box !important;
+      background:#ffffff !important;
+    }
+
+    .print-mobile-toolbar{
+      position:sticky;
+      top:0;
+      z-index:99999;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px;
+      background:#fffaf4;
+      border-bottom:1px solid #d9cbbb;
+      box-shadow:0 8px 22px rgba(60,35,20,.12);
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    .print-mobile-toolbar strong{
+      color:#3f3128;
+      font-size:14px;
+      line-height:1.25;
+    }
+
+    .print-mobile-toolbar button{
+      width:auto !important;
+      border:none;
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:14px;
+      font-weight:800;
+      background:#1e953f;
+      color:#ffffff;
+      cursor:pointer;
+    }
+
+    @media screen and (max-width:740px){
+      #printArea .page,
+      #printArea .doc,
+      #printArea .result,
+      #printArea .sermon-scripture,
+      #printArea .sermon-intro,
+      #printArea .sermon-point,
+      #printArea .sermon-conclusion,
+      #printArea .sermon-prayer,
+      #printArea .sermon-application-inside{
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+        box-sizing:border-box !important;
+      }
+    }
+
+    @media print{
+      .print-mobile-toolbar{
+        display:none !important;
+      }
+
+      html,
+      body{
+        background:#ffffff !important;
+        margin:0 !important;
+        padding:0 !important;
+      }
+
+      #printArea{
+        display:block !important;
+        padding:0 !important;
+        margin:0 !important;
+        width:100% !important;
+        max-width:100% !important;
+      }
+    }
+  </style>
+</head>
+<body class="${classeFormato}">
+  <div class="print-mobile-toolbar">
+    <strong>VERBO IA<br>Toque no botão verde se o PDF não abrir sozinho.</strong>
+    <button type="button" onclick="window.print()">Imprimir / salvar PDF</button>
+  </div>
+
+  <main id="printArea">
+    ${conteudo}
+  </main>
+
+  <script>
+    window.addEventListener('load', function(){
+      setTimeout(function(){
+        try{ window.focus(); window.print(); }catch(e){}
+      }, 700);
+    });
+  <\/script>
+</body>
+</html>`);
+      janela.document.close();
+      janela.focus();
+      return true;
     }
 
     function limparTudo(){
