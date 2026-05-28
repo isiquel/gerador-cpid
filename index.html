@@ -1525,6 +1525,100 @@
       display:none;
     }
 
+
+    /* CURSO — visual limpo de apostila, sem cara de Revista EBD */
+    .course-clean-page{
+      background:#fff;
+      border:1px solid #ded3c7;
+      border-radius:20px;
+      padding:28px;
+    }
+
+    .course-cover-box{
+      border-left:8px solid #6b432b;
+      background:linear-gradient(180deg,#ffffff,#fffaf4);
+      border-radius:0 18px 18px 0;
+      padding:22px;
+      margin-bottom:18px;
+    }
+
+    .course-cover-box h1{
+      margin:0 0 10px;
+      color:#4e3121;
+      font-size:34px;
+      line-height:1.12;
+    }
+
+    .course-cover-box p{
+      margin:0;
+      color:#6f5b4d;
+      font-size:17px;
+      line-height:1.55;
+    }
+
+    .course-section{
+      margin:0 0 22px;
+      padding:0 0 18px;
+      border-bottom:1px solid #eadfd4;
+    }
+
+    .course-section:last-child{
+      border-bottom:none;
+      padding-bottom:0;
+    }
+
+    .course-section h2,
+    .course-section h3{
+      color:#4e3121;
+      line-height:1.25;
+      margin:0 0 12px;
+    }
+
+    .course-section h2{
+      font-size:26px;
+    }
+
+    .course-section h3{
+      font-size:22px;
+    }
+
+    .course-section p,
+    .course-section li{
+      font-size:17px;
+      line-height:1.72;
+      color:#3d312a;
+      text-align:left;
+    }
+
+    .course-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      margin:12px 0 18px;
+    }
+
+    .course-meta span{
+      display:inline-block;
+      border:1px solid #d9cbbb;
+      background:#fffaf4;
+      color:#65452f;
+      border-radius:999px;
+      padding:7px 11px;
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .course-warning{
+      background:#fffaf4;
+      border:1px solid #d9cbbb;
+      border-left:7px solid #7a4b30;
+      border-radius:0 16px 16px 0;
+      padding:16px;
+      margin:16px 0;
+      color:#4e3121;
+      line-height:1.65;
+    }
+
     @media (max-width:1180px){
       .layout{ grid-template-columns:1fr; }
       .left-panel{ position:relative; top:auto; max-height:none; }
@@ -2894,7 +2988,7 @@
       revista:["Estrutura","Sumário","Lição/Cap. 1","Lição/Cap. 2","Lição/Cap. 3","Lição/Cap. 4","Capa IA","Contracapa"],
       ebook:["Capa","Introdução","Capítulos","Conclusão"],
       livro:["Capa","Sumário","Capítulos","Fechamento"],
-      curso:["Apresentação","Módulos","Aulas","Atividades"]
+      curso:["Apresentação","Módulos","Conteúdo","Atividades","Conclusão"]
     };
         function getValue(id){
       const el = document.getElementById(id);
@@ -7348,6 +7442,403 @@ Seja completo, mas sem desperdiçar páginas.
       }
     }
 
+
+    function limparTituloModuloCurso(titulo){
+      return String(titulo || "")
+        .replace(/^\s*(m[oó]dulo|aula|unidade)\s*\d+\s*[-–—:.]?\s*/i,"")
+        .replace(/^\s*\d+\s*[).:-]?\s*/,"")
+        .trim();
+    }
+
+    function modulosPadraoCapelania(){
+      return [
+        { titulo:"Capelania Hospitalar", textoBase:"Tiago 5.14-16", foco:"presença cristã junto a enfermos, familiares e equipes de saúde", dores:"medo, dor, incerteza, internação, diagnóstico difícil, cirurgia, cuidados paliativos e luto iminente" },
+        { titulo:"Capelania Prisional", textoBase:"Mateus 25.36", foco:"cuidado espiritual em ambientes de privação de liberdade", dores:"culpa, solidão, vergonha, ruptura familiar, medo, revolta e necessidade de recomeço" },
+        { titulo:"Capelania Escolar", textoBase:"Provérbios 22.6", foco:"apoio espiritual, escuta e orientação em ambiente educacional", dores:"ansiedade, conflitos familiares, bullying, insegurança, pressão acadêmica e crises de identidade" },
+        { titulo:"Capelania Militar", textoBase:"Josué 1.9", foco:"assistência espiritual a profissionais submetidos a disciplina, risco e pressão", dores:"medo, perdas, separação familiar, estresse operacional, trauma e responsabilidade extrema" },
+        { titulo:"Capelania Empresarial", textoBase:"Colossenses 3.23-24", foco:"cuidado pastoral no ambiente de trabalho", dores:"pressão por resultados, conflitos, esgotamento, desemprego, assédio moral e crises financeiras" },
+        { titulo:"Capelania Familiar", textoBase:"Josué 24.15", foco:"acolhimento e orientação espiritual para famílias em crise", dores:"conflitos conjugais, quebra de diálogo, luto, enfermidade, vícios, perdas e distanciamento espiritual" },
+        { titulo:"Capelania de Luto e Consolação", textoBase:"2 Coríntios 1.3-4", foco:"presença compassiva diante da perda e da dor", dores:"saudade, choque, culpa, revolta, vazio, tristeza profunda e reconstrução da rotina" },
+        { titulo:"Capelania em Dependência Química", textoBase:"Gálatas 6.2", foco:"apoio espiritual responsável a dependentes e familiares", dores:"compulsão, recaídas, vergonha, ruptura familiar, perdas sociais, ansiedade e desesperança" },
+        { titulo:"Capelania em Situações de Crise, Desastres e Emergências", textoBase:"Salmo 46.1", foco:"acolhimento em cenários de emergência e sofrimento coletivo", dores:"pânico, perdas repentinas, deslocamento, trauma, insegurança, choque e vulnerabilidade" },
+        { titulo:"Capelania Comunitária e Social", textoBase:"Lucas 10.33-37", foco:"serviço cristão junto a pessoas e comunidades vulneráveis", dores:"pobreza, abandono, fome, violência, exclusão, solidão e falta de apoio" }
+      ];
+    }
+
+    function extrairModulosCurso(base){
+      const texto = String(base.theme || "") + "\n" + String(base.extraNotes || "");
+      const linhas = texto.split(/\n+/).map(l => l.trim()).filter(Boolean);
+      const encontrados = [];
+
+      linhas.forEach(linha => {
+        const match = linha.match(/^(?:[-*•]?\s*)?(?:\d+\s*[).:-]\s*)?(.{4,90})$/);
+        if(!match) return;
+        const titulo = limparTituloModuloCurso(match[1]);
+        if(/^capelania\s+/i.test(titulo) && !encontrados.some(m => m.titulo.toLowerCase() === titulo.toLowerCase())){
+          encontrados.push({ titulo, textoBase:"Texto bíblico adequado", foco:"atuação capelã nesta área específica", dores:"dores e necessidades próprias do ambiente atendido" });
+        }
+      });
+
+      if(encontrados.length >= 3) return encontrados.slice(0,20);
+
+      if(/capelania/i.test(texto) || /capel[aã]o/i.test(texto)){
+        return modulosPadraoCapelania();
+      }
+
+      const quantidade = Math.min(Number(getValue("quantity") || 10),20);
+      const modulos = [];
+      for(let i = 1; i <= quantidade; i++){
+        modulos.push({
+          titulo:`Módulo ${i} — Fundamento ${i} do curso`,
+          textoBase:base.biblicalBase || "Texto bíblico adequado",
+          foco:"ensino progressivo relacionado ao tema do curso",
+          dores:"necessidades práticas do público-alvo"
+        });
+      }
+      return modulos;
+    }
+
+    function validarConteudoCurso(html){
+      const texto = extrairTextoDeHtml(html).toLowerCase().replace(/\s+/g," ").trim();
+      if(!texto || texto.length < 220) return false;
+
+      const proibidos = [
+        "desenvolva esta parte",
+        "desenvolva este módulo",
+        "com base no tema",
+        "crie um curso",
+        "estrutura obrigatória",
+        "não escrever como sermão",
+        "não criar apelo final",
+        "não criar oração final",
+        "não criar conteúdo superficial",
+        "o curso deve formar o aluno",
+        "a resposta deve"
+      ];
+
+      return !proibidos.some(p => texto.includes(p));
+    }
+
+    function promptCursoApresentacao(base,modulos){
+      return `
+Você é o VERBO IA gerando um CURSO cristão completo em HTML interno.
+
+TÍTULO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+TEMA DO USUÁRIO: ${base.theme}
+PÚBLICO-ALVO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+
+MÓDULOS DO CURSO:
+${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
+
+ENTREGUE SOMENTE HTML INTERNO, sem markdown.
+NÃO repita o prompt do usuário.
+NÃO escreva instruções como conteúdo.
+NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um curso” ou frases parecidas.
+NÃO faça sermão, devocional ou revista EBD.
+
+Crie a abertura do curso como apostila limpa, com estas seções:
+<h1 class="page-title">Título do curso</h1>
+<p class="subtitle">Subtítulo</p>
+<div class="course-section"><h2>Apresentação do curso</h2>...</div>
+<div class="course-section"><h2>Objetivos gerais</h2><ol>...</ol></div>
+<div class="course-section"><h2>Perfil do participante</h2>...</div>
+<div class="course-section"><h2>Metodologia</h2>...</div>
+<div class="course-section"><h2>Sumário dos módulos</h2><ol>...</ol></div>
+
+Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pastoral/didática.
+      `.trim();
+    }
+
+    function promptCursoModulo(base,modulo,numero,total){
+      return `
+Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão em HTML interno.
+
+CURSO: ${base.title}
+TEMA GERAL DO CURSO: ${base.theme}
+MÓDULO: ${modulo.titulo}
+TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
+FOCO DO MÓDULO: ${modulo.foco}
+DORES/NECESSIDADES DO AMBIENTE: ${modulo.dores}
+PÚBLICO-ALVO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES DO USUÁRIO: ${base.extraNotes || "nenhuma"}
+
+REGRAS ABSOLUTAS:
+- Entregue conteúdo final, não instruções.
+- Proibido repetir o prompt do usuário.
+- Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
+- Proibido deixar genérico.
+- Proibido fazer sermão, apelo ou devocional.
+- Não use muitos cards. Use visual de apostila limpa.
+- Não invente leis, normas, certificados ou autorização profissional.
+- Deixe claro que capelania respeita ética, sigilo, limites institucionais e encaminhamento profissional.
+- HTML interno apenas.
+
+Estruture exatamente assim:
+<div class="course-section"><h2>Módulo ${numero} — ${modulo.titulo}</h2><p>Introdução robusta...</p></div>
+<div class="course-section"><h3>Objetivo do módulo</h3><p>...</p></div>
+<div class="course-section"><h3>Texto bíblico base</h3><p>Escreva a referência e explique a aplicação. Se souber o texto bíblico, inclua-o com responsabilidade.</p></div>
+<div class="course-section"><h3>1. O que é esta área da capelania</h3><p>...</p></div>
+<div class="course-section"><h3>2. Pessoas atendidas e principais dores</h3><p>...</p><ul>...</ul></div>
+<div class="course-section"><h3>3. Postura correta do capelão cristão</h3><p>...</p></div>
+<div class="course-section"><h3>4. O que o capelão pode fazer</h3><ul>...</ul></div>
+<div class="course-section"><h3>5. O que o capelão não deve fazer</h3><ul>...</ul></div>
+<div class="course-section"><h3>6. Limites éticos e encaminhamentos</h3><p>...</p></div>
+<div class="course-section"><h3>7. Como abordar a pessoa em sofrimento</h3><p>...</p></div>
+<div class="course-section"><h3>8. Exemplo prático de atendimento</h3><p>...</p></div>
+<div class="course-section"><h3>9. Atividade prática</h3><p>...</p></div>
+<div class="course-section"><h3>10. Perguntas de revisão com respostas</h3><ol><li><strong>Pergunta:</strong> ...<br><strong>Resposta:</strong> ...</li></ol></div>
+<div class="course-section"><h3>Resumo do módulo</h3><p>...</p></div>
+
+Escreva com profundidade. O módulo deve ter conteúdo próprio e aplicável.
+      `.trim();
+    }
+
+    function promptCursoFechamento(base,modulos){
+      return `
+Gere o fechamento final do curso cristão em HTML interno.
+
+CURSO: ${base.title}
+TEMA: ${base.theme}
+MÓDULOS:
+${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
+
+Regras:
+- HTML interno apenas.
+- Não repita o prompt do usuário.
+- Não escreva instruções.
+- Não faça sermão.
+- Não invente validade legal de certificado.
+
+Inclua:
+<div class="course-section"><h2>Conclusão geral</h2>...</div>
+<div class="course-section"><h2>Código de conduta do capelão cristão</h2><ol>...</ol></div>
+<div class="course-section"><h2>Roteiro simples de visita capelã</h2>...</div>
+<div class="course-section"><h2>Modelo simples de ficha de atendimento</h2>...</div>
+<div class="course-section"><h2>Modelo de abordagem inicial</h2>...</div>
+<div class="course-section"><h2>Avaliação final com respostas</h2><ol>...</ol></div>
+<div class="course-section"><h2>Certificado simbólico de conclusão</h2>...</div>
+      `.trim();
+    }
+
+    function gerarModuloCursoFallback(base,modulo,numero,total){
+      return `
+        <div class="course-section">
+          <h2>Módulo ${numero} — ${escapeHtml(modulo.titulo)}</h2>
+          ${paragraph(`Este módulo apresenta a área de ${modulo.titulo} como campo de serviço cristão responsável. A capelania não atua por curiosidade, improviso ou desejo de controle, mas por amor, presença, escuta, prudência e respeito às pessoas em sofrimento.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>Objetivo do módulo</h3>
+          ${paragraph(`Capacitar o participante a compreender o ambiente de ${modulo.titulo}, reconhecer as principais necessidades das pessoas atendidas e agir com postura bíblica, ética, humana e responsável.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>Texto bíblico base</h3>
+          ${paragraph(`${modulo.textoBase}. Este texto deve ser aplicado como fundamento de cuidado, compaixão e serviço. O capelão aprende que sua presença não substitui a ação de Deus, nem o trabalho dos profissionais habilitados, mas pode ser instrumento de consolo, esperança e apoio espiritual.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>1. O que é esta área da capelania</h3>
+          ${paragraph(`A ${modulo.titulo} é uma atuação de cuidado espiritual direcionada a pessoas que enfrentam ${modulo.dores}. O capelão cristão se aproxima com humildade, sem invadir, sem pressionar e sem transformar a dor do outro em palco religioso.`)}
+          ${paragraph(`Seu papel é oferecer presença, escuta, oração quando apropriada, orientação espiritual básica e encaminhamento responsável quando a situação ultrapassa os limites da capelania.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>2. Pessoas atendidas e principais dores</h3>
+          <ul>
+            <li>Pessoas em sofrimento direto, emocional ou espiritual.</li>
+            <li>Familiares, cuidadores ou pessoas próximas afetadas pela crise.</li>
+            <li>Profissionais ou líderes envolvidos no ambiente de cuidado.</li>
+            <li>Pessoas fragilizadas por culpa, medo, vergonha, perdas ou insegurança.</li>
+          </ul>
+        </div>
+
+        <div class="course-section">
+          <h3>3. Postura correta do capelão cristão</h3>
+          ${paragraph(`O capelão deve agir com discrição, empatia, respeito, maturidade espiritual e domínio emocional. Deve ouvir antes de falar, perguntar antes de aconselhar e respeitar o tempo da pessoa atendida.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>4. O que o capelão pode fazer</h3>
+          <ul>
+            <li>Ouvir com atenção e sem julgamento.</li>
+            <li>Oferecer presença pastoral e apoio espiritual.</li>
+            <li>Orar quando houver abertura e respeito ao ambiente.</li>
+            <li>Compartilhar uma palavra bíblica breve e adequada.</li>
+            <li>Encaminhar casos graves a profissionais competentes.</li>
+          </ul>
+        </div>
+
+        <div class="course-section">
+          <h3>5. O que o capelão não deve fazer</h3>
+          <ul>
+            <li>Não deve prometer cura, solução imediata ou resultado garantido.</li>
+            <li>Não deve substituir médico, psicólogo, advogado, assistente social, autoridade ou liderança responsável.</li>
+            <li>Não deve expor informações pessoais sem autorização.</li>
+            <li>Não deve usar a dor da pessoa para impor opiniões.</li>
+            <li>Não deve ultrapassar regras institucionais do ambiente atendido.</li>
+          </ul>
+        </div>
+
+        <div class="course-section">
+          <h3>6. Limites éticos e encaminhamentos</h3>
+          ${paragraph(`A capelania cristã precisa caminhar com ética. Sigilo, consentimento, prudência e respeito aos protocolos do ambiente são indispensáveis. Quando houver risco à vida, violência, abuso, ideação suicida, surto, dependência severa ou necessidade técnica, o caso deve ser encaminhado a profissionais habilitados.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>7. Como abordar a pessoa em sofrimento</h3>
+          ${paragraph(`A abordagem deve ser simples: apresentar-se, pedir permissão, ouvir, validar a dor, evitar frases prontas, oferecer apoio e perguntar se a pessoa deseja oração. A presença do capelão deve transmitir paz, não pressão.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>8. Exemplo prático de atendimento</h3>
+          ${paragraph(`Ao encontrar alguém fragilizado, o capelão pode dizer: “Estou aqui para ouvir e apoiar. Posso me sentar um pouco com você?” Depois de ouvir, pode oferecer uma palavra curta de esperança, respeitando a condição emocional da pessoa e as normas do local.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>9. Atividade prática</h3>
+          ${paragraph(`Escreva um roteiro de visita de cinco minutos para esta área. Inclua apresentação, escuta, uma pergunta aberta, uma palavra bíblica breve, oração opcional e encaminhamento responsável se necessário.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>10. Perguntas de revisão com respostas</h3>
+          <ol>
+            <li><strong>Pergunta:</strong> Qual é o papel principal do capelão nesta área?<br><strong>Resposta:</strong> Oferecer presença, escuta, apoio espiritual, oração respeitosa e encaminhamento responsável quando necessário.</li>
+            <li><strong>Pergunta:</strong> Por que o capelão precisa conhecer seus limites?<br><strong>Resposta:</strong> Porque a capelania não substitui áreas profissionais e deve proteger a pessoa atendida, o ambiente e o próprio capelão.</li>
+            <li><strong>Pergunta:</strong> Que postura deve marcar o atendimento?<br><strong>Resposta:</strong> Empatia, discrição, prudência, respeito, maturidade espiritual e fidelidade bíblica.</li>
+          </ol>
+        </div>
+
+        <div class="course-section">
+          <h3>Resumo do módulo</h3>
+          ${paragraph(`A ${modulo.titulo} exige amor cristão, preparo, humildade e responsabilidade. O capelão serve melhor quando entende que sua missão é estar presente, ouvir, acolher, orar com respeito e encaminhar com sabedoria.`)}
+        </div>
+      `;
+    }
+
+    async function generateCourseAsync(base){
+      manualPlaceholdersCount = 0;
+      const modulos = extrairModulosCurso(base);
+      let html = `<div class="doc">`;
+
+      setStep(0,"Gerando apresentação limpa do curso...");
+      let apresentacao = await chamarTextoIAComTentativas(
+        [promptCursoApresentacao(base,modulos)],
+        "Apresentação do curso",
+        { minimo:700, aceitarCurto:true, aceitarMuitoCurto:true }
+      );
+
+      if(!validarConteudoCurso(apresentacao)){
+        apresentacao = `
+          <div class="course-cover-box">
+            <h1>${escapeHtml(base.title)}</h1>
+            <p>${escapeHtml(base.subtitle)}</p>
+          </div>
+          <div class="course-section">
+            <h2>Apresentação do curso</h2>
+            ${paragraph(`Este curso foi preparado para formar pessoas com visão bíblica, maturidade emocional, ética e prática ministerial. O objetivo é conduzir o participante a servir com amor, presença, escuta e responsabilidade em ambientes de sofrimento e vulnerabilidade.`)}
+          </div>
+          <div class="course-section">
+            <h2>Objetivos gerais</h2>
+            <ol class="list">
+              <li>Compreender a natureza cristã do cuidado capelão.</li>
+              <li>Desenvolver postura ética, respeitosa e madura.</li>
+              <li>Aprender a ouvir, acolher, orientar e encaminhar com responsabilidade.</li>
+              <li>Conhecer as principais áreas de atuação da capelania.</li>
+            </ol>
+          </div>
+          <div class="course-section">
+            <h2>Sumário dos módulos</h2>
+            ${orderedList(modulos.map((m,i)=>`Módulo ${i + 1} — ${m.titulo}`))}
+          </div>
+        `;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${apresentacao}</div>`,"course-page intro-page");
+      renderGenerated(html + `</div>`);
+
+      for(let i = 0; i < modulos.length; i++){
+        const numero = i + 1;
+        const modulo = modulos[i];
+        const stepIndex = Math.min(1 + i, Math.max(1, stepsByType.curso.length - 2));
+
+        await pause(500);
+        setStep(stepIndex,`Gerando Módulo ${numero}: ${modulo.titulo}...`);
+
+        let moduloHtml = await chamarTextoIAComTentativas(
+          [promptCursoModulo(base,modulo,numero,modulos.length)],
+          `Módulo ${numero} do curso`,
+          { minimo:950, aceitarCurto:true, aceitarMuitoCurto:true }
+        );
+
+        if(!validarConteudoCurso(moduloHtml)){
+          moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
+          manualPlaceholdersCount++;
+        }
+
+        html += renderPage(`<div class="course-clean-page">${moduloHtml}</div>`,"course-page lesson-page");
+        renderGenerated(html + `</div>`);
+      }
+
+      await pause(500);
+      setStep(stepsByType.curso.length - 1,"Gerando conclusão, avaliação e modelos práticos...");
+
+      let fechamento = await chamarTextoIAComTentativas(
+        [promptCursoFechamento(base,modulos)],
+        "Fechamento do curso",
+        { minimo:700, aceitarCurto:true, aceitarMuitoCurto:true }
+      );
+
+      if(!validarConteudoCurso(fechamento)){
+        fechamento = `
+          <div class="course-section">
+            <h2>Conclusão geral</h2>
+            ${paragraph("A capelania cristã é ministério de presença, escuta, cuidado e serviço. Quem conclui este curso deve compreender que servir pessoas em sofrimento exige amor, preparo, ética, limites e dependência de Deus.")}
+          </div>
+          <div class="course-section">
+            <h2>Código de conduta do capelão cristão</h2>
+            <ol class="list">
+              <li>Servir com amor e respeito.</li>
+              <li>Guardar sigilo, salvo quando houver risco ou obrigação legal de comunicar.</li>
+              <li>Respeitar protocolos institucionais.</li>
+              <li>Não prometer resultados que pertencem somente a Deus.</li>
+              <li>Encaminhar casos técnicos a profissionais habilitados.</li>
+            </ol>
+          </div>
+          <div class="course-section">
+            <h2>Roteiro simples de visita capelã</h2>
+            ${paragraph("Apresente-se, peça permissão, ouça com atenção, faça perguntas abertas, ofereça uma palavra bíblica breve, pergunte se pode orar e registre apenas o necessário com discrição.")}
+          </div>
+          <div class="course-section">
+            <h2>Modelo simples de ficha de atendimento</h2>
+            <ul class="list"><li>Nome ou identificação.</li><li>Data e local.</li><li>Necessidade apresentada.</li><li>Orientação espiritual oferecida.</li><li>Encaminhamento recomendado.</li></ul>
+          </div>
+          <div class="course-section">
+            <h2>Avaliação final com respostas</h2>
+            <ol class="list"><li><strong>Pergunta:</strong> O que é capelania cristã?<br><strong>Resposta:</strong> É serviço cristão de presença, cuidado espiritual, escuta e apoio responsável em ambientes de dor e necessidade.</li><li><strong>Pergunta:</strong> O capelão substitui profissionais técnicos?<br><strong>Resposta:</strong> Não. Ele acolhe espiritualmente e encaminha quando necessário.</li></ol>
+          </div>
+          <div class="course-section">
+            <h2>Certificado simbólico de conclusão</h2>
+            ${paragraph("Certificamos simbolicamente que o participante concluiu este curso de formação em capelania cristã, dedicado ao serviço com amor, ética, presença e responsabilidade.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${fechamento}</div>`,"course-page summary-page");
+      html += `</div>`;
+      renderGenerated(html);
+
+      if(manualPlaceholdersCount > 0){
+        finishSteps(`Curso finalizado. Algumas partes usaram o modelo interno seguro porque a IA não entregou conteúdo adequado.`);
+      }else{
+        finishSteps("Curso finalizado com módulos reais e conteúdo limpo de apostila.");
+      }
+    }
+
     function generateDevotional(base){
       return `
         <div class="doc">
@@ -7430,12 +7921,14 @@ Seja completo, mas sem desperdiçar páginas.
           await generateMagazineAsync(base);
         }else if(base.type === "estudo"){
           await generateStudyAsync(base);
+        }else if(base.type === "curso"){
+          await generateCourseAsync(base);
         }else{
           setStep(0,"Gerando material...");
 
           let html = "";
           if(base.type === "devocional") html = generateDevotional(base);
-          if(["ebook","livro","curso"].includes(base.type)) html = generateLongMaterial(base);
+          if(["ebook","livro"].includes(base.type)) html = generateLongMaterial(base);
 
           renderGenerated(html);
           finishSteps("Material gerado com sucesso.");
