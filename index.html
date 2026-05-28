@@ -1564,6 +1564,163 @@
       .sermon-impact-block{
         font-size:19px;
       }
+
+      /* AJUSTE MOBILE — deixa a pré-visualização confortável no celular */
+      html,
+      body{
+        width:100%;
+        max-width:100%;
+        overflow-x:hidden;
+      }
+
+      .app-shell,
+      .layout,
+      .panel,
+      .left-panel,
+      .right-panel,
+      .result,
+      .doc,
+      .page,
+      .block,
+      .sermon-scripture,
+      .sermon-intro,
+      .sermon-point,
+      .sermon-conclusion,
+      .sermon-prayer,
+      .sermon-application-inside,
+      .study-header,
+      .theology-box,
+      .memory-verse,
+      .lesson-synthesis,
+      .scripture-full,
+      .daily-reading,
+      .lesson-cover-page,
+      .lesson-hero,
+      .lesson-topic,
+      .subtopic,
+      .knowledge-box,
+      .teacher-help,
+      .summary-box,
+      .personal-application,
+      .book-note,
+      .bibliography-box,
+      .safe-bibliography-alert,
+      .reference-alert{
+        width:100% !important;
+        max-width:100% !important;
+        min-width:0 !important;
+        box-sizing:border-box !important;
+      }
+
+      .layout{
+        display:flex !important;
+        flex-direction:column !important;
+        gap:12px !important;
+      }
+
+      .right-panel{
+        min-height:auto !important;
+      }
+
+      .result{
+        padding:12px !important;
+        overflow-x:hidden !important;
+      }
+
+      .doc{
+        gap:12px !important;
+      }
+
+      .page{
+        padding:18px 14px !important;
+        margin:0 !important;
+        border-radius:18px !important;
+        overflow-x:hidden !important;
+      }
+
+      .text,
+      .list,
+      .question-answer,
+      .student-space{
+        font-size:17px !important;
+        line-height:1.72 !important;
+        text-align:left !important;
+        overflow-wrap:break-word !important;
+        word-break:normal !important;
+        white-space:normal !important;
+      }
+
+      .sermon-scripture,
+      .sermon-intro,
+      .sermon-point,
+      .sermon-conclusion,
+      .sermon-prayer,
+      .sermon-application-inside{
+        padding:18px 14px !important;
+        border-radius:18px !important;
+      }
+
+      .sermon-point{
+        border-radius:0 18px 18px 0 !important;
+      }
+
+      .sermon-scripture .text,
+      .sermon-intro .text,
+      .sermon-point .text,
+      .sermon-conclusion .text,
+      .sermon-prayer .text,
+      .sermon-application-inside .text{
+        font-size:18px !important;
+        line-height:1.78 !important;
+        text-align:left !important;
+        overflow-wrap:break-word !important;
+        word-break:normal !important;
+        white-space:normal !important;
+      }
+
+      .sermon-scripture h3,
+      .sermon-intro h3,
+      .sermon-point h3,
+      .sermon-conclusion h3,
+      .sermon-prayer h4{
+        font-size:22px !important;
+        line-height:1.28 !important;
+        overflow-wrap:break-word !important;
+      }
+
+      .page-title,
+      .lesson-hero h1,
+      .lesson-cover-header h1{
+        font-size:26px !important;
+        line-height:1.18 !important;
+        overflow-wrap:break-word !important;
+      }
+
+      input,
+      textarea,
+      select,
+      button,
+      .btn{
+        width:100% !important;
+        max-width:100% !important;
+        box-sizing:border-box !important;
+      }
+
+      textarea{
+        min-height:130px;
+      }
+
+      table{
+        width:100% !important;
+        max-width:100% !important;
+        display:block;
+        overflow-x:auto;
+      }
+
+      img{
+        max-width:100% !important;
+        height:auto !important;
+      }
     }
 
     @media print{
@@ -1940,7 +2097,7 @@
 
         <div class="primary-actions">
           <button id="btnGenerate" class="btn btn-primary" type="button">Gerar material</button>
-          <button id="btnPrint" class="btn btn-green" type="button">Salvar PDF</button>
+          <button id="btnPrint" class="btn btn-green" type="button">Salvar / imprimir PDF</button>
           <button id="btnClear" class="btn btn-light" type="button">Limpar</button>
         </div>
 
@@ -7101,9 +7258,10 @@ Seja completo, mas sem desperdiçar páginas.
       await pause(600);
     }
 
-    async function salvarPDF(){
+    function salvarPDF(){
       if(!currentHtml && !result.innerText.trim()){
         setStatus("Gere um material antes de salvar ou imprimir em PDF.","error");
+        alert("Gere um material antes de salvar ou imprimir em PDF.");
         return;
       }
 
@@ -7120,23 +7278,20 @@ Seja completo, mas sem desperdiçar páginas.
         setStatus("Modo A3 paisagem ativado. Na tela de impressão, escolha A3 e paisagem.","ok");
       }else{
         document.body.classList.add("print-a4");
-        setStatus("Modo A4 normal ativado. Preparando impressão...","ok");
+        setStatus("Abrindo impressão do navegador. No celular, escolha ‘Salvar como PDF’.","ok");
       }
 
       printArea.innerHTML = result.innerHTML;
 
-      await pause(300);
-      await esperarImagensDoPrint();
-
-      setStatus("Tudo pronto. Abrindo a tela de impressão...","ok");
+      /* IMPORTANTE:
+         O print precisa ser chamado pelo clique do usuário.
+         Em muitos celulares, chamadas muito atrasadas ou depois de await podem não abrir nada.
+         Por isso usamos a impressão nativa do navegador de forma direta. */
+      window.print();
 
       setTimeout(() => {
-        window.print();
-
-        setTimeout(() => {
-          document.body.classList.remove("print-a4","print-a3-livreto");
-        },1000);
-      },300);
+        document.body.classList.remove("print-a4","print-a3-livreto");
+      },1200);
     }
 
     function limparTudo(){
