@@ -265,6 +265,10 @@
       min-height:145px;
     }
 
+    #sermonSupportRefs{
+      min-height:82px;
+    }
+
     input:focus,
     textarea:focus,
     select:focus{
@@ -701,6 +705,18 @@
       border:1px solid #d8b15b;
       color:#67420a;
       font-size:14px;
+      font-weight:900;
+    }
+
+    .sermon-support-ref{
+      display:inline-block;
+      margin:5px 0 12px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#f7fff8;
+      border:1px solid #8fc89f;
+      color:#21653a;
+      font-size:13px;
       font-weight:900;
     }
 
@@ -1762,7 +1778,7 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Sermão com ordem travada, visual de púlpito e Revista EBD preservada.</p>
+      <p>Sermão com texto base principal, referências de apoio controladas e Revista EBD preservada.</p>
     </header>
 
     <div class="layout">
@@ -1783,8 +1799,11 @@
         </div>
 
         <div class="field">
-          <label for="biblicalBase">Texto bíblico base</label>
-          <input id="biblicalBase" type="text" placeholder="Ex: Gálatas 1.1-10; Lucas 4.18-19" />
+          <label for="biblicalBase">Texto bíblico base principal</label>
+          <input id="biblicalBase" type="text" placeholder="Ex: Salmo 147.3 ou Lucas 4.18-19" />
+          <div class="chip-note">
+            Para sermão, coloque aqui apenas o texto principal que será lido no início. As demais referências entram como apoio.
+          </div>
         </div>
 
         <details class="accordion" open>
@@ -1911,7 +1930,7 @@
           <summary>Opções do sermão</summary>
           <div class="accordion-body">
             <div class="sermon-note">
-              <strong>v10.4.9:</strong> o sermão não terá capa, terá ordem travada e visual mais legível para ministrar no tablet.
+              <strong>v10.5.0:</strong> o sermão usa apenas um texto base principal no início. As demais referências são apoio controlado dentro dos tópicos.
             </div>
 
             <div class="grid-3">
@@ -1965,6 +1984,14 @@
                   <option value="expandido">Expandido — 35 a 45 minutos</option>
                   <option value="curto">Curto — 15 a 25 minutos</option>
                 </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="sermonSupportRefs">Referências bíblicas de apoio</label>
+              <textarea id="sermonSupportRefs" placeholder="Ex: Lucas 4.18-19; Isaías 61.1-3; Mateus 11.28-30; João 8.36; 2 Coríntios 5.17"></textarea>
+              <div class="chip-note">
+                Use aqui textos que podem apoiar os tópicos. O app deve usar no máximo 1 referência principal por tópico, somente se combinar com o argumento.
               </div>
             </div>
           </div>
@@ -2461,6 +2488,30 @@
       {
         ref:"Josué 24.15",
         assunto:"decisão de servir ao Senhor"
+      },
+      {
+        ref:"Salmo 147.3",
+        assunto:"Deus sara os quebrantados de coração e liga suas feridas"
+      },
+      {
+        ref:"Lucas 4.18-19",
+        assunto:"missão de Cristo de evangelizar, curar, libertar e restaurar"
+      },
+      {
+        ref:"Isaías 61.1-3",
+        assunto:"consolo, restauração e alegria no lugar do pranto"
+      },
+      {
+        ref:"Mateus 11.28-30",
+        assunto:"descanso para os cansados e oprimidos em Cristo"
+      },
+      {
+        ref:"João 8.36",
+        assunto:"liberdade verdadeira em Cristo"
+      },
+      {
+        ref:"2 Coríntios 5.17",
+        assunto:"nova vida em Cristo"
       }
     ];
 
@@ -3535,13 +3586,64 @@ Etapa: ${etapa}
       return { ok:false, source:"sem-imagem", image:"" };
     }
 
+    function dividirReferenciasSermon(texto){
+      return String(texto || "")
+        .split(/;|\n|,/)
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => item.replace(/\.$/,""))
+        .filter(item => item.length > 2);
+    }
+
+    function separarTextoBasePrincipal(texto){
+      const refs = dividirReferenciasSermon(texto);
+      return refs[0] || String(texto || "").trim() || "Texto bíblico a definir";
+    }
+
+    function separarReferenciasApoioSermon(base){
+      const refsBase = dividirReferenciasSermon(base.biblicalBase);
+      const primeira = refsBase[0] || "";
+      const restantesDoCampoBase = refsBase.slice(1);
+      const refsCampoApoio = dividirReferenciasSermon(getValue("sermonSupportRefs"));
+      const refsObservacoes = dividirReferenciasSermon(base.extraNotes.match(/refer[eê]ncias?\s+de\s+apoio\s*[:\-–—]\s*([^\n]+)/i)?.[1] || "");
+
+      const todas = [
+        ...restantesDoCampoBase,
+        ...refsCampoApoio,
+        ...refsObservacoes
+      ];
+
+      const unicas = [];
+
+      todas.forEach(ref => {
+        const normal = ref.toLowerCase();
+        if(ref && ref !== primeira && !unicas.some(r => r.toLowerCase() === normal)){
+          unicas.push(ref);
+        }
+      });
+
+      return unicas;
+    }
+
+    function referenciaApoioParaTopico(info,indice){
+      const refs = info.supportRefs || [];
+      if(!refs.length) return "";
+
+      return refs[(indice - 1) % refs.length] || "";
+    }
+
     function montarInfoSermon(base){
+      const primaryText = separarTextoBasePrincipal(base.biblicalBase);
+      const supportRefs = separarReferenciasApoioSermon(base);
+
       return {
         points:Number(getValue("sermonPoints") || 4),
         type:getValue("sermonType") || "temático",
         appeal:getValue("sermonAppeal") || "com fechamento e apelo forte para ação",
         style:getValue("sermonStyle") || "bíblico, pastoral, pentecostal e profundo",
-        length:getValue("sermonLength") || "normal"
+        length:getValue("sermonLength") || "normal",
+        primaryText,
+        supportRefs
       };
     }
 
@@ -3563,16 +3665,17 @@ Etapa: ${etapa}
 TIPO ESCOLHIDO: SERMÃO EXPOSITIVO
 
 LÓGICA:
-O sermão deve partir do texto bíblico e caminhar pelo texto.
+O sermão deve partir do texto bíblico base principal e caminhar pelo texto.
 Não deve criar tópicos soltos.
 Deve explicar autor, contexto, destinatários, ocasião, propósito e depois expor os versículos ou blocos do texto.
 
 ESTRUTURA:
-1. Texto Bíblico Base escrito.
-2. Introdução ao livro, autor, contexto, ocasião e propósito.
-3. Exposição por versículos ou blocos.
-4. Cada bloco deve ter explicação do texto, lição extraída do texto e aplicação prática para a igreja.
-5. Conclusão com a mensagem central do texto e apelo para ação baseado no próprio texto.
+1. Tema do sermão.
+2. Texto Bíblico Base principal escrito.
+3. Introdução comentando o texto lido.
+4. Exposição por versículos ou blocos.
+5. Cada bloco deve ter explicação do texto, lição extraída do texto e aplicação prática para a igreja.
+6. Conclusão com a mensagem central do texto e apelo para ação baseado no próprio texto.
         `.trim();
       }
 
@@ -3582,12 +3685,12 @@ TIPO ESCOLHIDO: SERMÃO TEXTUAL
 
 LÓGICA:
 O sermão deve partir de um texto curto, geralmente um versículo ou poucos versículos.
-As divisões principais devem nascer das palavras, expressões e ideias do próprio texto bíblico.
+As divisões principais devem nascer das palavras, expressões e ideias do próprio texto bíblico base.
 
 ESTRUTURA:
-1. Texto Bíblico Base escrito.
-2. Introdução.
-3. Explicação breve do texto.
+1. Tema do sermão.
+2. Texto Bíblico Base principal escrito.
+3. Introdução comentando o texto lido.
 4. Divisões tiradas do próprio texto.
 5. Cada divisão deve ter explicação, argumento e aplicação prática dentro dela.
 6. Conclusão com fechamento e apelo para ação.
@@ -3598,22 +3701,28 @@ ESTRUTURA:
 TIPO ESCOLHIDO: SERMÃO TEMÁTICO
 
 LÓGICA:
-O sermão deve trabalhar um tema central e usar referências bíblicas coerentes para sustentar os argumentos.
+O sermão deve trabalhar um tema central, mas a mensagem deve emanar do texto bíblico base principal.
+As referências de apoio são ferramentas de sustentação, não enfeite.
 Os tópicos devem ser progressivos, um preparando o outro.
 A aplicação prática deve estar dentro de cada tópico.
 
 ESTRUTURA:
-1. Texto Bíblico Base escrito.
-2. Introdução profunda, expandida e envolvente.
-3. Tópico 1 com explicação bíblica, argumento consistente e aplicação prática.
-4. Tópico 2 com explicação bíblica, argumento consistente e aplicação prática.
-5. Tópico 3 com explicação bíblica, argumento consistente e aplicação prática.
-6. Tópico 4 ou 5, se escolhido, com explicação bíblica, argumento consistente e aplicação prática.
-7. Conclusão com fechamento e apelo para ação.
+1. Tema do sermão.
+2. Texto Bíblico Base principal escrito.
+3. Introdução comentando o texto base lido.
+4. Tópico 1 com explicação bíblica, argumento consistente e aplicação prática.
+5. Tópico 2 com explicação bíblica, argumento consistente e aplicação prática.
+6. Tópico 3 com explicação bíblica, argumento consistente e aplicação prática.
+7. Tópico 4 ou 5, se escolhido, com explicação bíblica, argumento consistente e aplicação prática.
+8. Conclusão com fechamento e apelo para ação.
       `.trim();
     }
 
     function montarPromptBaseSermon(base,info){
+      const apoio = info.supportRefs && info.supportRefs.length
+        ? info.supportRefs.join("; ")
+        : "Nenhuma referência de apoio informada.";
+
       return `
 Você é um pregador cristão, bíblico, pentecostal, pastoral e fiel às Escrituras.
 
@@ -3624,7 +3733,8 @@ DADOS DO SERMÃO:
 Título: ${base.title}
 Subtítulo: ${base.subtitle}
 Tema/prompt do usuário: ${base.theme}
-Texto bíblico base: ${base.biblicalBase}
+Texto Bíblico Base principal: ${info.primaryText}
+Referências bíblicas de apoio disponíveis: ${apoio}
 Público-alvo: ${base.targetAudience}
 Tom desejado: ${base.tone}
 Tipo de sermão: ${info.type}
@@ -3643,7 +3753,11 @@ REGRAS ABSOLUTAS:
 - Não criar página de capa.
 - Não criar arte visual.
 - Não criar “direção homilética” como primeira página.
-- O sermão deve começar diretamente com o Texto Bíblico Base escrito.
+- O início do sermão deve usar apenas o Texto Bíblico Base principal.
+- Não colocar todas as referências no início.
+- As referências de apoio devem aparecer apenas nos tópicos, quando combinarem diretamente com o argumento.
+- Use no máximo uma referência bíblica de apoio principal por tópico.
+- Não cite versículos apenas para enfeitar.
 - Não criar seção separada chamada “Aplicação Prática”.
 - A aplicação prática deve estar dentro de cada tópico, bloco ou divisão.
 - Depois do último tópico/bloco/divisão, ir direto para a conclusão.
@@ -3675,22 +3789,24 @@ ${guiaReferenciasTexto()}
     function promptTextoBiblicoSermon(base,info){
       return `${montarPromptBaseSermon(base,info)}
 
-ETAPA: TEXTO BÍBLICO BASE ESCRITO
+ETAPA: TEMA E TEXTO BÍBLICO BASE PRINCIPAL
 
 Crie somente o primeiro bloco do sermão.
 
 O bloco deve conter:
 - título do sermão;
-- referência bíblica;
-- o texto bíblico escrito, não apenas a referência;
+- referência do Texto Bíblico Base principal;
+- o texto bíblico principal escrito, não apenas a referência;
 - uma frase curta de transição para a introdução.
+
+Texto Bíblico Base principal obrigatório: ${info.primaryText}
 
 Use HTML exatamente neste estilo:
 <div class="sermon-scripture">
-  <h3>Texto Bíblico Base</h3>
-  <span class="ref">REFERÊNCIA</span>
-  <p class="text">TEXTO BÍBLICO ESCRITO</p>
-  <div class="sermon-impact-block">Frase forte de transição...</div>
+  <h3>Tema: ${base.title}</h3>
+  <span class="ref">Texto Bíblico Base: ${info.primaryText}</span>
+  <p class="text">TEXTO BÍBLICO PRINCIPAL ESCRITO</p>
+  <div class="sermon-impact-block">Frase curta de transição...</div>
 </div>
 
 REGRAS:
@@ -3700,9 +3816,11 @@ REGRAS:
 - Não começar com visual de capa.
 - Não escrever conclusão.
 - Não escrever oração.
-- Se houver vários textos bíblicos, escreva os principais de forma fiel e clara.
+- Não colocar referências de apoio neste bloco.
+- Não colocar um caminhão de versículos no início.
+- Escreva somente o texto bíblico principal.
 - Não invente texto bíblico.
-- Se não souber o texto completo, escreva uma seleção fiel e reverente dos versículos principais.
+- Se não souber o texto completo, escreva uma seleção fiel e reverente do versículo principal.
 - Gere somente esta etapa.`;
     }
 
@@ -3710,6 +3828,7 @@ REGRAS:
       const extraExpositivo = info.type === "expositivo"
         ? `
 Como é sermão expositivo, a introdução deve apresentar:
+- contexto do texto bíblico base;
 - autor do livro bíblico, quando couber;
 - destinatários;
 - ocasião;
@@ -3722,7 +3841,7 @@ Como é sermão expositivo, a introdução deve apresentar:
       const extraTextual = info.type === "textual"
         ? `
 Como é sermão textual, a introdução deve apresentar:
-- o sentido geral do texto;
+- o sentido geral do texto base;
 - a força das palavras principais;
 - a razão de as divisões nascerem do próprio texto.
         `.trim()
@@ -3731,9 +3850,9 @@ Como é sermão textual, a introdução deve apresentar:
       const extraTematico = info.type === "temático"
         ? `
 Como é sermão temático, a introdução deve apresentar:
+- a força espiritual do texto bíblico base;
 - a dor ou necessidade espiritual do tema;
 - a relevância do assunto para a igreja;
-- a ligação com o texto bíblico base;
 - uma preparação forte para os tópicos progressivos.
         `.trim()
         : "";
@@ -3744,13 +3863,16 @@ ETAPA: INTRODUÇÃO DO SERMÃO
 
 Crie uma introdução profunda, envolvente e controlada.
 
-A introdução deve:
-- prender a atenção da igreja;
-- não ser genérica;
-- apresentar a necessidade espiritual do sermão;
-- conectar o coração das pessoas com o texto bíblico;
-- preparar a progressão da mensagem;
-- terminar com uma transição natural para o primeiro tópico, bloco ou divisão.
+Texto Bíblico Base principal que acabou de ser lido: ${info.primaryText}
+
+A introdução deve começar comentando o texto bíblico base que foi lido.
+
+A introdução deve seguir esta progressão:
+1. Comentar o texto bíblico base.
+2. Mostrar por que esse texto é especial para esta mensagem.
+3. Aplicar a verdade do texto à realidade da igreja.
+4. Ampliar a ideia central sem fugir do texto.
+5. Fazer uma transição natural para o primeiro tópico, bloco ou divisão.
 
 ${extraTematico}
 ${extraExpositivo}
@@ -3759,12 +3881,14 @@ ${extraTextual}
 FORMATO:
 <div class="sermon-intro">
   <h3>Introdução</h3>
-  <p class="text">...</p>
+  <p class="text">Comentário inicial sobre o texto bíblico base...</p>
   <div class="sermon-impact-block">Frase forte em destaque...</div>
-  <p class="text">...</p>
+  <p class="text">Ampliação e transição...</p>
 </div>
 
 REGRAS:
+- Não começar com pergunta direta.
+- Não começar com frase solta.
 - Não criar capa.
 - Não criar contexto separado fora da introdução.
 - Não escrever conclusão.
@@ -3778,6 +3902,12 @@ REGRAS:
     }
 
     function promptTopicoSermon(base,info,indice){
+      const refApoio = referenciaApoioParaTopico(info,indice);
+
+      const apoioTexto = refApoio
+        ? `Referência de apoio sugerida para este tópico: ${refApoio}. Use somente se ela sustentar diretamente o argumento deste tópico.`
+        : "Nenhuma referência de apoio específica foi selecionada para este tópico. Use o texto base principal como fundamento.";
+
       const travas = `
 TRAVAS DE ORDEM:
 - Gere somente este tópico/bloco/divisão.
@@ -3790,6 +3920,16 @@ TRAVAS DE ORDEM:
 - Não antecipe o fechamento do sermão.
 - A conclusão será gerada somente depois de todos os tópicos.
 - A oração final será gerada somente no encerramento do sermão.
+
+TRAVAS DE REFERÊNCIA:
+- O texto base principal continua sendo a fonte da mensagem: ${info.primaryText}.
+- ${apoioTexto}
+- Use no máximo uma referência bíblica de apoio neste tópico.
+- A referência deve sustentar diretamente o argumento trabalhado.
+- Não cite versículos apenas para enfeitar.
+- Não use referência fora de contexto.
+- Não coloque lista de referências.
+- A mensagem deve emanar do texto bíblico, e não apenas usar a Bíblia como ilustração.
       `.trim();
 
       if(info.type === "expositivo"){
@@ -3819,6 +3959,7 @@ ${travas}
 Use HTML:
 <div class="sermon-point">
   <h3>${indice}. Título baseado no bloco bíblico</h3>
+  <span class="sermon-support-ref">Referência de apoio: ${refApoio || info.primaryText}</span>
   <p class="text">Explicação do texto...</p>
   <div class="sermon-impact-block">Frase forte...</div>
   <p class="text">Lição do texto...</p>
@@ -3857,6 +3998,7 @@ ${travas}
 Use HTML:
 <div class="sermon-point">
   <h3>${indice}. Título tirado do próprio texto</h3>
+  <span class="sermon-support-ref">Referência de apoio: ${refApoio || info.primaryText}</span>
   <p class="text">Explicação...</p>
   <div class="sermon-impact-block">Frase forte...</div>
   <p class="text">Argumento...</p>
@@ -3881,10 +4023,11 @@ Crie o tópico ${indice} completo do sermão.
 Regras para sermão temático:
 - O título do tópico deve ser forte, bíblico e pregável.
 - Os tópicos devem ser progressivos: o tópico ${indice} precisa continuar o raciocínio do sermão.
+- A ideia do tópico deve nascer do texto base principal e do tema.
 - Desenvolva explicação bíblica.
 - Traga argumento consistente e profundo.
 - Coloque aplicação prática dentro do próprio tópico.
-- Use referências bíblicas coerentes com o assunto, se couber.
+- Use referência bíblica de apoio apenas se ela for coerente com o assunto.
 - Inclua uma frase de transição curta ao final.
 - Não repita o que já foi dito.
 - Não escreva “desenvolva este ponto”.
@@ -3899,6 +4042,7 @@ ${travas}
 Use HTML:
 <div class="sermon-point">
   <h3>${indice}. Título do tópico</h3>
+  <span class="sermon-support-ref">Referência de apoio: ${refApoio || info.primaryText}</span>
   <p class="text">Explicação bíblica...</p>
   <div class="sermon-impact-block">Frase forte...</div>
   <p class="text">Argumento consistente...</p>
@@ -3923,6 +4067,7 @@ Crie a conclusão final do sermão.
 
 A conclusão deve:
 - fechar a linha de pensamento do sermão;
+- retomar o Texto Bíblico Base principal: ${info.primaryText};
 - retomar a mensagem central;
 - não criar uma nova aplicação separada;
 - transformar tudo o que foi pregado em chamado à decisão;
@@ -3960,6 +4105,7 @@ Crie uma oração final para encerrar o sermão.
 A oração deve:
 - ser reverente;
 - estar ligada ao tema;
+- estar ligada ao Texto Bíblico Base principal: ${info.primaryText};
 - pedir direção de Deus;
 - pedir transformação;
 - conduzir a igreja à dependência do Senhor.
@@ -4162,6 +4308,26 @@ Não inventar bibliografia.
 
       const mapa = [
         {
+          teste:["salmo 147.3","sl 147.3"],
+          texto:"Sara os quebrantados de coração e liga-lhes as feridas."
+        },
+        {
+          teste:["lucas 4.18","lc 4.18"],
+          texto:"O Espírito do Senhor é sobre mim, pois que me ungiu para evangelizar os pobres, enviou-me a curar os quebrantados do coração."
+        },
+        {
+          teste:["mateus 11.28","mt 11.28"],
+          texto:"Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei."
+        },
+        {
+          teste:["joão 8.36","jo 8.36"],
+          texto:"Se, pois, o Filho vos libertar, verdadeiramente, sereis livres."
+        },
+        {
+          teste:["2 coríntios 5.17","2co 5.17","2 co 5.17"],
+          texto:"Assim que, se alguém está em Cristo, nova criatura é: as coisas velhas já passaram; eis que tudo se fez novo."
+        },
+        {
           teste:["daniel 1.8","dn 1.8"],
           texto:"E Daniel assentou no seu coração não se contaminar com a porção do manjar do rei, nem com o vinho que ele bebia."
         },
@@ -4246,26 +4412,6 @@ Não inventar bibliografia.
           texto:"Mas vós, amados, edificando-vos a vós mesmos sobre a vossa santíssima fé, orando no Espírito Santo."
         },
         {
-          teste:["lucas 4.18","lc 4.18"],
-          texto:"O Espírito do Senhor é sobre mim, pois que me ungiu para evangelizar os pobres, enviou-me a curar os quebrantados do coração."
-        },
-        {
-          teste:["salmo 147.3","sl 147.3"],
-          texto:"Sara os quebrantados de coração e liga-lhes as feridas."
-        },
-        {
-          teste:["mateus 11.28","mt 11.28"],
-          texto:"Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei."
-        },
-        {
-          teste:["joão 8.36","jo 8.36"],
-          texto:"Se, pois, o Filho vos libertar, verdadeiramente, sereis livres."
-        },
-        {
-          teste:["2 coríntios 5.17","2co 5.17","2 co 5.17"],
-          texto:"Assim que, se alguém está em Cristo, nova criatura é: as coisas velhas já passaram; eis que tudo se fez novo."
-        },
-        {
           teste:["joão 14.1","jo 14.1"],
           texto:"Não se turbe o vosso coração; credes em Deus, crede também em mim."
         }
@@ -4277,6 +4423,30 @@ Não inventar bibliografia.
 
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
+
+      if(r.includes("salmo 147") || r.includes("sl 147")){
+        return "Deus sara os quebrantados de coração e trata suas feridas.";
+      }
+
+      if(r.includes("lucas 4") || r.includes("lc 4")){
+        return "Jesus anuncia sua missão de salvar, libertar e curar os quebrantados.";
+      }
+
+      if(r.includes("isaías 61") || r.includes("is 61")){
+        return "O Senhor promete consolo, restauração e alegria ao povo quebrantado.";
+      }
+
+      if(r.includes("mateus 11") || r.includes("mt 11")){
+        return "Jesus chama os cansados e oprimidos para encontrarem descanso nele.";
+      }
+
+      if(r.includes("joão 8") || r.includes("jo 8")){
+        return "A verdadeira liberdade vem do Filho de Deus.";
+      }
+
+      if(r.includes("2 coríntios 5") || r.includes("2co 5") || r.includes("2 co 5")){
+        return "Em Cristo há nova criação, novo começo e nova direção.";
+      }
 
       if(r.includes("mateus 24.12") || r.includes("mt 24.12")){
         return "Jesus alerta que a multiplicação da iniquidade pode esfriar o amor.";
@@ -4320,26 +4490,6 @@ Não inventar bibliografia.
 
       if(r.includes("provérbios 4") || r.includes("pv 4")){
         return "O coração precisa ser guardado, pois dele procedem as escolhas da vida.";
-      }
-
-      if(r.includes("lucas 4") || r.includes("lc 4")){
-        return "Jesus anuncia sua missão de salvar, libertar e curar os quebrantados.";
-      }
-
-      if(r.includes("salmo 147") || r.includes("sl 147")){
-        return "Deus sara os quebrantados de coração e trata suas feridas.";
-      }
-
-      if(r.includes("isaías 61") || r.includes("is 61")){
-        return "O Senhor promete consolo, restauração e alegria ao povo quebrantado.";
-      }
-
-      if(r.includes("mateus 11") || r.includes("mt 11")){
-        return "Jesus chama os cansados e oprimidos para encontrarem descanso nele.";
-      }
-
-      if(r.includes("joão 8") || r.includes("jo 8")){
-        return "A verdadeira liberdade vem do Filho de Deus.";
       }
 
       if(r.includes("salmo 119") || r.includes("sl 119")){
@@ -5153,6 +5303,19 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       return saida.trim();
     }
 
+    function limitarReferenciasNoTopicoSermon(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      const refs = [...temp.querySelectorAll(".sermon-support-ref")];
+
+      if(refs.length > 1){
+        refs.slice(1).forEach(el => el.remove());
+      }
+
+      return temp.innerHTML;
+    }
+
     function reforcarVisualSermon(html){
       const temp = document.createElement("div");
       temp.innerHTML = String(html || "");
@@ -5179,6 +5342,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
 
       if(tipo === "topico"){
         out = removerConclusaoEOracaoDeBlocoSermon(out);
+        out = limitarReferenciasNoTopicoSermon(out);
       }
 
       return out.trim();
@@ -5271,7 +5435,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
           minimo,
           aceitarCurto:true,
           aceitarMuitoCurto:true,
-          minQuality:"sermão completo, bíblico, pregável, sem capa, visual de púlpito e pronto para ministração"
+          minQuality:"sermão completo, bíblico, pregável, sem capa, texto base principal e referências de apoio controladas"
         }
       );
 
@@ -5292,14 +5456,14 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
 
       let html = `<div class="doc">`;
 
-      setStep(0,"Gerando Texto Bíblico Base escrito...");
+      setStep(0,"Gerando tema e Texto Bíblico Base principal...");
 
       const textoBiblico = await gerarBlocoSermon(
         base,
         info,
-        "Texto Bíblico Base",
+        "Texto Bíblico Base principal",
         promptTextoBiblicoSermon(base,info),
-        160,
+        120,
         "block",
         "inicio"
       );
@@ -5309,7 +5473,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
 
       await pause(600);
 
-      setStep(1,"Gerando introdução profunda e mais legível para o tablet...");
+      setStep(1,"Gerando introdução a partir do texto base lido...");
 
       const introducao = await gerarBlocoSermon(
         base,
@@ -5335,7 +5499,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
             ? `Divisão textual ${i}`
             : `Tópico ${i}`;
 
-        setStatus(`Gerando ${nomeBloco} de ${info.points}. Conclusão e oração estão bloqueadas nesta etapa...`);
+        setStatus(`Gerando ${nomeBloco} de ${info.points}. Usando no máximo 1 referência de apoio coerente...`);
 
         const topico = await gerarBlocoSermon(
           base,
@@ -5390,7 +5554,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       if(manualPlaceholdersCount > 0){
         finishSteps(`Sermão gerado com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente.`);
       }else{
-        finishSteps("Sermão gerado com ordem correta: texto bíblico, introdução, tópicos com aplicação, conclusão e oração final.");
+        finishSteps("Sermão gerado com texto base principal, referências de apoio controladas, conclusão e oração no final.");
       }
     }
 
@@ -6403,7 +6567,7 @@ Seja completo, mas sem desperdiçar páginas.
     function limparTudo(){
       [
         "title","subtitle","theme","biblicalBase","targetAudience","tone","author",
-        "ministry","extraNotes","quantity","revistaAno","revistaObservacao"
+        "ministry","extraNotes","quantity","revistaAno","revistaObservacao","sermonSupportRefs"
       ].forEach(id => setValue(id,""));
 
       setValue("depthLevel","profundo");
@@ -6494,8 +6658,9 @@ Seja completo, mas sem desperdiçar páginas.
       if(type === "sermao"){
         setValue("title","Cura Interior: Quando Deus Sara as Feridas da Alma");
         setValue("subtitle","Uma mensagem bíblica sobre restauração, perdão, libertação emocional e recomeço em Deus");
-        setValue("theme","Crie um sermão completo sobre cura interior. O sermão deve mostrar que Deus conhece as feridas escondidas, Jesus cura os quebrantados de coração, a cura passa pela entrega, pelo perdão e pela fé, e Deus transforma dor em testemunho. O sermão deve ser bíblico, pastoral, pentecostal, profundo, acolhedor e cristocêntrico. Use frases fortes em destaque, parágrafos curtos e visual bom para ministrar no tablet.");
-        setValue("biblicalBase","Lucas 4.18-19; Isaías 61.1-3; Salmo 147.3; Mateus 11.28-30; João 8.36");
+        setValue("theme","Crie um sermão completo sobre cura interior. A mensagem deve nascer do texto bíblico principal e mostrar que Deus conhece as feridas escondidas, Jesus cura os quebrantados de coração, a cura passa pela entrega, pelo perdão e pela fé, e Deus transforma dor em testemunho. O sermão deve ser bíblico, pastoral, pentecostal, profundo, acolhedor e cristocêntrico. Use frases fortes em destaque, parágrafos curtos e visual bom para ministrar no tablet.");
+        setValue("biblicalBase","Salmo 147.3");
+        setValue("sermonSupportRefs","Lucas 4.18-19; Isaías 61.1-3; Mateus 11.28-30; João 8.36; 2 Coríntios 5.17");
         setValue("targetAudience","Igreja em geral, pessoas feridas, famílias, novos convertidos e todos que precisam de restauração interior");
         setValue("tone","bíblico, pastoral, pentecostal, profundo, acolhedor, sensível, restaurador e cristocêntrico");
         setValue("author","Isiquel Rodrigues");
@@ -6506,7 +6671,7 @@ Seja completo, mas sem desperdiçar páginas.
         setValue("sermonStyle","libertação, autoridade espiritual, bíblico e cristocêntrico");
         setValue("sermonLength","normal");
         setValue("coverMode","sem-capa");
-        setValue("extraNotes","O sermão deve começar com o Texto Bíblico Base escrito, depois introdução profunda e envolvente, depois tópicos progressivos com aplicação prática dentro de cada tópico. Não criar aplicação prática separada. Não colocar conclusão nem oração dentro dos tópicos. Depois do último tópico, ir direto para a conclusão com fechamento e apelo para ação. Finalizar com oração.");
+        setValue("extraNotes","O sermão deve começar com o tema e o Texto Bíblico Base principal escrito. Use somente Salmo 147.3 no início. As demais referências são apenas de apoio nos tópicos, no máximo uma por tópico e somente se sustentarem diretamente o argumento. A introdução deve começar comentando o texto base lido, sem começar com pergunta direta. Não criar aplicação prática separada. Não colocar conclusão nem oração dentro dos tópicos. Depois do último tópico, ir direto para a conclusão com fechamento e apelo para ação. Finalizar com oração.");
       }
 
       if(type === "revista"){
@@ -6546,19 +6711,26 @@ Seja completo, mas sem desperdiçar páginas.
       if(currentType === "sermao"){
         if(tipo === "expositivo"){
           regraSermon = `
-Como sermão expositivo, caminhe pelo texto bíblico base. Explique autor, contexto, destinatários, ocasião, propósito, sentido do texto, blocos de versículos, lições extraídas do texto e aplicações dentro de cada bloco.
+Como sermão expositivo, caminhe pelo texto bíblico base principal. Explique contexto, propósito, sentido do texto, blocos de versículos, lições extraídas do texto e aplicações dentro de cada bloco.
+Use apenas o texto base principal no início.
+Referências de apoio devem ser usadas somente quando sustentarem o argumento.
 Não coloque conclusão nem oração dentro dos blocos.
 Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }else if(tipo === "textual"){
           regraSermon = `
-Como sermão textual, tire as divisões das palavras, expressões e ideias do próprio texto bíblico base. Cada divisão deve ter explicação, argumento e aplicação dentro dela.
+Como sermão textual, tire as divisões das palavras, expressões e ideias do próprio texto bíblico base principal. Cada divisão deve ter explicação, argumento e aplicação dentro dela.
+Use apenas o texto base principal no início.
+Referências de apoio devem ser usadas somente quando sustentarem o argumento.
 Não coloque conclusão nem oração dentro das divisões.
 Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }else{
           regraSermon = `
-Como sermão temático, desenvolva tópicos progressivos sobre o tema. Cada tópico deve ter explicação bíblica, argumento consistente e aplicação prática dentro do próprio tópico.
+Como sermão temático, desenvolva tópicos progressivos sobre o tema, mas a mensagem deve emanar do texto bíblico base principal.
+Use apenas o texto base principal no início.
+Cada tópico deve ter explicação bíblica, argumento consistente e aplicação prática dentro do próprio tópico.
+Use no máximo uma referência bíblica de apoio por tópico, somente se ela sustentar diretamente o argumento.
 Não coloque conclusão nem oração dentro dos tópicos.
 Use parágrafos curtos e frases fortes em destaque.
           `.trim();
