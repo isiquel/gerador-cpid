@@ -1833,7 +1833,7 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Sermões preservados, Revista EBD preservada e Estudo Teológico gerado por etapas.</p>
+      <p>Sermões preservados, Revista EBD preservada e Estudo/Apostila com lógica Aluno → Professor.</p>
     </header>
 
     <div class="layout">
@@ -1887,7 +1887,7 @@
                 <div class="type-icon">📖</div>
                 <div>
                   <div class="type-name">Estudo</div>
-                  <div class="type-desc">Estudo teológico.</div>
+                  <div class="type-desc">Estudo ou apostila.</div>
                 </div>
               </button>
 
@@ -2078,13 +2078,23 @@
         </details>
 
         <details id="estudoFields" class="accordion hidden">
-          <summary>Opções do estudo teológico</summary>
+          <summary>Opções do estudo / apostila</summary>
           <div class="accordion-body">
             <div class="study-note">
-              <strong>v10.5.2:</strong> estudo agora é gerado por etapas: contexto, explicação doutrinária, desenvolvimento, aplicações, revisão, glossário e conclusão teológica.
+              <strong>v10.5.3:</strong> o módulo Estudo agora gera estudo bíblico, estudo teológico, apostila do aluno e apostila do professor.
             </div>
 
             <div class="grid-2">
+              <div class="field">
+                <label for="studyType">Tipo de estudo</label>
+                <select id="studyType">
+                  <option value="estudo-biblico" selected>Estudo bíblico</option>
+                  <option value="estudo-teologico">Estudo teológico profundo</option>
+                  <option value="apostila-aluno">Apostila do aluno</option>
+                  <option value="apostila-professor">Apostila do professor</option>
+                </select>
+              </div>
+
               <div class="field">
                 <label for="studyDepth">Modelo</label>
                 <select id="studyDepth">
@@ -2092,9 +2102,13 @@
                   <option value="mais acadêmico">Mais acadêmico</option>
                   <option value="mais pastoral">Mais pastoral</option>
                   <option value="revista teológica ou apostila doutrinária">Revista teológica</option>
+                  <option value="apostila bíblica para sala de aula">Apostila bíblica para sala</option>
+                  <option value="formação ministerial profunda">Formação ministerial</option>
                 </select>
               </div>
+            </div>
 
+            <div class="grid-2">
               <div class="field">
                 <label for="studyQuestions">Perguntas</label>
                 <select id="studyQuestions">
@@ -2102,6 +2116,34 @@
                   <option value="com perguntas sem respostas">Sem respostas</option>
                 </select>
               </div>
+
+              <div class="field">
+                <label for="studyLessons">Aulas / unidades</label>
+                <select id="studyLessons">
+                  <option value="1" selected>1 estudo único</option>
+                  <option value="2">2 aulas</option>
+                  <option value="3">3 aulas</option>
+                  <option value="4">4 aulas</option>
+                  <option value="5">5 aulas</option>
+                  <option value="6">6 aulas</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="truth-note">
+              <strong>Lógica da apostila:</strong> primeiro gere a Apostila do Aluno. Depois gere a Apostila do Professor usando a apostila do aluno como base.
+            </div>
+
+            <div class="status-mini-grid">
+              <div id="baseApostilaAlunoStatus" class="status-mini warn">Apostila do aluno: base não salva.</div>
+              <div id="baseApostilaProfessorStatus" class="status-mini warn">Apostila do professor: base não salva.</div>
+            </div>
+
+            <div class="actions-grid" style="margin-top:0;">
+              <button id="btnSaveApostilaAlunoBase" class="btn btn-gold" type="button">Salvar apostila do aluno</button>
+              <button id="btnSaveApostilaProfessorBase" class="btn btn-gold" type="button">Salvar apostila do professor</button>
+              <button id="btnClearApostilaAlunoBase" class="btn btn-red" type="button">Apagar apostila do aluno</button>
+              <button id="btnClearApostilaProfessorBase" class="btn btn-red" type="button">Apagar apostila do professor</button>
             </div>
           </div>
         </details>
@@ -2346,6 +2388,12 @@
     const STORAGE_REVISTA_PROFESSOR_BASE = "verboia_revista_professor_base_ebd_v1046";
     const STORAGE_REVISTA_PROFESSOR_META = "verboia_revista_professor_meta_ebd_v1046";
 
+    const STORAGE_APOSTILA_ALUNO_BASE = "verboia_apostila_aluno_base_v1053";
+    const STORAGE_APOSTILA_ALUNO_META = "verboia_apostila_aluno_meta_v1053";
+
+    const STORAGE_APOSTILA_PROFESSOR_BASE = "verboia_apostila_professor_base_v1053";
+    const STORAGE_APOSTILA_PROFESSOR_META = "verboia_apostila_professor_meta_v1053";
+
     const SAFE_BIBLIOGRAPHY = [
       {
         titulo:"Bíblia de Estudo Pentecostal",
@@ -2501,7 +2549,16 @@
       { ref:"João 16.13", assunto:"o Espírito Santo guiando em toda a verdade" },
       { ref:"Atos 2.42", assunto:"perseverança na doutrina dos apóstolos" },
       { ref:"2 Timóteo 4.2", assunto:"pregar a Palavra em todo tempo" },
-      { ref:"Colossenses 3.16", assunto:"a Palavra de Cristo habitando abundantemente na igreja" }
+      { ref:"Colossenses 3.16", assunto:"a Palavra de Cristo habitando abundantemente na igreja" },
+      { ref:"Mateus 28.18-20", assunto:"a Grande Comissão e o discipulado das nações" },
+      { ref:"Atos 1.8", assunto:"poder do Espírito Santo para testemunhar" },
+      { ref:"Romanos 10.13-15", assunto:"necessidade da pregação para que pessoas ouçam e creiam" },
+      { ref:"João 3.16", assunto:"amor de Deus revelado na entrega do Filho para salvação" },
+      { ref:"Efésios 2.8-10", assunto:"salvação pela graça mediante a fé e vida de boas obras" },
+      { ref:"Romanos 3.23", assunto:"universalidade do pecado" },
+      { ref:"Romanos 6.23", assunto:"salário do pecado e dom gratuito de Deus" },
+      { ref:"Romanos 5.1", assunto:"justificação pela fé e paz com Deus" },
+      { ref:"Tito 3.5", assunto:"regeneração e renovação pelo Espírito Santo" }
     ];
 
     const typeButtons = document.querySelectorAll(".type-option");
@@ -2520,6 +2577,9 @@
     const baseAlunoStatus = document.getElementById("baseAlunoStatus");
     const baseProfessorStatus = document.getElementById("baseProfessorStatus");
 
+    const baseApostilaAlunoStatus = document.getElementById("baseApostilaAlunoStatus");
+    const baseApostilaProfessorStatus = document.getElementById("baseApostilaProfessorStatus");
+
     const btnGenerate = document.getElementById("btnGenerate");
     const btnPrint = document.getElementById("btnPrint");
     const btnClear = document.getElementById("btnClear");
@@ -2533,6 +2593,11 @@
     const btnClearAlunoBase = document.getElementById("btnClearAlunoBase");
     const btnSaveProfessorBase = document.getElementById("btnSaveProfessorBase");
     const btnClearProfessorBase = document.getElementById("btnClearProfessorBase");
+
+    const btnSaveApostilaAlunoBase = document.getElementById("btnSaveApostilaAlunoBase");
+    const btnSaveApostilaProfessorBase = document.getElementById("btnSaveApostilaProfessorBase");
+    const btnClearApostilaAlunoBase = document.getElementById("btnClearApostilaAlunoBase");
+    const btnClearApostilaProfessorBase = document.getElementById("btnClearApostilaProfessorBase");
 
     const sermaoFields = document.getElementById("sermaoFields");
     const revistaFields = document.getElementById("revistaFields");
@@ -2555,8 +2620,7 @@
       livro:["Capa","Sumário","Capítulos","Fechamento"],
       curso:["Apresentação","Módulos","Aulas","Atividades"]
     };
-
-    function getValue(id){
+        function getValue(id){
       const el = document.getElementById(id);
       return el ? String(el.value || "").trim() : "";
     }
@@ -2627,13 +2691,23 @@
       const labels = {
         sermao:"Sermão",
         devocional:"Devocional",
-        estudo:"Estudo Teológico",
+        estudo:"Estudo / Apostila",
         revista:"Revista EBD",
         ebook:"E-book",
         livro:"Livro",
         curso:"Curso"
       };
       return labels[type] || "Material";
+    }
+
+    function getStudyTypeLabel(type){
+      const labels = {
+        "estudo-biblico":"Estudo Bíblico",
+        "estudo-teologico":"Estudo Teológico Profundo",
+        "apostila-aluno":"Apostila do Aluno",
+        "apostila-professor":"Apostila do Professor"
+      };
+      return labels[type] || "Estudo";
     }
 
     function hideDynamicFields(){
@@ -2751,13 +2825,15 @@
 
       updateSteps(type);
       atualizarStatusBasesEBD();
+      atualizarStatusBasesApostila();
       setStatus("Modo selecionado: " + getTypeLabel(type) + ".","ok");
     }
-        function defaultTitle(type){
+
+    function defaultTitle(type){
       const labels = {
         sermao:"Mensagem da Palavra",
         devocional:"Devocional Bíblico",
-        estudo:"Estudo Teológico",
+        estudo:"Estudo Bíblico",
         revista:"Revista de Escola Bíblica Dominical",
         ebook:"E-book Cristão",
         livro:"Livro Cristão",
@@ -2770,7 +2846,7 @@
       const subtitles = {
         sermao:"Sermão bíblico completo, sem capa, pronto para pregação.",
         devocional:"Reflexão para fortalecer a fé no dia a dia.",
-        estudo:"Estudo teológico por etapas, com contexto, explicação, aplicação, revisão e conclusão.",
+        estudo:"Estudo bíblico ou apostila cristã, com contexto, explicação, aplicação, revisão e conclusão.",
         revista:"Revista mensal ou livro de apoio para Escola Bíblica Dominical.",
         ebook:"Conteúdo cristão organizado em capítulos.",
         livro:"Uma obra cristã estruturada para ensino e edificação.",
@@ -2946,6 +3022,30 @@
       }
     }
 
+    function obterBaseApostilaAluno(){
+      return localStorage.getItem(STORAGE_APOSTILA_ALUNO_BASE) || "";
+    }
+
+    function obterBaseApostilaProfessor(){
+      return localStorage.getItem(STORAGE_APOSTILA_PROFESSOR_BASE) || "";
+    }
+
+    function obterMetaApostilaAluno(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_APOSTILA_ALUNO_META) || "{}");
+      }catch(error){
+        return {};
+      }
+    }
+
+    function obterMetaApostilaProfessor(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_APOSTILA_PROFESSOR_META) || "{}");
+      }catch(error){
+        return {};
+      }
+    }
+
     function salvarBaseAlunoManual(){
       if(!result.innerText.trim() || result.querySelector(".placeholder")){
         setStatus("Gere ou abra a Revista do Aluno antes de salvar como base.","error");
@@ -3020,6 +3120,80 @@
       }
     }
 
+    function salvarBaseApostilaAlunoManual(){
+      if(!result.innerText.trim() || result.querySelector(".placeholder")){
+        setStatus("Gere a Apostila do Aluno antes de salvar como base.","error");
+        return;
+      }
+
+      const html = removerCapasEImagensPesadas(result.innerHTML);
+      const texto = extrairTextoDeHtml(html);
+
+      if(texto.length < 3000){
+        setStatus("O material atual parece curto demais para servir como base da Apostila do Aluno.","error");
+        return;
+      }
+
+      const base = buildBase();
+      const info = montarInfoStudy(base);
+
+      const okBase = salvarSeguroLocalStorage(STORAGE_APOSTILA_ALUNO_BASE,html);
+      const okMeta = salvarSeguroLocalStorage(STORAGE_APOSTILA_ALUNO_META,JSON.stringify({
+        title:base.title,
+        theme:base.theme,
+        studyType:info.studyType,
+        studyLessons:info.studyLessons,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length,
+        baseSemImagem:true
+      }));
+
+      atualizarStatusBasesApostila();
+
+      if(okBase && okMeta){
+        setStatus("Apostila do Aluno salva como base para a Apostila do Professor.","ok");
+      }else{
+        setStatus("Não foi possível salvar a Apostila do Aluno.","error");
+      }
+    }
+
+    function salvarBaseApostilaProfessorManual(){
+      if(!result.innerText.trim() || result.querySelector(".placeholder")){
+        setStatus("Gere a Apostila do Professor antes de salvar como base.","error");
+        return;
+      }
+
+      const html = removerCapasEImagensPesadas(result.innerHTML);
+      const texto = extrairTextoDeHtml(html);
+
+      if(texto.length < 4000){
+        setStatus("O material atual parece curto demais para servir como base da Apostila do Professor.","error");
+        return;
+      }
+
+      const base = buildBase();
+      const info = montarInfoStudy(base);
+
+      const okBase = salvarSeguroLocalStorage(STORAGE_APOSTILA_PROFESSOR_BASE,html);
+      const okMeta = salvarSeguroLocalStorage(STORAGE_APOSTILA_PROFESSOR_META,JSON.stringify({
+        title:base.title,
+        theme:base.theme,
+        studyType:info.studyType,
+        studyLessons:info.studyLessons,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length,
+        baseSemImagem:true
+      }));
+
+      atualizarStatusBasesApostila();
+
+      if(okBase && okMeta){
+        setStatus("Apostila do Professor salva como base textual.","ok");
+      }else{
+        setStatus("Não foi possível salvar a Apostila do Professor.","error");
+      }
+    }
+
     function salvarBaseAlunoAutomatico(base,info,html){
       if(!info || !info.isStudent || info.isSupportBook) return false;
       if(!html) return false;
@@ -3066,6 +3240,29 @@
       return okBase && okMeta;
     }
 
+    function salvarBaseApostilaAlunoAutomatico(base,info,html){
+      if(!info || !info.isApostilaAluno) return false;
+      if(!html) return false;
+
+      const htmlSeguro = removerCapasEImagensPesadas(html);
+      const texto = extrairTextoDeHtml(htmlSeguro);
+      if(texto.length < 3000) return false;
+
+      const okBase = salvarSeguroLocalStorage(STORAGE_APOSTILA_ALUNO_BASE,htmlSeguro);
+      const okMeta = salvarSeguroLocalStorage(STORAGE_APOSTILA_ALUNO_META,JSON.stringify({
+        title:base.title,
+        theme:base.theme,
+        studyType:info.studyType,
+        studyLessons:info.studyLessons,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length,
+        baseSemImagem:true
+      }));
+
+      atualizarStatusBasesApostila();
+      return okBase && okMeta;
+    }
+
     function apagarBaseAluno(){
       localStorage.removeItem(STORAGE_REVISTA_ALUNO_BASE);
       localStorage.removeItem(STORAGE_REVISTA_ALUNO_META);
@@ -3078,6 +3275,20 @@
       localStorage.removeItem(STORAGE_REVISTA_PROFESSOR_META);
       atualizarStatusBasesEBD();
       setStatus("Base da Revista do Professor apagada.","ok");
+    }
+
+    function apagarBaseApostilaAluno(){
+      localStorage.removeItem(STORAGE_APOSTILA_ALUNO_BASE);
+      localStorage.removeItem(STORAGE_APOSTILA_ALUNO_META);
+      atualizarStatusBasesApostila();
+      setStatus("Base da Apostila do Aluno apagada.","ok");
+    }
+
+    function apagarBaseApostilaProfessor(){
+      localStorage.removeItem(STORAGE_APOSTILA_PROFESSOR_BASE);
+      localStorage.removeItem(STORAGE_APOSTILA_PROFESSOR_META);
+      atualizarStatusBasesApostila();
+      setStatus("Base da Apostila do Professor apagada.","ok");
     }
 
     function atualizarStatusBasesEBD(){
@@ -3108,6 +3319,38 @@
           baseProfessorStatus.className = "status-mini ok";
           baseProfessorStatus.textContent =
             `Professor: base salva • ${metaProfessor.mes || ""} ${metaProfessor.ano || ""} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
+        }
+      }
+    }
+
+    function atualizarStatusBasesApostila(){
+      if(baseApostilaAlunoStatus){
+        const htmlAluno = obterBaseApostilaAluno();
+        const metaAluno = obterMetaApostilaAluno();
+
+        if(!htmlAluno){
+          baseApostilaAlunoStatus.className = "status-mini warn";
+          baseApostilaAlunoStatus.textContent = "Apostila do aluno: base não salva.";
+        }else{
+          const textoAluno = extrairTextoDeHtml(htmlAluno);
+          baseApostilaAlunoStatus.className = "status-mini ok";
+          baseApostilaAlunoStatus.textContent =
+            `Apostila do aluno: base salva • ${metaAluno.title || "sem título"} • ${textoAluno.length.toLocaleString("pt-BR")} caracteres.`;
+        }
+      }
+
+      if(baseApostilaProfessorStatus){
+        const htmlProfessor = obterBaseApostilaProfessor();
+        const metaProfessor = obterMetaApostilaProfessor();
+
+        if(!htmlProfessor){
+          baseApostilaProfessorStatus.className = "status-mini warn";
+          baseApostilaProfessorStatus.textContent = "Apostila do professor: base não salva.";
+        }else{
+          const textoProfessor = extrairTextoDeHtml(htmlProfessor);
+          baseApostilaProfessorStatus.className = "status-mini ok";
+          baseApostilaProfessorStatus.textContent =
+            `Apostila do professor: base salva • ${metaProfessor.title || "sem título"} • ${textoProfessor.length.toLocaleString("pt-BR")} caracteres.`;
         }
       }
     }
@@ -3322,7 +3565,7 @@
       }
 
       const temConteudoBiblico =
-        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino|oração|pecado|graça|obediência|verdade|adolescente|jovem|pregação|sermão|apelo|texto bíblico|teologia|doutrinária|bibliologia|inspiração|revelação|cânon|hermenêutica|exegese/i.test(limpo);
+        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino|oração|pecado|graça|obediência|verdade|adolescente|jovem|pregação|sermão|apelo|texto bíblico|teologia|doutrinária|bibliologia|inspiração|revelação|cânon|hermenêutica|exegese|missões|evangelismo|discipulado|família|oração|liderança|apostila|aluno|professor|aula|ensino/i.test(limpo);
 
       if(limpo.length >= minimo && temConteudoBiblico) return true;
       if(opcoes.aceitarCurto && limpo.length >= 80 && temConteudoBiblico) return true;
@@ -3419,7 +3662,7 @@ Agora simplifique:
 - Não mencione que houve erro.
 - Seja bíblico, claro e direto.
 - Se for parte de sermão, escreva conteúdo pregável, não esboço vazio.
-- Se for estudo teológico, escreva como apostila/revista teológica, não como sermão.
+- Se for estudo ou apostila, escreva como material de ensino, não como sermão.
 - HTML interno apenas.
 
 Etapa: ${etapa}
@@ -3436,7 +3679,7 @@ Entregue uma versão menor.
 Regras:
 - Escreva apenas o essencial.
 - Se for tópico de sermão, faça 1 parágrafo bíblico, 1 frase forte e 1 aplicação.
-- Se for estudo teológico, faça 2 a 4 parágrafos didáticos.
+- Se for estudo ou apostila, faça 2 a 4 parágrafos didáticos.
 - Não mencione erro.
 - Não peça desculpas.
 - Não escreva "desenvolva esta parte".
@@ -3890,8 +4133,7 @@ REGRAS:
 - Parágrafos curtos.
 - Gere somente a introdução.`;
     }
-
-    function promptTopicoSermon(base,info,indice){
+        function promptTopicoSermon(base,info,indice){
       const refApoio = referenciaApoioParaTopico(info,indice);
 
       const apoioTexto = refApoio
@@ -4221,7 +4463,8 @@ Não inventar bibliografia.
         </section>
       `;
     }
-        function extrairTituloLicao(linha,indice){
+
+    function extrairTituloLicao(linha,indice){
       const limpo = String(linha || "")
         .replace(/^[-•*]\s*/,"")
         .replace(/^li[cç][aã]o\s*\d+\s*[:\-–—]\s*/i,"")
@@ -4324,7 +4567,11 @@ Não inventar bibliografia.
         { teste:["mateus 24.13","mt 24.13"], texto:"Mas aquele que perseverar até ao fim será salvo." },
         { teste:["apocalipse 3.11","ap 3.11"], texto:"Eis que venho sem demora; guarda o que tens, para que ninguém tome a tua coroa." },
         { teste:["judas 1.20","jd 1.20","judas 20"], texto:"Mas vós, amados, edificando-vos a vós mesmos sobre a vossa santíssima fé, orando no Espírito Santo." },
-        { teste:["joão 14.1","jo 14.1"], texto:"Não se turbe o vosso coração; credes em Deus, crede também em mim." }
+        { teste:["joão 14.1","jo 14.1"], texto:"Não se turbe o vosso coração; credes em Deus, crede também em mim." },
+        { teste:["efésios 2.8","ef 2.8"], texto:"Porque pela graça sois salvos, por meio da fé; e isso não vem de vós; é dom de Deus." },
+        { teste:["efésios 2.10","ef 2.10"], texto:"Porque somos feitura sua, criados em Cristo Jesus para as boas obras." },
+        { teste:["mateus 28.19","mt 28.19"], texto:"Ide, ensinai todas as nações, batizando-as em nome do Pai, e do Filho, e do Espírito Santo." },
+        { teste:["atos 1.8","at 1.8"], texto:"Recebereis a virtude do Espírito Santo, que há de vir sobre vós; e ser-me-eis testemunhas." }
       ];
 
       const encontrado = mapa.find(item => item.teste.some(t => r.includes(t)));
@@ -4360,6 +4607,10 @@ Não inventar bibliografia.
       if(r.includes("joão 16") || r.includes("jo 16")) return "O Espírito guia o povo de Deus em toda a verdade.";
       if(r.includes("atos 2") || r.includes("at 2")) return "A igreja perseverava na doutrina dos apóstolos.";
       if(r.includes("colossenses 3") || r.includes("cl 3")) return "A Palavra de Cristo deve habitar ricamente na igreja.";
+      if(r.includes("mateus 28") || r.includes("mt 28")) return "Cristo envia sua igreja a fazer discípulos de todas as nações.";
+      if(r.includes("atos 1") || r.includes("at 1")) return "O Espírito Santo capacita a igreja para testemunhar.";
+      if(r.includes("romanos 10") || r.includes("rm 10")) return "A pregação é necessária para que pessoas ouçam, creiam e invoquem o Senhor.";
+      if(r.includes("efésios 2") || r.includes("ef 2")) return "A salvação é pela graça mediante a fé e conduz a uma vida de boas obras.";
 
       return "A Palavra de Deus chama o cristão à fé, à obediência e à perseverança.";
     }
@@ -4586,8 +4837,7 @@ ${base.extraNotes}
     async function gerarEstruturaLicoesComIA(base,info){
       return dadosLicoesMensais(base,info);
     }
-
-    function montarPromptBaseRevista(base,info,licoes){
+        function montarPromptBaseRevista(base,info,licoes){
       const listaLicoes = (licoes || [])
         .map((l,i) => `
 Lição ${i + 1}: ${l.titulo}
@@ -4986,6 +5236,10 @@ Use HTML com:
         return "visual teológico cristão, Bíblia aberta sobre mesa de estudo, luz suave sobre as páginas, caderno de anotações, ambiente acadêmico reverente, profundo e elegante";
       }
 
+      if(/soteriologia|salvação|graça|justificação|regeneração|redenção/.test(texto)){
+        return "visual cristão teológico sobre salvação, cruz iluminada, Bíblia aberta, luz dourada simbolizando graça, atmosfera reverente, profunda e cristocêntrica";
+      }
+
       return "visual cristão editorial premium baseado no tema, com composição diferente de capa comum, usando símbolos coerentes com o assunto, luz bíblica, reverência e profundidade";
     }
 
@@ -5009,26 +5263,45 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       `.trim();
     }
 
-    // ===== ESTUDO TEOLÓGICO v10.5.2 =====
-
     function montarInfoStudy(base){
+      const studyType = getValue("studyType") || "estudo-biblico";
+      const studyDepth = getValue("studyDepth") || "com explicação, aplicações e perguntas";
+      const studyQuestions = getValue("studyQuestions") || "com perguntas e respostas";
+      const studyLessons = Math.max(1,Math.min(6,Number(getValue("studyLessons") || 1)));
+
       return {
-        studyDepth:getValue("studyDepth") || "com explicação, aplicações e perguntas",
-        studyQuestions:getValue("studyQuestions") || "com perguntas e respostas",
-        theologicalMode:/teologia|teológico|doutrina|bibliologia|cristologia|pneumatologia|soteriologia|escatologia|eclesiologia|hamartiologia|angelologia|escrituras|inspiração|revelação|cânon|hermenêutica/i.test(
+        studyType,
+        studyDepth,
+        studyQuestions,
+        studyLessons,
+        label:getStudyTypeLabel(studyType),
+        isBiblicalStudy:studyType === "estudo-biblico",
+        isTheologicalStudy:studyType === "estudo-teologico",
+        isApostilaAluno:studyType === "apostila-aluno",
+        isApostilaProfessor:studyType === "apostila-professor",
+        theologicalMode:/teologia|teológico|doutrina|bibliologia|cristologia|pneumatologia|soteriologia|escatologia|eclesiologia|hamartiologia|angelologia|escrituras|inspiração|revelação|cânon|hermenêutica|salvação|graça|justificação|regeneração|santificação/i.test(
           `${base.title} ${base.subtitle} ${base.theme} ${base.extraNotes}`
         )
       };
     }
 
-    function montarPromptBaseStudy(base,info){
+    function montarPromptBaseStudy(base,info,baseAlunoTexto = ""){
+      const baseAluno = baseAlunoTexto
+        ? `
+BASE REAL DA APOSTILA DO ALUNO:
+A Apostila do Professor deve nascer desta base, mantendo o mesmo conteúdo central, a mesma linha de ensino e a mesma progressão.
+
+${limitarTexto(baseAlunoTexto,24000)}
+        `.trim()
+        : "";
+
       return `
-Você é um professor de teologia, escritor cristão, comentarista bíblico, editor de revista teológica e educador cristão.
+Você é professor de teologia, escritor cristão, educador bíblico, comentarista, editor cristão e formador de alunos.
 
 TAREFA:
-Criar um estudo cristão completo, bíblico, doutrinário, didático e bem organizado.
+Criar um material cristão completo, bíblico, didático, profundo e organizado.
 
-DADOS DO ESTUDO:
+DADOS DO MATERIAL:
 Título: ${base.title}
 Subtítulo: ${base.subtitle}
 Tema/prompt do usuário: ${base.theme}
@@ -5036,72 +5309,81 @@ Texto bíblico base: ${base.biblicalBase}
 Público-alvo: ${base.targetAudience}
 Tom desejado: ${base.tone}
 Profundidade: ${base.depthLevel}
-Modelo do estudo: ${info.studyDepth}
+Tipo do estudo: ${info.label}
+Modelo: ${info.studyDepth}
 Perguntas: ${info.studyQuestions}
+Aulas/unidades: ${info.studyLessons}
 Autor: ${base.author}
 Ministério/Editora: ${base.ministry}
 Observações extras: ${base.extraNotes}
 
-TIPO DE MATERIAL:
-Este material deve parecer uma revista teológica, apostila teológica ou estudo bíblico doutrinário.
-Não deve parecer sermão.
-Não deve parecer devocional.
-Não deve parecer esboço vazio.
+${baseAluno}
 
-REGRAS ABSOLUTAS:
+REGRAS GERAIS:
 - Não criar capa.
 - Não criar apelo final.
 - Não criar oração final.
 - Não usar linguagem emocional de púlpito.
-- Não repetir o prompt do usuário.
+- Não parecer sermão.
+- Não parecer devocional.
+- Não copiar o prompt do usuário.
 - Não escrever “desenvolva este ponto”.
 - Não entregar esboço vazio.
 - Não inventar citações de autores.
 - Não inventar bibliografia.
-- Não usar referências bíblicas fora de contexto.
+- Não usar referência bíblica fora de contexto.
 - Explicar os conceitos com clareza.
-- Usar linguagem teológica, bíblica, didática e formativa.
+- Usar linguagem bíblica, teológica, pastoral, didática e formativa.
 - Organizar com títulos, subtítulos, quadros didáticos, perguntas e respostas.
 - O conteúdo deve ser profundo, mas compreensível.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+
+REGRAS DA APOSTILA DO ALUNO:
+- Se for Apostila do Aluno, o material deve ser claro, didático, profundo e acompanhável em sala.
+- Deve ter espaços de resposta quando as perguntas forem sem respostas.
+- Não deve ter orientação ao professor.
+- Não deve ter bastidor didático.
+- Deve ensinar o aluno de forma direta.
+
+REGRAS DA APOSTILA DO PROFESSOR:
+- Se for Apostila do Professor, precisa nascer da Apostila do Aluno.
+- Não pode virar outro material.
+- Deve manter o mesmo conteúdo central da apostila do aluno.
+- Deve acrescentar: objetivos da aula, orientação ao professor, subsídios bíblicos, subsídios teológicos, auxílio didático, perguntas com respostas, possíveis dúvidas dos alunos, erros doutrinários a evitar, como explicar pontos difíceis e aprofundamento.
+- Deve ser mais completa que a Apostila do Aluno.
 
 GUIA DE REFERÊNCIAS BÍBLICAS:
 ${guiaReferenciasTexto()}
       `.trim();
     }
 
-    function promptContextoStudy(base,info){
-      return `${montarPromptBaseStudy(base,info)}
+    function promptContextoStudy(base,info,baseAlunoTexto = ""){
+      return `${montarPromptBaseStudy(base,info,baseAlunoTexto)}
 
-ETAPA: CONTEXTO E INTRODUÇÃO TEOLÓGICA
+ETAPA: CONTEXTO E INTRODUÇÃO
 
-Crie a primeira parte do estudo.
+Crie a primeira parte do material.
 
 Esta parte deve conter:
-1. Título do estudo.
+1. Título do estudo/apostila.
 2. Subtítulo.
 3. Texto bíblico base.
-4. Introdução teológica.
+4. Introdução bíblica e teológica.
 5. Importância do tema para a fé cristã.
 6. Caminho que o estudo seguirá.
 
-REGRAS:
-- Não copie o prompt do usuário.
-- Não escreva em formato de sermão.
-- Não faça apelo.
-- Não faça oração.
-- Não jogue todos os tópicos em um único parágrafo.
-- Não coloque a estrutura inteira em texto corrido.
-- Escreva como apostila/revista teológica.
+Se for Apostila do Professor, acrescente também:
+- Objetivos gerais do professor.
+- Como usar a apostila em sala.
 
 Use HTML:
 <div class="study-header">
   <h3>${base.title}</h3>
   <span class="ref">Texto Bíblico Base: ${base.biblicalBase}</span>
-  <p class="text">Comentário breve sobre o texto base...</p>
+  <p class="text">...</p>
 </div>
 <div class="block">
-  <h3>Introdução Teológica</h3>
+  <h3>Introdução</h3>
   <p class="text">...</p>
 </div>
 <div class="knowledge-box">
@@ -5112,142 +5394,131 @@ Use HTML:
 Gere somente esta etapa.`;
     }
 
-    function promptExplicacaoStudy(base,info){
-      return `${montarPromptBaseStudy(base,info)}
+    function promptExplicacaoStudy(base,info,baseAlunoTexto = ""){
+      return `${montarPromptBaseStudy(base,info,baseAlunoTexto)}
 
-ETAPA: EXPLICAÇÃO DOUTRINÁRIA
+ETAPA: EXPLICAÇÃO PRINCIPAL
 
-Crie a explicação doutrinária principal do estudo.
+Crie a explicação principal do estudo.
 
 Esta parte deve:
 - definir o tema com clareza;
 - explicar os conceitos centrais;
 - mostrar a base bíblica;
 - diferenciar termos importantes;
-- construir uma linha teológica organizada.
+- construir uma linha bíblica e doutrinária organizada.
 
-Se o tema for Bibliologia, explique com profundidade:
-- o que é Bibliologia;
-- revelação;
-- inspiração;
-- autoridade;
-- suficiência;
-- inerrância;
-- cânon;
-- iluminação;
-- interpretação bíblica.
+Se o tema for teológico, aprofunde a doutrina.
+Se o tema for missões, família, oração, santidade, liderança, evangelismo ou outro tema cristão, trate o assunto de forma bíblica, pastoral, didática e profunda.
 
-REGRAS:
-- Não escrever como sermão.
-- Não fazer apelo.
-- Não fazer oração.
-- Não copiar o prompt.
-- Não listar tópicos sem explicar.
-- Não usar referência bíblica fora de contexto.
-- Use parágrafos didáticos e quadros de ensino.
+Se for Apostila do Professor, acrescente:
+- subsídio bíblico;
+- subsídio teológico;
+- como explicar o tema para alunos;
+- pontos de atenção do professor.
 
 Use HTML com:
 <div class="block">
 <div class="knowledge-box">
 <div class="theology-box">
+<div class="teacher-help">
 <div class="summary-box">
 
-Gere somente a explicação doutrinária.`;
+Gere somente esta etapa.`;
     }
 
-    function promptDesenvolvimentoStudy(base,info,numero){
-      return `${montarPromptBaseStudy(base,info)}
+    function promptUnidadeStudy(base,info,numero,baseAlunoTexto = ""){
+      return `${montarPromptBaseStudy(base,info,baseAlunoTexto)}
 
-ETAPA: DESENVOLVIMENTO TEOLÓGICO — PARTE ${numero}
+ETAPA: UNIDADE / AULA ${numero}
 
-Crie a parte ${numero} do desenvolvimento teológico.
+Crie a unidade ${numero} do material.
 
-Esta parte deve aprofundar o estudo em blocos bem explicados.
+Esta unidade deve aprofundar o tema com:
+- título claro;
+- explicação bíblica;
+- explicação doutrinária ou temática;
+- referências bíblicas bem aplicadas;
+- aplicações para a vida cristã;
+- quadro de síntese.
 
-REGRAS:
-- Cada bloco precisa ter título claro.
-- Cada bloco precisa explicar uma doutrina, conceito ou aspecto do tema.
-- Use referências bíblicas dentro da explicação, não como enfeite.
-- Explique o sentido das referências usadas.
-- Não fazer sermão.
-- Não fazer apelo.
-- Não fazer oração.
-- Não repetir o que já foi explicado nas partes anteriores.
-- Use linguagem de apostila teológica.
+Se for Apostila do Aluno:
+- escreva para o aluno aprender e acompanhar.
+- se houver pergunta, deixe espaço para resposta quando o app estiver configurado sem respostas.
 
-DIREÇÃO POR PARTE:
-Parte 1: fundamentos, definições, base bíblica e distinções importantes.
-Parte 2: aprofundamento doutrinário, implicações teológicas e relação com a fé cristã.
-Parte 3: erros comuns, cuidados de interpretação, equilíbrio pastoral e aplicação no ensino da igreja.
+Se for Apostila do Professor:
+- preserve a linha da apostila do aluno.
+- acrescente orientação ao professor.
+- acrescente subsídio teológico e didático.
+- acrescente perguntas com respostas.
+- acrescente erros comuns a evitar.
+- acrescente sugestão de condução da aula.
 
-Use HTML com:
-<div class="block">
-  <h3>Título do bloco</h3>
-  <p class="text">Explicação...</p>
+Use HTML:
+<div class="lesson-hero">
+  <div class="number">Unidade ${numero}</div>
+  <h1>Título da unidade</h1>
+  <div class="meta">Texto bíblico e objetivo</div>
 </div>
+<div class="block">...</div>
+<div class="theology-box">...</div>
+<div class="personal-application">...</div>
+<div class="summary-box">...</div>
 
-<div class="theology-box">
-  <h4>Quadro Teológico</h4>
-  <p class="text">...</p>
-</div>
-
-Gere somente esta parte.`;
+Gere somente esta unidade.`;
     }
 
-    function promptAplicacaoStudy(base,info){
-      return `${montarPromptBaseStudy(base,info)}
+    function promptAplicacaoStudy(base,info,baseAlunoTexto = ""){
+      return `${montarPromptBaseStudy(base,info,baseAlunoTexto)}
 
-ETAPA: APLICAÇÕES TEOLÓGICAS E PRÁTICAS
+ETAPA: APLICAÇÕES BÍBLICAS, TEOLÓGICAS E PRÁTICAS
 
-Crie a seção de aplicações do estudo.
+Crie a seção de aplicações do estudo/apostila.
 
-Esta parte deve mostrar como a doutrina estudada afeta:
+Mostre como o tema afeta:
 - a fé cristã;
-- a pregação;
-- o ensino;
 - a vida devocional;
 - a santidade;
-- o discipulado;
-- a liderança;
 - a igreja local;
+- o discipulado;
+- a pregação;
+- o ensino;
+- a família;
+- a missão da igreja;
 - a defesa da fé.
 
-REGRAS:
-- Não fazer apelo de sermão.
-- Não criar oração.
-- Não usar tom emocional de púlpito.
-- Aplicação deve ser teológica, pastoral e didática.
+Se for Apostila do Professor, acrescente:
+- como conduzir a aplicação em sala;
+- perguntas para diálogo;
+- cuidados pastorais.
 
 Use HTML:
 <div class="personal-application">
-  <h4>Aplicações Teológicas e Práticas</h4>
+  <h4>Aplicações Bíblicas e Práticas</h4>
   ...
 </div>
 
 Gere somente esta etapa.`;
     }
 
-    function promptRevisaoGlossarioStudy(base,info){
-      return `${montarPromptBaseStudy(base,info)}
+    function promptRevisaoGlossarioStudy(base,info,baseAlunoTexto = ""){
+      const comResposta = info.studyQuestions !== "com perguntas sem respostas";
 
-ETAPA: PERGUNTAS, RESPOSTAS E GLOSSÁRIO
+      return `${montarPromptBaseStudy(base,info,baseAlunoTexto)}
+
+ETAPA: REVISÃO, PERGUNTAS E GLOSSÁRIO
 
 Crie uma seção final de revisão.
 
 Inclua:
-1. De 8 a 10 perguntas com respostas.
-2. Glossário teológico com termos importantes.
+1. De 8 a 10 perguntas ${comResposta ? "com respostas" : "sem respostas, com espaço para o aluno responder"}.
+2. Glossário bíblico/teológico com termos importantes.
 3. Síntese final do aprendizado.
 
-Se o tema for Bibliologia, o glossário deve incluir:
-Bibliologia, revelação, inspiração, autoridade, suficiência, inerrância, cânon, iluminação, hermenêutica e exegese.
-
-REGRAS:
-- Perguntas devem ter respostas.
-- Respostas devem ser claras e objetivas.
-- Glossário deve ter definições curtas e corretas.
-- Não inventar autores.
-- Não inventar bibliografia.
+Se for Apostila do Professor:
+- todas as perguntas devem ter respostas.
+- acrescente perguntas difíceis que os alunos podem fazer.
+- acrescente respostas bíblicas e pastorais.
 
 Use HTML:
 <div class="summary-box">
@@ -5256,24 +5527,24 @@ Use HTML:
 </div>
 
 <div class="knowledge-box">
-  <h4>Glossário Teológico</h4>
+  <h4>Glossário</h4>
   ...
 </div>
 
 Gere somente esta etapa.`;
     }
 
-    function promptConclusaoStudy(base,info){
-      return `${montarPromptBaseStudy(base,info)}
+    function promptConclusaoStudy(base,info,baseAlunoTexto = ""){
+      return `${montarPromptBaseStudy(base,info,baseAlunoTexto)}
 
-ETAPA: CONCLUSÃO TEOLÓGICA
+ETAPA: CONCLUSÃO DO ESTUDO/APOSTILA
 
-Crie a conclusão teológica do estudo.
+Crie a conclusão do material.
 
 A conclusão deve:
 - retomar a importância do tema;
 - reafirmar a base bíblica;
-- mostrar a relevância doutrinária;
+- mostrar a relevância para a vida cristã e para a igreja;
 - encerrar de forma firme, edificante e didática.
 
 REGRAS:
@@ -5282,26 +5553,26 @@ REGRAS:
 - Não usar linguagem emocional de púlpito.
 - Não repetir o prompt.
 - Não criar chamada ao altar.
-- A conclusão deve ser teológica, formativa e pastoral.
+- A conclusão deve ser bíblica, formativa e pastoral.
 
 Use HTML:
 <div class="summary-box">
-  <h4>Conclusão Teológica</h4>
+  <h4>Conclusão</h4>
   <p class="text">...</p>
 </div>
 
 Gere somente esta etapa.`;
     }
 
-    async function gerarBlocoStudy(base,info,nome,prompt,minimo = 260){
+    async function gerarBlocoStudy(base,info,nome,prompt,minimo = 260,baseAlunoTexto = ""){
       const html = await chamarTextoIAComTentativas(
         [prompt],
-        `Estudo teológico — ${nome}`,
+        `${info.label} — ${nome}`,
         {
           minimo,
           aceitarCurto:true,
           aceitarMuitoCurto:true,
-          minQuality:"estudo teológico profundo, bíblico, doutrinário, didático e organizado"
+          minQuality:"estudo ou apostila bíblica profunda, didática e organizada"
         }
       );
 
@@ -5316,95 +5587,126 @@ Gere somente esta etapa.`;
       const info = montarInfoStudy(base);
       manualPlaceholdersCount = 0;
 
+      let baseAlunoTexto = "";
+
+      if(info.isApostilaProfessor){
+        const baseAlunoHtml = obterBaseApostilaAluno();
+        baseAlunoTexto = extrairTextoDeHtml(baseAlunoHtml);
+
+        if(!baseAlunoHtml || baseAlunoTexto.length < 3000){
+          renderGenerated(`
+            <div class="doc">
+              ${renderPage(`
+                <h1 class="page-title">Apostila do Aluno não encontrada</h1>
+                <p class="subtitle">A Apostila do Professor precisa nascer da Apostila do Aluno completa.</p>
+                <div class="summary-box">
+                  <h4>Gere primeiro a Apostila do Aluno</h4>
+                  ${paragraph("O fluxo correto é: Apostila do Aluno → Apostila do Professor.")}
+                </div>
+              `)}
+            </div>
+          `);
+
+          finishSteps("Geração bloqueada: falta a Apostila do Aluno salva como base.");
+          return;
+        }
+      }
+
       let html = `<div class="doc">`;
 
-      setStep(0,"Gerando contexto e introdução teológica...");
+      setStep(0,"Gerando contexto e introdução...");
 
       const contexto = await gerarBlocoStudy(
         base,
         info,
-        "Contexto e Introdução Teológica",
-        promptContextoStudy(base,info),
-        350
+        "Contexto e Introdução",
+        promptContextoStudy(base,info,baseAlunoTexto),
+        350,
+        baseAlunoTexto
       );
 
       html += renderPage(contexto,"study-context-page");
       renderGenerated(html + `</div>`);
 
-      await pause(600);
+      await pause(500);
 
-      setStep(1,"Gerando explicação doutrinária...");
+      setStep(1,"Gerando explicação principal...");
 
       const explicacao = await gerarBlocoStudy(
         base,
         info,
-        "Explicação Doutrinária",
-        promptExplicacaoStudy(base,info),
-        550
+        "Explicação Principal",
+        promptExplicacaoStudy(base,info,baseAlunoTexto),
+        520,
+        baseAlunoTexto
       );
 
       html += renderPage(explicacao,"study-explanation-page");
       renderGenerated(html + `</div>`);
 
-      await pause(600);
+      await pause(500);
 
-      setStep(2,"Gerando desenvolvimento teológico por blocos...");
+      setStep(2,"Gerando desenvolvimento por unidade/aula...");
 
-      for(let i = 1; i <= 3; i++){
-        setStatus(`Gerando desenvolvimento teológico — parte ${i} de 3...`);
+      for(let i = 1; i <= info.studyLessons; i++){
+        setStatus(`Gerando unidade/aula ${i} de ${info.studyLessons}...`);
 
-        const desenvolvimento = await gerarBlocoStudy(
+        const unidade = await gerarBlocoStudy(
           base,
           info,
-          `Desenvolvimento Teológico ${i}`,
-          promptDesenvolvimentoStudy(base,info,i),
-          500
+          `Unidade ${i}`,
+          promptUnidadeStudy(base,info,i,baseAlunoTexto),
+          info.isApostilaProfessor ? 520 : 390,
+          baseAlunoTexto
         );
 
-        html += renderPage(desenvolvimento,"study-development-page");
+        html += renderPage(unidade,"study-unit-page");
         renderGenerated(html + `</div>`);
 
-        await pause(500);
+        await pause(450);
       }
 
-      setStep(3,"Gerando aplicações teológicas e práticas...");
+      setStep(3,"Gerando aplicações bíblicas e práticas...");
 
       const aplicacao = await gerarBlocoStudy(
         base,
         info,
-        "Aplicações Teológicas e Práticas",
-        promptAplicacaoStudy(base,info),
-        350
+        "Aplicações",
+        promptAplicacaoStudy(base,info,baseAlunoTexto),
+        340,
+        baseAlunoTexto
       );
 
       html += renderPage(aplicacao,"study-application-page");
       renderGenerated(html + `</div>`);
 
-      await pause(500);
+      await pause(450);
 
-      setStep(4,"Gerando perguntas, respostas e glossário teológico...");
+      setStep(4,"Gerando revisão, perguntas e glossário...");
 
       const revisao = await gerarBlocoStudy(
         base,
         info,
-        "Perguntas e Glossário",
-        promptRevisaoGlossarioStudy(base,info),
-        450
+        "Revisão e Glossário",
+        promptRevisaoGlossarioStudy(base,info,baseAlunoTexto),
+        440,
+        baseAlunoTexto
       );
 
       html += renderPage(revisao,"study-review-page");
       renderGenerated(html + `</div>`);
 
-      await pause(500);
+      await pause(450);
 
-      setStep(5,"Gerando conclusão teológica...");
+      setStep(5,"Gerando conclusão...");
 
       const conclusao = await gerarBlocoStudy(
         base,
         info,
-        "Conclusão Teológica",
-        promptConclusaoStudy(base,info),
-        220
+        "Conclusão",
+        promptConclusaoStudy(base,info,baseAlunoTexto),
+        220,
+        baseAlunoTexto
       );
 
       html += renderPage(conclusao,"study-conclusion-page");
@@ -5412,10 +5714,18 @@ Gere somente esta etapa.`;
 
       renderGenerated(html);
 
+      if(info.isApostilaAluno){
+        salvarBaseApostilaAlunoAutomatico(base,info,html);
+      }
+
       if(manualPlaceholdersCount > 0){
-        finishSteps(`Estudo teológico gerado com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente.`);
+        finishSteps(`${info.label} gerada com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente.`);
+      }else if(info.isApostilaAluno){
+        finishSteps("Apostila do Aluno gerada e salva como base para a Apostila do Professor.");
+      }else if(info.isApostilaProfessor){
+        finishSteps("Apostila do Professor gerada com base na Apostila do Aluno.");
       }else{
-        finishSteps("Estudo teológico gerado por etapas, com contexto, explicação, aplicação, revisão, glossário e conclusão.");
+        finishSteps(`${info.label} gerado com contexto, explicação, desenvolvimento, aplicações, revisão, glossário e conclusão.`);
       }
     }
 
@@ -6664,6 +6974,10 @@ Seja completo, mas sem desperdiçar páginas.
               <h3>Reflexão</h3>
               ${paragraph("Hoje somos conduzidos a meditar sobre \"" + base.theme + "\".")}
             </div>
+            <div class="personal-application">
+              <h4>Aplicação</h4>
+              ${paragraph("A Palavra de Deus nos chama a responder com fé, obediência e confiança no Senhor.")}
+            </div>
             <div class="block">
               <h3>Oração</h3>
               ${paragraph("Senhor Deus, fala comigo por meio da tua Palavra. Em nome de Jesus, amém.")}
@@ -6838,8 +7152,10 @@ Seja completo, mas sem desperdiçar páginas.
       setValue("sermonAppeal","com fechamento e apelo forte para ação");
       setValue("sermonStyle","bíblico, pastoral, pentecostal e profundo");
       setValue("sermonLength","normal");
+      setValue("studyType","estudo-biblico");
       setValue("studyDepth","com explicação, aplicações e perguntas");
       setValue("studyQuestions","com perguntas e respostas");
+      setValue("studyLessons","1");
       setValue("revistaTipo","aluno");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
@@ -6870,6 +7186,7 @@ Seja completo, mas sem desperdiçar páginas.
 
       updateSteps(currentType);
       atualizarStatusBasesEBD();
+      atualizarStatusBasesApostila();
       setStatus("Campos limpos. As bases salvas continuam guardadas no navegador.","ok");
     }
 
@@ -6938,19 +7255,21 @@ Seja completo, mas sem desperdiçar páginas.
       }
 
       if(type === "estudo"){
-        setValue("title","Bibliologia: A Doutrina das Escrituras");
-        setValue("subtitle","Um estudo teológico sobre inspiração, revelação, autoridade, suficiência e interpretação da Bíblia");
-        setValue("theme","Crie um estudo teológico completo, profundo, bíblico, didático e organizado sobre Bibliologia: a Doutrina das Escrituras. Este material deve ter linguagem de revista teológica ou apostila de teologia, com profundidade doutrinária, clareza didática e fidelidade bíblica. Não escrever em formato de sermão. Não criar apelo final. Não criar oração final. Não escrever como devocional. O estudo deve explicar que Bibliologia é a área da teologia que estuda a Bíblia como Palavra de Deus, tratando sua origem divina, inspiração, revelação, autoridade, suficiência, inerrância, preservação, cânon, iluminação e interpretação.");
-        setValue("biblicalBase","2 Timóteo 3.16-17");
-        setValue("targetAudience","Alunos de teologia, professores de EBD, líderes cristãos, obreiros, pregadores e cristãos que desejam compreender melhor a doutrina das Escrituras");
-        setValue("tone","teológico, bíblico, doutrinário, didático, profundo, claro, reverente e formativo");
+        setValue("title","Soteriologia: A Doutrina da Salvação");
+        setValue("subtitle","Um estudo sobre a obra salvadora de Deus em Cristo, a graça, a fé, a justificação, a regeneração, a santificação e a esperança eterna");
+        setValue("theme","Crie um estudo bíblico e teológico completo, profundo, didático e organizado sobre Soteriologia: a Doutrina da Salvação. Explique a condição pecaminosa do ser humano, a graça de Deus, a obra de Cristo, arrependimento e fé, justificação, regeneração, adoção, santificação, perseverança e glorificação. Não escrever como sermão. Não criar apelo final. Não criar oração final. Organizar como estudo ou apostila para ensino cristão.");
+        setValue("biblicalBase","Efésios 2.8-10");
+        setValue("targetAudience","Alunos de teologia, professores de EBD, líderes cristãos, obreiros, pregadores e cristãos que desejam compreender melhor a doutrina da salvação");
+        setValue("tone","teológico, bíblico, doutrinário, didático, profundo, claro, reverente, cristocêntrico e formativo");
         setValue("author","Isiquel Rodrigues");
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("depthLevel","muito-profundo");
+        setValue("studyType","apostila-aluno");
         setValue("studyDepth","revista teológica ou apostila doutrinária");
         setValue("studyQuestions","com perguntas e respostas");
+        setValue("studyLessons","4");
         setValue("coverMode","sem-capa");
-        setValue("extraNotes","O material deve parecer uma revista teológica ou apostila de teologia. Não escrever em formato de sermão. Não criar conclusão com apelo nem oração final. Usar explicação doutrinária, referências bíblicas bem aplicadas, perguntas com respostas e glossário teológico.");
+        setValue("extraNotes","O material deve parecer apostila bíblica para sala de aula. Pode ser usado com alunos. Não escrever em formato de sermão. Não criar conclusão com apelo nem oração final. Usar explicação doutrinária, referências bíblicas bem aplicadas, perguntas com respostas e glossário.");
       }
 
       if(type === "revista"){
@@ -6984,6 +7303,7 @@ Seja completo, mas sem desperdiçar páginas.
 
       const tema = getValue("theme") || getValue("title") || "tema bíblico escolhido";
       const tipo = getValue("sermonType") || "temático";
+      const studyType = getValue("studyType") || "estudo-biblico";
 
       let regra = "";
 
@@ -7017,19 +7337,45 @@ Use parágrafos curtos e frases fortes em destaque.
       }
 
       if(currentType === "estudo"){
-        regra = `
+        if(studyType === "apostila-aluno"){
+          regra = `
+Crie uma Apostila do Aluno completa sobre o tema.
+A apostila deve servir para sala de aula, discipulado, curso bíblico, formação cristã ou estudo em grupo.
+Não escrever como sermão.
+Não criar apelo final.
+Não criar oração final.
+Organize em: contexto, introdução, explicação principal, unidades/aulas, aplicações, perguntas de revisão, glossário e conclusão.
+Escreva para o aluno acompanhar, aprender e responder.
+Não coloque orientação ao professor.
+          `.trim();
+        }else if(studyType === "apostila-professor"){
+          regra = `
+Crie uma Apostila do Professor completa sobre o tema, usando a Apostila do Aluno como base quando disponível.
+Não pode virar outro material.
+Mantenha o mesmo conteúdo central do aluno, mas acrescente objetivos, orientação ao professor, plano de aula, subsídios bíblicos, subsídios teológicos, auxílio didático, perguntas com respostas, erros comuns a evitar e como explicar pontos difíceis.
+Não escrever como sermão.
+Não criar apelo final.
+Não criar oração final.
+          `.trim();
+        }else if(studyType === "estudo-teologico"){
+          regra = `
 Crie um estudo teológico completo, bíblico, doutrinário, didático e organizado.
-O material deve parecer uma revista teológica ou apostila de teologia.
+O material deve parecer revista teológica ou apostila de teologia.
 Não escrever em formato de sermão.
 Não criar apelo final.
 Não criar oração final.
-Organize em etapas: contexto e introdução teológica, explicação doutrinária, desenvolvimento por blocos, aplicações teológicas e práticas, perguntas com respostas, glossário teológico e conclusão teológica.
-Use linguagem teológica, bíblica, clara, didática e formativa.
-Não copie o prompt dentro do material final.
-Não invente citações de autores.
-Não invente bibliografia.
-Não use referências bíblicas fora de contexto.
-        `.trim();
+Organize em etapas: contexto, explicação doutrinária, desenvolvimento por blocos, aplicações, perguntas com respostas, glossário teológico e conclusão teológica.
+          `.trim();
+        }else{
+          regra = `
+Crie um estudo bíblico completo, profundo, claro e didático.
+Pode ser sobre qualquer tema cristão: missões, família, oração, santidade, discipulado, liderança, evangelismo, doutrina, vida cristã ou outro assunto bíblico.
+Não escrever como sermão.
+Não criar apelo final.
+Não criar oração final.
+Organize com contexto, explicação bíblica, desenvolvimento, aplicações, perguntas, glossário e conclusão.
+          `.trim();
+        }
       }
 
       const prompt = `
@@ -7070,8 +7416,14 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     btnSaveProfessorBase.addEventListener("click",salvarBaseProfessorManual);
     btnClearProfessorBase.addEventListener("click",apagarBaseProfessor);
 
+    btnSaveApostilaAlunoBase.addEventListener("click",salvarBaseApostilaAlunoManual);
+    btnSaveApostilaProfessorBase.addEventListener("click",salvarBaseApostilaProfessorManual);
+    btnClearApostilaAlunoBase.addEventListener("click",apagarBaseApostilaAluno);
+    btnClearApostilaProfessorBase.addEventListener("click",apagarBaseApostilaProfessor);
+
     updateReservedState();
     atualizarStatusBasesEBD();
+    atualizarStatusBasesApostila();
     setContentType("sermao");
   </script>
 </body>
