@@ -143,6 +143,21 @@
       color:#073d8c;
     }
 
+    .study-note{
+      background:#f7f7ff;
+      border:1px solid #b7b2ec;
+      color:#393074;
+      border-radius:16px;
+      padding:10px 12px;
+      font-size:13px;
+      line-height:1.45;
+      margin-bottom:12px;
+    }
+
+    .study-note strong{
+      color:#22185f;
+    }
+
     .status-mini-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -624,11 +639,6 @@
       margin-bottom:7px;
     }
 
-    /*
-      VISUAL DE PÚLPITO PARA SERMÃO
-      Mais legível no tablet, menos texto grudado e frases fortes destacadas.
-    */
-
     .sermon-scripture,
     .sermon-intro,
     .sermon-point,
@@ -797,6 +807,47 @@
       margin:0 0 12px;
       color:#704915;
       font-size:23px;
+    }
+
+    .study-header{
+      background:linear-gradient(180deg,#ffffff,#f7f7ff);
+      border:1px solid #b7b2ec;
+      border-left:8px solid #5143b8;
+      border-radius:18px;
+      padding:20px;
+      margin-bottom:18px;
+    }
+
+    .study-header h3{
+      margin:0 0 12px;
+      color:#2d256e;
+      font-size:24px;
+    }
+
+    .study-header .ref{
+      display:inline-block;
+      margin:0 0 12px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #b7b2ec;
+      color:#2d256e;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .theology-box{
+      background:linear-gradient(180deg,#f7f7ff,#eeeeff);
+      border:1px solid #7775c9;
+      border-left:7px solid #4e4db3;
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:14px;
+    }
+
+    .theology-box h4{
+      margin:0 0 12px;
+      color:#2d256e;
     }
 
     .mini-grid{
@@ -1630,7 +1681,9 @@
       .bibliography-box,
       .safe-bibliography-alert,
       .reference-alert,
-      .manual-placeholder{
+      .manual-placeholder,
+      .theology-box,
+      .study-header{
         break-inside:avoid;
         page-break-inside:avoid;
       }
@@ -1677,7 +1730,9 @@
       .book-note,
       .bibliography-box,
       .safe-bibliography-alert,
-      .reference-alert{
+      .reference-alert,
+      .theology-box,
+      .study-header{
         padding:10px !important;
         margin-bottom:8px !important;
       }
@@ -1778,7 +1833,7 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Sermão com texto base principal, referências de apoio controladas e Revista EBD preservada.</p>
+      <p>Sermões preservados, Revista EBD preservada e Estudo Teológico gerado por etapas.</p>
     </header>
 
     <div class="layout">
@@ -1800,7 +1855,7 @@
 
         <div class="field">
           <label for="biblicalBase">Texto bíblico base principal</label>
-          <input id="biblicalBase" type="text" placeholder="Ex: Salmo 147.3 ou Lucas 4.18-19" />
+          <input id="biblicalBase" type="text" placeholder="Ex: Salmo 147.3 ou 2 Timóteo 3.16-17" />
           <div class="chip-note">
             Para sermão, coloque aqui apenas o texto principal que será lido no início. As demais referências entram como apoio.
           </div>
@@ -1832,7 +1887,7 @@
                 <div class="type-icon">📖</div>
                 <div>
                   <div class="type-name">Estudo</div>
-                  <div class="type-desc">Estudo bíblico.</div>
+                  <div class="type-desc">Estudo teológico.</div>
                 </div>
               </button>
 
@@ -1930,7 +1985,7 @@
           <summary>Opções do sermão</summary>
           <div class="accordion-body">
             <div class="sermon-note">
-              <strong>v10.5.0:</strong> o sermão usa apenas um texto base principal no início. As demais referências são apoio controlado dentro dos tópicos.
+              <strong>Sermão preservado:</strong> temático, textual e expositivo permanecem no padrão aprovado.
             </div>
 
             <div class="grid-3">
@@ -1991,7 +2046,7 @@
               <label for="sermonSupportRefs">Referências bíblicas de apoio</label>
               <textarea id="sermonSupportRefs" placeholder="Ex: Lucas 4.18-19; Isaías 61.1-3; Mateus 11.28-30; João 8.36; 2 Coríntios 5.17"></textarea>
               <div class="chip-note">
-                Use aqui textos que podem apoiar os tópicos. O app deve usar no máximo 1 referência principal por tópico, somente se combinar com o argumento.
+                Use aqui textos que podem apoiar os tópicos. O app usa no máximo 1 referência principal por tópico, somente se combinar com o argumento.
               </div>
             </div>
           </div>
@@ -2023,8 +2078,12 @@
         </details>
 
         <details id="estudoFields" class="accordion hidden">
-          <summary>Opções do estudo bíblico</summary>
+          <summary>Opções do estudo teológico</summary>
           <div class="accordion-body">
+            <div class="study-note">
+              <strong>v10.5.2:</strong> estudo agora é gerado por etapas: contexto, explicação doutrinária, desenvolvimento, aplicações, revisão, glossário e conclusão teológica.
+            </div>
+
             <div class="grid-2">
               <div class="field">
                 <label for="studyDepth">Modelo</label>
@@ -2032,6 +2091,7 @@
                   <option value="com explicação, aplicações e perguntas" selected>Explicação + aplicação</option>
                   <option value="mais acadêmico">Mais acadêmico</option>
                   <option value="mais pastoral">Mais pastoral</option>
+                  <option value="revista teológica ou apostila doutrinária">Revista teológica</option>
                 </select>
               </div>
 
@@ -2116,9 +2176,6 @@
                   <option value="expandido" selected>Expandido — 45 a 60 páginas</option>
                   <option value="muito-expandido">Muito expandido — 60 a 75 páginas</option>
                 </select>
-                <div class="chip-note">
-                  Essa opção vale principalmente para o Livro de Apoio do Professor.
-                </div>
               </div>
 
               <div class="field">
@@ -2127,9 +2184,6 @@
                   <option value="segura" selected>Somente obras seguras</option>
                   <option value="segura-com-revisao">Segura + aviso de revisão</option>
                 </select>
-                <div class="chip-note">
-                  Não inventar livros, Bíblias, comentários, autores ou editoras.
-                </div>
               </div>
             </div>
 
@@ -2286,12 +2340,6 @@
       "admin"
     ];
 
-    /*
-      IMPORTANTE:
-      Revista EBD preservada.
-      As chaves continuam v1046 para não quebrar bases já salvas.
-      Não mudar esta parte sem pedido explícito.
-    */
     const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1046";
     const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1046";
 
@@ -2421,98 +2469,39 @@
     ];
 
     const REFERENCE_GUIDE = [
-      {
-        ref:"Mateus 24.12",
-        assunto:"esfriamento do amor por causa da multiplicação da iniquidade"
-      },
-      {
-        ref:"Mateus 24.13",
-        assunto:"perseverança até o fim"
-      },
-      {
-        ref:"2 Timóteo 3.16",
-        assunto:"inspiração divina e utilidade das Escrituras"
-      },
-      {
-        ref:"2 Timóteo 3.14-17",
-        assunto:"permanecer naquilo que foi aprendido e reconhecer a suficiência das Escrituras"
-      },
-      {
-        ref:"João 17.17",
-        assunto:"santificação pela verdade da Palavra de Deus"
-      },
-      {
-        ref:"Romanos 12.1-2",
-        assunto:"não conformação com o mundo e renovação da mente"
-      },
-      {
-        ref:"Gálatas 1.6-10",
-        assunto:"perigo de outro evangelho"
-      },
-      {
-        ref:"2 Timóteo 4.1-5",
-        assunto:"pregação fiel da Palavra e rejeição da sã doutrina"
-      },
-      {
-        ref:"1 Pedro 1.13-16",
-        assunto:"chamado à santidade"
-      },
-      {
-        ref:"Judas 1.20-25",
-        assunto:"edificação na fé, vigilância espiritual e preservação em Deus"
-      },
-      {
-        ref:"Provérbios 13.20",
-        assunto:"influência das companhias sábias"
-      },
-      {
-        ref:"1 Coríntios 15.33",
-        assunto:"más companhias corrompem bons costumes"
-      },
-      {
-        ref:"Salmo 1.1-3",
-        assunto:"caminho do justo e prazer na lei do Senhor"
-      },
-      {
-        ref:"Daniel 1.8",
-        assunto:"decisão de não se contaminar"
-      },
-      {
-        ref:"1 Timóteo 4.12",
-        assunto:"jovem cristão como exemplo na fé, conduta e pureza"
-      },
-      {
-        ref:"Salmo 119.9",
-        assunto:"purificação do caminho do jovem pela Palavra"
-      },
-      {
-        ref:"Josué 24.15",
-        assunto:"decisão de servir ao Senhor"
-      },
-      {
-        ref:"Salmo 147.3",
-        assunto:"Deus sara os quebrantados de coração e liga suas feridas"
-      },
-      {
-        ref:"Lucas 4.18-19",
-        assunto:"missão de Cristo de evangelizar, curar, libertar e restaurar"
-      },
-      {
-        ref:"Isaías 61.1-3",
-        assunto:"consolo, restauração e alegria no lugar do pranto"
-      },
-      {
-        ref:"Mateus 11.28-30",
-        assunto:"descanso para os cansados e oprimidos em Cristo"
-      },
-      {
-        ref:"João 8.36",
-        assunto:"liberdade verdadeira em Cristo"
-      },
-      {
-        ref:"2 Coríntios 5.17",
-        assunto:"nova vida em Cristo"
-      }
+      { ref:"Mateus 24.12", assunto:"esfriamento do amor por causa da multiplicação da iniquidade" },
+      { ref:"Mateus 24.13", assunto:"perseverança até o fim" },
+      { ref:"2 Timóteo 3.16", assunto:"inspiração divina e utilidade das Escrituras" },
+      { ref:"2 Timóteo 3.14-17", assunto:"permanecer naquilo que foi aprendido e reconhecer a suficiência das Escrituras" },
+      { ref:"João 17.17", assunto:"santificação pela verdade da Palavra de Deus" },
+      { ref:"Romanos 12.1-2", assunto:"não conformação com o mundo e renovação da mente" },
+      { ref:"Gálatas 1.6-10", assunto:"perigo de outro evangelho" },
+      { ref:"2 Timóteo 4.1-5", assunto:"pregação fiel da Palavra e rejeição da sã doutrina" },
+      { ref:"1 Pedro 1.13-16", assunto:"chamado à santidade" },
+      { ref:"Judas 1.20-25", assunto:"edificação na fé, vigilância espiritual e preservação em Deus" },
+      { ref:"Provérbios 13.20", assunto:"influência das companhias sábias" },
+      { ref:"1 Coríntios 15.33", assunto:"más companhias corrompem bons costumes" },
+      { ref:"Salmo 1.1-3", assunto:"caminho do justo e prazer na lei do Senhor" },
+      { ref:"Daniel 1.8", assunto:"decisão de não se contaminar" },
+      { ref:"1 Timóteo 4.12", assunto:"jovem cristão como exemplo na fé, conduta e pureza" },
+      { ref:"Salmo 119.9", assunto:"purificação do caminho do jovem pela Palavra" },
+      { ref:"Josué 24.15", assunto:"decisão de servir ao Senhor" },
+      { ref:"Salmo 147.3", assunto:"Deus sara os quebrantados de coração e liga suas feridas" },
+      { ref:"Lucas 4.18-19", assunto:"missão de Cristo de evangelizar, curar, libertar e restaurar" },
+      { ref:"Isaías 61.1-3", assunto:"consolo, restauração e alegria no lugar do pranto" },
+      { ref:"Mateus 11.28-30", assunto:"descanso para os cansados e oprimidos em Cristo" },
+      { ref:"João 8.36", assunto:"liberdade verdadeira em Cristo" },
+      { ref:"2 Coríntios 5.17", assunto:"nova vida em Cristo" },
+      { ref:"Salmo 19.1", assunto:"revelação geral de Deus na criação" },
+      { ref:"Romanos 1.20", assunto:"revelação de atributos divinos pela criação" },
+      { ref:"Hebreus 1.1-2", assunto:"revelação especial culminando em Cristo" },
+      { ref:"2 Pedro 1.20-21", assunto:"homens santos falaram inspirados pelo Espírito Santo" },
+      { ref:"Isaías 40.8", assunto:"permanência da Palavra de Deus" },
+      { ref:"1 Coríntios 2.12-14", assunto:"compreensão espiritual das coisas de Deus" },
+      { ref:"João 16.13", assunto:"o Espírito Santo guiando em toda a verdade" },
+      { ref:"Atos 2.42", assunto:"perseverança na doutrina dos apóstolos" },
+      { ref:"2 Timóteo 4.2", assunto:"pregar a Palavra em todo tempo" },
+      { ref:"Colossenses 3.16", assunto:"a Palavra de Cristo habitando abundantemente na igreja" }
     ];
 
     const typeButtons = document.querySelectorAll(".type-option");
@@ -2560,7 +2549,7 @@
     const stepsByType = {
       sermao:["Texto Bíblico","Introdução","Tópicos","Conclusão","Oração"],
       devocional:["Tema","Reflexão","Aplicação","Oração"],
-      estudo:["Contexto","Explicação","Aplicação","Conclusão"],
+      estudo:["Contexto","Explicação","Desenvolvimento","Aplicações","Revisão","Conclusão"],
       revista:["Estrutura","Sumário","Lição/Cap. 1","Lição/Cap. 2","Lição/Cap. 3","Lição/Cap. 4","Capa IA","Contracapa"],
       ebook:["Capa","Introdução","Capítulos","Conclusão"],
       livro:["Capa","Sumário","Capítulos","Fechamento"],
@@ -2638,7 +2627,7 @@
       const labels = {
         sermao:"Sermão",
         devocional:"Devocional",
-        estudo:"Estudo Bíblico",
+        estudo:"Estudo Teológico",
         revista:"Revista EBD",
         ebook:"E-book",
         livro:"Livro",
@@ -2746,6 +2735,7 @@
       if(type === "estudo"){
         estudoFields.classList.remove("hidden");
         estudoFields.open = true;
+        setValue("coverMode","sem-capa");
       }
 
       if(type === "revista"){
@@ -2767,7 +2757,7 @@
       const labels = {
         sermao:"Mensagem da Palavra",
         devocional:"Devocional Bíblico",
-        estudo:"Estudo Bíblico",
+        estudo:"Estudo Teológico",
         revista:"Revista de Escola Bíblica Dominical",
         ebook:"E-book Cristão",
         livro:"Livro Cristão",
@@ -2780,7 +2770,7 @@
       const subtitles = {
         sermao:"Sermão bíblico completo, sem capa, pronto para pregação.",
         devocional:"Reflexão para fortalecer a fé no dia a dia.",
-        estudo:"Estudo fiel às Escrituras, com explicação e aplicação.",
+        estudo:"Estudo teológico por etapas, com contexto, explicação, aplicação, revisão e conclusão.",
         revista:"Revista mensal ou livro de apoio para Escola Bíblica Dominical.",
         ebook:"Conteúdo cristão organizado em capítulos.",
         livro:"Uma obra cristã estruturada para ensino e edificação.",
@@ -2847,7 +2837,7 @@
         author:getValue("author") || "Autor não informado",
         ministry:getValue("ministry") || "Ministério não informado",
         depthLevel:getValue("depthLevel") || "profundo",
-        coverMode:type === "sermao" ? "sem-capa" : (type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa")),
+        coverMode:type === "sermao" || type === "estudo" ? "sem-capa" : (type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa")),
         extraNotes:getValue("extraNotes") || ""
       };
     }
@@ -3332,7 +3322,7 @@
       }
 
       const temConteudoBiblico =
-        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino|oração|pecado|graça|obediência|verdade|adolescente|jovem|pregação|sermão|apelo|texto bíblico/i.test(limpo);
+        /Deus|Cristo|Jesus|Espírito|Palavra|Escritura|Bíblia|Senhor|fé|igreja|santidade|doutrina|evangelho|salvação|cristão|servo|vida cristã|esperança|juízo|ressurreição|reino|oração|pecado|graça|obediência|verdade|adolescente|jovem|pregação|sermão|apelo|texto bíblico|teologia|doutrinária|bibliologia|inspiração|revelação|cânon|hermenêutica|exegese/i.test(limpo);
 
       if(limpo.length >= minimo && temConteudoBiblico) return true;
       if(opcoes.aceitarCurto && limpo.length >= 80 && temConteudoBiblico) return true;
@@ -3429,6 +3419,7 @@ Agora simplifique:
 - Não mencione que houve erro.
 - Seja bíblico, claro e direto.
 - Se for parte de sermão, escreva conteúdo pregável, não esboço vazio.
+- Se for estudo teológico, escreva como apostila/revista teológica, não como sermão.
 - HTML interno apenas.
 
 Etapa: ${etapa}
@@ -3445,8 +3436,7 @@ Entregue uma versão menor.
 Regras:
 - Escreva apenas o essencial.
 - Se for tópico de sermão, faça 1 parágrafo bíblico, 1 frase forte e 1 aplicação.
-- Se for introdução, faça 1 parágrafo forte.
-- Se for conclusão, faça 1 fechamento com apelo.
+- Se for estudo teológico, faça 2 a 4 parágrafos didáticos.
 - Não mencione erro.
 - Não peça desculpas.
 - Não escreva "desenvolva esta parte".
@@ -4307,114 +4297,34 @@ Não inventar bibliografia.
         .trim();
 
       const mapa = [
-        {
-          teste:["salmo 147.3","sl 147.3"],
-          texto:"Sara os quebrantados de coração e liga-lhes as feridas."
-        },
-        {
-          teste:["lucas 4.18","lc 4.18"],
-          texto:"O Espírito do Senhor é sobre mim, pois que me ungiu para evangelizar os pobres, enviou-me a curar os quebrantados do coração."
-        },
-        {
-          teste:["mateus 11.28","mt 11.28"],
-          texto:"Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei."
-        },
-        {
-          teste:["joão 8.36","jo 8.36"],
-          texto:"Se, pois, o Filho vos libertar, verdadeiramente, sereis livres."
-        },
-        {
-          teste:["2 coríntios 5.17","2co 5.17","2 co 5.17"],
-          texto:"Assim que, se alguém está em Cristo, nova criatura é: as coisas velhas já passaram; eis que tudo se fez novo."
-        },
-        {
-          teste:["daniel 1.8","dn 1.8"],
-          texto:"E Daniel assentou no seu coração não se contaminar com a porção do manjar do rei, nem com o vinho que ele bebia."
-        },
-        {
-          teste:["provérbios 4.23","pv 4.23"],
-          texto:"Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida."
-        },
-        {
-          teste:["provérbios 13.20","pv 13.20"],
-          texto:"Anda com os sábios e serás sábio, mas o companheiro dos tolos será afligido."
-        },
-        {
-          teste:["1 coríntios 15.33","1co 15.33","1 co 15.33"],
-          texto:"Não vos enganeis: as más conversações corrompem os bons costumes."
-        },
-        {
-          teste:["1 timóteo 4.12","1tm 4.12","1 tm 4.12"],
-          texto:"Ninguém despreze a tua mocidade; mas sê o exemplo dos fiéis, na palavra, no trato, na caridade, no espírito, na fé, na pureza."
-        },
-        {
-          teste:["salmo 119.9","sl 119.9"],
-          texto:"Com que purificará o jovem o seu caminho? Observando-o conforme a tua palavra."
-        },
-        {
-          teste:["josué 24.15","js 24.15"],
-          texto:"Porém eu e a minha casa serviremos ao Senhor."
-        },
-        {
-          teste:["2 timóteo 3.14","2tm 3.14","2 tm 3.14"],
-          texto:"Tu, porém, permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido."
-        },
-        {
-          teste:["2 timóteo 3.16","2tm 3.16","2 tm 3.16"],
-          texto:"Toda a Escritura é divinamente inspirada, e proveitosa para ensinar, para redarguir, para corrigir e para instruir em justiça."
-        },
-        {
-          teste:["joão 17.17","jo 17.17"],
-          texto:"Santifica-os na tua verdade; a tua palavra é a verdade."
-        },
-        {
-          teste:["salmo 119.105","sl 119.105"],
-          texto:"Lâmpada para os meus pés é tua palavra e luz, para o meu caminho."
-        },
-        {
-          teste:["gálatas 1.6","gl 1.6"],
-          texto:"Maravilho-me de que tão depressa passásseis daquele que vos chamou à graça de Cristo para outro evangelho."
-        },
-        {
-          teste:["mateus 7.24","mt 7.24"],
-          texto:"Todo aquele, pois, que escuta estas minhas palavras, e as pratica, assemelhá-lo-ei ao homem prudente."
-        },
-        {
-          teste:["2 timóteo 4.2","2tm 4.2","2 tm 4.2"],
-          texto:"Que pregues a palavra, instes a tempo e fora de tempo, redarguas, repreendas, exortes, com toda a longanimidade e doutrina."
-        },
-        {
-          teste:["1 pedro 1.16","1pe 1.16","1 pe 1.16"],
-          texto:"Porquanto escrito está: Sede santos, porque eu sou santo."
-        },
-        {
-          teste:["romanos 12.2","rm 12.2"],
-          texto:"E não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento."
-        },
-        {
-          teste:["hebreus 12.14","hb 12.14"],
-          texto:"Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor."
-        },
-        {
-          teste:["mateus 24.12","mt 24.12"],
-          texto:"E, por se multiplicar a iniquidade, o amor de muitos se esfriará."
-        },
-        {
-          teste:["mateus 24.13","mt 24.13"],
-          texto:"Mas aquele que perseverar até ao fim será salvo."
-        },
-        {
-          teste:["apocalipse 3.11","ap 3.11"],
-          texto:"Eis que venho sem demora; guarda o que tens, para que ninguém tome a tua coroa."
-        },
-        {
-          teste:["judas 1.20","jd 1.20","judas 20"],
-          texto:"Mas vós, amados, edificando-vos a vós mesmos sobre a vossa santíssima fé, orando no Espírito Santo."
-        },
-        {
-          teste:["joão 14.1","jo 14.1"],
-          texto:"Não se turbe o vosso coração; credes em Deus, crede também em mim."
-        }
+        { teste:["salmo 147.3","sl 147.3"], texto:"Sara os quebrantados de coração e liga-lhes as feridas." },
+        { teste:["lucas 4.18","lc 4.18"], texto:"O Espírito do Senhor é sobre mim, pois que me ungiu para evangelizar os pobres, enviou-me a curar os quebrantados do coração." },
+        { teste:["mateus 11.28","mt 11.28"], texto:"Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei." },
+        { teste:["joão 8.36","jo 8.36"], texto:"Se, pois, o Filho vos libertar, verdadeiramente, sereis livres." },
+        { teste:["2 coríntios 5.17","2co 5.17","2 co 5.17"], texto:"Assim que, se alguém está em Cristo, nova criatura é: as coisas velhas já passaram; eis que tudo se fez novo." },
+        { teste:["daniel 1.8","dn 1.8"], texto:"E Daniel assentou no seu coração não se contaminar com a porção do manjar do rei, nem com o vinho que ele bebia." },
+        { teste:["provérbios 4.23","pv 4.23"], texto:"Sobre tudo o que se deve guardar, guarda o teu coração, porque dele procedem as saídas da vida." },
+        { teste:["provérbios 13.20","pv 13.20"], texto:"Anda com os sábios e serás sábio, mas o companheiro dos tolos será afligido." },
+        { teste:["1 coríntios 15.33","1co 15.33","1 co 15.33"], texto:"Não vos enganeis: as más conversações corrompem os bons costumes." },
+        { teste:["1 timóteo 4.12","1tm 4.12","1 tm 4.12"], texto:"Ninguém despreze a tua mocidade; mas sê o exemplo dos fiéis, na palavra, no trato, na caridade, no espírito, na fé, na pureza." },
+        { teste:["salmo 119.9","sl 119.9"], texto:"Com que purificará o jovem o seu caminho? Observando-o conforme a tua palavra." },
+        { teste:["josué 24.15","js 24.15"], texto:"Porém eu e a minha casa serviremos ao Senhor." },
+        { teste:["2 timóteo 3.14","2tm 3.14","2 tm 3.14"], texto:"Tu, porém, permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido." },
+        { teste:["2 timóteo 3.16","2tm 3.16","2 tm 3.16"], texto:"Toda a Escritura é divinamente inspirada, e proveitosa para ensinar, para redarguir, para corrigir e para instruir em justiça." },
+        { teste:["2 timóteo 3.17","2tm 3.17","2 tm 3.17"], texto:"Para que o homem de Deus seja perfeito e perfeitamente instruído para toda boa obra." },
+        { teste:["joão 17.17","jo 17.17"], texto:"Santifica-os na tua verdade; a tua palavra é a verdade." },
+        { teste:["salmo 119.105","sl 119.105"], texto:"Lâmpada para os meus pés é tua palavra e luz, para o meu caminho." },
+        { teste:["gálatas 1.6","gl 1.6"], texto:"Maravilho-me de que tão depressa passásseis daquele que vos chamou à graça de Cristo para outro evangelho." },
+        { teste:["mateus 7.24","mt 7.24"], texto:"Todo aquele, pois, que escuta estas minhas palavras, e as pratica, assemelhá-lo-ei ao homem prudente." },
+        { teste:["2 timóteo 4.2","2tm 4.2","2 tm 4.2"], texto:"Que pregues a palavra, instes a tempo e fora de tempo, redarguas, repreendas, exortes, com toda a longanimidade e doutrina." },
+        { teste:["1 pedro 1.16","1pe 1.16","1 pe 1.16"], texto:"Porquanto escrito está: Sede santos, porque eu sou santo." },
+        { teste:["romanos 12.2","rm 12.2"], texto:"E não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento." },
+        { teste:["hebreus 12.14","hb 12.14"], texto:"Segui a paz com todos e a santificação, sem a qual ninguém verá o Senhor." },
+        { teste:["mateus 24.12","mt 24.12"], texto:"E, por se multiplicar a iniquidade, o amor de muitos se esfriará." },
+        { teste:["mateus 24.13","mt 24.13"], texto:"Mas aquele que perseverar até ao fim será salvo." },
+        { teste:["apocalipse 3.11","ap 3.11"], texto:"Eis que venho sem demora; guarda o que tens, para que ninguém tome a tua coroa." },
+        { teste:["judas 1.20","jd 1.20","judas 20"], texto:"Mas vós, amados, edificando-vos a vós mesmos sobre a vossa santíssima fé, orando no Espírito Santo." },
+        { teste:["joão 14.1","jo 14.1"], texto:"Não se turbe o vosso coração; credes em Deus, crede também em mim." }
       ];
 
       const encontrado = mapa.find(item => item.teste.some(t => r.includes(t)));
@@ -4424,77 +4334,32 @@ Não inventar bibliografia.
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
 
-      if(r.includes("salmo 147") || r.includes("sl 147")){
-        return "Deus sara os quebrantados de coração e trata suas feridas.";
-      }
-
-      if(r.includes("lucas 4") || r.includes("lc 4")){
-        return "Jesus anuncia sua missão de salvar, libertar e curar os quebrantados.";
-      }
-
-      if(r.includes("isaías 61") || r.includes("is 61")){
-        return "O Senhor promete consolo, restauração e alegria ao povo quebrantado.";
-      }
-
-      if(r.includes("mateus 11") || r.includes("mt 11")){
-        return "Jesus chama os cansados e oprimidos para encontrarem descanso nele.";
-      }
-
-      if(r.includes("joão 8") || r.includes("jo 8")){
-        return "A verdadeira liberdade vem do Filho de Deus.";
-      }
-
-      if(r.includes("2 coríntios 5") || r.includes("2co 5") || r.includes("2 co 5")){
-        return "Em Cristo há nova criação, novo começo e nova direção.";
-      }
-
-      if(r.includes("mateus 24.12") || r.includes("mt 24.12")){
-        return "Jesus alerta que a multiplicação da iniquidade pode esfriar o amor.";
-      }
-
-      if(r.includes("mateus 24.13") || r.includes("mt 24.13")){
-        return "A perseverança até o fim acompanha os que permanecem fiéis.";
-      }
-
-      if(r.includes("2 timóteo 3.16") || r.includes("2tm 3.16") || r.includes("2 tm 3.16")){
-        return "Toda a Escritura é inspirada por Deus e útil para formar o servo do Senhor.";
-      }
-
-      if(r.includes("joão 17") || r.includes("jo 17")){
-        return "A verdade de Deus santifica o seu povo.";
-      }
-
-      if(r.includes("gálatas 1") || r.includes("gl 1")){
-        return "Outro evangelho não pode substituir a mensagem de Cristo.";
-      }
-
-      if(r.includes("2 timóteo 4") || r.includes("2tm 4") || r.includes("2 tm 4")){
-        return "A Palavra deve ser pregada com fidelidade em todo tempo.";
-      }
-
-      if(r.includes("1 pedro 1") || r.includes("1pe 1") || r.includes("1 pe 1")){
-        return "Deus chama o seu povo para uma vida santa.";
-      }
-
-      if(r.includes("romanos 12") || r.includes("rm 12")){
-        return "A mente renovada não se conforma com este mundo.";
-      }
-
-      if(r.includes("judas") || r.includes("jd")){
-        return "A igreja deve edificar-se na fé e guardar-se no amor de Deus.";
-      }
-
-      if(r.includes("daniel 1") || r.includes("dn 1")){
-        return "Daniel decidiu permanecer fiel a Deus mesmo em ambiente de pressão.";
-      }
-
-      if(r.includes("provérbios 4") || r.includes("pv 4")){
-        return "O coração precisa ser guardado, pois dele procedem as escolhas da vida.";
-      }
-
-      if(r.includes("salmo 119") || r.includes("sl 119")){
-        return "A Palavra ilumina e purifica o caminho do cristão.";
-      }
+      if(r.includes("salmo 147") || r.includes("sl 147")) return "Deus sara os quebrantados de coração e trata suas feridas.";
+      if(r.includes("lucas 4") || r.includes("lc 4")) return "Jesus anuncia sua missão de salvar, libertar e curar os quebrantados.";
+      if(r.includes("isaías 61") || r.includes("is 61")) return "O Senhor promete consolo, restauração e alegria ao povo quebrantado.";
+      if(r.includes("mateus 11") || r.includes("mt 11")) return "Jesus chama os cansados e oprimidos para encontrarem descanso nele.";
+      if(r.includes("joão 8") || r.includes("jo 8")) return "A verdadeira liberdade vem do Filho de Deus.";
+      if(r.includes("2 coríntios 5") || r.includes("2co 5") || r.includes("2 co 5")) return "Em Cristo há nova criação, novo começo e nova direção.";
+      if(r.includes("mateus 24.12") || r.includes("mt 24.12")) return "Jesus alerta que a multiplicação da iniquidade pode esfriar o amor.";
+      if(r.includes("mateus 24.13") || r.includes("mt 24.13")) return "A perseverança até o fim acompanha os que permanecem fiéis.";
+      if(r.includes("2 timóteo 3.16") || r.includes("2tm 3.16") || r.includes("2 tm 3.16")) return "Toda a Escritura é inspirada por Deus e útil para formar o servo do Senhor.";
+      if(r.includes("joão 17") || r.includes("jo 17")) return "A verdade de Deus santifica o seu povo.";
+      if(r.includes("gálatas 1") || r.includes("gl 1")) return "Outro evangelho não pode substituir a mensagem de Cristo.";
+      if(r.includes("2 timóteo 4") || r.includes("2tm 4") || r.includes("2 tm 4")) return "A Palavra deve ser pregada com fidelidade em todo tempo.";
+      if(r.includes("1 pedro 1") || r.includes("1pe 1") || r.includes("1 pe 1")) return "Deus chama o seu povo para uma vida santa.";
+      if(r.includes("romanos 12") || r.includes("rm 12")) return "A mente renovada não se conforma com este mundo.";
+      if(r.includes("judas") || r.includes("jd")) return "A igreja deve edificar-se na fé e guardar-se no amor de Deus.";
+      if(r.includes("daniel 1") || r.includes("dn 1")) return "Daniel decidiu permanecer fiel a Deus mesmo em ambiente de pressão.";
+      if(r.includes("provérbios 4") || r.includes("pv 4")) return "O coração precisa ser guardado, pois dele procedem as escolhas da vida.";
+      if(r.includes("salmo 119") || r.includes("sl 119")) return "A Palavra ilumina e purifica o caminho do cristão.";
+      if(r.includes("salmo 19") || r.includes("sl 19")) return "A criação proclama a glória de Deus.";
+      if(r.includes("romanos 1") || r.includes("rm 1")) return "A criação testemunha atributos divinos e torna o ser humano responsável diante de Deus.";
+      if(r.includes("hebreus 1") || r.includes("hb 1")) return "Deus falou de muitas maneiras e, de modo pleno, por meio do Filho.";
+      if(r.includes("2 pedro 1") || r.includes("2pe 1") || r.includes("2 pe 1")) return "A profecia bíblica veio da parte de Deus, por homens movidos pelo Espírito Santo.";
+      if(r.includes("1 coríntios 2") || r.includes("1co 2") || r.includes("1 co 2")) return "O Espírito ajuda o crente a compreender as coisas espirituais.";
+      if(r.includes("joão 16") || r.includes("jo 16")) return "O Espírito guia o povo de Deus em toda a verdade.";
+      if(r.includes("atos 2") || r.includes("at 2")) return "A igreja perseverava na doutrina dos apóstolos.";
+      if(r.includes("colossenses 3") || r.includes("cl 3")) return "A Palavra de Cristo deve habitar ricamente na igreja.";
 
       return "A Palavra de Deus chama o cristão à fé, à obediência e à perseverança.";
     }
@@ -5117,6 +4982,10 @@ Use HTML com:
         return "visual missionário, mapa do mundo, pessoas em oração, Bíblia aberta, luz sobre as nações, senso de envio e propósito";
       }
 
+      if(/bibliologia|bíblia|escrituras|palavra de deus|doutrina das escrituras/.test(texto)){
+        return "visual teológico cristão, Bíblia aberta sobre mesa de estudo, luz suave sobre as páginas, caderno de anotações, ambiente acadêmico reverente, profundo e elegante";
+      }
+
       return "visual cristão editorial premium baseado no tema, com composição diferente de capa comum, usando símbolos coerentes com o assunto, luz bíblica, reverência e profundidade";
     }
 
@@ -5138,6 +5007,416 @@ ${estiloVisual}
 
 Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, composição bonita, luz bem trabalhada, alta qualidade.
       `.trim();
+    }
+
+    // ===== ESTUDO TEOLÓGICO v10.5.2 =====
+
+    function montarInfoStudy(base){
+      return {
+        studyDepth:getValue("studyDepth") || "com explicação, aplicações e perguntas",
+        studyQuestions:getValue("studyQuestions") || "com perguntas e respostas",
+        theologicalMode:/teologia|teológico|doutrina|bibliologia|cristologia|pneumatologia|soteriologia|escatologia|eclesiologia|hamartiologia|angelologia|escrituras|inspiração|revelação|cânon|hermenêutica/i.test(
+          `${base.title} ${base.subtitle} ${base.theme} ${base.extraNotes}`
+        )
+      };
+    }
+
+    function montarPromptBaseStudy(base,info){
+      return `
+Você é um professor de teologia, escritor cristão, comentarista bíblico, editor de revista teológica e educador cristão.
+
+TAREFA:
+Criar um estudo cristão completo, bíblico, doutrinário, didático e bem organizado.
+
+DADOS DO ESTUDO:
+Título: ${base.title}
+Subtítulo: ${base.subtitle}
+Tema/prompt do usuário: ${base.theme}
+Texto bíblico base: ${base.biblicalBase}
+Público-alvo: ${base.targetAudience}
+Tom desejado: ${base.tone}
+Profundidade: ${base.depthLevel}
+Modelo do estudo: ${info.studyDepth}
+Perguntas: ${info.studyQuestions}
+Autor: ${base.author}
+Ministério/Editora: ${base.ministry}
+Observações extras: ${base.extraNotes}
+
+TIPO DE MATERIAL:
+Este material deve parecer uma revista teológica, apostila teológica ou estudo bíblico doutrinário.
+Não deve parecer sermão.
+Não deve parecer devocional.
+Não deve parecer esboço vazio.
+
+REGRAS ABSOLUTAS:
+- Não criar capa.
+- Não criar apelo final.
+- Não criar oração final.
+- Não usar linguagem emocional de púlpito.
+- Não repetir o prompt do usuário.
+- Não escrever “desenvolva este ponto”.
+- Não entregar esboço vazio.
+- Não inventar citações de autores.
+- Não inventar bibliografia.
+- Não usar referências bíblicas fora de contexto.
+- Explicar os conceitos com clareza.
+- Usar linguagem teológica, bíblica, didática e formativa.
+- Organizar com títulos, subtítulos, quadros didáticos, perguntas e respostas.
+- O conteúdo deve ser profundo, mas compreensível.
+- Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+
+GUIA DE REFERÊNCIAS BÍBLICAS:
+${guiaReferenciasTexto()}
+      `.trim();
+    }
+
+    function promptContextoStudy(base,info){
+      return `${montarPromptBaseStudy(base,info)}
+
+ETAPA: CONTEXTO E INTRODUÇÃO TEOLÓGICA
+
+Crie a primeira parte do estudo.
+
+Esta parte deve conter:
+1. Título do estudo.
+2. Subtítulo.
+3. Texto bíblico base.
+4. Introdução teológica.
+5. Importância do tema para a fé cristã.
+6. Caminho que o estudo seguirá.
+
+REGRAS:
+- Não copie o prompt do usuário.
+- Não escreva em formato de sermão.
+- Não faça apelo.
+- Não faça oração.
+- Não jogue todos os tópicos em um único parágrafo.
+- Não coloque a estrutura inteira em texto corrido.
+- Escreva como apostila/revista teológica.
+
+Use HTML:
+<div class="study-header">
+  <h3>${base.title}</h3>
+  <span class="ref">Texto Bíblico Base: ${base.biblicalBase}</span>
+  <p class="text">Comentário breve sobre o texto base...</p>
+</div>
+<div class="block">
+  <h3>Introdução Teológica</h3>
+  <p class="text">...</p>
+</div>
+<div class="knowledge-box">
+  <h4>Por que este tema é importante?</h4>
+  <p class="text">...</p>
+</div>
+
+Gere somente esta etapa.`;
+    }
+
+    function promptExplicacaoStudy(base,info){
+      return `${montarPromptBaseStudy(base,info)}
+
+ETAPA: EXPLICAÇÃO DOUTRINÁRIA
+
+Crie a explicação doutrinária principal do estudo.
+
+Esta parte deve:
+- definir o tema com clareza;
+- explicar os conceitos centrais;
+- mostrar a base bíblica;
+- diferenciar termos importantes;
+- construir uma linha teológica organizada.
+
+Se o tema for Bibliologia, explique com profundidade:
+- o que é Bibliologia;
+- revelação;
+- inspiração;
+- autoridade;
+- suficiência;
+- inerrância;
+- cânon;
+- iluminação;
+- interpretação bíblica.
+
+REGRAS:
+- Não escrever como sermão.
+- Não fazer apelo.
+- Não fazer oração.
+- Não copiar o prompt.
+- Não listar tópicos sem explicar.
+- Não usar referência bíblica fora de contexto.
+- Use parágrafos didáticos e quadros de ensino.
+
+Use HTML com:
+<div class="block">
+<div class="knowledge-box">
+<div class="theology-box">
+<div class="summary-box">
+
+Gere somente a explicação doutrinária.`;
+    }
+
+    function promptDesenvolvimentoStudy(base,info,numero){
+      return `${montarPromptBaseStudy(base,info)}
+
+ETAPA: DESENVOLVIMENTO TEOLÓGICO — PARTE ${numero}
+
+Crie a parte ${numero} do desenvolvimento teológico.
+
+Esta parte deve aprofundar o estudo em blocos bem explicados.
+
+REGRAS:
+- Cada bloco precisa ter título claro.
+- Cada bloco precisa explicar uma doutrina, conceito ou aspecto do tema.
+- Use referências bíblicas dentro da explicação, não como enfeite.
+- Explique o sentido das referências usadas.
+- Não fazer sermão.
+- Não fazer apelo.
+- Não fazer oração.
+- Não repetir o que já foi explicado nas partes anteriores.
+- Use linguagem de apostila teológica.
+
+DIREÇÃO POR PARTE:
+Parte 1: fundamentos, definições, base bíblica e distinções importantes.
+Parte 2: aprofundamento doutrinário, implicações teológicas e relação com a fé cristã.
+Parte 3: erros comuns, cuidados de interpretação, equilíbrio pastoral e aplicação no ensino da igreja.
+
+Use HTML com:
+<div class="block">
+  <h3>Título do bloco</h3>
+  <p class="text">Explicação...</p>
+</div>
+
+<div class="theology-box">
+  <h4>Quadro Teológico</h4>
+  <p class="text">...</p>
+</div>
+
+Gere somente esta parte.`;
+    }
+
+    function promptAplicacaoStudy(base,info){
+      return `${montarPromptBaseStudy(base,info)}
+
+ETAPA: APLICAÇÕES TEOLÓGICAS E PRÁTICAS
+
+Crie a seção de aplicações do estudo.
+
+Esta parte deve mostrar como a doutrina estudada afeta:
+- a fé cristã;
+- a pregação;
+- o ensino;
+- a vida devocional;
+- a santidade;
+- o discipulado;
+- a liderança;
+- a igreja local;
+- a defesa da fé.
+
+REGRAS:
+- Não fazer apelo de sermão.
+- Não criar oração.
+- Não usar tom emocional de púlpito.
+- Aplicação deve ser teológica, pastoral e didática.
+
+Use HTML:
+<div class="personal-application">
+  <h4>Aplicações Teológicas e Práticas</h4>
+  ...
+</div>
+
+Gere somente esta etapa.`;
+    }
+
+    function promptRevisaoGlossarioStudy(base,info){
+      return `${montarPromptBaseStudy(base,info)}
+
+ETAPA: PERGUNTAS, RESPOSTAS E GLOSSÁRIO
+
+Crie uma seção final de revisão.
+
+Inclua:
+1. De 8 a 10 perguntas com respostas.
+2. Glossário teológico com termos importantes.
+3. Síntese final do aprendizado.
+
+Se o tema for Bibliologia, o glossário deve incluir:
+Bibliologia, revelação, inspiração, autoridade, suficiência, inerrância, cânon, iluminação, hermenêutica e exegese.
+
+REGRAS:
+- Perguntas devem ter respostas.
+- Respostas devem ser claras e objetivas.
+- Glossário deve ter definições curtas e corretas.
+- Não inventar autores.
+- Não inventar bibliografia.
+
+Use HTML:
+<div class="summary-box">
+  <h4>Perguntas para Revisão</h4>
+  <div class="question-answer"><strong>1. Pergunta...</strong><p class="text">Resposta...</p></div>
+</div>
+
+<div class="knowledge-box">
+  <h4>Glossário Teológico</h4>
+  ...
+</div>
+
+Gere somente esta etapa.`;
+    }
+
+    function promptConclusaoStudy(base,info){
+      return `${montarPromptBaseStudy(base,info)}
+
+ETAPA: CONCLUSÃO TEOLÓGICA
+
+Crie a conclusão teológica do estudo.
+
+A conclusão deve:
+- retomar a importância do tema;
+- reafirmar a base bíblica;
+- mostrar a relevância doutrinária;
+- encerrar de forma firme, edificante e didática.
+
+REGRAS:
+- Não fazer apelo de sermão.
+- Não fazer oração.
+- Não usar linguagem emocional de púlpito.
+- Não repetir o prompt.
+- Não criar chamada ao altar.
+- A conclusão deve ser teológica, formativa e pastoral.
+
+Use HTML:
+<div class="summary-box">
+  <h4>Conclusão Teológica</h4>
+  <p class="text">...</p>
+</div>
+
+Gere somente esta etapa.`;
+    }
+
+    async function gerarBlocoStudy(base,info,nome,prompt,minimo = 260){
+      const html = await chamarTextoIAComTentativas(
+        [prompt],
+        `Estudo teológico — ${nome}`,
+        {
+          minimo,
+          aceitarCurto:true,
+          aceitarMuitoCurto:true,
+          minQuality:"estudo teológico profundo, bíblico, doutrinário, didático e organizado"
+        }
+      );
+
+      if(html && extrairTextoDeHtml(html).trim().length > 80){
+        return html;
+      }
+
+      return blocoManualVazio("block",nome);
+    }
+
+    async function generateStudyAsync(base){
+      const info = montarInfoStudy(base);
+      manualPlaceholdersCount = 0;
+
+      let html = `<div class="doc">`;
+
+      setStep(0,"Gerando contexto e introdução teológica...");
+
+      const contexto = await gerarBlocoStudy(
+        base,
+        info,
+        "Contexto e Introdução Teológica",
+        promptContextoStudy(base,info),
+        350
+      );
+
+      html += renderPage(contexto,"study-context-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(1,"Gerando explicação doutrinária...");
+
+      const explicacao = await gerarBlocoStudy(
+        base,
+        info,
+        "Explicação Doutrinária",
+        promptExplicacaoStudy(base,info),
+        550
+      );
+
+      html += renderPage(explicacao,"study-explanation-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(2,"Gerando desenvolvimento teológico por blocos...");
+
+      for(let i = 1; i <= 3; i++){
+        setStatus(`Gerando desenvolvimento teológico — parte ${i} de 3...`);
+
+        const desenvolvimento = await gerarBlocoStudy(
+          base,
+          info,
+          `Desenvolvimento Teológico ${i}`,
+          promptDesenvolvimentoStudy(base,info,i),
+          500
+        );
+
+        html += renderPage(desenvolvimento,"study-development-page");
+        renderGenerated(html + `</div>`);
+
+        await pause(500);
+      }
+
+      setStep(3,"Gerando aplicações teológicas e práticas...");
+
+      const aplicacao = await gerarBlocoStudy(
+        base,
+        info,
+        "Aplicações Teológicas e Práticas",
+        promptAplicacaoStudy(base,info),
+        350
+      );
+
+      html += renderPage(aplicacao,"study-application-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(500);
+
+      setStep(4,"Gerando perguntas, respostas e glossário teológico...");
+
+      const revisao = await gerarBlocoStudy(
+        base,
+        info,
+        "Perguntas e Glossário",
+        promptRevisaoGlossarioStudy(base,info),
+        450
+      );
+
+      html += renderPage(revisao,"study-review-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(500);
+
+      setStep(5,"Gerando conclusão teológica...");
+
+      const conclusao = await gerarBlocoStudy(
+        base,
+        info,
+        "Conclusão Teológica",
+        promptConclusaoStudy(base,info),
+        220
+      );
+
+      html += renderPage(conclusao,"study-conclusion-page");
+      html += `</div>`;
+
+      renderGenerated(html);
+
+      if(manualPlaceholdersCount > 0){
+        finishSteps(`Estudo teológico gerado com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente.`);
+      }else{
+        finishSteps("Estudo teológico gerado por etapas, com contexto, explicação, aplicação, revisão, glossário e conclusão.");
+      }
     }
 
     function renderDailyReading(numero,dados){
@@ -6394,25 +6673,6 @@ Seja completo, mas sem desperdiçar páginas.
       `;
     }
 
-    function generateStudy(base){
-      return `
-        <div class="doc">
-          ${renderPage(`
-            <h1 class="page-title">${escapeHtml(base.title)}</h1>
-            <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-            <div class="block">
-              <h3>Introdução</h3>
-              ${paragraph("Este estudo aborda o tema \"" + base.theme + "\" com explicação bíblica e aplicação prática.")}
-            </div>
-            <div class="block">
-              <h3>Desenvolvimento</h3>
-              ${paragraph("Explique o ensino central do texto, mostre sua relação com toda a Escritura e apresente aplicações práticas.")}
-            </div>
-          `)}
-        </div>
-      `;
-    }
-
     function generateLongMaterial(base){
       const quantity = Number(getValue("quantity") || 10);
       const quantityType = getValue("quantityType") || "capítulos";
@@ -6466,12 +6726,13 @@ Seja completo, mas sem desperdiçar páginas.
           await generateSermonAsync(base);
         }else if(base.type === "revista"){
           await generateMagazineAsync(base);
+        }else if(base.type === "estudo"){
+          await generateStudyAsync(base);
         }else{
           setStep(0,"Gerando material...");
 
           let html = "";
           if(base.type === "devocional") html = generateDevotional(base);
-          if(base.type === "estudo") html = generateStudy(base);
           if(["ebook","livro","curso"].includes(base.type)) html = generateLongMaterial(base);
 
           renderGenerated(html);
@@ -6577,6 +6838,8 @@ Seja completo, mas sem desperdiçar páginas.
       setValue("sermonAppeal","com fechamento e apelo forte para ação");
       setValue("sermonStyle","bíblico, pastoral, pentecostal e profundo");
       setValue("sermonLength","normal");
+      setValue("studyDepth","com explicação, aplicações e perguntas");
+      setValue("studyQuestions","com perguntas e respostas");
       setValue("revistaTipo","aluno");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
@@ -6674,6 +6937,22 @@ Seja completo, mas sem desperdiçar páginas.
         setValue("extraNotes","O sermão deve começar com o tema e o Texto Bíblico Base principal escrito. Use somente Salmo 147.3 no início. As demais referências são apenas de apoio nos tópicos, no máximo uma por tópico e somente se sustentarem diretamente o argumento. A introdução deve começar comentando o texto base lido, sem começar com pergunta direta. Não criar aplicação prática separada. Não colocar conclusão nem oração dentro dos tópicos. Depois do último tópico, ir direto para a conclusão com fechamento e apelo para ação. Finalizar com oração.");
       }
 
+      if(type === "estudo"){
+        setValue("title","Bibliologia: A Doutrina das Escrituras");
+        setValue("subtitle","Um estudo teológico sobre inspiração, revelação, autoridade, suficiência e interpretação da Bíblia");
+        setValue("theme","Crie um estudo teológico completo, profundo, bíblico, didático e organizado sobre Bibliologia: a Doutrina das Escrituras. Este material deve ter linguagem de revista teológica ou apostila de teologia, com profundidade doutrinária, clareza didática e fidelidade bíblica. Não escrever em formato de sermão. Não criar apelo final. Não criar oração final. Não escrever como devocional. O estudo deve explicar que Bibliologia é a área da teologia que estuda a Bíblia como Palavra de Deus, tratando sua origem divina, inspiração, revelação, autoridade, suficiência, inerrância, preservação, cânon, iluminação e interpretação.");
+        setValue("biblicalBase","2 Timóteo 3.16-17");
+        setValue("targetAudience","Alunos de teologia, professores de EBD, líderes cristãos, obreiros, pregadores e cristãos que desejam compreender melhor a doutrina das Escrituras");
+        setValue("tone","teológico, bíblico, doutrinário, didático, profundo, claro, reverente e formativo");
+        setValue("author","Isiquel Rodrigues");
+        setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
+        setValue("depthLevel","muito-profundo");
+        setValue("studyDepth","revista teológica ou apostila doutrinária");
+        setValue("studyQuestions","com perguntas e respostas");
+        setValue("coverMode","sem-capa");
+        setValue("extraNotes","O material deve parecer uma revista teológica ou apostila de teologia. Não escrever em formato de sermão. Não criar conclusão com apelo nem oração final. Usar explicação doutrinária, referências bíblicas bem aplicadas, perguntas com respostas e glossário teológico.");
+      }
+
       if(type === "revista"){
         setValue("title","A Igreja em Tempos de Confusão");
         setValue("subtitle","Guardando a fé, a santidade e a verdade em uma geração marcada por engano, relativismo e esfriamento espiritual");
@@ -6706,11 +6985,11 @@ Seja completo, mas sem desperdiçar páginas.
       const tema = getValue("theme") || getValue("title") || "tema bíblico escolhido";
       const tipo = getValue("sermonType") || "temático";
 
-      let regraSermon = "";
+      let regra = "";
 
       if(currentType === "sermao"){
         if(tipo === "expositivo"){
-          regraSermon = `
+          regra = `
 Como sermão expositivo, caminhe pelo texto bíblico base principal. Explique contexto, propósito, sentido do texto, blocos de versículos, lições extraídas do texto e aplicações dentro de cada bloco.
 Use apenas o texto base principal no início.
 Referências de apoio devem ser usadas somente quando sustentarem o argumento.
@@ -6718,7 +6997,7 @@ Não coloque conclusão nem oração dentro dos blocos.
 Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }else if(tipo === "textual"){
-          regraSermon = `
+          regra = `
 Como sermão textual, tire as divisões das palavras, expressões e ideias do próprio texto bíblico base principal. Cada divisão deve ter explicação, argumento e aplicação dentro dela.
 Use apenas o texto base principal no início.
 Referências de apoio devem ser usadas somente quando sustentarem o argumento.
@@ -6726,7 +7005,7 @@ Não coloque conclusão nem oração dentro das divisões.
 Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }else{
-          regraSermon = `
+          regra = `
 Como sermão temático, desenvolva tópicos progressivos sobre o tema, mas a mensagem deve emanar do texto bíblico base principal.
 Use apenas o texto base principal no início.
 Cada tópico deve ter explicação bíblica, argumento consistente e aplicação prática dentro do próprio tópico.
@@ -6737,12 +7016,28 @@ Use parágrafos curtos e frases fortes em destaque.
         }
       }
 
+      if(currentType === "estudo"){
+        regra = `
+Crie um estudo teológico completo, bíblico, doutrinário, didático e organizado.
+O material deve parecer uma revista teológica ou apostila de teologia.
+Não escrever em formato de sermão.
+Não criar apelo final.
+Não criar oração final.
+Organize em etapas: contexto e introdução teológica, explicação doutrinária, desenvolvimento por blocos, aplicações teológicas e práticas, perguntas com respostas, glossário teológico e conclusão teológica.
+Use linguagem teológica, bíblica, clara, didática e formativa.
+Não copie o prompt dentro do material final.
+Não invente citações de autores.
+Não invente bibliografia.
+Não use referências bíblicas fora de contexto.
+        `.trim();
+      }
+
       const prompt = `
 Crie um material cristão completo, original, bíblico, profundo e bem organizado sobre o tema:
 
 ${tema}
 
-${regraSermon}
+${regra}
 
 Use linguagem bíblica, pastoral, pentecostal, didática e clara.
 Não copie conteúdo de nenhuma editora.
