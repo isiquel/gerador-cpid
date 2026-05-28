@@ -128,6 +128,21 @@
       color:#174e2c;
     }
 
+    .sermon-note{
+      background:#f4f9ff;
+      border:1px solid #9dc4ef;
+      color:#174978;
+      border-radius:16px;
+      padding:10px 12px;
+      font-size:13px;
+      line-height:1.45;
+      margin-bottom:12px;
+    }
+
+    .sermon-note strong{
+      color:#073d8c;
+    }
+
     .status-mini-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -631,6 +646,57 @@
     .reference-alert h4{
       margin:0 0 9px;
       color:#765000;
+    }
+
+    .sermon-hero{
+      background:
+        radial-gradient(circle at 85% 15%,rgba(255,210,100,.28),transparent 28%),
+        linear-gradient(135deg,#2e1a12,#673b24 52%,#9a6534);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow:0 16px 35px rgba(70,40,20,.16);
+      color:#fff;
+      border-radius:22px;
+      padding:26px;
+      margin-bottom:18px;
+    }
+
+    .sermon-hero .number{
+      display:inline-block;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.16);
+      border:1px solid rgba(255,255,255,.24);
+      font-size:13px;
+      font-weight:700;
+      margin-bottom:14px;
+    }
+
+    .sermon-hero h1{
+      margin:0 0 10px;
+      font-size:34px;
+      line-height:1.12;
+      color:#fff;
+    }
+
+    .sermon-hero .meta{
+      color:#fff2df;
+      line-height:1.6;
+      font-size:15px;
+    }
+
+    .sermon-point{
+      border-left:8px solid #7a4b30;
+      background:linear-gradient(180deg,#ffffff,#fff9f2);
+      border-radius:0 18px 18px 0;
+      padding:0 0 0 18px;
+      margin-bottom:18px;
+    }
+
+    .sermon-point h3{
+      font-size:25px;
+      margin:0 0 12px;
+      color:#5b331f;
+      padding-top:2px;
     }
 
     .mini-grid{
@@ -1292,6 +1358,7 @@
 
       .page-title{ font-size:28px; }
       .lesson-hero h1{ font-size:28px; }
+      .sermon-hero h1{ font-size:28px; }
       .lesson-cover-header h1{ font-size:30px; }
       .cover-title{ font-size:38px; }
       .cover-subtitle{ font-size:18px; }
@@ -1500,7 +1567,8 @@
         font-size:19px !important;
       }
 
-      .lesson-topic h3{
+      .lesson-topic h3,
+      .sermon-point h3{
         font-size:21px !important;
       }
 
@@ -1546,7 +1614,7 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Gerador de material cristão com revista EBD mensal, professor e livro de apoio com controle de fidelidade bíblica.</p>
+      <p>Gerador de material cristão com sermão por IA em etapas e Revista EBD preservada.</p>
     </header>
 
     <div class="layout">
@@ -1694,6 +1762,10 @@
         <details id="sermaoFields" class="accordion">
           <summary>Opções do sermão</summary>
           <div class="accordion-body">
+            <div class="sermon-note">
+              <strong>v10.4.7:</strong> o sermão agora será gerado por etapas: direção, introdução, contexto, tópicos, aplicação, conclusão, apelo e oração.
+            </div>
+
             <div class="grid-3">
               <div class="field">
                 <label for="sermonPoints">Tópicos</label>
@@ -1718,6 +1790,30 @@
                 <select id="sermonAppeal">
                   <option value="com apelo espiritual forte" selected>Com apelo</option>
                   <option value="sem apelo">Sem apelo</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="sermonStyle">Estilo do sermão</label>
+                <select id="sermonStyle">
+                  <option value="bíblico, pastoral, pentecostal e profundo" selected>Pastoral pentecostal</option>
+                  <option value="avivado, bíblico, pentecostal e com forte aplicação espiritual">Avivado</option>
+                  <option value="expositivo, bíblico, doutrinário e didático">Ensino doutrinário</option>
+                  <option value="evangelístico, cristocêntrico e com apelo à salvação">Evangelístico</option>
+                  <option value="para culto da família, pastoral, acolhedor e restaurador">Culto da família</option>
+                  <option value="missionário, bíblico, urgente e cheio de compaixão pelas almas">Missões</option>
+                  <option value="libertação, autoridade espiritual, bíblico e cristocêntrico">Libertação</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="sermonLength">Tamanho</label>
+                <select id="sermonLength">
+                  <option value="normal">Normal — pronto para 25 a 35 minutos</option>
+                  <option value="expandido" selected>Expandido — pronto para 35 a 50 minutos</option>
+                  <option value="curto">Curto — pronto para 15 a 25 minutos</option>
                 </select>
               </div>
             </div>
@@ -1781,7 +1877,7 @@
             </div>
 
             <div class="truth-note">
-              <strong>v10.4.6:</strong> bibliografia segura, referências bíblicas mais fiéis e Livro de Apoio com opção expandida.
+              <strong>Preservado:</strong> esta lógica da Revista EBD permanece intocada.
             </div>
 
             <div class="status-mini-grid">
@@ -2012,6 +2108,11 @@
       "admin"
     ];
 
+    /*
+      IMPORTANTE:
+      As chaves da Revista EBD continuam v1046 para preservar as bases já salvas.
+      Não mudar essas chaves sem pedido explícito.
+    */
     const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1046";
     const STORAGE_REVISTA_ALUNO_META = "verboia_revista_aluno_meta_ebd_v1046";
 
@@ -2254,7 +2355,7 @@
     let manualPlaceholdersCount = 0;
 
     const stepsByType = {
-      sermao: ["Tema", "Texto", "Tópicos", "Conclusão"],
+      sermao: ["Direção", "Introdução", "Contexto", "Tópicos", "Aplicação", "Conclusão", "Apelo", "Oração"],
       devocional: ["Tema", "Reflexão", "Aplicação", "Oração"],
       estudo: ["Contexto", "Explicação", "Aplicação", "Conclusão"],
       revista: ["Estrutura", "Sumário", "Lição/Cap. 1", "Lição/Cap. 2", "Lição/Cap. 3", "Lição/Cap. 4", "Capa IA", "Contracapa"],
@@ -2472,7 +2573,7 @@
 
     function defaultSubtitle(type){
       const subtitles = {
-        sermao:"Mensagem bíblica para edificação da igreja.",
+        sermao:"Mensagem bíblica completa, pronta para pregação.",
         devocional:"Reflexão para fortalecer a fé no dia a dia.",
         estudo:"Estudo fiel às Escrituras, com explicação e aplicação.",
         revista:"Revista mensal ou livro de apoio para Escola Bíblica Dominical.",
@@ -2942,6 +3043,28 @@
       return proibidos.some(p => limpo.includes(p));
     }
 
+    function contemRespostaVazia(texto){
+      const limpo = String(texto || "")
+        .replace(/<[^>]+>/g," ")
+        .replace(/\s+/g," ")
+        .toLowerCase()
+        .trim();
+
+      const sinais = [
+        "desenvolva este ponto",
+        "desenvolva esta parte",
+        "com base no tema",
+        "crie um conteúdo original",
+        "gere um conteúdo",
+        "aqui está um exemplo",
+        "não posso",
+        "não consigo",
+        "como modelo de linguagem"
+      ];
+
+      return sinais.some(sinal => limpo.includes(sinal)) && limpo.length < 1200;
+    }
+
     function contemBibliografiaInventada(texto){
       const limpo = String(texto || "").toLowerCase();
 
@@ -2973,6 +3096,10 @@
       const limpo = original.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
 
       if(!limpo) return false;
+
+      if(contemRespostaVazia(limpo)){
+        return false;
+      }
 
       const mensagensErro = [
         "error",
@@ -3096,7 +3223,7 @@ Agora simplifique:
 - Não use texto técnico.
 - Não mencione que houve erro.
 - Seja bíblico, claro e direto.
-- Se for subtópico, escreva apenas 1 parágrafo forte.
+- Se for tópico de sermão, escreva 2 parágrafos fortes e pregáveis.
 - HTML interno apenas.
 
 Etapa: ${etapa}
@@ -3112,13 +3239,14 @@ Entregue uma versão menor.
 
 Regras:
 - Escreva apenas o essencial.
-- Se for subtópico, faça somente 1 parágrafo curto e bíblico.
+- Se for tópico de sermão, faça 1 parágrafo bíblico e uma aplicação.
 - Se for introdução, faça apenas 1 parágrafo.
 - Se for conclusão, faça apenas 1 parágrafo.
-- Se for sinopse, faça apenas 2 ou 3 linhas.
 - Não precisa alongar.
 - Não mencione erro.
 - Não peça desculpas.
+- Não escreva "desenvolva esta parte".
+- Não repita o prompt do usuário.
 - Entregue somente HTML interno aproveitável.
 
 Etapa: ${etapa}
@@ -3254,6 +3382,248 @@ Etapa: ${etapa}
       return { ok:false, source:"sem-imagem", image:"" };
     }
 
+    function montarInfoSermon(base){
+      return {
+        points:Number(getValue("sermonPoints") || 4),
+        type:getValue("sermonType") || "temático",
+        appeal:getValue("sermonAppeal") || "com apelo espiritual forte",
+        style:getValue("sermonStyle") || "bíblico, pastoral, pentecostal e profundo",
+        length:getValue("sermonLength") || "expandido"
+      };
+    }
+
+    function descricaoTamanhoSermon(info){
+      if(info.length === "curto"){
+        return "Sermão curto, pronto para aproximadamente 15 a 25 minutos. Seja direto, claro e forte.";
+      }
+
+      if(info.length === "normal"){
+        return "Sermão normal, pronto para aproximadamente 25 a 35 minutos. Desenvolva bem os pontos sem excesso.";
+      }
+
+      return "Sermão expandido, pronto para aproximadamente 35 a 50 minutos. Desenvolva os pontos com profundidade bíblica, aplicações e transições.";
+    }
+
+    function montarPromptBaseSermon(base,info){
+      return `
+Você é um pregador cristão, bíblico, pentecostal, pastoral e fiel às Escrituras.
+
+TAREFA:
+Criar um sermão completo, pronto para pregação.
+
+DADOS DO SERMÃO:
+Título: ${base.title}
+Subtítulo: ${base.subtitle}
+Tema/prompt do usuário: ${base.theme}
+Texto bíblico base: ${base.biblicalBase}
+Público-alvo: ${base.targetAudience}
+Tom desejado: ${base.tone}
+Tipo de sermão: ${info.type}
+Estilo: ${info.style}
+Quantidade de tópicos: ${info.points}
+Apelo: ${info.appeal}
+Tamanho: ${descricaoTamanhoSermon(info)}
+Autor/pregador: ${base.author}
+Ministério: ${base.ministry}
+Observações extras: ${base.extraNotes}
+
+REGRAS ABSOLUTAS:
+- Não repita o prompt do usuário dentro do sermão.
+- Não escreva “desenvolva este ponto”.
+- Não entregue esboço vazio.
+- Não entregue resumo genérico.
+- Gere conteúdo final pronto para pregação.
+- Toda referência bíblica citada precisa combinar com o assunto explicado.
+- Não use versículo fora de contexto.
+- Não invente referência bíblica.
+- Não invente citação de autor.
+- Não copie conteúdo de nenhum pregador.
+- Linguagem bíblica, pastoral, pentecostal, clara, profunda e pregável.
+- Use frases de transição entre as partes.
+- Entregue somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+
+GUIA DE REFERÊNCIAS BÍBLICAS:
+${guiaReferenciasTexto()}
+      `.trim();
+    }
+
+    function promptDirecaoSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: DIREÇÃO HOMILÉTICA
+
+Crie a abertura editorial do sermão com:
+- tema central;
+- propósito da mensagem;
+- frase de impacto;
+- ideia central;
+- objetivo espiritual;
+- estrutura dos ${info.points} tópicos.
+
+Use HTML com:
+<div class="sermon-hero">
+<div class="mini-grid">
+<div class="mini-card">
+<div class="summary-box">
+
+Não escreva o sermão inteiro ainda.
+Não repita o prompt do usuário.
+Gere somente esta etapa.`;
+    }
+
+    function promptIntroducaoSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: INTRODUÇÃO COMPLETA
+
+Crie a introdução completa do sermão.
+
+A introdução deve:
+- começar com uma aproximação forte;
+- apresentar a dor ou necessidade espiritual do tema;
+- conectar com o texto bíblico base;
+- preparar a igreja para ouvir a mensagem;
+- terminar com uma frase de transição para o contexto bíblico.
+
+Use HTML com:
+<div class="block"><h3>Introdução</h3>...</div>
+
+Não repita o prompt do usuário.
+Não escreva “desenvolva”.
+Gere somente a introdução.`;
+    }
+
+    function promptContextoSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: CONTEXTO BÍBLICO DO TEXTO
+
+Explique o contexto bíblico do texto base: ${base.biblicalBase}
+
+A explicação deve:
+- situar o texto dentro do livro bíblico;
+- explicar o sentido principal do texto;
+- mostrar a ligação com o tema do sermão;
+- evitar exageros e aplicações fora do contexto;
+- preparar a transição para os tópicos.
+
+Use HTML com:
+<div class="scripture-full">
+<div class="knowledge-box">
+
+Não repita o prompt do usuário.
+Gere somente o contexto bíblico.`;
+    }
+
+    function promptTopicoSermon(base,info,indice){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: TÓPICO ${indice} DO SERMÃO
+
+Crie o tópico ${indice} completo do sermão.
+
+Regras:
+- Use <div class="sermon-point"><h3>${indice}. Título do tópico</h3>...</div>.
+- O título do tópico deve ser forte, bíblico e pregável.
+- Desenvolva com explicação bíblica.
+- Traga aplicação prática para a igreja.
+- Use pelo menos uma referência bíblica coerente com o assunto, se couber.
+- Inclua uma frase de transição ao final.
+- Não repita o que já foi dito.
+- Não escreva “desenvolva este ponto”.
+- Não copie o prompt do usuário.
+- Não entregue apenas esboço.
+- Gere conteúdo final pronto para pregação.
+
+Quantidade total de tópicos: ${info.points}
+Este é o tópico: ${indice}
+
+Gere somente este tópico.`;
+    }
+
+    function promptAplicacaoSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: APLICAÇÃO PRÁTICA
+
+Crie uma aplicação prática forte para a igreja.
+
+A aplicação deve:
+- mostrar como a mensagem toca a vida real;
+- chamar a igreja à resposta espiritual;
+- ser pastoral, clara e profunda;
+- não repetir os tópicos;
+- conectar o sermão com oração, arrependimento, fé, obediência ou consagração conforme o tema.
+
+Use HTML com:
+<div class="personal-application"><h4>Aplicação para a Igreja</h4>...</div>
+
+Gere somente esta parte.`;
+    }
+
+    function promptConclusaoSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: CONCLUSÃO
+
+Crie a conclusão do sermão.
+
+A conclusão deve:
+- retomar a ideia central;
+- unir os tópicos em uma chamada final;
+- ser forte, pastoral e espiritual;
+- preparar o ambiente para o apelo, se houver.
+
+Use HTML com:
+<div class="block"><h3>Conclusão</h3>...</div>
+
+Gere somente a conclusão.`;
+    }
+
+    function promptApeloSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: APELO
+
+Crie o apelo final do sermão.
+
+Tipo de apelo escolhido: ${info.appeal}
+
+Se o usuário escolheu “sem apelo”:
+- faça uma chamada pastoral final sem linguagem de apelo ao altar.
+
+Se o usuário escolheu “com apelo espiritual forte”:
+- faça um apelo bíblico, espiritual, reverente e profundo;
+- chame à decisão, arrependimento, fé, consagração ou retorno para Deus conforme o tema;
+- não manipule emocionalmente;
+- não use exageros.
+
+Use HTML com:
+<div class="summary-box"><h4>Apelo</h4>...</div>
+
+Gere somente o apelo.`;
+    }
+
+    function promptOracaoSermon(base,info){
+      return `${montarPromptBaseSermon(base,info)}
+
+ETAPA: ORAÇÃO FINAL
+
+Crie uma oração final para encerrar o sermão.
+
+A oração deve:
+- ser reverente;
+- estar ligada ao tema;
+- pedir direção de Deus;
+- pedir transformação;
+- conduzir a igreja à dependência do Senhor.
+
+Use HTML com:
+<div class="book-note"><h4>Oração Final</h4>...</div>
+
+Gere somente a oração final.`;
+    }
+
     function montarInfoRevista(base){
       const revistaTipo = getValue("revistaTipo") || "aluno";
       const revistaClasse = getValue("revistaClasse") || "adultos";
@@ -3364,8 +3734,7 @@ Não inventar bibliografia.
         </section>
       `;
     }
-
-    function extrairTituloLicao(linha,indice){
+        function extrairTituloLicao(linha,indice){
       const limpo = String(linha || "")
         .replace(/^[-•*]\s*/,"")
         .replace(/^li[cç][aã]o\s*\d+\s*[:\-–—]\s*/i,"")
@@ -3535,96 +3904,6 @@ Não inventar bibliografia.
       return encontrado ? encontrado.texto : "";
     }
 
-    function assuntoCorretoDaReferencia(ref){
-      const r = String(ref || "").toLowerCase().replace(":",".").trim();
-      const item = REFERENCE_GUIDE.find(g => r.includes(g.ref.toLowerCase()));
-      return item ? item.assunto : "";
-    }
-
-    async function obterTextoAureoCompleto(base,info,licoes,numero,dados){
-      const ref = reduzirParaUmVersiculo(dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base));
-      const fallback = textoBiblicoCurtoPorReferencia(ref);
-
-      if(fallback){
-        return {
-          referencia:ref,
-          texto:fallback
-        };
-      }
-
-      const prompt = `
-Você é editor de revista de Escola Bíblica Dominical.
-
-TAREFA:
-Escreva o Texto Áureo da Lição ${numero}.
-
-REGRA ABSOLUTA:
-- O Texto Áureo deve ter UM ÚNICO versículo.
-- Não escreva explicação.
-- Não escreva aplicação.
-- Não escreva comentário.
-- Não escreva mais de um versículo.
-- Não use bloco grande.
-- Se a referência recebida for um intervalo, escolha o versículo principal do intervalo.
-- Responda somente em JSON válido.
-
-DADOS:
-Tema: ${base.visibleTheme}
-Título da lição: ${dados.titulo}
-Referência sugerida: ${ref}
-Texto bíblico da lição: ${dados.leituraClasse}
-
-FORMATO:
-{
-  "referencia": "Livro capítulo.versículo",
-  "texto": "Texto do versículo em linguagem bíblica, fiel, clara e reverente"
-}
-      `.trim();
-
-      const resposta = await chamarTextoIAComTentativas(
-        [prompt],
-        `Texto Áureo da Lição ${numero}`,
-        {
-          minimo:80,
-          aceitarCurto:true,
-          aceitarMuitoCurto:true,
-          minQuality:"um único versículo escrito por extenso em JSON"
-        }
-      );
-
-      try{
-        const limpo = String(resposta || "")
-          .replace(/^```json\s*/i,"")
-          .replace(/^```\s*/i,"")
-          .replace(/```$/i,"")
-          .trim();
-
-        const json = JSON.parse(limpo);
-
-        if(json && json.referencia && json.texto){
-          return {
-            referencia:reduzirParaUmVersiculo(json.referencia),
-            texto:String(json.texto || "").trim()
-          };
-        }
-      }catch(error){
-        console.warn("Texto Áureo não veio em JSON válido:",error);
-      }
-
-      return {
-        referencia:ref,
-        texto:fallback || "Permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido."
-      };
-    }
-
-    function gerarTeseUniversal(titulo,base,objetivo = ""){
-      if(objetivo){
-        return objetivo.replace(/\.$/,"") + ".";
-      }
-
-      return `A lição "${titulo}" apresenta uma verdade bíblica essencial para a compreensão do tema "${base.visibleTheme}".`;
-    }
-
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
 
@@ -3711,6 +3990,23 @@ FORMATO:
       return "A Palavra de Deus chama o cristão à fé, à obediência e à perseverança.";
     }
 
+    async function obterTextoAureoCompleto(base,info,licoes,numero,dados){
+      const ref = reduzirParaUmVersiculo(dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base));
+      const fallback = textoBiblicoCurtoPorReferencia(ref);
+
+      if(fallback){
+        return {
+          referencia:ref,
+          texto:fallback
+        };
+      }
+
+      return {
+        referencia:ref,
+        texto:fallback || "Permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido."
+      };
+    }
+
     function criarLeituraDiariaUniversal(base,dados,textoBase = ""){
       const tema = base.visibleTheme || base.title || "tema bíblico";
 
@@ -3749,6 +4045,14 @@ FORMATO:
         const ref = refsUnicas[index] || refsGerais[index] || "2 Timóteo 3.16";
         return [dia,ref,resumoDaReferencia(ref,tema)];
       });
+    }
+
+    function gerarTeseUniversal(titulo,base,objetivo = ""){
+      if(objetivo){
+        return objetivo.replace(/\.$/,"") + ".";
+      }
+
+      return `A lição "${titulo}" apresenta uma verdade bíblica essencial para a compreensão do tema "${base.visibleTheme}".`;
     }
 
     function montarLicaoUniversal(titulo,index,base,extra = "",textoBase = "",topicosExtraidos = null){
@@ -3922,149 +4226,8 @@ ${base.extraNotes}
       return gerarLicoesUniversaisDoTema(base);
     }
 
-    function normalizarLicaoIAComFallback(licaoIA,fallback,base){
-      const l = licaoIA || {};
-      const titulo = fallback.titulo || l.titulo || "Lição";
-
-      const refPrincipal = reduzirParaUmVersiculo(
-        fallback.textoAureoRef ||
-        l.textoAureoRef ||
-        l.textoAureo ||
-        escolherTextoAureoPrincipal(fallback.leituraClasse || l.leituraClasse,base)
-      );
-
-      const merged = {
-        ...fallback,
-        ...l,
-        titulo,
-        textoAureoRef:refPrincipal,
-        textoAureoTexto:l.textoAureoTexto || fallback.textoAureoTexto || textoBiblicoCurtoPorReferencia(refPrincipal),
-        textoAureo:refPrincipal,
-        leituraClasse:fallback.leituraClasse || l.leituraClasse || base.biblicalBase,
-        topicos:Array.isArray(fallback.topicos) && fallback.topicos.length === 3 ? fallback.topicos : (Array.isArray(l.topicos) && l.topicos.length === 3 ? l.topicos : fallback.topicos),
-        progressao:Array.isArray(fallback.progressao) && fallback.progressao.length ? fallback.progressao : (Array.isArray(l.progressao) ? l.progressao : []),
-        perguntas:Array.isArray(l.perguntas) && l.perguntas.length ? l.perguntas : fallback.perguntas,
-        termos:Array.isArray(l.termos) && l.termos.length ? l.termos : fallback.termos,
-        palavraChave:extrairPalavraChave(titulo,base.visibleTheme)
-      };
-
-      merged.sintese = l.sintese || fallback.sintese || fallback.tese;
-
-      merged.leituraDiaria = Array.isArray(l.leituraDiaria) && l.leituraDiaria.length === 6
-        ? l.leituraDiaria.map(item => {
-            const dia = item[0] || "Dia";
-            const ref = item[1] || "2 Timóteo 3.16";
-            const resumo = item[2] || resumoDaReferencia(ref,base.visibleTheme);
-            const generico = /verdade bíblica para meditação|meditação e aplicação espiritual|palavra de deus orienta/i.test(resumo);
-            return [dia,ref,generico ? resumoDaReferencia(ref,base.visibleTheme) : resumo];
-          })
-        : criarLeituraDiariaUniversal(base,merged,merged.leituraClasse || fallback.leituraClasse);
-
-      return merged;
-    }
-
     async function gerarEstruturaLicoesComIA(base,info){
-      const licoesExtraidas = dadosLicoesMensais(base,info);
-
-      const textoCompleto = `
-Título: ${base.title}
-Subtítulo: ${base.subtitle}
-Tema/prompt: ${base.theme}
-Texto bíblico geral: ${base.biblicalBase}
-Direção das lições: ${info.revistaObservacao}
-Observações: ${base.extraNotes}
-      `.trim();
-
-      const prompt = `
-Você é editor de revista mensal de Escola Bíblica Dominical.
-
-Crie a estrutura de 4 lições mensais com base EXCLUSIVAMENTE no pedido do usuário.
-
-PEDIDO DO USUÁRIO:
-${textoCompleto}
-
-REGRAS ABSOLUTAS:
-- Obedeça ao tema que o usuário pediu.
-- Se o usuário escreveu Lição 1, Lição 2, Lição 3 e Lição 4, preserve esses títulos exatamente.
-- Se o usuário escreveu Tópico 1, Tópico 2 e Tópico 3 em cada lição, preserve esses títulos exatamente.
-- Se o usuário escreveu subtópicos, preserve os subtópicos.
-- Não troque os títulos das lições por títulos genéricos.
-- O Texto Áureo deve ter apenas UM versículo principal.
-- Não coloque bloco grande no Texto Áureo.
-- Não use várias referências no Texto Áureo.
-- A leitura diária precisa ter referências bíblicas reais e frases específicas, nunca genéricas.
-- Cada referência bíblica precisa combinar com o assunto explicado.
-- Não use Mateus 24.12 para falar da inspiração das Escrituras.
-- Não use 2 Timóteo 3.16 para falar do esfriamento do amor.
-- Não misture referência bíblica com assunto de outro texto.
-- Cada tópico precisa acrescentar algo novo, sem repetição artificial.
-- Responda SOMENTE em JSON válido, sem markdown.
-
-GUIA DE REFERÊNCIAS:
-${guiaReferenciasTexto()}
-
-FORMATO:
-{
-  "licoes": [
-    {
-      "titulo": "",
-      "sintese": "",
-      "foco": "",
-      "textoAureoRef": "Uma única referência, exemplo: 2 Timóteo 3.16",
-      "textoAureoTexto": "Texto do versículo escrito por extenso, sem explicação",
-      "leituraClasse": "",
-      "palavraChave": "",
-      "termos": ["", "", ""],
-      "progressao": ["", "", ""],
-      "leituraDiaria": [
-        ["Segunda", "Referência bíblica real", "Resumo curto e específico"],
-        ["Terça", "Referência bíblica real", "Resumo curto e específico"],
-        ["Quarta", "Referência bíblica real", "Resumo curto e específico"],
-        ["Quinta", "Referência bíblica real", "Resumo curto e específico"],
-        ["Sexta", "Referência bíblica real", "Resumo curto e específico"],
-        ["Sábado", "Referência bíblica real", "Resumo curto e específico"]
-      ],
-      "topicos": [
-        {"titulo": "", "funcao": "", "subtitulos": ["", "", ""]},
-        {"titulo": "", "funcao": "", "subtitulos": ["", "", ""]},
-        {"titulo": "", "funcao": "", "subtitulos": ["", "", ""]}
-      ],
-      "perguntas": [
-        ["Pergunta", "Resposta"],
-        ["Pergunta", "Resposta"],
-        ["Pergunta", "Resposta"],
-        ["Pergunta", "Resposta"]
-      ]
-    }
-  ]
-}
-      `.trim();
-
-      const resposta = await chamarTextoIA(prompt,"Estrutura das 4 lições",{
-        minimo:500,
-        minQuality:"JSON com 4 lições baseadas no tema do usuário"
-      });
-
-      try{
-        const limpo = String(resposta || "")
-          .replace(/^```json\s*/i,"")
-          .replace(/^```\s*/i,"")
-          .replace(/```$/i,"")
-          .trim();
-
-        const json = JSON.parse(limpo);
-
-        if(json && Array.isArray(json.licoes) && json.licoes.length === 4){
-          return licoesExtraidas.map((fallback,i) => {
-            const l = json.licoes[i] || {};
-            return normalizarLicaoIAComFallback(l,fallback,base);
-          });
-        }
-      }catch(error){
-        console.warn("A IA não retornou JSON válido para estrutura das lições:",error);
-      }
-
-      return licoesExtraidas;
+      return dadosLicoesMensais(base,info);
     }
 
     function montarPromptBaseRevista(base,info,licoes){
@@ -4110,23 +4273,11 @@ Direção original das 4 lições: ${info.revistaObservacao}
 4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
 
-REGRAS DE FIDELIDADE BÍBLICA:
-- Toda referência bíblica citada deve combinar diretamente com o assunto explicado.
-- Não use referência bíblica apenas para enfeitar o texto.
-- Não misture o sentido de um versículo com outro.
-- Mateus 24.12 deve tratar do esfriamento do amor por causa da multiplicação da iniquidade.
-- 2 Timóteo 3.16 deve tratar da inspiração e utilidade das Escrituras.
-- João 17.17 deve tratar da santificação pela verdade.
-- Romanos 12.2 deve tratar da não conformação com o mundo e renovação da mente.
-- Gálatas 1.6-10 deve tratar do perigo de outro evangelho.
-
-GUIA DE REFERÊNCIAS:
-${guiaReferenciasTexto()}
-
 REGRAS DE QUALIDADE:
 - Conteúdo original.
 - Linguagem bíblica, pastoral, pentecostal, teológica, didática e acessível.
 - Referências bíblicas devem entrar dentro da argumentação.
+- Toda referência bíblica deve combinar com o assunto explicado.
 - Não copiar conteúdo de nenhuma editora.
 - Nunca copiar o prompt do usuário dentro do conteúdo final.
 - Evitar repetição de ideias apenas para preencher espaço.
@@ -4148,11 +4299,6 @@ TAMANHO:
 - 3 parágrafos no máximo.
 - Texto profundo, porém enxuto.
 - Não repetir a mesma ideia em parágrafos diferentes.
-
-Se for Revista do Aluno:
-- Fale com o cristão.
-- Não use linguagem de professor.
-- Seja profundo, mas objetivo.
 
 Use HTML com:
 <h1 class="page-title">
@@ -4196,22 +4342,10 @@ REGRAS:
 - Gere SOMENTE esta parte.
 - Não gere a lição inteira.
 - Não use linguagem de professor.
-- Não escreva “o professor deve”.
-- Não escreva “conduza a classe”.
-- Não escreva “explique aos alunos”.
-- Não escreva “função pedagógica”.
-- Não escreva “este tópico aprofunda”.
-- Não escreva “este subtópico ajuda”.
-- Não escreva “o aluno é levado”.
-- Não escreva “ajuda o aluno”.
 - Use “o cristão”, “o servo de Deus”, “a igreja”, “nós aprendemos”, “somos chamados”.
 - Linguagem natural, bíblica, pastoral e ensinável.
 - Toda referência bíblica deve estar relacionada corretamente ao assunto.
-- Não use referência bíblica fora de contexto.
-- Evite repetir abertura de parágrafo.
-- Evite repetir a mesma ideia apenas para preencher espaço.
 - Seja profundo, mas compacto como revista EBD.
-- Economize páginas: escreva com densidade, sem enrolação.
 - Entregue somente HTML interno.
 
 ${extra}`;
@@ -4237,10 +4371,8 @@ REGRAS:
 - O Texto Áureo já apareceu na abertura da lição.
 - Não repita o Texto Áureo.
 - Não escreva “leia o texto indicado”.
-- Não escreva “na versão adotada pela igreja”.
 - O leitor precisa ver o texto bíblico escrito na própria revista.
 - Seja fiel, reverente e claro.
-- Pode usar tradução em linguagem própria, fiel e reverente, sem copiar integralmente uma tradução comercial extensa.
         `
       );
     }
@@ -4290,12 +4422,12 @@ REGRAS:
 - Acrescente orientação de professor quando couber.
 - Seja completo, mas sem repetir blocos já gerados.
 - Não use referência bíblica fora de contexto.
-- Não misture sentido de um versículo com outro.
 - Entregue somente HTML interno.
 
 ${extra}`;
     }
-        function montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto){
+
+    function montarPromptBaseLivroApoio(base,info,licoes,revistaProfessorTexto){
       const listaLicoes = (licoes || [])
         .map((l,i) => `Lição ${i + 1}: ${l.titulo} — termos importantes: ${(l.termos || []).join(", ")}`)
         .join("\n");
@@ -4335,34 +4467,15 @@ ${listaLicoes}
 BASE REAL DA REVISTA DO PROFESSOR JÁ GERADA
 ${limitarTexto(revistaProfessorTexto,24000)}
 
-REGRAS PARA O LIVRO DE APOIO
+REGRAS PARA O LIVRO DE APOIO:
 - O livro deve ser mais profundo que a revista do professor.
 - Não escrever como revista de aluno.
-- Expandir as lições reais da revista.
-- Evitar repetição desnecessária.
-- Explicar termos importantes com clareza e profundidade.
-- Acrescentar perguntas difíceis e respostas reais.
-- Acrescentar exemplos que o professor possa usar em sala.
-- Acrescentar erros comuns que o professor deve evitar.
-- Acrescentar orientação didática prática.
-- Acrescentar aplicações pastorais.
-- Não inventar livros.
-- Não inventar Bíblias de estudo.
-- Não inventar comentários bíblicos.
-- Não inventar autores.
-- Não inventar editoras.
-- Não atribuir comentários ou obras à CPID, a menos que o usuário tenha informado que tal obra existe.
+- Não inventar livros, Bíblias de estudo, comentários, autores ou editoras.
 - Toda referência bíblica citada deve combinar diretamente com o assunto explicado.
-- Não usar referência bíblica apenas para enfeitar o texto.
-- Não misturar o sentido de um versículo com outro.
-- Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
+- Entregar somente HTML interno, sem markdown.
 
 BIBLIOGRAFIA SEGURA PERMITIDA:
-Use somente estas obras caso precise citar bibliografia:
 ${bibliografiaSeguraTexto()}
-
-GUIA DE REFERÊNCIAS BÍBLICAS:
-${guiaReferenciasTexto()}
       `.trim();
     }
 
@@ -4371,15 +4484,7 @@ ${guiaReferenciasTexto()}
 
 ETAPA: ABERTURA DO LIVRO DE APOIO AO PROFESSOR
 
-Crie a abertura do livro com:
-- apresentação pastoral;
-- prefácio ao professor;
-- como usar este livro junto com a revista;
-- explicação de que o livro aprofunda a revista;
-- visão do professor como ensinador da Palavra;
-- aviso editorial de fidelidade bíblica.
-
-Seja profundo, mas sem alongar demais a abertura.
+Crie a abertura do livro com apresentação pastoral, prefácio ao professor, como usar o livro junto com a revista e visão do professor como ensinador da Palavra.
 
 Use HTML com:
 <h1 class="page-title">
@@ -4387,8 +4492,7 @@ Use HTML com:
 <div class="block">
 <div class="book-note">
 <div class="teacher-help">
-<div class="summary-box">
-<div class="reference-alert">`;
+<div class="summary-box">`;
     }
 
     function promptSumarioLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -4398,15 +4502,12 @@ ETAPA: SUMÁRIO DO LIVRO DE APOIO AO PROFESSOR
 
 Monte um sumário de livro, não de revista.
 Inclua capítulos principais, perguntas difíceis, glossário, orientação didática e bibliografia segura.
-Tudo deve obedecer ao tema real do usuário.
 
 Use HTML com:
 <h1 class="page-title">
 <p class="subtitle">
 <div class="block">
-<ol class="list">
-<div class="knowledge-box">
-<div class="safe-bibliography-alert">`;
+<ol class="list">`;
     }
 
     function promptCapituloLivroApoio(base,info,licoes,numero,dados,revistaProfessorTexto){
@@ -4427,36 +4528,19 @@ ${trechoLicao}
 
 Crie um capítulo de livro mais profundo que a lição da revista.
 
-ESTRUTURA OBRIGATÓRIA:
+ESTRUTURA:
 1. Cabeçalho do capítulo.
 2. Visão geral da lição.
 3. Texto bíblico principal explicado.
-4. O que a revista ensina resumidamente.
-5. Ampliação bíblica.
-6. Explicação teológica.
-7. Contexto histórico e cultural.
-8. Termos importantes explicados.
-9. Pontos sensíveis para ensinar.
-10. Perguntas difíceis que podem surgir em sala.
-11. Respostas bíblicas e pastorais.
-12. Erros comuns a evitar.
-13. Aplicações para a igreja atual.
-14. Como conduzir a aula.
-15. Sugestões didáticas simples.
-16. Resumo final para o professor.
-
-REGRA DE TAMANHO:
-- Se o modo for normal, escreva de forma completa e objetiva.
-- Se o modo for expandido, aprofunde cada seção com conteúdo real.
-- Se o modo for muito expandido, acrescente mais densidade bíblica e pastoral, mas sem repetição.
-- Não aumentar o texto inventando fontes.
-- Não repetir o mesmo argumento em seções diferentes.
-
-REGRAS DE REFERÊNCIA BÍBLICA:
-- Toda referência deve ser explicada conforme seu sentido correto.
-- Não use Mateus 24.12 para falar de inspiração bíblica.
-- Não use 2 Timóteo 3.16 para falar de esfriamento do amor.
-- Não cite referência só para decorar o texto.
+4. Ampliação bíblica.
+5. Explicação teológica.
+6. Termos importantes.
+7. Perguntas difíceis.
+8. Respostas bíblicas e pastorais.
+9. Erros comuns a evitar.
+10. Aplicações para a igreja atual.
+11. Como conduzir a aula.
+12. Resumo final.
 
 Use HTML com:
 <div class="lesson-hero">
@@ -4465,9 +4549,7 @@ Use HTML com:
 <div class="knowledge-box">
 <div class="teacher-help">
 <div class="summary-box">
-<div class="personal-application">
-<div class="reference-alert">
-<div class="question-answer">`;
+<div class="personal-application">`;
     }
 
     function promptRespostasLivroApoio(base,info,licoes,revistaProfessorTexto){
@@ -4476,15 +4558,6 @@ Use HTML com:
 ETAPA: CAPÍTULO ESPECIAL — RESPOSTAS NA PONTA DA LÍNGUA
 
 Crie de 20 a 25 perguntas e respostas diferentes para o professor.
-As perguntas devem ser reais, difíceis e úteis em sala.
-As respostas devem ser bíblicas, doutrinárias, pastorais e didáticas.
-As perguntas precisam estar ligadas ao tema real da revista.
-
-REGRAS:
-- Não inventar fatos históricos.
-- Não inventar citações de autores.
-- Não citar livro que não esteja na bibliografia segura.
-- Toda referência bíblica precisa estar ligada ao argumento.
 
 Use HTML com:
 <h1 class="page-title">
@@ -4498,20 +4571,7 @@ Use HTML com:
 
 ETAPA: APÊNDICES DO LIVRO
 
-Crie:
-1. Glossário teológico.
-2. Sugestões didáticas.
-3. Recursos visuais simples.
-4. Checklist de preparação do professor.
-5. Conclusão pastoral.
-
-Tudo deve estar ligado ao tema real pedido pelo usuário.
-
-REGRAS:
-- Não inventar bibliografia.
-- Não inventar dados históricos.
-- Não criar afirmações sem base bíblica.
-- Usar linguagem pastoral e confiável.
+Crie glossário teológico, sugestões didáticas, recursos visuais simples, checklist de preparação do professor e conclusão pastoral.
 
 Use HTML com:
 <h1 class="page-title">
@@ -4539,7 +4599,7 @@ Use HTML com:
     }
 
     function detectarEstiloVisualCapa(base,info){
-      const texto = `${base.title} ${base.subtitle} ${base.visibleTheme} ${base.theme} ${info.revistaClasse}`.toLowerCase();
+      const texto = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${info.revistaClasse || ""}`.toLowerCase();
 
       if(/adolescentes|adolescência|escolhas|futuro|internet|pressão|redes sociais|identidade/.test(texto)){
         return "visual cristão atual para adolescentes, moderno e reverente, jovem lendo a Bíblia ou caminhando diante de escolhas, luz suave e esperançosa, elementos discretos de escola, celular e caminho, sem parecer infantil e sem parecer secular demais";
@@ -4553,12 +4613,8 @@ Use HTML com:
         return "visual jovem cristão, moderno e reverente, grupo de jovens com Bíblia, luz vibrante, cidade ao fundo, fé e propósito";
       }
 
-      if(/escatologia|volta de cristo|arrebatamento|eternidade|apocalipse|últimos dias|novos céus|nova terra/.test(texto)){
-        return "visual esperançoso e glorioso, céu iluminado, horizonte dourado, sensação de eternidade, igreja aguardando Cristo, luz celestial, sem medo e sem sensacionalismo";
-      }
-
-      if(/santidade|consagração|pureza|temor|relativismo/.test(texto)){
-        return "visual reverente e claro, caminho iluminado, luz branca e dourada, atmosfera de consagração, pureza, Bíblia aberta em ambiente limpo";
+      if(/confusão|verdade|doutrina|engano|evangelho raso|esfriamento/.test(texto)){
+        return "visual de igreja firme em meio à confusão, Bíblia iluminada como centro, pessoas caminhando entre sombras e luz, contraste entre verdade e engano, atmosfera atual e urgente";
       }
 
       if(/família|lar|casamento|filhos|casa/.test(texto)){
@@ -4569,41 +4625,26 @@ Use HTML com:
         return "visual missionário, mapa do mundo, pessoas em oração, Bíblia aberta, luz sobre as nações, senso de envio e propósito";
       }
 
-      if(/oração|intercessão|avivamento|espírito santo/.test(texto)){
-        return "visual de oração e avivamento, igreja em clamor, luz quente, atmosfera espiritual, mãos erguidas, Bíblia aberta";
-      }
-
-      if(/batalha espiritual|diabo|libertação|armadura|guerra espiritual/.test(texto)){
-        return "visual sério e reverente de batalha espiritual, luz vencendo sombras, Bíblia e oração, sem imagens assustadoras, sem demônios explícitos";
-      }
-
-      if(/confusão|verdade|doutrina|engano|evangelho raso|esfriamento/.test(texto)){
-        return "visual de igreja firme em meio à confusão, Bíblia iluminada como centro, pessoas caminhando entre sombras e luz, contraste entre verdade e engano, atmosfera atual e urgente";
-      }
-
       return "visual cristão editorial premium baseado no tema, com composição diferente de capa comum, usando símbolos coerentes com o assunto, luz bíblica, reverência e profundidade";
     }
 
-    function promptCapaImagem(base,info){
+    function promptCapaImagem(base,info = {}){
       const estiloVisual = detectarEstiloVisualCapa(base,info);
 
       return `
-Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de material cristão de Escola Bíblica Dominical.
+Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de material cristão.
 NÃO escreva nenhum texto na imagem.
 NÃO coloque letras, logotipos, nomes de igreja ou marcas.
-NÃO repita sempre Bíblia aberta em fundo escuro.
-A arte deve variar conforme o conteúdo da revista.
 
-TEMA DA REVISTA: ${base.visibleTheme}
+TEMA: ${base.visibleTheme || base.theme}
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
-PÚBLICO: ${info.revistaClasse}
-TIPO: ${info.label}
+TIPO: ${info.label || getTypeLabel(base.type)}
 
-DIREÇÃO VISUAL ESPECÍFICA:
+DIREÇÃO VISUAL:
 ${estiloVisual}
 
-Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa de revista EBD, composição bonita, luz bem trabalhada, alta qualidade.
+Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, composição bonita, luz bem trabalhada, alta qualidade.
       `.trim();
     }
 
@@ -4762,6 +4803,15 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
         `;
       }
 
+      if(tipo === "sermon"){
+        return `
+          <div class="block manual-placeholder" data-manual-placeholder="true">
+            <h3>${escapeHtml(tituloLimpo)}</h3>
+            <p class="text manual-empty"></p>
+          </div>
+        `;
+      }
+
       return `
         <div class="block manual-placeholder" data-manual-placeholder="true">
           <h3>${escapeHtml(tituloLimpo)}</h3>
@@ -4787,6 +4837,162 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
           </div>
         </section>
       `;
+    }
+
+    async function gerarBlocoSermon(base,info,nome,prompt,minimo = 220,tipoFallback = "sermon"){
+      const html = await chamarTextoIAComTentativas(
+        [prompt],
+        `Sermão — ${nome}`,
+        {
+          minimo,
+          aceitarCurto:true,
+          aceitarMuitoCurto:true,
+          minQuality:"sermão completo, bíblico, pregável e pronto para ministração"
+        }
+      );
+
+      if(html){
+        return html;
+      }
+
+      return blocoManualVazio(tipoFallback,nome);
+    }
+
+    async function generateSermonAsync(base){
+      const info = montarInfoSermon(base);
+      manualPlaceholdersCount = 0;
+
+      let html = `<div class="doc">`;
+
+      setStep(0,"Gerando direção homilética do sermão...");
+
+      const direcao = await gerarBlocoSermon(
+        base,
+        info,
+        "Direção Homilética",
+        promptDirecaoSermon(base,info),
+        320
+      );
+
+      html += renderPage(direcao,"intro-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(1,"Gerando introdução completa do sermão...");
+
+      const introducao = await gerarBlocoSermon(
+        base,
+        info,
+        "Introdução",
+        promptIntroducaoSermon(base,info),
+        260
+      );
+
+      html += renderPage(introducao,"sermon-intro-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(2,"Gerando contexto bíblico do texto base...");
+
+      const contexto = await gerarBlocoSermon(
+        base,
+        info,
+        "Contexto Bíblico",
+        promptContextoSermon(base,info),
+        280
+      );
+
+      html += renderPage(contexto,"sermon-context-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(3,"Gerando tópicos completos do sermão...");
+
+      for(let i = 1; i <= info.points; i++){
+        setStatus(`Gerando tópico ${i} de ${info.points} com tentativa inteligente...`);
+
+        const topico = await gerarBlocoSermon(
+          base,
+          info,
+          `Tópico ${i}`,
+          promptTopicoSermon(base,info,i),
+          info.length === "curto" ? 220 : 340
+        );
+
+        html += renderPage(topico,"sermon-point-page");
+        renderGenerated(html + `</div>`);
+
+        await pause(500);
+      }
+
+      setStep(4,"Gerando aplicação prática...");
+
+      const aplicacao = await gerarBlocoSermon(
+        base,
+        info,
+        "Aplicação para a Igreja",
+        promptAplicacaoSermon(base,info),
+        240
+      );
+
+      html += renderPage(aplicacao,"sermon-application-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(5,"Gerando conclusão...");
+
+      const conclusao = await gerarBlocoSermon(
+        base,
+        info,
+        "Conclusão",
+        promptConclusaoSermon(base,info),
+        200
+      );
+
+      html += renderPage(conclusao,"sermon-conclusion-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(6,"Gerando apelo...");
+
+      const apelo = await gerarBlocoSermon(
+        base,
+        info,
+        "Apelo",
+        promptApeloSermon(base,info),
+        180
+      );
+
+      html += renderPage(apelo,"sermon-appeal-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(600);
+
+      setStep(7,"Gerando oração final...");
+
+      const oracao = await gerarBlocoSermon(
+        base,
+        info,
+        "Oração Final",
+        promptOracaoSermon(base,info),
+        160
+      );
+
+      html += renderPage(oracao,"sermon-prayer-page");
+      html += `</div>`;
+
+      renderGenerated(html);
+
+      if(manualPlaceholdersCount > 0){
+        finishSteps(`Sermão gerado com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente.`);
+      }else{
+        finishSteps("Sermão completo gerado com sucesso, pronto para revisar e pregar.");
+      }
     }
 
     async function gerarParteAluno(base,info,licoes,numero,dados,nomeParte,extra,minimo = 140){
@@ -4948,7 +5154,6 @@ Regras:
 Crie apenas a introdução da lição.
 A introdução deve ter 2 parágrafos.
 Não repita frases genéricas.
-Não antecipe todos os argumentos dos tópicos.
 Mostre o problema central da lição, o valor bíblico do assunto e prepare o cristão para os tópicos.
 Use <div class="block"><h3>Introdução</h3>...</div>.
         `,
@@ -4984,7 +5189,6 @@ Regras:
 - Traga uma informação bíblica, histórica, doutrinária ou cultural que ajude o cristão a entender melhor a lição.
 - Não cite livros específicos inventados.
 - Não use linguagem de professor.
-- Não repita a introdução nem as sinopses.
         `,
         110
       );
@@ -5002,7 +5206,6 @@ Regras:
 Crie somente a conclusão.
 A conclusão deve ter 2 parágrafos curtos.
 Retome a lição, ligue os tópicos e chame o cristão à obediência.
-Não reescreva tudo que já foi dito.
 Use <div class="block"><h3>Conclusão</h3>...</div>.
         `,
         140
@@ -5171,16 +5374,15 @@ Seja completo, mas sem desperdiçar páginas.
       return partes.join("\n");
     }
 
-    function renderCover(base,info,imageData){
+    function renderCover(base,info = {},imageData = null){
       const hasImage = imageData?.ok && imageData?.image;
 
       const imageTag = hasImage
         ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte de fundo da capa do material" loading="eager" decoding="sync" />`
         : "";
 
-      const classeCapa = info.revistaClasse === "adolescentes"
-        ? "Classe adolescentes"
-        : `Classe ${info.revistaClasse}`;
+      const tipoLabel = info.label || getTypeLabel(base.type);
+      const classeCapa = info.revistaClasse ? `Classe ${info.revistaClasse}` : tipoLabel;
 
       return `
         <section class="page cover-page">
@@ -5190,16 +5392,15 @@ Seja completo, mas sem desperdiçar páginas.
           <div class="cover-content">
             <div class="cover-frame">
               <div class="cover-top">
-                <span class="cover-badge">${info.isSupportBook ? "Livro de Apoio EBD" : "Revista EBD Mensal"}</span>
-                <span class="cover-series">${escapeHtml(base.visibleTheme)}</span>
+                <span class="cover-badge">${escapeHtml(tipoLabel)}</span>
+                <span class="cover-series">${escapeHtml(base.visibleTheme || base.theme)}</span>
               </div>
               <div class="cover-main">
                 <h1 class="cover-title">${escapeHtml(base.title)}</h1>
                 <p class="cover-subtitle">${escapeHtml(base.subtitle)}</p>
                 <div class="cover-pill-row">
-                  <span class="cover-pill">${escapeHtml(info.label)}</span>
+                  <span class="cover-pill">${escapeHtml(tipoLabel)}</span>
                   <span class="cover-pill">${escapeHtml(classeCapa)}</span>
-                  <span class="cover-pill">${escapeHtml(info.revistaMes)} de ${escapeHtml(info.revistaAno)}</span>
                 </div>
               </div>
               <div class="cover-footer">
@@ -5212,7 +5413,7 @@ Seja completo, mas sem desperdiçar páginas.
       `;
     }
 
-    function renderBackCover(base,info){
+    function renderBackCover(base,info = {}){
       return `
         <section class="page back-cover-page">
           <div class="cover-bg"></div>
@@ -5226,7 +5427,6 @@ Seja completo, mas sem desperdiçar páginas.
               </div>
               <div class="cover-footer">
                 <p>${escapeHtml(base.title)}</p>
-                <p>${escapeHtml(info.monthInfo)}</p>
                 <p>${escapeHtml(base.ministry)}</p>
               </div>
             </div>
@@ -5608,48 +5808,6 @@ Seja completo, mas sem desperdiçar páginas.
       }
     }
 
-    function generateSermon(base){
-      const points = Number(getValue("sermonPoints") || 4);
-      const sermonType = getValue("sermonType") || "temático";
-      const sermonAppeal = getValue("sermonAppeal") || "com apelo espiritual forte";
-
-      let topics = "";
-
-      for(let i = 1; i <= points; i++){
-        topics += `
-          <div class="block">
-            <h3>${i}. ${escapeHtml(["A verdade que Deus revela","O chamado que Deus faz","A resposta que Deus espera","A transformação que Deus realiza","A promessa que Deus sustenta"][i - 1] || "Tópico")}</h3>
-            ${paragraph("Desenvolva este ponto conectando o tema \"" + base.theme + "\" ao texto bíblico base " + base.biblicalBase + ".")}
-          </div>
-        `;
-      }
-
-      return `
-        <div class="doc">
-          ${renderPage(`
-            <div class="lesson-hero">
-              <div class="number">Sermão ${escapeHtml(sermonType)}</div>
-              <h1>${escapeHtml(base.title)}</h1>
-              <div class="meta">Texto base: ${escapeHtml(base.biblicalBase)}</div>
-            </div>
-            <div class="block">
-              <h3>Introdução</h3>
-              ${paragraph("Apresente o tema \"" + base.theme + "\" de forma bíblica, pastoral e envolvente.")}
-            </div>
-            ${topics}
-            <div class="block">
-              <h3>Conclusão</h3>
-              ${paragraph("Retome a verdade central e mostre a resposta prática que Deus espera de seu povo.")}
-            </div>
-            <div class="block">
-              <h3>Apelo</h3>
-              ${paragraph("Finalize " + sermonAppeal + ", chamando a igreja à oração, consagração e obediência.")}
-            </div>
-          `)}
-        </div>
-      `;
-    }
-
     function generateDevotional(base){
       return `
         <div class="doc">
@@ -5741,13 +5899,14 @@ Seja completo, mas sem desperdiçar páginas.
       setStatus("Iniciando geração do material...");
 
       try{
-        if(base.type === "revista"){
+        if(base.type === "sermao"){
+          await generateSermonAsync(base);
+        }else if(base.type === "revista"){
           await generateMagazineAsync(base);
         }else{
           setStep(0,"Gerando material...");
 
           let html = "";
-          if(base.type === "sermao") html = generateSermon(base);
           if(base.type === "devocional") html = generateDevotional(base);
           if(base.type === "estudo") html = generateStudy(base);
           if(["ebook","livro","curso"].includes(base.type)) html = generateLongMaterial(base);
@@ -5853,6 +6012,8 @@ Seja completo, mas sem desperdiçar páginas.
       setValue("sermonPoints","4");
       setValue("sermonType","temático");
       setValue("sermonAppeal","com apelo espiritual forte");
+      setValue("sermonStyle","bíblico, pastoral, pentecostal e profundo");
+      setValue("sermonLength","expandido");
       setValue("revistaTipo","aluno");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
@@ -5931,10 +6092,27 @@ Seja completo, mas sem desperdiçar páginas.
     function preencherTeste(){
       const type = currentType;
 
+      if(type === "sermao"){
+        setValue("title","Deus Ainda Levanta Famílias Para Vencer");
+        setValue("subtitle","Uma mensagem bíblica para restauração, posicionamento e fé dentro do lar");
+        setValue("theme","Crie um sermão completo para culto da família mostrando que Deus deseja restaurar lares, curar relacionamentos, levantar pais, mães, filhos e famílias inteiras para viverem debaixo da Palavra. O sermão deve mostrar que a família precisa de posicionamento, fé, oração, perdão e obediência.");
+        setValue("biblicalBase","Josué 24.15; Salmo 127.1; Efésios 6.1-4");
+        setValue("targetAudience","Igreja em geral, famílias, casais, pais, mães e filhos");
+        setValue("tone","bíblico, pastoral, pentecostal, profundo, restaurador e encorajador");
+        setValue("author","Isiquel Rodrigues");
+        setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
+        setValue("sermonPoints","4");
+        setValue("sermonType","temático");
+        setValue("sermonAppeal","com apelo espiritual forte");
+        setValue("sermonStyle","para culto da família, pastoral, acolhedor e restaurador");
+        setValue("sermonLength","expandido");
+        setValue("extraNotes","O sermão deve ter introdução forte, contexto bíblico, quatro tópicos bem desenvolvidos, aplicações para a família, conclusão, apelo e oração final. Não repetir o prompt. Não escrever 'desenvolva este ponto'. Gerar conteúdo pronto para pregar.");
+      }
+
       if(type === "revista"){
         setValue("title","A Igreja em Tempos de Confusão");
         setValue("subtitle","Guardando a fé, a santidade e a verdade em uma geração marcada por engano, relativismo e esfriamento espiritual");
-        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical para adultos com o tema: A Igreja em Tempos de Confusão. A revista deve tratar de um assunto atual e urgente para a Igreja de Deus: como permanecer firme em Cristo em uma geração marcada por confusão doutrinária, relativismo moral, esfriamento espiritual, evangelho raso, ataques à família, perda do temor de Deus, distrações digitais, secularismo e afastamento da verdade bíblica. A abordagem deve ser bíblica, pastoral, pentecostal, doutrinária, didática, profunda, firme e esperançosa. O Texto Áureo deve ter apenas um versículo, com o texto bíblico escrito por extenso, sem explicação extra. A revista deve ser mensal, com exatamente 4 lições.");
+        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical para adultos com o tema: A Igreja em Tempos de Confusão.");
         setValue("biblicalBase","2 Timóteo 3.14-17; João 17.17; Gálatas 1.6-10; 2 Timóteo 4.1-5; 1 Pedro 1.13-16; Romanos 12.1-2; Mateus 24.12-13; Judas 1.20-25");
         setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
         setValue("tone","bíblico, pastoral, pentecostal, doutrinário, didático, atual, profundo, firme e esperançoso");
@@ -5949,16 +6127,6 @@ Seja completo, mas sem desperdiçar páginas.
         setValue("bibliographyMode","segura");
         setValue("printFormat","a4");
         setValue("revistaObservacao","Lição 1: Uma Geração Confusa e a Verdade da Palavra\nTexto base: 2 Timóteo 3.14-17; João 17.17; Salmo 119.105\nObjetivo: mostrar que, em tempos de confusão espiritual e moral, a igreja precisa permanecer firmada na verdade da Palavra de Deus.\n\nTópico 1: A confusão de uma geração sem absolutos\nSubtópicos: A verdade tem sido relativizada; A opinião humana tem ocupado o lugar da Palavra; A igreja precisa discernir o espírito do tempo.\n\nTópico 2: A Palavra de Deus como fundamento da verdade\nSubtópicos: Toda a Escritura é inspirada por Deus; A Palavra santifica o povo de Deus; A Escritura ilumina o caminho do cristão.\n\nTópico 3: A igreja guardando a verdade em amor\nSubtópicos: Defender a verdade sem perder a graça; Ensinar a Palavra com fidelidade; Viver a verdade diante de uma geração confusa.\n\n\nLição 2: O Perigo do Evangelho Raso\nTexto base: Gálatas 1.6-10; Mateus 7.21-27; 2 Timóteo 4.1-5\nObjetivo: alertar a igreja sobre os perigos de um evangelho sem cruz, sem arrependimento, sem santidade e sem compromisso real com Cristo.\n\nTópico 1: Quando o evangelho é esvaziado\nSubtópicos: Um evangelho sem arrependimento; Uma fé sem obediência; Uma mensagem que agrada o homem, mas não transforma o coração.\n\nTópico 2: O perigo de ouvir apenas o que agrada\nSubtópicos: A rejeição da sã doutrina; A busca por mensagens convenientes; O risco de confundir emoção com conversão.\n\nTópico 3: Voltando ao evangelho de Cristo\nSubtópicos: Cristo é o centro da mensagem; A cruz confronta o pecado; O verdadeiro evangelho produz fruto e perseverança.\n\n\nLição 3: Santidade em Tempos de Relativismo\nTexto base: 1 Pedro 1.13-16; Romanos 12.1-2; Hebreus 12.14\nObjetivo: ensinar que a santidade continua sendo uma exigência bíblica para o povo de Deus, mesmo em uma cultura que tenta normalizar o pecado.\n\nTópico 1: O chamado bíblico à santidade\nSubtópicos: Deus é santo e chama seu povo à santidade; A santidade envolve mente, corpo e conduta; A graça não anula a obediência.\n\nTópico 2: O perigo da conformação com o mundo\nSubtópicos: O mundo tenta moldar os valores da igreja; A mente precisa ser renovada pela Palavra; O cristão não pode negociar princípios eternos.\n\nTópico 3: Uma vida santa em uma geração impura\nSubtópicos: Santidade no falar, no pensar e no agir; Santidade na família e nos relacionamentos; Santidade como testemunho diante do mundo.\n\n\nLição 4: Uma Igreja Firme Até a Volta de Cristo\nTexto base: Mateus 24.12-13; Apocalipse 3.7-13; Judas 1.20-25\nObjetivo: mostrar que, mesmo diante do esfriamento espiritual e da multiplicação do engano, a igreja deve permanecer fiel, vigilante e esperançosa até a volta de Cristo.\n\nTópico 1: O perigo do esfriamento espiritual\nSubtópicos: O amor de muitos se esfriará; A rotina religiosa pode substituir a vida com Deus; A vigilância espiritual não pode ser abandonada.\n\nTópico 2: Perseverando em fidelidade\nSubtópicos: Guardar a Palavra de Cristo; Permanecer firme mesmo com pouca força; Não negociar a fé diante da pressão.\n\nTópico 3: A esperança que sustenta a igreja\nSubtópicos: Cristo guarda os que permanecem fiéis; A volta de Jesus fortalece a perseverança; A igreja deve edificar-se na fé até o fim.");
-        setValue("extraNotes","A revista deve ser para adultos da Escola Bíblica Dominical. Não usar tom agressivo, político-partidário ou sensacionalista. O tom deve ser firme, bíblico, espiritual, pastoral e esperançoso. O Texto Áureo deve ter apenas um versículo escrito por extenso, sem explicação extra. O Livro de Apoio deve ser expandido, profundo e confiável. Não inventar bibliografia. Não inventar editoras. Não usar referência bíblica fora de contexto.");
-      }
-
-      if(type === "sermao"){
-        setValue("title","A Família Que Permanece de Pé");
-        setValue("subtitle","Lições bíblicas para uma casa firmada em Deus");
-        setValue("theme","A família que Deus abençoa");
-        setValue("biblicalBase","Josué 24.15");
-        setValue("targetAudience","Igreja em geral");
-        setValue("tone","bíblico, pastoral, pentecostal e profundo");
       }
 
       setStatus("Exemplo preenchido para " + getTypeLabel(type) + ".","ok");
@@ -5980,54 +6148,10 @@ ${tema}
 Use linguagem bíblica, pastoral, pentecostal, didática e clara.
 Inclua referências bíblicas explicadas, aplicações práticas, perguntas para revisão, conclusão e orientação espiritual.
 Não copie conteúdo de nenhuma editora.
-
-Para EBD, siga esta lógica:
-1. Revista do Aluno: lição-base compacta, econômica para impressão e ensinável.
-2. Revista do Professor: mesma lição-base do aluno, com subsídios, respostas e orientação.
-3. Livro de Apoio: expansão profunda da Revista do Professor.
-
-Exigência para Revista do Aluno:
-- Modelo editorial tipo livreto de EBD.
-- Capa no início e contracapa no final.
-- Abertura compacta da lição.
-- Texto Áureo com apenas um versículo principal.
-- O Texto Áureo deve vir escrito por extenso.
-- O Texto Áureo não deve ter explicação extra.
-- Síntese da Lição.
-- Leitura Diária curta, objetiva e bíblica.
-- Leitura Bíblica em Classe com versículos escritos.
-- Comentário.
-- Introdução com 2 parágrafos.
-- Três tópicos principais.
-- Três subtópicos em cada tópico.
-- Cada subtópico com 1 parágrafo forte ou no máximo 2 parágrafos curtos.
-- Sinopse curta no final de cada tópico.
-- Ampliando o Conhecimento compacto.
-- Conclusão.
-- Revisando o conteúdo.
-- Não repetir Texto Áureo dentro do comentário.
-- Não usar “Tese da Lição”, “Caminho da Lição”, “Objetivos da Aula” nem “Verdade Prática”.
-- Não usar linguagem de professor.
-- Preferir: “o cristão”, “a igreja”, “o servo de Deus”, “somos chamados”.
-- Evitar repetição de ideias só para preencher espaço.
-- A capa deve ser criada conforme o tema específico, sem repetir sempre o mesmo padrão visual.
-- Quando uma parte for difícil, tente entregar versão menor antes de deixar em branco.
-
-Regra para Revista do Professor:
-- Manter o mesmo conteúdo-base do aluno.
-- Acrescentar respostas, plano de aula, auxílios e orientação ao professor.
-
-Regra para Livro de Apoio:
-- Usar a Revista do Professor como base.
-- Expandir cada lição em capítulo.
-- Explicar termos teológicos importantes.
-- Trazer perguntas difíceis e respostas.
-- Trazer contexto histórico, erros comuns e orientação didática.
-- Não inventar bibliografia.
-- Não inventar Bíblias, comentários, autores ou editoras.
-- Usar somente obras reais e conhecidas.
-- Toda referência bíblica citada deve combinar com o assunto explicado.
-- Não usar referência bíblica fora de contexto.
+Não repita este prompt dentro do conteúdo final.
+Não escreva "desenvolva esta parte".
+Não entregue esboço vazio.
+Toda referência bíblica citada deve combinar com o assunto explicado.
       `.trim();
 
       setValue("theme",prompt);
