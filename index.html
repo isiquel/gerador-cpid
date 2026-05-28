@@ -2640,6 +2640,59 @@
           </div>
         </details>
 
+        <details id="cursoFields" class="accordion hidden">
+          <summary>Opções do curso</summary>
+          <div class="accordion-body">
+            <div class="compact-flow">
+              <strong>Fluxo do curso:</strong> Apostila do Aluno → Manual do Professor → Livro de Apoio → Divulgação → Certificado.
+            </div>
+
+            <div class="truth-note">
+              <strong>Preservado:</strong> esta lógica é exclusiva do Curso e não altera Sermões, Estudos nem Revista EBD.
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="cursoTipo">Tipo de material do curso</label>
+                <select id="cursoTipo">
+                  <option value="aluno" selected>Apostila do aluno</option>
+                  <option value="professor">Manual do professor</option>
+                  <option value="apoio-professor">Livro de apoio do professor</option>
+                  <option value="divulgacao">Material de divulgação</option>
+                  <option value="certificado">Certificado</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="cursoCargaHoraria">Carga horária</label>
+                <input id="cursoCargaHoraria" type="text" value="40 horas" placeholder="Ex: 20 horas, 40 horas, 60 horas" />
+              </div>
+            </div>
+
+            <div class="status-mini-grid">
+              <div id="baseCursoAlunoStatus" class="status-mini warn">Curso aluno: base não salva.</div>
+              <div id="baseCursoProfessorStatus" class="status-mini warn">Curso professor: base não salva.</div>
+              <div id="baseCursoApoioStatus" class="status-mini warn">Livro de apoio: base não salva.</div>
+              <div class="status-mini ok">Divulgação e certificado usam o tema do curso.</div>
+            </div>
+
+            <div class="actions-grid" style="margin-top:0;">
+              <button id="btnSaveCursoAlunoBase" class="btn btn-gold" type="button">Salvar curso do aluno</button>
+              <button id="btnSaveCursoProfessorBase" class="btn btn-gold" type="button">Salvar manual do professor</button>
+              <button id="btnSaveCursoApoioBase" class="btn btn-gold" type="button">Salvar livro de apoio</button>
+              <button id="btnClearCursoBases" class="btn btn-red" type="button">Apagar bases do curso</button>
+            </div>
+
+            <div class="field" style="margin-top:12px;">
+              <label for="cursoObservacao">Direção específica do curso</label>
+              <textarea id="cursoObservacao" placeholder="Ex: módulos, carga horária, atividades, avaliação, regras, público, observações para divulgação ou certificado..."></textarea>
+              <div class="chip-note">
+                Use este campo para orientar somente o Curso. Ele não interfere na EBD, sermões ou estudos.
+              </div>
+            </div>
+          </div>
+        </details>
+
         <details class="accordion">
           <summary>Observações extras</summary>
           <div class="accordion-body">
@@ -2763,6 +2816,15 @@
 
     const STORAGE_APOSTILA_PROFESSOR_BASE = "verboia_apostila_professor_base_v1053";
     const STORAGE_APOSTILA_PROFESSOR_META = "verboia_apostila_professor_meta_v1053";
+
+    const STORAGE_CURSO_ALUNO_BASE = "verboia_curso_aluno_base_v1060";
+    const STORAGE_CURSO_ALUNO_META = "verboia_curso_aluno_meta_v1060";
+
+    const STORAGE_CURSO_PROFESSOR_BASE = "verboia_curso_professor_base_v1060";
+    const STORAGE_CURSO_PROFESSOR_META = "verboia_curso_professor_meta_v1060";
+
+    const STORAGE_CURSO_APOIO_BASE = "verboia_curso_apoio_base_v1060";
+    const STORAGE_CURSO_APOIO_META = "verboia_curso_apoio_meta_v1060";
 
     const SAFE_BIBLIOGRAPHY = [
       {
@@ -2950,6 +3012,14 @@
     const baseApostilaAlunoStatus = document.getElementById("baseApostilaAlunoStatus");
     const baseApostilaProfessorStatus = document.getElementById("baseApostilaProfessorStatus");
 
+    const cursoFields = document.getElementById("cursoFields");
+    const cursoTipo = document.getElementById("cursoTipo");
+    const cursoCargaHoraria = document.getElementById("cursoCargaHoraria");
+    const cursoObservacao = document.getElementById("cursoObservacao");
+    const baseCursoAlunoStatus = document.getElementById("baseCursoAlunoStatus");
+    const baseCursoProfessorStatus = document.getElementById("baseCursoProfessorStatus");
+    const baseCursoApoioStatus = document.getElementById("baseCursoApoioStatus");
+
     const btnGenerate = document.getElementById("btnGenerate");
     const btnPrint = document.getElementById("btnPrint");
     const btnClear = document.getElementById("btnClear");
@@ -2968,6 +3038,11 @@
     const btnSaveApostilaProfessorBase = document.getElementById("btnSaveApostilaProfessorBase");
     const btnClearApostilaAlunoBase = document.getElementById("btnClearApostilaAlunoBase");
     const btnClearApostilaProfessorBase = document.getElementById("btnClearApostilaProfessorBase");
+
+    const btnSaveCursoAlunoBase = document.getElementById("btnSaveCursoAlunoBase");
+    const btnSaveCursoProfessorBase = document.getElementById("btnSaveCursoProfessorBase");
+    const btnSaveCursoApoioBase = document.getElementById("btnSaveCursoApoioBase");
+    const btnClearCursoBases = document.getElementById("btnClearCursoBases");
 
     const sermaoFields = document.getElementById("sermaoFields");
     const revistaFields = document.getElementById("revistaFields");
@@ -2988,7 +3063,7 @@
       revista:["Estrutura","Sumário","Lição/Cap. 1","Lição/Cap. 2","Lição/Cap. 3","Lição/Cap. 4","Capa IA","Contracapa"],
       ebook:["Capa","Introdução","Capítulos","Conclusão"],
       livro:["Capa","Sumário","Capítulos","Fechamento"],
-      curso:["Apresentação","Módulos","Conteúdo","Atividades","Conclusão"]
+      curso:["Tipo","Base","Módulos","Atividades","Apoio","Final"]
     };
         function getValue(id){
       const el = document.getElementById(id);
@@ -3086,6 +3161,7 @@
       estudoFields.classList.add("hidden");
       devocionalFields.classList.add("hidden");
       bookFields.classList.add("hidden");
+      if(cursoFields) cursoFields.classList.add("hidden");
     }
 
     function updateSteps(type){
@@ -3193,9 +3269,18 @@
         bookFields.open = true;
       }
 
+      if(type === "curso" && cursoFields){
+        cursoFields.classList.remove("hidden");
+        cursoFields.open = true;
+        setValue("quantityType","módulos");
+        if(!getValue("quantity")) setValue("quantity","10");
+        setValue("coverMode", getValue("coverMode") || "com-capa");
+      }
+
       updateSteps(type);
       atualizarStatusBasesEBD();
       atualizarStatusBasesApostila();
+      atualizarStatusBasesCurso();
       setStatus("Modo selecionado: " + getTypeLabel(type) + ".","ok");
     }
 
@@ -3284,6 +3369,9 @@
         ministry:getValue("ministry") || "Ministério não informado",
         depthLevel:getValue("depthLevel") || "profundo",
         coverMode:type === "sermao" || type === "estudo" ? "sem-capa" : (type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa")),
+        cursoTipo:getValue("cursoTipo") || "aluno",
+        cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
+        cursoObservacao:getValue("cursoObservacao") || "",
         extraNotes:getValue("extraNotes") || ""
       };
     }
@@ -3414,6 +3502,148 @@
       }catch(error){
         return {};
       }
+    }
+
+    function obterBaseCursoAluno(){
+      return localStorage.getItem(STORAGE_CURSO_ALUNO_BASE) || "";
+    }
+
+    function obterBaseCursoProfessor(){
+      return localStorage.getItem(STORAGE_CURSO_PROFESSOR_BASE) || "";
+    }
+
+    function obterBaseCursoApoio(){
+      return localStorage.getItem(STORAGE_CURSO_APOIO_BASE) || "";
+    }
+
+    function obterMetaCurso(chave){
+      try{
+        return JSON.parse(localStorage.getItem(chave) || "{}");
+      }catch(error){
+        return {};
+      }
+    }
+
+    function obterMetaCursoAluno(){
+      return obterMetaCurso(STORAGE_CURSO_ALUNO_META);
+    }
+
+    function obterMetaCursoProfessor(){
+      return obterMetaCurso(STORAGE_CURSO_PROFESSOR_META);
+    }
+
+    function obterMetaCursoApoio(){
+      return obterMetaCurso(STORAGE_CURSO_APOIO_META);
+    }
+
+    function salvarBaseCursoManual(chaveBase,chaveMeta,label,minimo){
+      if(!result.innerText.trim() || result.querySelector(".placeholder")){
+        setStatus(`Gere o ${label} antes de salvar como base.`,"error");
+        return;
+      }
+
+      const html = removerCapasEImagensPesadas(result.innerHTML);
+      const texto = extrairTextoDeHtml(html);
+
+      if(texto.length < minimo){
+        setStatus(`O material atual parece curto demais para servir como base de ${label}.`,"error");
+        return;
+      }
+
+      const base = buildBase();
+      const okBase = salvarSeguroLocalStorage(chaveBase,html);
+      const okMeta = salvarSeguroLocalStorage(chaveMeta,JSON.stringify({
+        title:base.title,
+        theme:base.theme,
+        cursoTipo:base.cursoTipo,
+        cargaHoraria:base.cursoCargaHoraria,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length,
+        baseSemImagem:true
+      }));
+
+      atualizarStatusBasesCurso();
+
+      if(okBase && okMeta){
+        setStatus(`${label} salvo como base textual do curso.`,"ok");
+      }else{
+        setStatus(`Não foi possível salvar ${label}.`,"error");
+      }
+    }
+
+    function salvarBaseCursoAlunoManual(){
+      salvarBaseCursoManual(STORAGE_CURSO_ALUNO_BASE,STORAGE_CURSO_ALUNO_META,"Curso do Aluno",3000);
+    }
+
+    function salvarBaseCursoProfessorManual(){
+      salvarBaseCursoManual(STORAGE_CURSO_PROFESSOR_BASE,STORAGE_CURSO_PROFESSOR_META,"Manual do Professor",4000);
+    }
+
+    function salvarBaseCursoApoioManual(){
+      salvarBaseCursoManual(STORAGE_CURSO_APOIO_BASE,STORAGE_CURSO_APOIO_META,"Livro de Apoio do Professor",4000);
+    }
+
+    function salvarBaseCursoAutomatico(base,html){
+      if(!base || base.type !== "curso" || !html) return false;
+      if(!["aluno","professor","apoio-professor"].includes(base.cursoTipo)) return false;
+
+      const htmlSeguro = removerCapasEImagensPesadas(html);
+      const texto = extrairTextoDeHtml(htmlSeguro);
+      if(texto.length < 2500) return false;
+
+      let chaveBase = STORAGE_CURSO_ALUNO_BASE;
+      let chaveMeta = STORAGE_CURSO_ALUNO_META;
+      if(base.cursoTipo === "professor"){
+        chaveBase = STORAGE_CURSO_PROFESSOR_BASE;
+        chaveMeta = STORAGE_CURSO_PROFESSOR_META;
+      }
+      if(base.cursoTipo === "apoio-professor"){
+        chaveBase = STORAGE_CURSO_APOIO_BASE;
+        chaveMeta = STORAGE_CURSO_APOIO_META;
+      }
+
+      const okBase = salvarSeguroLocalStorage(chaveBase,htmlSeguro);
+      const okMeta = salvarSeguroLocalStorage(chaveMeta,JSON.stringify({
+        title:base.title,
+        theme:base.theme,
+        cursoTipo:base.cursoTipo,
+        cargaHoraria:base.cursoCargaHoraria,
+        savedAt:new Date().toISOString(),
+        tamanho:texto.length,
+        baseSemImagem:true
+      }));
+
+      atualizarStatusBasesCurso();
+      return okBase && okMeta;
+    }
+
+    function apagarBasesCurso(){
+      localStorage.removeItem(STORAGE_CURSO_ALUNO_BASE);
+      localStorage.removeItem(STORAGE_CURSO_ALUNO_META);
+      localStorage.removeItem(STORAGE_CURSO_PROFESSOR_BASE);
+      localStorage.removeItem(STORAGE_CURSO_PROFESSOR_META);
+      localStorage.removeItem(STORAGE_CURSO_APOIO_BASE);
+      localStorage.removeItem(STORAGE_CURSO_APOIO_META);
+      atualizarStatusBasesCurso();
+      setStatus("Bases do Curso apagadas.","ok");
+    }
+
+    function atualizarStatusBasesCurso(){
+      const atualizar = (statusEl,html,meta,label) => {
+        if(!statusEl) return;
+        if(!html){
+          statusEl.className = "status-mini warn";
+          statusEl.textContent = `${label}: base não salva.`;
+          return;
+        }
+        const texto = extrairTextoDeHtml(html);
+        statusEl.className = "status-mini ok";
+        statusEl.textContent = `${label}: base salva • ${meta.title || "sem título"} • ${texto.length.toLocaleString("pt-BR")} caracteres.`;
+      };
+
+      atualizar(baseCursoAlunoStatus,obterBaseCursoAluno(),obterMetaCursoAluno(),"Curso aluno");
+      atualizar(baseCursoProfessorStatus,obterBaseCursoProfessor(),obterMetaCursoProfessor(),"Curso professor");
+      atualizar(baseCursoApoioStatus,obterBaseCursoApoio(),obterMetaCursoApoio(),"Livro de apoio");
     }
 
     function salvarBaseAlunoManual(){
@@ -7519,16 +7749,172 @@ Seja completo, mas sem desperdiçar páginas.
       return !proibidos.some(p => texto.includes(p));
     }
 
+    function nomeTipoCurso(tipo){
+      const nomes = {
+        "aluno":"Apostila do Aluno",
+        "professor":"Manual do Professor",
+        "apoio-professor":"Livro de Apoio do Professor",
+        "divulgacao":"Material de Divulgação",
+        "certificado":"Certificado"
+      };
+      return nomes[tipo] || "Apostila do Aluno";
+    }
+
+    function contextoBasesCurso(base){
+      const aluno = obterBaseCursoAluno();
+      const professor = obterBaseCursoProfessor();
+      const apoio = obterBaseCursoApoio();
+      let partes = [];
+
+      if(base.cursoTipo === "professor"){
+        partes.push("BASE DA APOSTILA DO ALUNO PARA MANTER O MESMO CONTEÚDO CENTRAL:\n" + (aluno ? limitarTexto(extrairTextoDeHtml(aluno),18000) : "Não há base do aluno salva. Mesmo assim, crie o manual preservando o eixo do curso e avisando que o ideal é gerar/salvar a apostila do aluno antes."));
+      }
+
+      if(base.cursoTipo === "apoio-professor"){
+        partes.push("BASE DA APOSTILA DO ALUNO:\n" + (aluno ? limitarTexto(extrairTextoDeHtml(aluno),12000) : "Não há base do aluno salva."));
+        partes.push("BASE DO MANUAL DO PROFESSOR:\n" + (professor ? limitarTexto(extrairTextoDeHtml(professor),16000) : "Não há base do professor salva. O livro de apoio deve aprofundar sem contradizer a apostila do aluno."));
+      }
+
+      if(["divulgacao","certificado"].includes(base.cursoTipo)){
+        if(aluno) partes.push("RESUMO DA APOSTILA DO ALUNO:\n" + limitarTexto(extrairTextoDeHtml(aluno),9000));
+        if(professor) partes.push("RESUMO DO MANUAL DO PROFESSOR:\n" + limitarTexto(extrairTextoDeHtml(professor),7000));
+        if(apoio) partes.push("RESUMO DO LIVRO DE APOIO:\n" + limitarTexto(extrairTextoDeHtml(apoio),7000));
+      }
+
+      return partes.length ? partes.join("\n\n---\n\n") : "Sem bases salvas ainda.";
+    }
+
+    function regrasTipoCurso(base){
+      if(base.cursoTipo === "aluno"){
+        return `
+TIPO DE MATERIAL: APOSTILA DO ALUNO.
+- Gere material para o aluno estudar e acompanhar as aulas.
+- Não inclua respostas completas nas atividades e perguntas.
+- Inclua espaços de resposta/anotações quando adequado.
+- Use linguagem limpa, didática, contínua e organizada.
+- O aluno deve receber conteúdo suficiente para aprender, mas sem o manual de condução do professor.`.trim();
+      }
+
+      if(base.cursoTipo === "professor"){
+        return `
+TIPO DE MATERIAL: MANUAL DO PROFESSOR.
+- Use a apostila do aluno como base central.
+- Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base.
+- Acrescente respostas, orientações didáticas, plano de aula, sugestões de explicação, exemplos extras, alertas éticos, como conduzir a turma e critérios de avaliação.
+- Não crie um curso diferente do aluno; aprofunde e oriente o professor.`.trim();
+      }
+
+      if(base.cursoTipo === "apoio-professor"){
+        return `
+TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
+- Use a apostila do aluno e o manual do professor como base.
+- Aprofunde os temas com conteúdo bíblico, pastoral, ético e prático.
+- Inclua estudos complementares, casos práticos, modelos de atendimento, leituras orientadas, alertas ministeriais e aprofundamentos.
+- Não substitua a apostila nem o manual; sirva como material de preparo e aprofundamento.`.trim();
+      }
+
+      if(base.cursoTipo === "divulgacao"){
+        return `
+TIPO DE MATERIAL: DIVULGAÇÃO DO CURSO.
+- Gere textos para WhatsApp, Instagram, cartaz, convite, descrição curta, descrição longa, chamada para inscrição, público-alvo, benefícios e módulos.
+- Não gere os módulos completos.
+- Não escreva como apostila; escreva como divulgação profissional, clara e chamativa.`.trim();
+      }
+
+      if(base.cursoTipo === "certificado"){
+        return `
+TIPO DE MATERIAL: CERTIFICADO.
+- Gere um modelo de certificado simbólico em texto/HTML.
+- Inclua nome do curso, carga horária, campo para nome do aluno, data, ministério/editora, professor/responsável e assinatura.
+- Não prometa validade legal automática nem reconhecimento oficial.`.trim();
+      }
+
+      return "TIPO DE MATERIAL: APOSTILA DO ALUNO.";
+    }
+
+    function blocoPerguntasCursoFallback(base){
+      if(base.cursoTipo === "aluno"){
+        return `
+          <div class="course-section">
+            <h3>10. Perguntas de revisão</h3>
+            <ol>
+              <li><strong>Pergunta:</strong> Qual é o papel principal do capelão nesta área?<div class="student-space">Resposta do aluno:</div></li>
+              <li><strong>Pergunta:</strong> Por que o capelão precisa conhecer seus limites?<div class="student-space">Resposta do aluno:</div></li>
+              <li><strong>Pergunta:</strong> Que postura deve marcar o atendimento?<div class="student-space">Resposta do aluno:</div></li>
+            </ol>
+          </div>`;
+      }
+
+      return `
+        <div class="course-section">
+          <h3>10. Perguntas de revisão com respostas</h3>
+          <ol>
+            <li><strong>Pergunta:</strong> Qual é o papel principal do capelão nesta área?<br><strong>Resposta:</strong> Oferecer presença, escuta, apoio espiritual, oração respeitosa e encaminhamento responsável quando necessário.</li>
+            <li><strong>Pergunta:</strong> Por que o capelão precisa conhecer seus limites?<br><strong>Resposta:</strong> Porque a capelania não substitui áreas profissionais e deve proteger a pessoa atendida, o ambiente e o próprio capelão.</li>
+            <li><strong>Pergunta:</strong> Que postura deve marcar o atendimento?<br><strong>Resposta:</strong> Empatia, discrição, prudência, respeito, maturidade espiritual e fidelidade bíblica.</li>
+          </ol>
+        </div>`;
+    }
+
+    function gerarDivulgacaoCursoFallback(base,modulos){
+      return `<div class="doc">
+        ${renderPage(`
+          <div class="course-clean-page">
+            <div class="course-cover-box"><h1>${escapeHtml(base.title)}</h1><p>${escapeHtml(base.subtitle)}</p></div>
+            <div class="course-section"><h2>Texto curto para WhatsApp</h2>${paragraph(`Está aberta a inscrição para o ${base.title}. Um curso bíblico, pastoral e prático para quem deseja servir pessoas em momentos de dor, crise e vulnerabilidade com amor, ética e responsabilidade cristã.`)}</div>
+            <div class="course-section"><h2>Descrição completa</h2>${paragraph(`O ${base.title} foi preparado para cristãos, líderes, obreiros e voluntários que desejam compreender a capelania como ministério de presença, escuta, acolhimento, oração e orientação espiritual responsável. O curso aborda bases bíblicas, ética, limites de atuação e áreas práticas de serviço.`)}</div>
+            <div class="course-section"><h2>Módulos do curso</h2>${orderedList(modulos.map((m,i)=>`Módulo ${i+1} — ${m.titulo}`))}</div>
+            <div class="course-section"><h2>Público-alvo</h2>${paragraph(base.targetAudience)}</div>
+            <div class="course-section"><h2>Chamada para inscrição</h2>${paragraph(`Inscreva-se e prepare-se para servir com amor, maturidade espiritual, escuta responsável e sabedoria bíblica.`)}</div>
+          </div>
+        `,"course-page intro-page")}
+      </div>`;
+    }
+
+    function gerarCertificadoCursoFallback(base){
+      return `<div class="doc">
+        ${renderPage(`
+          <div class="course-clean-page">
+            <div class="course-cover-box">
+              <h1>Certificado de Conclusão</h1>
+              <p>${escapeHtml(base.title)}</p>
+            </div>
+            <div class="course-section" style="text-align:center;">
+              <h2>Certificamos que</h2>
+              <p class="text" style="font-size:24px;text-align:center;"><strong>________________________________________</strong></p>
+              ${paragraph(`concluiu o curso ${base.title}, com carga horária de ${base.cursoCargaHoraria}, dedicado à formação cristã para serviço, cuidado, escuta, presença e responsabilidade ética.`)}
+              ${paragraph(`Ministério/Editora: ${base.ministry}`)}
+              ${paragraph(`Responsável: ${base.author}`)}
+              ${paragraph("Data: ____ / ____ / ______")}
+              ${paragraph("Assinatura: ________________________________________")}
+            </div>
+            <div class="course-section">
+              <h2>Observação</h2>
+              ${paragraph("Este certificado é simbólico e ministerial, não representando autorização profissional, credenciamento civil ou validade legal automática.")}
+            </div>
+          </div>
+        `,"course-page intro-page")}
+      </div>`;
+    }
+
     function promptCursoApresentacao(base,modulos){
       return `
-Você é o VERBO IA gerando um CURSO cristão completo em HTML interno.
+Você é o VERBO IA gerando um material de CURSO cristão em HTML interno.
 
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA DO USUÁRIO: ${base.theme}
 PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
-OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
 
 MÓDULOS DO CURSO:
 ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
@@ -7539,7 +7925,7 @@ NÃO escreva instruções como conteúdo.
 NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um curso” ou frases parecidas.
 NÃO faça sermão, devocional ou revista EBD.
 
-Crie a abertura do curso como apostila limpa, com estas seções:
+Crie a abertura do material como apostila limpa, com estas seções:
 <h1 class="page-title">Título do curso</h1>
 <p class="subtitle">Subtítulo</p>
 <div class="course-section"><h2>Apresentação do curso</h2>...</div>
@@ -7548,15 +7934,23 @@ Crie a abertura do curso como apostila limpa, com estas seções:
 <div class="course-section"><h2>Metodologia</h2>...</div>
 <div class="course-section"><h2>Sumário dos módulos</h2><ol>...</ol></div>
 
+Se for Manual do Professor, inclua também: Como usar este manual.
+Se for Livro de Apoio, inclua também: Como usar este apoio no preparo das aulas.
 Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pastoral/didática.
       `.trim();
     }
 
     function promptCursoModulo(base,modulo,numero,total){
+      const revisao = base.cursoTipo === "aluno"
+        ? "Perguntas de revisão sem respostas, com espaço para o aluno responder."
+        : "Perguntas de revisão com respostas e orientação de correção.";
+
       return `
 Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão em HTML interno.
 
 CURSO: ${base.title}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA GERAL DO CURSO: ${base.theme}
 MÓDULO: ${modulo.titulo}
 TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
@@ -7564,7 +7958,13 @@ FOCO DO MÓDULO: ${modulo.foco}
 DORES/NECESSIDADES DO AMBIENTE: ${modulo.dores}
 PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
-OBSERVAÇÕES DO USUÁRIO: ${base.extraNotes || "nenhuma"}
+OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
@@ -7590,21 +7990,31 @@ Estruture exatamente assim:
 <div class="course-section"><h3>7. Como abordar a pessoa em sofrimento</h3><p>...</p></div>
 <div class="course-section"><h3>8. Exemplo prático de atendimento</h3><p>...</p></div>
 <div class="course-section"><h3>9. Atividade prática</h3><p>...</p></div>
-<div class="course-section"><h3>10. Perguntas de revisão com respostas</h3><ol><li><strong>Pergunta:</strong> ...<br><strong>Resposta:</strong> ...</li></ol></div>
+<div class="course-section"><h3>10. ${revisao}</h3><ol>...</ol></div>
 <div class="course-section"><h3>Resumo do módulo</h3><p>...</p></div>
 
+Se for Manual do Professor, acrescente dentro do módulo: orientação didática, plano de aula, respostas e como conduzir a discussão.
+Se for Livro de Apoio, aprofunde o conteúdo com estudos complementares, casos práticos e modelos úteis.
 Escreva com profundidade. O módulo deve ter conteúdo próprio e aplicável.
       `.trim();
     }
 
     function promptCursoFechamento(base,modulos){
       return `
-Gere o fechamento final do curso cristão em HTML interno.
+Gere o fechamento final do material de curso cristão em HTML interno.
 
 CURSO: ${base.title}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA: ${base.theme}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 MÓDULOS:
 ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
 
 Regras:
 - HTML interno apenas.
@@ -7613,13 +8023,18 @@ Regras:
 - Não faça sermão.
 - Não invente validade legal de certificado.
 
-Inclua:
+Inclua conforme o tipo do material:
+- Apostila do Aluno: conclusão geral, atividades finais, avaliação final sem respostas e certificado simbólico em texto.
+- Manual do Professor: conclusão geral, gabarito, critérios de avaliação, orientação para encerramento e condução da turma.
+- Livro de Apoio: conclusão pastoral, leituras orientadas, modelos práticos, estudos complementares e checklist de preparo.
+
+Estrutura sugerida:
 <div class="course-section"><h2>Conclusão geral</h2>...</div>
 <div class="course-section"><h2>Código de conduta do capelão cristão</h2><ol>...</ol></div>
 <div class="course-section"><h2>Roteiro simples de visita capelã</h2>...</div>
 <div class="course-section"><h2>Modelo simples de ficha de atendimento</h2>...</div>
 <div class="course-section"><h2>Modelo de abordagem inicial</h2>...</div>
-<div class="course-section"><h2>Avaliação final com respostas</h2><ol>...</ol></div>
+<div class="course-section"><h2>Avaliação final</h2><ol>...</ol></div>
 <div class="course-section"><h2>Certificado simbólico de conclusão</h2>...</div>
       `.trim();
     }
@@ -7704,14 +8119,7 @@ Inclua:
           ${paragraph(`Escreva um roteiro de visita de cinco minutos para esta área. Inclua apresentação, escuta, uma pergunta aberta, uma palavra bíblica breve, oração opcional e encaminhamento responsável se necessário.`)}
         </div>
 
-        <div class="course-section">
-          <h3>10. Perguntas de revisão com respostas</h3>
-          <ol>
-            <li><strong>Pergunta:</strong> Qual é o papel principal do capelão nesta área?<br><strong>Resposta:</strong> Oferecer presença, escuta, apoio espiritual, oração respeitosa e encaminhamento responsável quando necessário.</li>
-            <li><strong>Pergunta:</strong> Por que o capelão precisa conhecer seus limites?<br><strong>Resposta:</strong> Porque a capelania não substitui áreas profissionais e deve proteger a pessoa atendida, o ambiente e o próprio capelão.</li>
-            <li><strong>Pergunta:</strong> Que postura deve marcar o atendimento?<br><strong>Resposta:</strong> Empatia, discrição, prudência, respeito, maturidade espiritual e fidelidade bíblica.</li>
-          </ol>
-        </div>
+        ${blocoPerguntasCursoFallback(base)}
 
         <div class="course-section">
           <h3>Resumo do módulo</h3>
@@ -7723,6 +8131,23 @@ Inclua:
     async function generateCourseAsync(base){
       manualPlaceholdersCount = 0;
       const modulos = extrairModulosCurso(base);
+
+      if(base.cursoTipo === "divulgacao"){
+        setStep(0,"Gerando material de divulgação do curso...");
+        const htmlDivulgacao = gerarDivulgacaoCursoFallback(base,modulos);
+        renderGenerated(htmlDivulgacao);
+        finishSteps("Material de divulgação do curso gerado com sucesso.");
+        return;
+      }
+
+      if(base.cursoTipo === "certificado"){
+        setStep(0,"Gerando certificado do curso...");
+        const htmlCertificado = gerarCertificadoCursoFallback(base);
+        renderGenerated(htmlCertificado);
+        finishSteps("Certificado do curso gerado com sucesso.");
+        return;
+      }
+
       let html = `<div class="doc">`;
 
       setStep(0,"Gerando apresentação limpa do curso...");
@@ -7736,7 +8161,7 @@ Inclua:
         apresentacao = `
           <div class="course-cover-box">
             <h1>${escapeHtml(base.title)}</h1>
-            <p>${escapeHtml(base.subtitle)}</p>
+            <p>${escapeHtml(nomeTipoCurso(base.cursoTipo))} • ${escapeHtml(base.subtitle)}</p>
           </div>
           <div class="course-section">
             <h2>Apresentação do curso</h2>
@@ -7831,6 +8256,7 @@ Inclua:
       html += renderPage(`<div class="course-clean-page">${fechamento}</div>`,"course-page summary-page");
       html += `</div>`;
       renderGenerated(html);
+      salvarBaseCursoAutomatico(base,html);
 
       if(manualPlaceholdersCount > 0){
         finishSteps(`Curso finalizado. Algumas partes usaram o modelo interno seguro porque a IA não entregou conteúdo adequado.`);
@@ -8457,9 +8883,22 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     btnClearApostilaAlunoBase.addEventListener("click",apagarBaseApostilaAluno);
     btnClearApostilaProfessorBase.addEventListener("click",apagarBaseApostilaProfessor);
 
+    if(btnSaveCursoAlunoBase) btnSaveCursoAlunoBase.addEventListener("click",salvarBaseCursoAlunoManual);
+    if(btnSaveCursoProfessorBase) btnSaveCursoProfessorBase.addEventListener("click",salvarBaseCursoProfessorManual);
+    if(btnSaveCursoApoioBase) btnSaveCursoApoioBase.addEventListener("click",salvarBaseCursoApoioManual);
+    if(btnClearCursoBases) btnClearCursoBases.addEventListener("click",apagarBasesCurso);
+
+    if(cursoTipo){
+      cursoTipo.addEventListener("change",() => {
+        const label = cursoTipo.options[cursoTipo.selectedIndex]?.textContent || "material do curso";
+        setStatus("Tipo de curso selecionado: " + label + ".","ok");
+      });
+    }
+
     updateReservedState();
     atualizarStatusBasesEBD();
     atualizarStatusBasesApostila();
+    atualizarStatusBasesCurso();
     setContentType("sermao");
   </script>
 </body>
