@@ -620,31 +620,88 @@
       margin-bottom:7px;
     }
 
+    /*
+      VISUAL DE PÚLPITO PARA SERMÃO
+      Mais legível no tablet, menos texto grudado e frases fortes destacadas.
+    */
+
+    .sermon-scripture,
+    .sermon-intro,
+    .sermon-point,
+    .sermon-conclusion,
+    .sermon-prayer{
+      font-size:18px;
+    }
+
+    .sermon-scripture .text,
+    .sermon-intro .text,
+    .sermon-point .text,
+    .sermon-conclusion .text,
+    .sermon-prayer .text,
+    .sermon-application-inside .text{
+      font-size:18px;
+      line-height:1.82;
+      text-align:left;
+      margin-bottom:18px;
+      letter-spacing:.1px;
+    }
+
+    .sermon-scripture strong,
+    .sermon-intro strong,
+    .sermon-point strong,
+    .sermon-conclusion strong,
+    .sermon-prayer strong,
+    .sermon-application-inside strong,
+    .sermon-impact{
+      font-weight:900;
+      color:#5b331f;
+      background:#fff2cf;
+      border-left:6px solid #b88700;
+      border-radius:12px;
+      padding:4px 8px;
+      display:inline;
+      box-decoration-break:clone;
+      -webkit-box-decoration-break:clone;
+    }
+
+    .sermon-impact-block{
+      background:linear-gradient(180deg,#fff8e5,#fff0c8);
+      border:1px solid #dfbd69;
+      border-left:8px solid #b88700;
+      border-radius:16px;
+      padding:13px 15px;
+      margin:16px 0;
+      font-size:20px;
+      line-height:1.55;
+      font-weight:900;
+      color:#55341b;
+    }
+
     .sermon-scripture{
       background:linear-gradient(180deg,#fffaf0,#fff0cf);
       border:1px solid #d1a748;
       border-left:8px solid #b88700;
       border-radius:18px;
-      padding:18px;
-      margin-bottom:16px;
+      padding:20px;
+      margin-bottom:18px;
     }
 
     .sermon-scripture h3{
-      margin:0 0 12px;
+      margin:0 0 14px;
       color:#704915;
-      font-size:24px;
+      font-size:25px;
     }
 
     .sermon-scripture .ref{
       display:inline-block;
-      margin:0 0 10px;
-      padding:7px 12px;
+      margin:0 0 12px;
+      padding:8px 13px;
       border-radius:999px;
       background:#fff;
       border:1px solid #d8b15b;
       color:#67420a;
-      font-size:13px;
-      font-weight:800;
+      font-size:14px;
+      font-weight:900;
     }
 
     .sermon-intro{
@@ -652,32 +709,33 @@
       border:1px solid #e0c8ad;
       border-left:8px solid #7a4b30;
       border-radius:18px;
-      padding:20px;
+      padding:22px;
       margin-bottom:18px;
     }
 
     .sermon-intro h3{
-      margin:0 0 12px;
+      margin:0 0 15px;
       color:#5b331f;
-      font-size:26px;
+      font-size:27px;
     }
 
     .sermon-point{
       border-left:8px solid #7a4b30;
       background:linear-gradient(180deg,#ffffff,#fff9f2);
       border-radius:0 18px 18px 0;
-      padding:18px;
-      margin-bottom:18px;
+      padding:22px;
+      margin-bottom:20px;
       border-top:1px solid #ead9c8;
       border-right:1px solid #ead9c8;
       border-bottom:1px solid #ead9c8;
     }
 
     .sermon-point h3{
-      font-size:25px;
-      margin:0 0 12px;
+      font-size:27px;
+      margin:0 0 16px;
       color:#5b331f;
       padding-top:2px;
+      line-height:1.22;
     }
 
     .sermon-application-inside{
@@ -685,14 +743,14 @@
       border:1px solid #9fd1ad;
       border-left:7px solid #238b45;
       border-radius:16px;
-      padding:14px;
-      margin-top:13px;
+      padding:16px;
+      margin-top:16px;
     }
 
     .sermon-application-inside h4{
-      margin:0 0 8px;
+      margin:0 0 10px;
       color:#1f6f38;
-      font-size:18px;
+      font-size:20px;
     }
 
     .sermon-conclusion{
@@ -700,14 +758,29 @@
       border:1px solid #c94a4a;
       border-left:8px solid #b92424;
       border-radius:18px;
-      padding:20px;
-      margin-bottom:16px;
+      padding:22px;
+      margin-bottom:18px;
     }
 
     .sermon-conclusion h3{
-      margin:0 0 12px;
+      margin:0 0 15px;
       color:#842020;
-      font-size:26px;
+      font-size:28px;
+    }
+
+    .sermon-prayer{
+      background:linear-gradient(180deg,#fffaf0,#fff1d1);
+      border:1px solid #d1a748;
+      border-left:7px solid #b88700;
+      border-radius:18px;
+      padding:20px;
+      margin-bottom:14px;
+    }
+
+    .sermon-prayer h4{
+      margin:0 0 12px;
+      color:#704915;
+      font-size:23px;
     }
 
     .mini-grid{
@@ -1404,6 +1477,26 @@
       .placeholder{
         min-height:380px;
       }
+
+      .sermon-scripture .text,
+      .sermon-intro .text,
+      .sermon-point .text,
+      .sermon-conclusion .text,
+      .sermon-prayer .text,
+      .sermon-application-inside .text{
+        font-size:18.5px;
+        line-height:1.9;
+      }
+
+      .sermon-point h3,
+      .sermon-conclusion h3,
+      .sermon-intro h3{
+        font-size:25px;
+      }
+
+      .sermon-impact-block{
+        font-size:19px;
+      }
     }
 
     @media print{
@@ -1510,6 +1603,7 @@
       .sermon-intro,
       .sermon-point,
       .sermon-conclusion,
+      .sermon-prayer,
       .mini-card,
       .summary-box,
       .knowledge-box,
@@ -1531,6 +1625,24 @@
         line-height:1.43 !important;
       }
 
+      .sermon-scripture .text,
+      .sermon-intro .text,
+      .sermon-point .text,
+      .sermon-conclusion .text,
+      .sermon-prayer .text,
+      .sermon-application-inside .text{
+        font-size:14.8px !important;
+        line-height:1.56 !important;
+        margin-bottom:10px !important;
+      }
+
+      .sermon-impact-block{
+        font-size:16px !important;
+        line-height:1.4 !important;
+        padding:9px 11px !important;
+        margin:9px 0 !important;
+      }
+
       .block,
       .subtopic,
       .knowledge-box,
@@ -1542,6 +1654,7 @@
       .sermon-intro,
       .sermon-point,
       .sermon-conclusion,
+      .sermon-prayer,
       .memory-verse,
       .lesson-synthesis,
       .daily-reading,
@@ -1649,7 +1762,7 @@
   <div class="app-shell">
     <header class="app-header">
       <h1>VERBO IA</h1>
-      <p>Sermão por tipo: temático, expositivo e textual. Revista EBD preservada.</p>
+      <p>Sermão com ordem travada, visual de púlpito e Revista EBD preservada.</p>
     </header>
 
     <div class="layout">
@@ -1798,7 +1911,7 @@
           <summary>Opções do sermão</summary>
           <div class="accordion-body">
             <div class="sermon-note">
-              <strong>v10.4.8:</strong> o sermão não terá capa. Cada tipo possui estrutura própria: temático, expositivo ou textual.
+              <strong>v10.4.9:</strong> o sermão não terá capa, terá ordem travada e visual mais legível para ministrar no tablet.
             </div>
 
             <div class="grid-3">
@@ -1848,8 +1961,8 @@
               <div class="field">
                 <label for="sermonLength">Tamanho</label>
                 <select id="sermonLength">
-                  <option value="normal">Normal — 25 a 35 minutos</option>
-                  <option value="expandido" selected>Expandido — 35 a 50 minutos</option>
+                  <option value="normal" selected>Normal — 25 a 35 minutos</option>
+                  <option value="expandido">Expandido — 35 a 45 minutos</option>
                   <option value="curto">Curto — 15 a 25 minutos</option>
                 </select>
               </div>
@@ -3280,7 +3393,7 @@ Entregue uma versão menor.
 
 Regras:
 - Escreva apenas o essencial.
-- Se for tópico de sermão, faça 1 parágrafo bíblico, 1 argumento e 1 aplicação.
+- Se for tópico de sermão, faça 1 parágrafo bíblico, 1 frase forte e 1 aplicação.
 - Se for introdução, faça 1 parágrafo forte.
 - Se for conclusão, faça 1 fechamento com apelo.
 - Não mencione erro.
@@ -3428,20 +3541,20 @@ Etapa: ${etapa}
         type:getValue("sermonType") || "temático",
         appeal:getValue("sermonAppeal") || "com fechamento e apelo forte para ação",
         style:getValue("sermonStyle") || "bíblico, pastoral, pentecostal e profundo",
-        length:getValue("sermonLength") || "expandido"
+        length:getValue("sermonLength") || "normal"
       };
     }
 
     function descricaoTamanhoSermon(info){
       if(info.length === "curto"){
-        return "Sermão curto, pronto para aproximadamente 15 a 25 minutos. Seja direto, claro e forte.";
+        return "Sermão curto, pronto para aproximadamente 15 a 25 minutos. Seja direto, forte, com parágrafos curtos.";
       }
 
-      if(info.length === "normal"){
-        return "Sermão normal, pronto para aproximadamente 25 a 35 minutos. Desenvolva bem os pontos sem excesso.";
+      if(info.length === "expandido"){
+        return "Sermão expandido, pronto para aproximadamente 35 a 45 minutos. Desenvolva com profundidade, mas sem virar livro. Use parágrafos curtos e frases fortes.";
       }
 
-      return "Sermão expandido, pronto para aproximadamente 35 a 50 minutos. Desenvolva com profundidade bíblica, argumentos fortes e aplicações dentro dos tópicos.";
+      return "Sermão normal, pronto para aproximadamente 25 a 35 minutos. Desenvolva bem os pontos, com profundidade controlada, parágrafos curtos e boa leitura no tablet.";
     }
 
     function descricaoTipoSermon(info){
@@ -3535,6 +3648,7 @@ REGRAS ABSOLUTAS:
 - A aplicação prática deve estar dentro de cada tópico, bloco ou divisão.
 - Depois do último tópico/bloco/divisão, ir direto para a conclusão.
 - A conclusão deve ser fechamento + apelo para ação.
+- A oração final só pode aparecer no final do sermão.
 - Não repetir o prompt do usuário dentro do sermão.
 - Não escrever “desenvolva este ponto”.
 - Não entregar esboço vazio.
@@ -3546,6 +3660,11 @@ REGRAS ABSOLUTAS:
 - Não inventar citação de autor.
 - Não copiar conteúdo de nenhum pregador.
 - Linguagem bíblica, pastoral, pentecostal, clara, profunda e pregável.
+- Use parágrafos curtos.
+- Use frases fortes em negrito com <strong>.
+- Use pelo menos uma frase de impacto em cada tópico.
+- Não alongar desnecessariamente.
+- Evite texto muito grudado.
 - Entregue somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
 
 GUIA DE REFERÊNCIAS BÍBLICAS:
@@ -3571,7 +3690,7 @@ Use HTML exatamente neste estilo:
   <h3>Texto Bíblico Base</h3>
   <span class="ref">REFERÊNCIA</span>
   <p class="text">TEXTO BÍBLICO ESCRITO</p>
-  <p class="text">Frase de transição...</p>
+  <div class="sermon-impact-block">Frase forte de transição...</div>
 </div>
 
 REGRAS:
@@ -3579,6 +3698,8 @@ REGRAS:
 - Não criar imagem.
 - Não criar direção homilética.
 - Não começar com visual de capa.
+- Não escrever conclusão.
+- Não escrever oração.
 - Se houver vários textos bíblicos, escreva os principais de forma fiel e clara.
 - Não invente texto bíblico.
 - Se não souber o texto completo, escreva uma seleção fiel e reverente dos versículos principais.
@@ -3621,11 +3742,11 @@ Como é sermão temático, a introdução deve apresentar:
 
 ETAPA: INTRODUÇÃO DO SERMÃO
 
-Crie uma introdução profunda, expandida e envolvente.
+Crie uma introdução profunda, envolvente e controlada.
 
 A introdução deve:
 - prender a atenção da igreja;
-- não ser curta nem genérica;
+- não ser genérica;
 - apresentar a necessidade espiritual do sermão;
 - conectar o coração das pessoas com o texto bíblico;
 - preparar a progressão da mensagem;
@@ -3635,18 +3756,42 @@ ${extraTematico}
 ${extraExpositivo}
 ${extraTextual}
 
-Use HTML:
-<div class="sermon-intro"><h3>Introdução</h3>...</div>
+FORMATO:
+<div class="sermon-intro">
+  <h3>Introdução</h3>
+  <p class="text">...</p>
+  <div class="sermon-impact-block">Frase forte em destaque...</div>
+  <p class="text">...</p>
+</div>
 
 REGRAS:
 - Não criar capa.
 - Não criar contexto separado fora da introdução.
+- Não escrever conclusão.
+- Não escrever apelo final.
+- Não escrever oração final.
 - Não repetir o prompt do usuário.
 - Não escrever “desenvolva”.
+- Use 3 a 5 parágrafos no máximo.
+- Parágrafos curtos.
 - Gere somente a introdução.`;
     }
 
     function promptTopicoSermon(base,info,indice){
+      const travas = `
+TRAVAS DE ORDEM:
+- Gere somente este tópico/bloco/divisão.
+- Não escreva conclusão.
+- Não escreva "Conclusão".
+- Não escreva "Conclusão e Apelo".
+- Não escreva "Apelo Final".
+- Não escreva "Oração Final".
+- Não escreva "Vamos orar".
+- Não antecipe o fechamento do sermão.
+- A conclusão será gerada somente depois de todos os tópicos.
+- A oração final será gerada somente no encerramento do sermão.
+      `.trim();
+
       if(info.type === "expositivo"){
         return `${montarPromptBaseSermon(base,info)}
 
@@ -3665,11 +3810,17 @@ Regras para sermão expositivo:
 - Não force ideia que não está no texto.
 - Não use versículo fora de contexto.
 - Não escreva “desenvolva este ponto”.
+- Use parágrafos curtos.
+- Use frase forte em destaque.
+- Conteúdo profundo, porém pregável no tablet.
+
+${travas}
 
 Use HTML:
 <div class="sermon-point">
   <h3>${indice}. Título baseado no bloco bíblico</h3>
   <p class="text">Explicação do texto...</p>
+  <div class="sermon-impact-block">Frase forte...</div>
   <p class="text">Lição do texto...</p>
   <div class="sermon-application-inside">
     <h4>Aplicação para a Igreja</h4>
@@ -3698,11 +3849,16 @@ Regras para sermão textual:
 - Coloque aplicação prática dentro da própria divisão.
 - Não escreva “desenvolva este ponto”.
 - Não repita o prompt do usuário.
+- Use parágrafos curtos.
+- Use frase forte em destaque.
+
+${travas}
 
 Use HTML:
 <div class="sermon-point">
   <h3>${indice}. Título tirado do próprio texto</h3>
   <p class="text">Explicação...</p>
+  <div class="sermon-impact-block">Frase forte...</div>
   <p class="text">Argumento...</p>
   <div class="sermon-application-inside">
     <h4>Aplicação para a Igreja</h4>
@@ -3729,16 +3885,22 @@ Regras para sermão temático:
 - Traga argumento consistente e profundo.
 - Coloque aplicação prática dentro do próprio tópico.
 - Use referências bíblicas coerentes com o assunto, se couber.
-- Inclua uma frase de transição ao final.
+- Inclua uma frase de transição curta ao final.
 - Não repita o que já foi dito.
 - Não escreva “desenvolva este ponto”.
 - Não copie o prompt do usuário.
 - Não entregue apenas esboço.
+- Use parágrafos curtos.
+- Use frase forte em destaque.
+- Conteúdo profundo, porém pregável no tablet.
+
+${travas}
 
 Use HTML:
 <div class="sermon-point">
   <h3>${indice}. Título do tópico</h3>
   <p class="text">Explicação bíblica...</p>
+  <div class="sermon-impact-block">Frase forte...</div>
   <p class="text">Argumento consistente...</p>
   <div class="sermon-application-inside">
     <h4>Aplicação para a Igreja</h4>
@@ -3769,13 +3931,22 @@ A conclusão deve:
 - ser forte, pastoral, espiritual e cristocêntrica.
 
 Use HTML:
-<div class="sermon-conclusion"><h3>Conclusão</h3>...</div>
+<div class="sermon-conclusion">
+  <h3>Conclusão e Apelo para Ação</h3>
+  <p class="text">...</p>
+  <div class="sermon-impact-block">Frase forte de apelo...</div>
+  <p class="text">...</p>
+</div>
 
 REGRAS:
+- Esta conclusão só aparece agora, depois dos tópicos.
 - Não criar seção “Aplicação Prática”.
 - Não criar seção “Apelo” separada.
 - O apelo deve estar dentro da conclusão.
+- Não escrever oração final aqui.
 - Não repetir o prompt do usuário.
+- Use 3 a 5 parágrafos no máximo.
+- Parágrafos curtos.
 - Gere somente a conclusão.`;
     }
 
@@ -3794,9 +3965,14 @@ A oração deve:
 - conduzir a igreja à dependência do Senhor.
 
 Use HTML:
-<div class="book-note"><h4>Oração Final</h4>...</div>
+<div class="sermon-prayer"><h4>Oração Final</h4>...</div>
 
-Gere somente a oração final.`;
+REGRAS:
+- Esta oração só aparece no final do sermão.
+- Não crie novo tópico.
+- Não crie nova conclusão.
+- Use 2 a 4 parágrafos curtos.
+- Gere somente a oração final.`;
     }
 
     function montarInfoRevista(base){
@@ -4936,6 +5112,78 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       return temp.innerHTML;
     }
 
+    function removerConclusaoEOracaoDeBlocoSermon(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      const palavrasBloqueadas = [
+        "conclusão",
+        "conclusão e apelo",
+        "apelo final",
+        "oração final",
+        "vamos orar",
+        "oremos"
+      ];
+
+      temp.querySelectorAll("h1,h2,h3,h4,strong").forEach(el => {
+        const txt = (el.innerText || "").toLowerCase().trim();
+
+        if(palavrasBloqueadas.some(p => txt.includes(p))){
+          let alvo = el.closest(".sermon-conclusion,.sermon-prayer,.block,.book-note,.summary-box,.sermon-point,.sermon-application-inside,div,p") || el;
+          alvo.remove();
+        }
+      });
+
+      let saida = temp.innerHTML;
+
+      const cortes = [
+        /<div[^>]*class=["'][^"']*sermon-conclusion[^"']*["'][\s\S]*?<\/div>/gi,
+        /<div[^>]*class=["'][^"']*sermon-prayer[^"']*["'][\s\S]*?<\/div>/gi,
+        /<h[1-4][^>]*>\s*Conclus[aã]o[\s\S]*$/gi,
+        /<h[1-4][^>]*>\s*Conclus[aã]o\s+e\s+Apelo[\s\S]*$/gi,
+        /<h[1-4][^>]*>\s*Ora[cç][aã]o\s+Final[\s\S]*$/gi,
+        /<p[^>]*>\s*Vamos\s+orar[\s\S]*$/gi,
+        /<p[^>]*>\s*Oremos[\s\S]*$/gi
+      ];
+
+      cortes.forEach(regex => {
+        saida = saida.replace(regex,"");
+      });
+
+      return saida.trim();
+    }
+
+    function reforcarVisualSermon(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      temp.querySelectorAll("p").forEach(p => {
+        if(!p.classList.contains("text")){
+          p.classList.add("text");
+        }
+      });
+
+      temp.querySelectorAll("b").forEach(b => {
+        const strong = document.createElement("strong");
+        strong.innerHTML = b.innerHTML;
+        b.replaceWith(strong);
+      });
+
+      return temp.innerHTML;
+    }
+
+    function limparBlocoSermonPorTipo(html,tipo = ""){
+      let out = String(html || "");
+
+      out = reforcarVisualSermon(out);
+
+      if(tipo === "topico"){
+        out = removerConclusaoEOracaoDeBlocoSermon(out);
+      }
+
+      return out.trim();
+    }
+
     function blocoManualVazio(tipo,titulo,subtitulo = ""){
       manualPlaceholdersCount++;
 
@@ -5015,7 +5263,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       `;
     }
 
-    async function gerarBlocoSermon(base,info,nome,prompt,minimo = 220,tipoFallback = "block"){
+    async function gerarBlocoSermon(base,info,nome,prompt,minimo = 220,tipoFallback = "block",tipoLimpeza = ""){
       const html = await chamarTextoIAComTentativas(
         [prompt],
         `Sermão — ${nome}`,
@@ -5023,12 +5271,16 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
           minimo,
           aceitarCurto:true,
           aceitarMuitoCurto:true,
-          minQuality:"sermão completo, bíblico, pregável, sem capa e pronto para ministração"
+          minQuality:"sermão completo, bíblico, pregável, sem capa, visual de púlpito e pronto para ministração"
         }
       );
 
       if(html){
-        return html;
+        const limpo = limparBlocoSermonPorTipo(html,tipoLimpeza);
+
+        if(limpo && extrairTextoDeHtml(limpo).trim().length > 60){
+          return limpo;
+        }
       }
 
       return blocoManualVazio(tipoFallback,nome);
@@ -5047,8 +5299,9 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
         info,
         "Texto Bíblico Base",
         promptTextoBiblicoSermon(base,info),
-        180,
-        "block"
+        160,
+        "block",
+        "inicio"
       );
 
       html += renderPage(textoBiblico,"sermon-scripture-page");
@@ -5056,15 +5309,16 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
 
       await pause(600);
 
-      setStep(1,"Gerando introdução profunda e envolvente...");
+      setStep(1,"Gerando introdução profunda e mais legível para o tablet...");
 
       const introducao = await gerarBlocoSermon(
         base,
         info,
         "Introdução",
         promptIntroducaoSermon(base,info),
-        info.length === "curto" ? 220 : 420,
-        "block"
+        info.length === "curto" ? 180 : 320,
+        "block",
+        "introducao"
       );
 
       html += renderPage(introducao,"sermon-intro-page");
@@ -5081,15 +5335,16 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
             ? `Divisão textual ${i}`
             : `Tópico ${i}`;
 
-        setStatus(`Gerando ${nomeBloco} de ${info.points} com aplicação dentro do próprio bloco...`);
+        setStatus(`Gerando ${nomeBloco} de ${info.points}. Conclusão e oração estão bloqueadas nesta etapa...`);
 
         const topico = await gerarBlocoSermon(
           base,
           info,
           nomeBloco,
           promptTopicoSermon(base,info,i),
-          info.length === "curto" ? 260 : 420,
-          "sermon-point"
+          info.length === "curto" ? 220 : 330,
+          "sermon-point",
+          "topico"
         );
 
         html += renderPage(topico,"sermon-point-page");
@@ -5098,15 +5353,16 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
         await pause(500);
       }
 
-      setStep(3,"Gerando conclusão com fechamento e apelo para ação...");
+      setStep(3,"Gerando conclusão final com apelo para ação...");
 
       const conclusao = await gerarBlocoSermon(
         base,
         info,
         "Conclusão",
         promptConclusaoSermon(base,info),
-        info.length === "curto" ? 180 : 300,
-        "sermon-conclusion"
+        info.length === "curto" ? 160 : 240,
+        "sermon-conclusion",
+        "conclusao"
       );
 
       html += renderPage(conclusao,"sermon-conclusion-page");
@@ -5114,15 +5370,16 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
 
       await pause(600);
 
-      setStep(4,"Gerando oração final...");
+      setStep(4,"Gerando oração final no encerramento do sermão...");
 
       const oracao = await gerarBlocoSermon(
         base,
         info,
         "Oração Final",
         promptOracaoSermon(base,info),
-        150,
-        "block"
+        130,
+        "block",
+        "oracao"
       );
 
       html += renderPage(oracao,"sermon-prayer-page");
@@ -5133,7 +5390,7 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, compo
       if(manualPlaceholdersCount > 0){
         finishSteps(`Sermão gerado com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente.`);
       }else{
-        finishSteps("Sermão gerado com sucesso: sem capa, com texto bíblico, introdução, tópicos/blocos com aplicação e conclusão com apelo.");
+        finishSteps("Sermão gerado com ordem correta: texto bíblico, introdução, tópicos com aplicação, conclusão e oração final.");
       }
     }
 
@@ -6155,7 +6412,7 @@ Seja completo, mas sem desperdiçar páginas.
       setValue("sermonType","temático");
       setValue("sermonAppeal","com fechamento e apelo forte para ação");
       setValue("sermonStyle","bíblico, pastoral, pentecostal e profundo");
-      setValue("sermonLength","expandido");
+      setValue("sermonLength","normal");
       setValue("revistaTipo","aluno");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
@@ -6237,7 +6494,7 @@ Seja completo, mas sem desperdiçar páginas.
       if(type === "sermao"){
         setValue("title","Cura Interior: Quando Deus Sara as Feridas da Alma");
         setValue("subtitle","Uma mensagem bíblica sobre restauração, perdão, libertação emocional e recomeço em Deus");
-        setValue("theme","Crie um sermão completo sobre cura interior. O sermão deve mostrar que Deus conhece as feridas escondidas, Jesus cura os quebrantados de coração, a cura passa pela entrega, pelo perdão e pela fé, e Deus transforma dor em testemunho. O sermão deve ser bíblico, pastoral, pentecostal, profundo, acolhedor e cristocêntrico.");
+        setValue("theme","Crie um sermão completo sobre cura interior. O sermão deve mostrar que Deus conhece as feridas escondidas, Jesus cura os quebrantados de coração, a cura passa pela entrega, pelo perdão e pela fé, e Deus transforma dor em testemunho. O sermão deve ser bíblico, pastoral, pentecostal, profundo, acolhedor e cristocêntrico. Use frases fortes em destaque, parágrafos curtos e visual bom para ministrar no tablet.");
         setValue("biblicalBase","Lucas 4.18-19; Isaías 61.1-3; Salmo 147.3; Mateus 11.28-30; João 8.36");
         setValue("targetAudience","Igreja em geral, pessoas feridas, famílias, novos convertidos e todos que precisam de restauração interior");
         setValue("tone","bíblico, pastoral, pentecostal, profundo, acolhedor, sensível, restaurador e cristocêntrico");
@@ -6247,9 +6504,9 @@ Seja completo, mas sem desperdiçar páginas.
         setValue("sermonType","temático");
         setValue("sermonAppeal","com fechamento e apelo forte para ação");
         setValue("sermonStyle","libertação, autoridade espiritual, bíblico e cristocêntrico");
-        setValue("sermonLength","expandido");
+        setValue("sermonLength","normal");
         setValue("coverMode","sem-capa");
-        setValue("extraNotes","O sermão deve começar com o Texto Bíblico Base escrito, depois introdução profunda e envolvente, depois tópicos progressivos com aplicação prática dentro de cada tópico. Não criar aplicação prática separada. Depois do último tópico, ir direto para a conclusão com fechamento e apelo para ação. Finalizar com oração.");
+        setValue("extraNotes","O sermão deve começar com o Texto Bíblico Base escrito, depois introdução profunda e envolvente, depois tópicos progressivos com aplicação prática dentro de cada tópico. Não criar aplicação prática separada. Não colocar conclusão nem oração dentro dos tópicos. Depois do último tópico, ir direto para a conclusão com fechamento e apelo para ação. Finalizar com oração.");
       }
 
       if(type === "revista"){
@@ -6290,14 +6547,20 @@ Seja completo, mas sem desperdiçar páginas.
         if(tipo === "expositivo"){
           regraSermon = `
 Como sermão expositivo, caminhe pelo texto bíblico base. Explique autor, contexto, destinatários, ocasião, propósito, sentido do texto, blocos de versículos, lições extraídas do texto e aplicações dentro de cada bloco.
+Não coloque conclusão nem oração dentro dos blocos.
+Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }else if(tipo === "textual"){
           regraSermon = `
 Como sermão textual, tire as divisões das palavras, expressões e ideias do próprio texto bíblico base. Cada divisão deve ter explicação, argumento e aplicação dentro dela.
+Não coloque conclusão nem oração dentro das divisões.
+Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }else{
           regraSermon = `
 Como sermão temático, desenvolva tópicos progressivos sobre o tema. Cada tópico deve ter explicação bíblica, argumento consistente e aplicação prática dentro do próprio tópico.
+Não coloque conclusão nem oração dentro dos tópicos.
+Use parágrafos curtos e frases fortes em destaque.
           `.trim();
         }
       }
