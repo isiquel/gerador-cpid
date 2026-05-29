@@ -394,7 +394,28 @@
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:9px;
-      margin:12px 0 8px;
+      margin:12px 0 12px;
+      position:sticky;
+      top:8px;
+      z-index:120;
+      background:rgba(255,250,244,.96);
+      border:1px solid var(--line);
+      box-shadow:0 12px 30px rgba(60,35,20,.16);
+      border-radius:22px;
+      padding:10px;
+      backdrop-filter:blur(10px);
+    }
+
+    .primary-actions::before{
+      content:"Ações principais";
+      grid-column:1 / -1;
+      display:block;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.7px;
+      text-transform:uppercase;
+      color:#7a5a47;
+      padding:0 4px 2px;
     }
 
     .primary-actions .btn-primary{
@@ -1676,6 +1697,7 @@
         left:10px;
         right:10px;
         bottom:10px;
+        top:auto;
         z-index:999;
         background:rgba(255,250,244,.96);
         border:1px solid var(--line);
@@ -1685,6 +1707,10 @@
         grid-template-columns:1.2fr 1fr 1fr;
         margin:0;
         backdrop-filter:blur(8px);
+      }
+
+      .primary-actions::before{
+        display:none;
       }
 
       .primary-actions .btn-primary{
