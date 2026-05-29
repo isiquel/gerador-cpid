@@ -9985,8 +9985,7 @@ REGRAS ABSOLUTAS:
 - HTML interno apenas, sem markdown.
 
 CAPÍTULOS DO LIVRO:
-${capitulos.map((c,i)=>`${i+1}. ${c}`).join("
-")}
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\\n")}
 
 Crie somente estas seções, nesta ordem:
 <div class="course-section"><h2>Apresentação</h2><p>Texto autoral, sensível e profundo, introduzindo a dor central do livro e a esperança bíblica.</p></div>
