@@ -8377,6 +8377,644 @@ Estrutura sugerida:
       }
     }
 
+
+
+    /* =========================================================
+       CURSO ROBUSTO v8 — formação de 40h com módulos aprofundados
+       Mantém Sermões, Revista EBD, Estudos, PDF, Mobile e Senha intactos.
+       Estas funções sobrescrevem apenas a lógica interna de CURSO.
+    ========================================================= */
+
+    function cursoEDeCapelaniaV8(base){
+      const t = `${base.title || ""} ${base.theme || ""} ${base.cursoObservacao || ""}`.toLowerCase();
+      return /capelan|capel[aã]o|hospitalar|prisional/.test(t);
+    }
+
+    function cursoEDeMissoesV8(base){
+      const t = `${base.title || ""} ${base.theme || ""} ${base.cursoObservacao || ""}`.toLowerCase();
+      return /miss(ões|oes|ao|ão)|evangelismo|evangeliza|mission[aá]rio|grande comiss[aã]o/.test(t);
+    }
+
+    function termosCursoV8(base){
+      if(cursoEDeCapelaniaV8(base)){
+        return {
+          campo:"área da capelania",
+          servo:"capelão cristão",
+          servico:"atendimento capelão",
+          acao:"cuidado espiritual, escuta, acolhimento, oração respeitosa e encaminhamento responsável",
+          limites:"ética, sigilo, limites institucionais e encaminhamento profissional"
+        };
+      }
+      if(cursoEDeMissoesV8(base)){
+        return {
+          campo:"área de missões e evangelismo",
+          servo:"missionário, evangelista, líder ou aluno em formação",
+          servico:"atuação missionária e evangelística",
+          acao:"oração, anúncio do evangelho, discipulado, envio, contribuição, cuidado com novos convertidos e serviço cristão",
+          limites:"fidelidade bíblica, ética, respeito às pessoas, responsabilidade pastoral e dependência do Espírito Santo"
+        };
+      }
+      return {
+        campo:"tema ministerial do módulo",
+        servo:"aluno, líder ou obreiro em formação",
+        servico:"atuação cristã prática",
+        acao:"ensino bíblico, aplicação ministerial, serviço cristão e responsabilidade espiritual",
+        limites:"ética, maturidade, responsabilidade e fidelidade bíblica"
+      };
+    }
+
+    function regrasTipoCurso(base){
+      const carga = base.cursoCargaHoraria || "40 horas";
+      if(base.cursoTipo === "aluno"){
+        return `
+TIPO DE MATERIAL: APOSTILA DO ALUNO.
+- Gere material para o aluno estudar e acompanhar as aulas.
+- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma unidade de aproximadamente 4 horas.
+- NÃO faça apostila resumida. Cada módulo deve ser robusto, com argumento bíblico, explicação teológica/pastoral, desenvolvimento prático, exemplos, estudo de caso, atividade e revisão.
+- Para 10 módulos/40h, mire uma apostila expandida, com densidade equivalente a 80 a 120 páginas quando salva em PDF.
+- Não inclua respostas completas nas atividades e perguntas; deixe espaço de resposta/anotações quando adequado.
+- Use linguagem limpa, didática, contínua e organizada.
+- O aluno deve receber conteúdo suficiente para aprender com profundidade, mas sem o manual de condução do professor.`.trim();
+      }
+
+      if(base.cursoTipo === "professor"){
+        return `
+TIPO DE MATERIAL: MANUAL DO PROFESSOR.
+- Use OBRIGATORIAMENTE a apostila do aluno como base central.
+- Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
+- NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo, mais didático e mais orientador que a apostila do aluno.
+- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma aula/formação de aproximadamente 4 horas.
+- Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula de 4 horas, roteiro de exposição, respostas comentadas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
+- Mire densidade equivalente a 120 a 160 páginas quando salvo em PDF, se o curso for de 40h.
+- O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
+- Não crie um curso diferente do aluno; amplie, explique, responda, oriente e aprofunde.`.trim();
+      }
+
+      if(base.cursoTipo === "apoio-professor"){
+        return `
+TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
+- Use OBRIGATORIAMENTE a apostila do aluno e o manual do professor como base.
+- O livro de apoio NÃO é uma repetição do manual do professor. Ele deve ser o material mais aprofundado do curso.
+- NÃO entregue conteúdo menor, igual ou parecido com o manual. Amplie cada módulo com estudo bíblico, teologia aplicada, contextualização histórica quando útil, estratégias ministeriais, estudos de caso, modelos práticos, leituras orientadas, checklists, alertas ministeriais e aprofundamentos.
+- Este curso tem carga horária de ${carga}. Para 10 módulos/40h, o livro de apoio deve funcionar como biblioteca de preparo do professor, com material além da aula.
+- Para cada módulo, acrescente seções novas que não aparecem no aluno: estudo complementar robusto, aprofundamento bíblico, argumento teológico, aplicações avançadas, caso prático comentado, erros comuns, perguntas de reflexão para o professor, roteiro de preparo e recursos de apoio.
+- Mire densidade equivalente a 150 a 220 páginas quando salvo em PDF, se o curso for de 40h.
+- Não substitua a apostila nem o manual; sirva como biblioteca de preparo, aprofundamento e ampliação.`.trim();
+      }
+
+      if(base.cursoTipo === "divulgacao"){
+        return `
+TIPO DE MATERIAL: DIVULGAÇÃO DO CURSO.
+- Gere textos para WhatsApp, Instagram, cartaz, convite, descrição curta, descrição longa, chamada para inscrição, público-alvo, benefícios e módulos.
+- Não gere os módulos completos.
+- Não escreva como apostila; escreva como divulgação profissional, clara e chamativa.`.trim();
+      }
+
+      if(base.cursoTipo === "certificado"){
+        return `
+TIPO DE MATERIAL: CERTIFICADO.
+- Gere um modelo de certificado simbólico em texto/HTML.
+- Inclua nome do curso, carga horária, campo para nome do aluno, data, ministério/editora, professor/responsável e assinatura.
+- Não prometa validade legal automática nem reconhecimento oficial.`.trim();
+      }
+
+      return "TIPO DE MATERIAL: APOSTILA DO ALUNO.";
+    }
+
+    function promptCursoApresentacao(base,modulos){
+      return `
+Você é o VERBO IA gerando um material de CURSO cristão em HTML interno.
+
+TÍTULO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
+TEMA DO USUÁRIO: ${base.theme}
+PÚBLICO-ALVO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
+
+MÓDULOS DO CURSO:
+${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
+
+ENTREGUE SOMENTE HTML INTERNO, sem markdown.
+NÃO repita o prompt do usuário.
+NÃO escreva instruções como conteúdo.
+NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um curso” ou frases parecidas.
+NÃO faça sermão, devocional ou revista EBD.
+
+Crie uma abertura robusta, com densidade de apostila de formação, usando estas seções:
+<h1 class="page-title">Título do curso</h1>
+<p class="subtitle">Subtítulo</p>
+<div class="course-section"><h2>Apresentação do curso</h2><p>Texto amplo, pastoral, didático e contextualizado.</p></div>
+<div class="course-section"><h2>Objetivos gerais</h2><ol>Inclua 8 a 12 objetivos.</ol></div>
+<div class="course-section"><h2>Justificativa bíblica e ministerial</h2><p>Explique por que este curso é necessário.</p></div>
+<div class="course-section"><h2>Perfil do participante</h2><p>Explique quem deve fazer o curso e qual postura se espera.</p></div>
+<div class="course-section"><h2>Metodologia e carga horária</h2><p>Explique a organização em módulos e a carga horária.</p></div>
+<div class="course-section"><h2>Como estudar este material</h2><ol>Oriente leitura, atividades, anotações e aplicação prática.</ol></div>
+<div class="course-section"><h2>Sumário dos módulos</h2><ol>Liste todos os módulos.</ol></div>
+
+Se for Manual do Professor, inclua também: Como usar este manual, como ele se relaciona com a apostila do aluno e por que ele traz respostas e orientação de ministração.
+Se for Livro de Apoio, inclua também: Como usar este apoio no preparo das aulas, deixando claro que ele é material extra de aprofundamento e não repetição do manual.
+Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pastoral/didática.
+      `.trim();
+    }
+
+    function promptCursoModulo(base,modulo,numero,total){
+      const termos = termosCursoV8(base);
+      const revisao = base.cursoTipo === "aluno"
+        ? "Perguntas de revisão sem respostas, com espaço para o aluno responder."
+        : "Perguntas de revisão com respostas comentadas e orientação de correção.";
+
+      const metaExtensao = base.cursoTipo === "professor"
+        ? "Este módulo do MANUAL DO PROFESSOR deve ser mais completo que o módulo do aluno: mantenha o conteúdo-base e acrescente roteiro de aula de 4 horas, respostas, comentários, didática, exemplos extras, alertas, dinâmica e avaliação. Não entregue menos que o aluno."
+        : base.cursoTipo === "apoio-professor"
+          ? "Este módulo do LIVRO DE APOIO deve ser o mais aprofundado: não repita o manual; amplie com estudo complementar robusto, argumento bíblico, argumento teológico, casos práticos, estratégias, modelos, checklists e leituras orientadas."
+          : "Este módulo da APOSTILA DO ALUNO deve ser completo, claro e didático, com profundidade suficiente para uma aula/formação de aproximadamente 4 horas, atividades e espaço de resposta.";
+
+      return `
+Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão em HTML interno.
+
+CURSO: ${base.title}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
+TEMA GERAL DO CURSO: ${base.theme}
+MÓDULO: ${modulo.titulo}
+TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
+FOCO DO MÓDULO: ${modulo.foco}
+DESAFIOS/NECESSIDADES: ${modulo.dores}
+PÚBLICO-ALVO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
+
+META DE QUALIDADE E EXTENSÃO:
+${metaExtensao}
+
+REGRAS ABSOLUTAS:
+- Entregue conteúdo final, não instruções.
+- Proibido repetir o prompt do usuário.
+- Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
+- Proibido deixar genérico.
+- Proibido fazer sermão, apelo ou devocional.
+- Não use muitos cards. Use visual de apostila limpa.
+- Não invente leis, normas, certificados ou autorização profissional.
+- HTML interno apenas.
+
+DENSIDADE OBRIGATÓRIA:
+- Este módulo representa aproximadamente 4 horas de formação.
+- Escreva explicações amplas, com parágrafos desenvolvidos.
+- Inclua argumento bíblico, argumento teológico/pastoral, exemplos práticos, estudo de caso, atividade e revisão.
+- Não entregue um módulo curto.
+
+Estruture exatamente assim:
+<div class="course-section"><h2>Módulo ${numero} — ${modulo.titulo}</h2><p>Introdução robusta com 3 a 5 parágrafos.</p></div>
+<div class="course-section"><h3>Objetivo do módulo</h3><p>...</p></div>
+<div class="course-section"><h3>Texto bíblico base</h3><p>Escreva a referência e explique a aplicação. Se souber o texto bíblico, inclua-o com responsabilidade.</p></div>
+<div class="course-section"><h3>1. Fundamento bíblico do módulo</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>2. Argumento teológico e pastoral</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>3. Explicação principal do tema</h3><p>...</p><p>...</p><p>...</p></div>
+<div class="course-section"><h3>4. Desafios reais encontrados nesta ${termos.campo}</h3><p>...</p><ul>...</ul></div>
+<div class="course-section"><h3>5. Postura correta do ${termos.servo}</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>6. Aplicações práticas</h3><ol>...</ol></div>
+<div class="course-section"><h3>7. Exemplos práticos de ${termos.servico}</h3><p>Inclua pelo menos 3 exemplos desenvolvidos.</p></div>
+<div class="course-section"><h3>8. Erros que devem ser evitados</h3><ul>...</ul></div>
+<div class="course-section"><h3>9. Limites, ética e responsabilidade</h3><p>Trate de ${termos.limites}.</p></div>
+<div class="course-section"><h3>10. Estudo de caso</h3><p>Apresente um caso prático e comente a resposta adequada.</p></div>
+<div class="course-section"><h3>11. Atividade prática</h3><p>...</p></div>
+<div class="course-section"><h3>12. ${revisao}</h3><ol>Inclua 5 a 8 perguntas.</ol></div>
+<div class="course-section"><h3>Resumo do módulo</h3><p>...</p></div>
+
+Se for Manual do Professor, acrescente dentro do módulo, obrigatoriamente:
+<div class="course-section"><h3>Orientação ao professor</h3><p>...</p></div>
+<div class="course-section"><h3>Plano de aula de 4 horas</h3><ol>Distribua tempo, exposição, debate, atividade e fechamento.</ol></div>
+<div class="course-section"><h3>Comentários para aprofundamento em sala</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Respostas comentadas e critérios de correção</h3><ol>...</ol></div>
+<div class="course-section"><h3>Dinâmica ou debate sugerido</h3><p>...</p></div>
+<div class="course-section"><h3>Alertas pastorais ao ministrar este módulo</h3><ul>...</ul></div>
+
+Se for Livro de Apoio, acrescente dentro do módulo, obrigatoriamente:
+<div class="course-section"><h3>Estudo complementar robusto</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Aprofundamento bíblico</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Aprofundamento teológico e ministerial</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Estudo de caso comentado</h3><p>...</p></div>
+<div class="course-section"><h3>Estratégias práticas para aplicação ministerial</h3><ol>...</ol></div>
+<div class="course-section"><h3>Modelo prático ou roteiro aplicável</h3><p>...</p></div>
+<div class="course-section"><h3>Checklist de preparo do professor</h3><ul>...</ul></div>
+<div class="course-section"><h3>Recursos e leituras orientadas</h3><p>...</p></div>
+
+Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicável.
+      `.trim();
+    }
+
+    function promptCursoFechamento(base,modulos){
+      return `
+Gere o fechamento final do material de curso cristão em HTML interno.
+
+CURSO: ${base.title}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
+TEMA: ${base.theme}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+MÓDULOS:
+${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
+
+Regras:
+- HTML interno apenas.
+- Não repita o prompt do usuário.
+- Não escreva instruções.
+- Não faça sermão.
+- Não invente validade legal de certificado.
+
+Inclua conforme o tipo do material:
+- Apostila do Aluno: conclusão geral, atividades finais, avaliação final sem respostas e certificado simbólico em texto.
+- Manual do Professor: conclusão geral, gabarito completo, critérios de avaliação, orientação para encerramento e condução da turma.
+- Livro de Apoio: conclusão pastoral, leituras orientadas, modelos práticos, estudos complementares e checklist de preparo.
+
+Estrutura sugerida:
+<div class="course-section"><h2>Conclusão geral</h2>...</div>
+<div class="course-section"><h2>Código de conduta cristão aplicado ao curso</h2><ol>...</ol></div>
+<div class="course-section"><h2>Orientações práticas finais</h2>...</div>
+<div class="course-section"><h2>Modelos práticos</h2>...</div>
+<div class="course-section"><h2>Avaliação final</h2><ol>Inclua 10 a 15 perguntas.</ol></div>
+<div class="course-section"><h2>Encerramento</h2>...</div>
+      `.trim();
+    }
+
+    function extrasManualProfessorFallback(base,modulo,numero){
+      if(base.cursoTipo !== "professor") return "";
+      return `
+        <div class="course-section">
+          <h3>Orientação ao professor</h3>
+          ${paragraph(`Ao ministrar este módulo, comece retomando o conteúdo da apostila do aluno e mostre como ele se aplica à realidade da turma. O professor deve conduzir a aula com clareza, evitando transformar a formação em sermão e promovendo participação, perguntas e reflexão prática.`)}
+          ${paragraph(`O professor deve preparar exemplos próprios, contextualizados e seguros, sem expor pessoas ou situações reais identificáveis. O objetivo é formar consciência bíblica, maturidade espiritual e habilidade prática.`)}
+        </div>
+        <div class="course-section">
+          <h3>Plano de aula de 4 horas</h3>
+          <ol class="list">
+            <li><strong>0h00–0h15:</strong> abertura, oração breve e apresentação dos objetivos.</li>
+            <li><strong>0h15–0h45:</strong> revisão do módulo anterior e conexão com o tema atual.</li>
+            <li><strong>0h45–1h40:</strong> exposição bíblica e fundamento teológico/pastoral.</li>
+            <li><strong>1h40–2h10:</strong> debate dirigido com perguntas da apostila.</li>
+            <li><strong>2h10–2h25:</strong> intervalo.</li>
+            <li><strong>2h25–3h15:</strong> exemplos práticos, estudo de caso e aplicação ministerial.</li>
+            <li><strong>3h15–3h45:</strong> atividade em grupo ou simulação supervisionada.</li>
+            <li><strong>3h45–4h00:</strong> fechamento, revisão e orientação de atividade para casa.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Comentários para aprofundamento em sala</h3>
+          ${paragraph(`Mostre aos alunos que conhecimento ministerial sem maturidade espiritual produz atuação insegura. A formação cristã exige amor, preparo, ética, humildade e constância.`)}
+          ${paragraph(`Trabalhe o equilíbrio entre zelo e prudência. O aluno precisa aprender que boa intenção não substitui preparo, submissão à liderança, respeito ao próximo e responsabilidade.`)}
+        </div>
+        <div class="course-section">
+          <h3>Respostas comentadas e critérios de correção</h3>
+          <ol class="list">
+            <li><strong>Resposta esperada:</strong> o aluno deve demonstrar compreensão bíblica, postura ética e aplicação prática.</li>
+            <li><strong>Critério:</strong> avaliar clareza, fidelidade bíblica, responsabilidade, capacidade de aplicar o conteúdo e maturidade espiritual.</li>
+            <li><strong>Observação:</strong> respostas não precisam ser idênticas, mas devem preservar o princípio ensinado.</li>
+            <li><strong>Correção pastoral:</strong> quando a resposta for incompleta, conduza o aluno a pensar no texto bíblico, no objetivo do módulo e na prática ministerial.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Dinâmica ou debate sugerido</h3>
+          ${paragraph(`Divida a turma em pequenos grupos e apresente uma situação prática ligada ao módulo. Cada grupo deve responder: qual seria a abordagem correta, quais limites precisam ser respeitados, que texto bíblico poderia orientar a ação e qual encaminhamento seria prudente.`)}
+        </div>
+        <div class="course-section">
+          <h3>Alertas pastorais ao ministrar este módulo</h3>
+          <ul class="list">
+            <li>Evite transformar exemplos em exposição de pessoas.</li>
+            <li>Não permita que a aula se torne debate sem direção bíblica.</li>
+            <li>Corrija ideias perigosas com mansidão, mas com firmeza.</li>
+            <li>Reforce que serviço cristão exige caráter e responsabilidade.</li>
+          </ul>
+        </div>`;
+    }
+
+    function extrasLivroApoioFallback(base,modulo,numero){
+      if(base.cursoTipo !== "apoio-professor") return "";
+      return `
+        <div class="course-section">
+          <h3>Estudo complementar robusto</h3>
+          ${paragraph(`Este apoio amplia o módulo ${numero}, oferecendo ao professor conteúdo extra para enriquecer a preparação. O objetivo não é repetir a apostila nem o manual, mas aprofundar a compreensão bíblica, pastoral e prática do tema.`)}
+          ${paragraph(`O professor deve estudar este conteúdo antes da aula e selecionar os elementos mais úteis para a realidade da turma, preservando a unidade do curso e evitando sobrecarregar o aluno com informações desconectadas.`)}
+          ${paragraph(`A formação ministerial precisa unir convicção bíblica, discernimento espiritual e prática responsável. Quando esses elementos caminham juntos, o ensino deixa de ser apenas informativo e passa a formar obreiros maduros.`)}
+        </div>
+        <div class="course-section">
+          <h3>Aprofundamento bíblico</h3>
+          ${paragraph(`A Escritura deve ser lida como fundamento e direção para a prática cristã. O professor deve conduzir os alunos a enxergar não apenas o texto isolado, mas o princípio bíblico que governa a ação ministerial.`)}
+          ${paragraph(`Ao aplicar o texto bíblico, evite alegorias forçadas e promessas fora do contexto. A Palavra deve iluminar a missão, moldar o caráter e corrigir práticas que não combinam com o evangelho.`)}
+        </div>
+        <div class="course-section">
+          <h3>Aprofundamento teológico e ministerial</h3>
+          ${paragraph(`Todo ministério cristão nasce de uma compreensão correta de Deus, da missão da igreja e do valor da pessoa humana diante do Senhor. O professor deve ajudar a turma a perceber que técnica sem teologia gera ativismo, e teologia sem serviço gera esterilidade.`)}
+          ${paragraph(`O equilíbrio bíblico está em formar pessoas que conhecem a Palavra, amam vidas e sabem agir com responsabilidade. Esse equilíbrio precisa ser reforçado em cada módulo.`)}
+        </div>
+        <div class="course-section">
+          <h3>Estudo de caso comentado</h3>
+          ${paragraph(`Caso: um aluno deseja agir rapidamente diante de uma situação difícil, mas ainda não compreende todos os limites envolvidos. Comentário: o professor deve mostrar que zelo sem prudência pode causar dano. A resposta madura começa com escuta, avaliação, oração, orientação e encaminhamento quando necessário.`)}
+        </div>
+        <div class="course-section">
+          <h3>Estratégias práticas para aplicação ministerial</h3>
+          <ol class="list">
+            <li>Preparar a equipe com oração, estudo e orientação clara.</li>
+            <li>Definir responsabilidades antes da ação ministerial.</li>
+            <li>Registrar aprendizados e dificuldades após cada atividade.</li>
+            <li>Promover acompanhamento dos alunos e voluntários.</li>
+            <li>Revisar limites éticos e pastorais antes de ações em campo.</li>
+            <li>Avaliar cada prática com humildade e disposição para melhorar.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Modelo prático ou roteiro aplicável</h3>
+          ${paragraph(`Antes de qualquer atividade prática, o professor pode orientar a turma a responder quatro perguntas: qual é o objetivo da ação, quem será atendido, quais limites precisam ser respeitados e que resultado espiritual/prático se espera.`)}
+        </div>
+        <div class="course-section">
+          <h3>Checklist de preparo do professor</h3>
+          <ul class="list">
+            <li>Li a apostila do aluno?</li>
+            <li>Revisei o manual do professor?</li>
+            <li>Separei exemplos práticos?</li>
+            <li>Preparei perguntas para debate?</li>
+            <li>Revisei os limites éticos e pastorais?</li>
+            <li>Planejei o fechamento e a atividade?</li>
+            <li>Tenho clareza sobre o que precisa ser encaminhado para liderança ou profissional habilitado?</li>
+          </ul>
+        </div>
+        <div class="course-section">
+          <h3>Recursos e leituras orientadas</h3>
+          ${paragraph(`Sugira leitura bíblica complementar, revisão dos textos principais do módulo, estudo dirigido em grupo e pesquisa supervisionada sobre práticas ministeriais responsáveis. Evite recomendar materiais sem segurança doutrinária ou fontes sem credibilidade.`)}
+        </div>`;
+    }
+
+    function gerarModuloCursoFallback(base,modulo,numero,total){
+      const termos = termosCursoV8(base);
+      return `
+        <div class="course-section">
+          <h2>Módulo ${numero} — ${escapeHtml(modulo.titulo)}</h2>
+          ${paragraph(`Este módulo apresenta ${modulo.titulo} como parte essencial da formação cristã proposta neste curso. Um módulo de formação não deve apenas informar, mas conduzir o aluno a compreender a base bíblica, discernir os desafios práticos e aplicar o ensino com responsabilidade.`)}
+          ${paragraph(`A proposta é desenvolver uma visão madura, equilibrada e fiel à Palavra. O aluno precisa entender o conteúdo, refletir sobre sua aplicação e perceber como a verdade estudada se transforma em prática ministerial.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>Objetivo do módulo</h3>
+          ${paragraph(`Capacitar o participante a compreender o tema ${modulo.titulo}, reconhecer seus fundamentos bíblicos e aplicar seus princípios com postura cristã, ética, prática e responsável.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>Texto bíblico base</h3>
+          ${paragraph(`${modulo.textoBase}. Este texto deve ser aplicado como fundamento de serviço, obediência, compaixão e responsabilidade. A formação cristã precisa nascer da Palavra e retornar à prática diária com fidelidade.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>1. Fundamento bíblico do módulo</h3>
+          ${paragraph(`A Bíblia revela que Deus chama pessoas para viverem uma fé ativa, obediente e frutífera. O ensino deste módulo deve ser compreendido à luz do caráter de Deus, da missão da igreja e da responsabilidade de cada cristão diante do próximo.`)}
+          ${paragraph(`O fundamento bíblico impede que a prática se torne apenas técnica, emoção ou improviso. A Palavra corrige motivações, orienta decisões e dá segurança para que o serviço cristão seja realizado com amor e maturidade.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>2. Argumento teológico e pastoral</h3>
+          ${paragraph(`Teologicamente, este módulo mostra que a ação cristã deve nascer da revelação de Deus e da obra de Cristo. Não servimos para construir reputação, mas porque fomos alcançados pela graça e chamados a cooperar com o propósito do Reino.`)}
+          ${paragraph(`Pastoralmente, o tema exige equilíbrio. O aluno deve aprender a unir zelo e prudência, coragem e humildade, convicção e amor. Sem esse equilíbrio, a prática ministerial pode se tornar dura, superficial ou desorganizada.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>3. Explicação principal do tema</h3>
+          ${paragraph(`${modulo.titulo} precisa ser entendido como uma área de formação que envolve conhecimento, caráter e prática. O conhecimento oferece direção; o caráter sustenta a caminhada; e a prática revela se o aprendizado realmente foi absorvido.`)}
+          ${paragraph(`O aluno deve observar que toda atuação cristã responsável passa por preparo. Não basta desejar fazer; é preciso compreender o que se faz, por que se faz, como se faz e quais limites devem ser respeitados.`)}
+          ${paragraph(`Esse aprendizado deve gerar maturidade. A pessoa formada precisa ser capaz de agir com segurança bíblica, respeito ao próximo e compromisso com a edificação da igreja.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>4. Desafios reais encontrados nesta ${termos.campo}</h3>
+          <ul class="list">
+            <li>Falta de preparo bíblico e prático.</li>
+            <li>Ativismo sem oração e sem discernimento.</li>
+            <li>Dificuldade de lidar com pessoas em diferentes realidades.</li>
+            <li>Risco de agir por impulso, emoção ou pressão externa.</li>
+            <li>Necessidade de manter fidelidade bíblica sem perder sensibilidade humana.</li>
+          </ul>
+        </div>
+
+        <div class="course-section">
+          <h3>5. Postura correta do ${termos.servo}</h3>
+          ${paragraph(`A postura correta começa com humildade diante de Deus e respeito diante das pessoas. O servo cristão precisa ouvir, aprender, obedecer e agir com sabedoria.`)}
+          ${paragraph(`A maturidade aparece quando a pessoa entende que servir não é dominar, aparecer ou controlar, mas cooperar com amor, submissão à Palavra e responsabilidade.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>6. Aplicações práticas</h3>
+          <ol class="list">
+            <li>Estudar o tema antes de praticá-lo.</li>
+            <li>Orar por discernimento e direção.</li>
+            <li>Agir com clareza, respeito e humildade.</li>
+            <li>Trabalhar em unidade com a liderança e com a equipe.</li>
+            <li>Avaliar os resultados e aprender com cada experiência.</li>
+          </ol>
+        </div>
+
+        <div class="course-section">
+          <h3>7. Exemplos práticos de ${termos.servico}</h3>
+          ${paragraph(`Exemplo 1: Um aluno percebe uma necessidade real e decide agir, mas antes busca orientação, prepara-se biblicamente e conversa com sua liderança. Essa atitude mostra maturidade e evita improvisos.`)}
+          ${paragraph(`Exemplo 2: Uma equipe realiza uma ação prática, mas mantém foco espiritual, organização e respeito às pessoas atendidas. O trabalho se torna mais frutífero porque une amor e preparo.`)}
+          ${paragraph(`Exemplo 3: Durante uma situação difícil, o aluno evita respostas prontas e escolhe ouvir, acolher e encaminhar corretamente. Isso demonstra sabedoria e cuidado cristão.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>8. Erros que devem ser evitados</h3>
+          <ul class="list">
+            <li>Agir sem preparo.</li>
+            <li>Confundir zelo com imprudência.</li>
+            <li>Usar frases prontas para situações complexas.</li>
+            <li>Prometer resultados que pertencem somente a Deus.</li>
+            <li>Desconsiderar liderança, ética e responsabilidade.</li>
+          </ul>
+        </div>
+
+        <div class="course-section">
+          <h3>9. Limites, ética e responsabilidade</h3>
+          ${paragraph(`Este módulo exige atenção a ${termos.limites}. A atuação cristã deve ser firme na fé, mas responsável na prática. Quando uma situação ultrapassar a capacidade do aluno, deve haver orientação, acompanhamento ou encaminhamento adequado.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>10. Estudo de caso</h3>
+          ${paragraph(`Caso: Um grupo deseja iniciar uma ação relacionada ao tema do módulo, mas parte da equipe não entende os objetivos nem os limites. Resposta adequada: antes de executar a ação, a liderança deve orientar a equipe, revisar os princípios bíblicos, definir responsabilidades e esclarecer como agir diante de situações delicadas.`)}
+        </div>
+
+        <div class="course-section">
+          <h3>11. Atividade prática</h3>
+          ${paragraph(`Elabore um plano simples de aplicação deste módulo. Inclua objetivo, público envolvido, texto bíblico de apoio, cuidados necessários, limites, forma de execução e avaliação final.`)}
+        </div>
+
+        ${blocoPerguntasCursoFallback(base)}
+
+        ${extrasManualProfessorFallback(base,modulo,numero)}
+        ${extrasLivroApoioFallback(base,modulo,numero)}
+
+        <div class="course-section">
+          <h3>Resumo do módulo</h3>
+          ${paragraph(`O módulo ${numero} mostra que ${modulo.titulo} precisa ser vivido com base bíblica, argumento teológico, sensibilidade pastoral e prática responsável. O aluno deve sair desta unidade com mais entendimento, mais maturidade e mais clareza sobre sua responsabilidade cristã.`)}
+        </div>
+      `;
+    }
+
+    async function generateCourseAsync(base){
+      manualPlaceholdersCount = 0;
+      const modulos = extrairModulosCurso(base);
+
+      if(base.cursoTipo === "divulgacao"){
+        setStep(0,"Gerando material de divulgação do curso...");
+        const htmlDivulgacao = gerarDivulgacaoCursoFallback(base,modulos);
+        renderGenerated(htmlDivulgacao);
+        finishSteps("Material de divulgação do curso gerado com sucesso.");
+        return;
+      }
+
+      if(base.cursoTipo === "certificado"){
+        setStep(0,"Gerando certificado do curso...");
+        const htmlCertificado = gerarCertificadoCursoFallback(base);
+        renderGenerated(htmlCertificado);
+        finishSteps("Certificado do curso gerado com sucesso.");
+        return;
+      }
+
+      let html = `<div class="doc">`;
+
+      setStep(0,"Gerando apresentação robusta do curso...");
+      const minimoApresentacaoCurso = base.cursoTipo === "apoio-professor" ? 3200 : base.cursoTipo === "professor" ? 2600 : 2000;
+      let apresentacao = await chamarTextoIAComTentativas(
+        [promptCursoApresentacao(base,modulos)],
+        "Apresentação do curso",
+        { minimo:minimoApresentacaoCurso, aceitarCurto:false, aceitarMuitoCurto:false }
+      );
+
+      if(!validarConteudoCurso(apresentacao)){
+        apresentacao = `
+          <div class="course-cover-box">
+            <h1>${escapeHtml(base.title)}</h1>
+            <p>${escapeHtml(nomeTipoCurso(base.cursoTipo))} • ${escapeHtml(base.subtitle)}</p>
+          </div>
+          <div class="course-section">
+            <h2>Apresentação do curso</h2>
+            ${paragraph(`Este curso foi preparado como uma formação cristã robusta, organizada e prática. Sua proposta é conduzir o participante a compreender o tema com profundidade bíblica, maturidade espiritual e responsabilidade ministerial.`)}
+            ${paragraph(`A carga horária de ${base.cursoCargaHoraria} exige módulos mais completos, com explicação, aplicação, reflexão, atividade e avaliação. Por isso, este material não deve ser tratado como resumo, mas como apostila de formação.`)}
+          </div>
+          <div class="course-section">
+            <h2>Objetivos gerais</h2>
+            <ol class="list">
+              <li>Compreender os fundamentos bíblicos do curso.</li>
+              <li>Desenvolver maturidade espiritual e prática ministerial.</li>
+              <li>Aprender a aplicar o conteúdo com responsabilidade.</li>
+              <li>Formar visão clara sobre o serviço cristão.</li>
+              <li>Preparar o aluno para atuar com ética, amor e fidelidade bíblica.</li>
+            </ol>
+          </div>
+          <div class="course-section">
+            <h2>Sumário dos módulos</h2>
+            ${orderedList(modulos.map((m,i)=>`Módulo ${i + 1} — ${m.titulo}`))}
+          </div>
+        `;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${apresentacao}</div>`,"course-page intro-page");
+      renderGenerated(html + `</div>`);
+
+      for(let i = 0; i < modulos.length; i++){
+        const numero = i + 1;
+        const modulo = modulos[i];
+        const stepIndex = Math.min(1 + i, Math.max(1, stepsByType.curso.length - 2));
+
+        await pause(500);
+        setStep(stepIndex,`Gerando Módulo ${numero} aprofundado: ${modulo.titulo}...`);
+
+        const minimoModuloCurso = base.cursoTipo === "apoio-professor" ? 7000 : base.cursoTipo === "professor" ? 5600 : 4200;
+        let moduloHtml = await chamarTextoIAComTentativas(
+          [promptCursoModulo(base,modulo,numero,modulos.length)],
+          `Módulo ${numero} aprofundado do curso`,
+          { minimo:minimoModuloCurso, aceitarCurto:false, aceitarMuitoCurto:false }
+        );
+
+        if(!validarConteudoCurso(moduloHtml)){
+          moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
+          manualPlaceholdersCount++;
+        }
+
+        html += renderPage(`<div class="course-clean-page">${moduloHtml}</div>`,"course-page lesson-page");
+        renderGenerated(html + `</div>`);
+      }
+
+      await pause(500);
+      setStep(stepsByType.curso.length - 1,"Gerando conclusão, avaliação e modelos práticos aprofundados...");
+
+      const minimoFechamentoCurso = base.cursoTipo === "apoio-professor" ? 3200 : base.cursoTipo === "professor" ? 2600 : 2000;
+      let fechamento = await chamarTextoIAComTentativas(
+        [promptCursoFechamento(base,modulos)],
+        "Fechamento aprofundado do curso",
+        { minimo:minimoFechamentoCurso, aceitarCurto:false, aceitarMuitoCurto:false }
+      );
+
+      if(!validarConteudoCurso(fechamento)){
+        fechamento = `
+          <div class="course-section">
+            <h2>Conclusão geral</h2>
+            ${paragraph("Ao concluir este curso, o participante deve compreender que formação cristã verdadeira une conhecimento bíblico, maturidade espiritual, prática responsável e compromisso com o Reino de Deus.")}
+            ${paragraph("O conteúdo estudado deve produzir não apenas informação, mas transformação de visão, postura e ação. A fé se torna madura quando aprende a servir com amor, responsabilidade e fidelidade.")}
+          </div>
+          <div class="course-section">
+            <h2>Código de conduta cristão aplicado ao curso</h2>
+            <ol class="list">
+              <li>Servir com amor e respeito.</li>
+              <li>Agir com fidelidade bíblica.</li>
+              <li>Respeitar liderança, ética e limites.</li>
+              <li>Evitar promessas irresponsáveis ou atitudes impulsivas.</li>
+              <li>Buscar preparo contínuo e vida devocional saudável.</li>
+            </ol>
+          </div>
+          <div class="course-section">
+            <h2>Avaliação final</h2>
+            <ol class="list">
+              <li>Explique a importância bíblica do tema central do curso.</li>
+              <li>Quais atitudes práticas devem marcar o aluno formado?</li>
+              <li>Quais erros precisam ser evitados?</li>
+              <li>Como aplicar este conteúdo na igreja local?</li>
+              <li>Que texto bíblico melhor resume sua responsabilidade após o curso?</li>
+            </ol>
+          </div>
+          <div class="course-section">
+            <h2>Encerramento</h2>
+            ${paragraph("Que este curso desperte compromisso, amor pela Palavra e disposição para servir com excelência no Reino de Deus.")}
+          </div>
+        `;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${fechamento}</div>`,"course-page summary-page");
+      html += `</div>`;
+      renderGenerated(html);
+      salvarBaseCursoAutomatico(base,html);
+
+      if(manualPlaceholdersCount > 0){
+        finishSteps(`Curso finalizado em modo robusto. Algumas partes usaram o modelo interno seguro porque a IA não entregou conteúdo adequado.`);
+      }else{
+        finishSteps("Curso robusto finalizado com módulos aprofundados e conteúdo limpo de apostila.");
+      }
+    }
+
     function generateDevotional(base){
       return `
         <div class="doc">
