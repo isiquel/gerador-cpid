@@ -2307,6 +2307,114 @@
       }
     }
 
+  
+    /* v13.7 — Revista EBD em duas colunas (somente revista) */
+    .doc.magazine-layout .lesson-page .block,
+    .doc.magazine-layout .lesson-page .summary-box,
+    .doc.magazine-layout .lesson-page .teacher-help,
+    .doc.magazine-layout .lesson-page .knowledge-box,
+    .doc.magazine-layout .lesson-page .personal-application,
+    .doc.magazine-layout .lesson-page .teacher-guide,
+    .doc.magazine-layout .lesson-page .lesson-content,
+    .doc.magazine-layout .lesson-page .course-section{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns{
+      column-count:2;
+      column-gap:28px;
+      column-rule:1px solid rgba(80,60,35,.12);
+      text-align:justify;
+      hyphens:auto;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns h1,
+    .doc.magazine-layout .lesson-page .magazine-columns h2,
+    .doc.magazine-layout .lesson-page .magazine-columns h3,
+    .doc.magazine-layout .lesson-page .magazine-columns h4,
+    .doc.magazine-layout .lesson-page .magazine-columns .summary-box,
+    .doc.magazine-layout .lesson-page .magazine-columns .block,
+    .doc.magazine-layout .lesson-page .magazine-columns .teacher-help,
+    .doc.magazine-layout .lesson-page .magazine-columns .knowledge-box,
+    .doc.magazine-layout .lesson-page .magazine-columns .personal-application{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns p{
+      margin-bottom:.86rem;
+      line-height:1.72;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns ul,
+    .doc.magazine-layout .lesson-page .magazine-columns ol{
+      padding-left:1.15rem;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns li{
+      margin-bottom:.52rem;
+      line-height:1.6;
+    }
+
+    .doc.magazine-layout .lesson-page .lesson-hero,
+    .doc.magazine-layout .lesson-page .lesson-title,
+    .doc.magazine-layout .lesson-page .page-title,
+    .doc.magazine-layout .lesson-page > h1:first-child,
+    .doc.magazine-layout .lesson-page > h2:first-child{
+      column-span:all;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-full{
+      column-span:all;
+    }
+
+    @media(max-width:820px){
+      .doc.magazine-layout .lesson-page .magazine-columns{
+        column-count:1;
+        column-rule:none;
+      }
+    }
+
+    @media print{
+      .doc.magazine-layout .lesson-page{
+        padding:13mm 11mm !important;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns{
+        column-count:2 !important;
+        column-gap:22px !important;
+        column-rule:1px solid rgba(80,60,35,.12) !important;
+        font-size:.94rem !important;
+        line-height:1.58 !important;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns p{
+        line-height:1.58 !important;
+        margin-bottom:.62rem !important;
+        orphans:3;
+        widows:3;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns h2,
+      .doc.magazine-layout .lesson-page .magazine-columns h3,
+      .doc.magazine-layout .lesson-page .magazine-columns h4{
+        break-after:avoid !important;
+        page-break-after:avoid !important;
+        margin-top:.75rem !important;
+        margin-bottom:.38rem !important;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns .block,
+      .doc.magazine-layout .lesson-page .magazine-columns .summary-box,
+      .doc.magazine-layout .lesson-page .magazine-columns .teacher-help,
+      .doc.magazine-layout .lesson-page .magazine-columns .knowledge-box,
+      .doc.magazine-layout .lesson-page .magazine-columns .personal-application{
+        padding:12px 14px !important;
+        margin:10px 0 !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -7740,6 +7848,39 @@ Estruture assim:
       }
     }
 
+    function aplicarLayoutRevistaDuasColunasV137(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      const doc = temp.querySelector(".doc");
+      if(doc){
+        doc.classList.add("magazine-layout");
+      }
+
+      temp.querySelectorAll(".lesson-page").forEach(page => {
+        if(page.querySelector(".magazine-columns")) return;
+
+        const hero = page.querySelector(".lesson-hero");
+        const nodes = Array.from(page.childNodes);
+        const wrap = document.createElement("div");
+        wrap.className = "magazine-columns";
+
+        nodes.forEach(node => {
+          if(hero && node === hero) return;
+          wrap.appendChild(node);
+        });
+
+        if(hero){
+          page.appendChild(wrap);
+        }else{
+          page.innerHTML = "";
+          page.appendChild(wrap);
+        }
+      });
+
+      return temp.innerHTML;
+    }
+
     async function generateMagazineAsync(base){
       const info = montarInfoRevista(base);
       manualPlaceholdersCount = 0;
@@ -7911,7 +8052,7 @@ Estruture assim:
 
       const capaFinal = renderCover(base,info,imageData);
 
-      renderGenerated(html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`) + `</div>`);
+      renderGenerated(aplicarLayoutRevistaDuasColunasV137(html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`) + `</div>`));
 
       await pause(600);
 
@@ -7950,7 +8091,7 @@ Estruture assim:
         `<div class="doc">${capaFinal}`
       );
 
-      renderGenerated(htmlFinalComCapaNoInicio);
+      renderGenerated(aplicarLayoutRevistaDuasColunasV137(htmlFinalComCapaNoInicio));
 
       if(manualPlaceholdersCount > 0){
         finishSteps(`Geração finalizada com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente antes do PDF.`);
@@ -11101,6 +11242,114 @@ Crie:
       .ebook-visual .ebook-reflection{
         padding:14px 16px !important;
         margin:14px 0 !important;
+      }
+    }
+
+  
+    /* v13.7 — Revista EBD em duas colunas (somente revista) */
+    .doc.magazine-layout .lesson-page .block,
+    .doc.magazine-layout .lesson-page .summary-box,
+    .doc.magazine-layout .lesson-page .teacher-help,
+    .doc.magazine-layout .lesson-page .knowledge-box,
+    .doc.magazine-layout .lesson-page .personal-application,
+    .doc.magazine-layout .lesson-page .teacher-guide,
+    .doc.magazine-layout .lesson-page .lesson-content,
+    .doc.magazine-layout .lesson-page .course-section{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns{
+      column-count:2;
+      column-gap:28px;
+      column-rule:1px solid rgba(80,60,35,.12);
+      text-align:justify;
+      hyphens:auto;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns h1,
+    .doc.magazine-layout .lesson-page .magazine-columns h2,
+    .doc.magazine-layout .lesson-page .magazine-columns h3,
+    .doc.magazine-layout .lesson-page .magazine-columns h4,
+    .doc.magazine-layout .lesson-page .magazine-columns .summary-box,
+    .doc.magazine-layout .lesson-page .magazine-columns .block,
+    .doc.magazine-layout .lesson-page .magazine-columns .teacher-help,
+    .doc.magazine-layout .lesson-page .magazine-columns .knowledge-box,
+    .doc.magazine-layout .lesson-page .magazine-columns .personal-application{
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns p{
+      margin-bottom:.86rem;
+      line-height:1.72;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns ul,
+    .doc.magazine-layout .lesson-page .magazine-columns ol{
+      padding-left:1.15rem;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-columns li{
+      margin-bottom:.52rem;
+      line-height:1.6;
+    }
+
+    .doc.magazine-layout .lesson-page .lesson-hero,
+    .doc.magazine-layout .lesson-page .lesson-title,
+    .doc.magazine-layout .lesson-page .page-title,
+    .doc.magazine-layout .lesson-page > h1:first-child,
+    .doc.magazine-layout .lesson-page > h2:first-child{
+      column-span:all;
+    }
+
+    .doc.magazine-layout .lesson-page .magazine-full{
+      column-span:all;
+    }
+
+    @media(max-width:820px){
+      .doc.magazine-layout .lesson-page .magazine-columns{
+        column-count:1;
+        column-rule:none;
+      }
+    }
+
+    @media print{
+      .doc.magazine-layout .lesson-page{
+        padding:13mm 11mm !important;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns{
+        column-count:2 !important;
+        column-gap:22px !important;
+        column-rule:1px solid rgba(80,60,35,.12) !important;
+        font-size:.94rem !important;
+        line-height:1.58 !important;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns p{
+        line-height:1.58 !important;
+        margin-bottom:.62rem !important;
+        orphans:3;
+        widows:3;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns h2,
+      .doc.magazine-layout .lesson-page .magazine-columns h3,
+      .doc.magazine-layout .lesson-page .magazine-columns h4{
+        break-after:avoid !important;
+        page-break-after:avoid !important;
+        margin-top:.75rem !important;
+        margin-bottom:.38rem !important;
+      }
+
+      .doc.magazine-layout .lesson-page .magazine-columns .block,
+      .doc.magazine-layout .lesson-page .magazine-columns .summary-box,
+      .doc.magazine-layout .lesson-page .magazine-columns .teacher-help,
+      .doc.magazine-layout .lesson-page .magazine-columns .knowledge-box,
+      .doc.magazine-layout .lesson-page .magazine-columns .personal-application{
+        padding:12px 14px !important;
+        margin:10px 0 !important;
       }
     }
 
