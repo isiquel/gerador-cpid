@@ -9015,6 +9015,473 @@ Estrutura sugerida:
       }
     }
 
+
+    /* =========================================================
+       CURSO v9 — trava de tema + bibliografia segura por assunto
+       Atualiza apenas a lógica interna de CURSO.
+       Preserva Sermões, Revista EBD, Estudos, PDF, Mobile e Senha.
+    ========================================================= */
+
+    function normalizarTextoCursoV9(valor){
+      return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .toLowerCase();
+    }
+
+    function corpusCursoV9(base){
+      return normalizarTextoCursoV9(`${base.title || ""}\n${base.subtitle || ""}\n${base.theme || ""}\n${base.biblicalBase || ""}\n${base.targetAudience || ""}\n${base.extraNotes || ""}\n${base.cursoObservacao || ""}`);
+    }
+
+    function detectarTemaCursoV9(base){
+      const t = corpusCursoV9(base);
+      if(/casal|casais|casamento|conjugal|marido|esposa|noivo|noiva|familia|lar|filhos/.test(t)) return "casais";
+      if(/missao|missoes|mission|evangelismo|evangeliz|grande comissao|discipulado|novos convertidos/.test(t)) return "missoes";
+      if(/capelania|capelao|capela|hospitalar|prisional|luto|dependencia quimica/.test(t)) return "capelania";
+      return "geral";
+    }
+
+    function tituloTemaCursoV9(base){
+      const tema = detectarTemaCursoV9(base);
+      const mapa = {
+        casais:"casamento cristão, família, aliança conjugal, diálogo, perdão, vida espiritual no lar, filhos, finanças e restauração do relacionamento",
+        missoes:"missões, evangelismo, Grande Comissão, discipulado, igreja local, envio, oração, contribuição e dependência do Espírito Santo",
+        capelania:"capelania cristã, presença pastoral, escuta, cuidado espiritual, ética, limites, acolhimento e encaminhamento responsável",
+        geral:"tema central do curso informado pelo usuário"
+      };
+      return mapa[tema] || mapa.geral;
+    }
+
+    function temaProibidoCursoV9(base,html){
+      const tema = detectarTemaCursoV9(base);
+      const texto = normalizarTextoCursoV9(extrairTextoDeHtml(html || ""));
+      if(!texto) return false;
+
+      if(tema === "casais"){
+        return /capelania|capelao|atendimento capelao|hospitalar|prisional|dependencia quimica|miss(ao|oes)|evangelismo|missionario/.test(texto);
+      }
+
+      if(tema === "missoes"){
+        return /capelania|capelao|atendimento capelao|hospitalar|prisional|curso para casais|casamento conjugal|marido e esposa/.test(texto);
+      }
+
+      if(tema === "capelania"){
+        return /curso para casais|casamento conjugal|evangelismo pessoal como modulo central de missoes|grande comissao como curso principal/.test(texto);
+      }
+
+      return false;
+    }
+
+    function instrucoesTravaTemaCursoV9(base){
+      const tema = detectarTemaCursoV9(base);
+      if(tema === "casais"){
+        return `
+TRAVA ABSOLUTA DE TEMA:
+Este curso é sobre CASAIS CRISTÃOS / CASAMENTO / FAMÍLIA.
+Todo módulo, exemplo, pergunta, atividade, resumo e aplicação deve permanecer nesse campo: casamento, aliança, amor, respeito, comunicação, perdão, intimidade saudável, filhos, finanças, conflitos, restauração, vida espiritual no lar e legado familiar.
+É PROIBIDO misturar com capelania, missões, evangelismo, hospital, prisão ou qualquer outro curso anterior.
+Não use a palavra capelania nem capelão neste curso, a menos que o usuário peça explicitamente.`.trim();
+      }
+      if(tema === "missoes"){
+        return `
+TRAVA ABSOLUTA DE TEMA:
+Este curso é sobre MISSÕES E EVANGELISMO.
+Todo módulo, exemplo, pergunta, atividade, resumo e aplicação deve permanecer nesse campo: Grande Comissão, evangelização, missão de Deus, igreja local, discipulado, envio, oração, contribuição, novos convertidos, povos não alcançados e dependência do Espírito Santo.
+É PROIBIDO misturar com curso de casais, capelania, casamento conjugal ou qualquer outro curso anterior.`.trim();
+      }
+      if(tema === "capelania"){
+        return `
+TRAVA ABSOLUTA DE TEMA:
+Este curso é sobre CAPELANIA CRISTÃ.
+Todo módulo, exemplo, pergunta, atividade, resumo e aplicação deve permanecer nesse campo: presença pastoral, escuta, acolhimento, ética, sigilo, limites, cuidado espiritual e encaminhamento responsável.
+É PROIBIDO misturar com curso de casais, missões, evangelismo ou qualquer outro curso anterior.`.trim();
+      }
+      return `
+TRAVA ABSOLUTA DE TEMA:
+Todo o conteúdo deve permanecer fiel ao tema atual informado pelo usuário: ${base.title || "curso"}.
+É PROIBIDO puxar assunto de cursos anteriores, exemplos antigos, capelania, missões ou casais quando isso não fizer parte do tema atual.`.trim();
+    }
+
+    function modulosPadraoMissoesV9(){
+      return [
+        {titulo:"A Missão de Deus na Bíblia", textoBase:"Gênesis 12.1-3; Apocalipse 7.9-10", foco:"missio Dei, promessa, redenção e alcance das nações", dores:"falta de visão missionária, localismo, indiferença espiritual e desconhecimento bíblico"},
+        {titulo:"A Grande Comissão de Jesus", textoBase:"Mateus 28.18-20; Marcos 16.15; Atos 1.8", foco:"ordem de Cristo, autoridade, envio e testemunho", dores:"omissão evangelística, medo, falta de preparo e baixa responsabilidade da igreja"},
+        {titulo:"O Evangelho que Pregamos", textoBase:"1 Coríntios 15.1-4; Romanos 10.13-15", foco:"conteúdo central do evangelho, cruz, ressurreição, arrependimento e fé", dores:"mensagens sem Cristo, superficialidade, ausência de arrependimento e confusão doutrinária"},
+        {titulo:"O Chamado Missionário e a Vocação Cristã", textoBase:"Isaías 6.8; Atos 13.1-4", foco:"chamado geral, vocações específicas, obediência, preparo e envio", dores:"dúvidas vocacionais, insegurança, resistência, falta de preparo e individualismo"},
+        {titulo:"Evangelismo Pessoal", textoBase:"João 4.7-30; 2 Coríntios 5.18-20", foco:"abordagem respeitosa, testemunho, escuta, apresentação do evangelho e acompanhamento", dores:"medo de falar, abordagem agressiva, falta de clareza e abandono após a decisão"},
+        {titulo:"Evangelismo Urbano e Comunitário", textoBase:"Lucas 10.1-2; Mateus 9.35-38", foco:"ações em ruas, bairros, escolas, hospitais, presídios e comunidades", dores:"desorganização, ausência de equipe, falta de acompanhamento e ativismo sem mensagem"},
+        {titulo:"Missões Transculturais", textoBase:"Salmo 96.3; Apocalipse 7.9-10", foco:"povos, culturas, barreiras, adaptação, envio e perseverança", dores:"choque cultural, etnocentrismo, despreparo, solidão missionária e falta de sustento"},
+        {titulo:"A Igreja Local e o Departamento de Missões", textoBase:"Filipenses 4.15-19; Atos 13.1-4", foco:"organização missionária, intercessão, oferta, adoção de missionários e visão de igreja", dores:"falta de liderança, campanhas sem continuidade, ausência de prestação de contas e pouca mobilização"},
+        {titulo:"O Espírito Santo e a Obra Missionária", textoBase:"Atos 1.8; Atos 13.2", foco:"poder, direção, coragem, dons, santidade e dependência espiritual", dores:"ativismo sem oração, confiança na técnica, medo, desânimo e ausência de discernimento"},
+        {titulo:"Discipulado, Consolidação e Fruto Permanente", textoBase:"Mateus 28.19-20; Colossenses 1.28", foco:"cuidado com novos convertidos, ensino, integração e formação de discípulos", dores:"decisões sem acompanhamento, abandono, imaturidade e falta de integração na igreja"}
+      ];
+    }
+
+    function modulosPadraoCasaisV9(){
+      return [
+        {titulo:"O Projeto de Deus para o Casamento", textoBase:"Gênesis 2.18-24; Mateus 19.4-6", foco:"origem bíblica do casamento, aliança, unidade e propósito do lar", dores:"confusão sobre casamento, expectativas irreais, egoísmo e falta de base bíblica"},
+        {titulo:"Aliança, Amor e Compromisso", textoBase:"Efésios 5.21-33; 1 Coríntios 13.4-7", foco:"amor sacrificial, compromisso, fidelidade e permanência da aliança", dores:"amor tratado como sentimento instável, quebra de compromisso, frieza e individualismo"},
+        {titulo:"Comunicação Saudável no Casamento", textoBase:"Tiago 1.19; Provérbios 15.1; Provérbios 18.21", foco:"escuta, fala respeitosa, resolução de conflitos e diálogo maduro", dores:"silêncio, gritos, acusações, ironias, mágoas acumuladas e incompreensão"},
+        {titulo:"Perdão, Cura Emocional e Restauração", textoBase:"Mateus 18.21-22; Colossenses 3.12-14", foco:"perdão bíblico, tratamento de feridas, restauração de confiança e reconciliação", dores:"ressentimento, orgulho, feridas antigas, culpa, distanciamento e dificuldade de recomeçar"},
+        {titulo:"Papéis, Responsabilidades e Parceria no Lar", textoBase:"Efésios 5.21; Colossenses 3.18-19", foco:"serviço mútuo, liderança responsável, honra, cooperação e parceria", dores:"autoritarismo, omissão, disputa de poder, sobrecarga e desvalorização"},
+        {titulo:"Intimidade, Afeto e Proteção do Relacionamento", textoBase:"Cantares 8.7; Hebreus 13.4", foco:"intimidade saudável, cuidado afetivo, fidelidade emocional e proteção do vínculo", dores:"frieza, distanciamento, tentações, pornografia, infidelidade emocional e negligência afetiva"},
+        {titulo:"Finanças, Planejamento e Administração Familiar", textoBase:"Lucas 14.28; Provérbios 21.5", foco:"mordomia, orçamento, transparência, prioridades e planejamento familiar", dores:"dívidas, compras impulsivas, segredos financeiros, ansiedade e conflitos por dinheiro"},
+        {titulo:"Criação de Filhos e Vida Familiar", textoBase:"Salmo 127.1-5; Provérbios 22.6; Josué 24.15", foco:"educação cristã, presença dos pais, limites, exemplo e culto doméstico", dores:"ausência, permissividade, autoritarismo, conflitos geracionais e terceirização da formação espiritual"},
+        {titulo:"Conflitos, Crises e Reconstrução da Confiança", textoBase:"Eclesiastes 4.9-12; Romanos 12.18", foco:"manejo de crises, reconstrução, arrependimento, limites e ajuda responsável", dores:"traição, mentiras, crises intensas, ameaças, violência, vícios e sofrimento emocional"},
+        {titulo:"O Casal como Ministério, Testemunho e Legado", textoBase:"Mateus 5.14-16; Josué 24.15", foco:"família como testemunho, serviço cristão, legado espiritual e missão do lar", dores:"vida espiritual fraca, falta de propósito, rotina sem oração e ausência de legado"}
+      ];
+    }
+
+    function extrairModulosCurso(base){
+      const textoOriginal = [base.cursoObservacao, base.extraNotes, base.theme, base.subtitle, base.title].map(v => String(v || "")).join("\n");
+      const linhas = textoOriginal.split(/\n+/).map(l => l.trim()).filter(Boolean);
+      const encontrados = [];
+
+      linhas.forEach(linha => {
+        const matchModulo = linha.match(/^(?:[-*•]?\s*)?(?:m[oó]dulo\s*)?(\d{1,2})\s*(?:[).:-]|—|–|-)?\s*(.+)$/i);
+        if(!matchModulo) return;
+        let titulo = limparTituloModuloCurso(matchModulo[2]).replace(/^—\s*/,"").trim();
+        if(!titulo || titulo.length < 4 || titulo.length > 120) return;
+        if(/^(cada modulo|antes dos modulos|se for|use referencias|nao transformar|carga horaria|fluxo do curso)/i.test(titulo)) return;
+        if(!encontrados.some(m => m.titulo.toLowerCase() === titulo.toLowerCase())){
+          encontrados.push({ titulo, textoBase:base.biblicalBase || "Texto bíblico adequado", foco:`desenvolvimento de ${titulo} dentro do tema do curso`, dores:"desafios, necessidades e aplicações próprias deste módulo" });
+        }
+      });
+
+      if(encontrados.length >= 3) return encontrados.slice(0,20);
+
+      const tema = detectarTemaCursoV9(base);
+      if(tema === "casais") return modulosPadraoCasaisV9();
+      if(tema === "missoes") return modulosPadraoMissoesV9();
+      if(tema === "capelania") return modulosPadraoCapelania();
+
+      const quantidade = Math.min(Number(getValue("quantity") || 10),20);
+      const assunto = (base.title || base.theme || "Formação Cristã").replace(/^curso\s+(de|para)\s+/i,"").trim();
+      const modulos = [];
+      for(let i = 1; i <= quantidade; i++){
+        modulos.push({
+          titulo:`${assunto} — Unidade ${i}`,
+          textoBase:base.biblicalBase || "Texto bíblico adequado",
+          foco:`aprofundamento progressivo de ${assunto}`,
+          dores:"dúvidas, desafios e aplicações práticas relacionadas ao tema atual"
+        });
+      }
+      return modulos;
+    }
+
+    function referenciasBibliograficasCursoV9(base){
+      const tema = detectarTemaCursoV9(base);
+      const comum = [
+        {obra:"Bíblia de Estudo Pentecostal", autor:"Donald C. Stamps (ed.)", uso:"apoio bíblico e notas de estudo em perspectiva pentecostal."},
+        {obra:"Comentário Bíblico Beacon", autor:"Vários autores", uso:"consulta bíblica e apoio exegético para aulas."},
+        {obra:"Comentário Bíblico Moody", autor:"Vários autores", uso:"panorama bíblico e apoio introdutório aos textos."},
+        {obra:"Teologia Sistemática", autor:"Wayne Grudem", uso:"consulta teológica geral, com revisão doutrinária conforme a linha da igreja."}
+      ];
+      const listas = {
+        casais:[
+          {obra:"O Significado do Casamento", autor:"Timothy Keller e Kathy Keller", uso:"base cristã sobre aliança, compromisso e visão bíblica do casamento."},
+          {obra:"As Cinco Linguagens do Amor", autor:"Gary Chapman", uso:"apoio prático para diálogo, afeto e compreensão das necessidades emocionais."},
+          {obra:"Amor e Respeito", autor:"Emerson Eggerichs", uso:"reflexão sobre dinâmicas conjugais de honra, respeito e amor."},
+          {obra:"Limites no Casamento", autor:"Henry Cloud e John Townsend", uso:"apoio para limites saudáveis, responsabilidade e maturidade relacional."},
+          {obra:"Os Sete Princípios para o Casamento Dar Certo", autor:"John Gottman e Nan Silver", uso:"material prático sobre estabilidade conjugal, comunicação e resolução de conflitos; usar com discernimento pastoral."},
+          {obra:"O Poder da Esposa que Ora", autor:"Stormie Omartian", uso:"apoio devocional sobre intercessão no casamento."},
+          {obra:"O Poder do Marido que Ora", autor:"Stormie Omartian", uso:"apoio devocional sobre oração e responsabilidade espiritual no lar."}
+        ],
+        missoes:[
+          {obra:"A Missão Cristã no Mundo Moderno", autor:"John Stott", uso:"reflexão bíblica equilibrada sobre missão, evangelização e responsabilidade cristã."},
+          {obra:"A Missão de Deus", autor:"Christopher J. H. Wright", uso:"aprofundamento sobre a missão na grande narrativa bíblica."},
+          {obra:"Missão Transformadora", autor:"David J. Bosch", uso:"obra ampla para reflexão histórica e teológica sobre missão; indicada para professor e apoio."},
+          {obra:"Perspectivas no Movimento Cristão Mundial", autor:"Ralph D. Winter e Steven C. Hawthorne (orgs.)", uso:"panorama histórico, bíblico, cultural e estratégico da missão cristã mundial."},
+          {obra:"Métodos Missionários: São Paulo ou os Nossos?", autor:"Roland Allen", uso:"análise missionária clássica sobre métodos, igreja local e expansão do evangelho."},
+          {obra:"Paixão pelas Almas", autor:"Oswald J. Smith", uso:"inspiração missionária e evangelística com forte apelo à responsabilidade da igreja."}
+        ],
+        capelania:[
+          {obra:"Aconselhamento Pastoral", autor:"Howard Clinebell", uso:"apoio para cuidado pastoral, escuta e acompanhamento em sofrimento."},
+          {obra:"O Curador Ferido", autor:"Henri J. M. Nouwen", uso:"reflexão pastoral sobre presença, vulnerabilidade e cuidado."},
+          {obra:"Instrumentos nas Mãos do Redentor", autor:"Paul David Tripp", uso:"apoio cristão para cuidado, aconselhamento e transformação pela Palavra."},
+          {obra:"O Pastor Contemplativo", autor:"Eugene Peterson", uso:"reflexão sobre ministério pastoral, presença e cuidado com a alma."},
+          {obra:"Conexão", autor:"Larry Crabb", uso:"apoio sobre relacionamentos, cuidado e conversas transformadoras."}
+        ],
+        geral:[
+          {obra:"Cristianismo Básico", autor:"John Stott", uso:"fundamentos da fé cristã para formação de alunos."},
+          {obra:"Celebração da Disciplina", autor:"Richard Foster", uso:"apoio sobre formação espiritual e disciplinas cristãs."},
+          {obra:"O Discípulo Radical", autor:"John Stott", uso:"reflexão sobre maturidade cristã e compromisso prático."}
+        ]
+      };
+      return (listas[tema] || listas.geral).concat(comum);
+    }
+
+    function htmlBibliografiaCursoV9(base,titulo="Materiais recomendados para aprofundamento"){
+      const itens = referenciasBibliograficasCursoV9(base);
+      return `
+        <div class="course-section">
+          <h3>${escapeHtml(titulo)}</h3>
+          <p class="text">As indicações abaixo são obras reais e conhecidas. Recomenda-se ao professor conferir edição, disponibilidade, tradução e alinhamento doutrinário antes de usar em sala ou citar em material impresso.</p>
+          <ol class="list">
+            ${itens.map(item => `<li><strong>${escapeHtml(item.obra)}</strong> — ${escapeHtml(item.autor)}. ${escapeHtml(item.uso)}</li>`).join("")}
+          </ol>
+        </div>`;
+    }
+
+    function regrasTipoCurso(base){
+      const carga = base.cursoCargaHoraria || "40 horas";
+      const bibliografia = `
+REGRAS DE BIBLIOGRAFIA:
+- Recomende materiais somente quando forem reais, conhecidos e verificáveis.
+- PROIBIDO inventar livros, autores, editoras, leis ou certificações.
+- Se não houver segurança de que uma obra existe, não cite.
+- Para Manual do Professor, inclua bibliografia recomendada obrigatória.
+- Para Livro de Apoio do Professor, inclua bibliografia comentada ampliada obrigatória.
+- Para Apostila do Aluno, inclua leituras recomendadas simples somente quando fizer sentido.`.trim();
+
+      if(base.cursoTipo === "aluno"){
+        return `
+TIPO DE MATERIAL: APOSTILA DO ALUNO.
+- Gere material para o aluno estudar e acompanhar as aulas.
+- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma unidade de aproximadamente 4 horas.
+- NÃO faça apostila resumida. Cada módulo deve ser robusto, com argumento bíblico, explicação teológica/pastoral, desenvolvimento prático, exemplos, estudo de caso, atividade e revisão.
+- Para 10 módulos/40h, mire uma apostila expandida, com densidade equivalente a 80 a 120 páginas quando salva em PDF.
+- Não inclua respostas completas nas atividades e perguntas; deixe espaço de resposta/anotações quando adequado.
+- Use linguagem limpa, didática, contínua e organizada.
+- O aluno deve receber conteúdo suficiente para aprender com profundidade, mas sem o manual de condução do professor.
+${bibliografia}`.trim();
+      }
+
+      if(base.cursoTipo === "professor"){
+        return `
+TIPO DE MATERIAL: MANUAL DO PROFESSOR.
+- Use OBRIGATORIAMENTE a apostila do aluno como base central.
+- Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
+- NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo, mais didático e mais orientador que a apostila do aluno.
+- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma aula/formação de aproximadamente 4 horas.
+- Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula de 4 horas, roteiro de exposição, respostas comentadas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação, orientação de fechamento e bibliografia recomendada real.
+- Mire densidade equivalente a 120 a 160 páginas quando salvo em PDF, se o curso for de 40h.
+- O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
+- Não crie um curso diferente do aluno; amplie, explique, responda, oriente e aprofunde.
+${bibliografia}`.trim();
+      }
+
+      if(base.cursoTipo === "apoio-professor"){
+        return `
+TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
+- Use OBRIGATORIAMENTE a apostila do aluno e o manual do professor como base.
+- O livro de apoio NÃO é uma repetição do manual do professor. Ele deve ser o material mais aprofundado do curso.
+- NÃO entregue conteúdo menor, igual ou parecido com o manual. Amplie cada módulo com estudo bíblico, teologia aplicada, contextualização histórica quando útil, estratégias ministeriais, estudos de caso, modelos práticos, leituras orientadas, checklists, alertas ministeriais, aprofundamentos e bibliografia comentada.
+- Este curso tem carga horária de ${carga}. Para 10 módulos/40h, o livro de apoio deve funcionar como biblioteca de preparo do professor, com material além da aula.
+- Para cada módulo, acrescente seções novas que não aparecem no aluno: estudo complementar robusto, aprofundamento bíblico, argumento teológico, aplicações avançadas, caso prático comentado, erros comuns, perguntas de reflexão para o professor, roteiro de preparo, recursos de apoio e materiais bibliográficos reais.
+- Mire densidade equivalente a 150 a 220 páginas quando salvo em PDF, se o curso for de 40h.
+- Não substitua a apostila nem o manual; sirva como biblioteca de preparo, aprofundamento e ampliação.
+${bibliografia}`.trim();
+      }
+
+      if(base.cursoTipo === "divulgacao"){
+        return `
+TIPO DE MATERIAL: DIVULGAÇÃO DO CURSO.
+- Gere textos para WhatsApp, Instagram, cartaz, convite, descrição curta, descrição longa, chamada para inscrição, público-alvo, benefícios e módulos.
+- Não gere os módulos completos.
+- Não escreva como apostila; escreva como divulgação profissional, clara e chamativa.`.trim();
+      }
+
+      if(base.cursoTipo === "certificado"){
+        return `
+TIPO DE MATERIAL: CERTIFICADO.
+- Gere um modelo de certificado simbólico em texto/HTML.
+- Inclua nome do curso, carga horária, campo para nome do aluno, data, ministério/editora, professor/responsável e assinatura.
+- Não prometa validade legal automática nem reconhecimento oficial.`.trim();
+      }
+
+      return "TIPO DE MATERIAL: APOSTILA DO ALUNO.";
+    }
+
+    function validarConteudoCurso(html){
+      const textoOriginal = extrairTextoDeHtml(html || "");
+      const texto = normalizarTextoCursoV9(textoOriginal).replace(/\s+/g," ").trim();
+      if(!texto || texto.length < 220) return false;
+
+      const proibidos = [
+        "desenvolva esta parte",
+        "desenvolva este modulo",
+        "com base no tema",
+        "crie um curso",
+        "estrutura obrigatoria",
+        "nao escrever como sermao",
+        "nao criar apelo final",
+        "nao criar oracao final",
+        "nao criar conteudo superficial",
+        "o curso deve formar o aluno",
+        "a resposta deve",
+        "modulo 1 mostra que modulo 1",
+        "modulo 2 mostra que modulo 2",
+        "fundamento 1 do curso",
+        "fundamento 2 do curso",
+        "fundamento 3 do curso",
+        "modulo 1 — fundamento",
+        "modulo 2 — fundamento"
+      ];
+
+      return !proibidos.some(p => texto.includes(p));
+    }
+
+    function validarConteudoCursoComTemaV9(base,html){
+      if(!validarConteudoCurso(html)) return false;
+      if(temaProibidoCursoV9(base,html)) return false;
+      return true;
+    }
+
+    function promptCursoApresentacao(base,modulos){
+      return `
+Você é o VERBO IA gerando um material de CURSO cristão em HTML interno.
+
+TÍTULO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
+TEMA DO USUÁRIO: ${base.theme}
+PÚBLICO-ALVO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+
+${instrucoesTravaTemaCursoV9(base)}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
+
+MÓDULOS DO CURSO:
+${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
+
+ENTREGUE SOMENTE HTML INTERNO, sem markdown.
+NÃO repita o prompt do usuário.
+NÃO escreva instruções como conteúdo.
+NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um curso” ou frases parecidas.
+NÃO faça sermão, devocional ou revista EBD.
+NÃO use nomes genéricos como “Fundamento 1 do curso”.
+NÃO puxe assunto de cursos anteriores.
+
+Crie uma abertura robusta, com densidade de apostila de formação, usando estas seções:
+<h1 class="page-title">Título do curso</h1>
+<p class="subtitle">Subtítulo</p>
+<div class="course-section"><h2>Apresentação do curso</h2><p>Texto amplo, pastoral, didático e contextualizado ao tema atual.</p></div>
+<div class="course-section"><h2>Objetivos gerais</h2><ol>Inclua 8 a 12 objetivos.</ol></div>
+<div class="course-section"><h2>Justificativa bíblica e ministerial</h2><p>Explique por que este curso é necessário.</p></div>
+<div class="course-section"><h2>Perfil do participante</h2><p>Explique quem deve fazer o curso e qual postura se espera.</p></div>
+<div class="course-section"><h2>Metodologia e carga horária</h2><p>Explique a organização em módulos e a carga horária.</p></div>
+<div class="course-section"><h2>Como estudar este material</h2><ol>Oriente leitura, atividades, anotações e aplicação prática.</ol></div>
+<div class="course-section"><h2>Sumário dos módulos</h2><ol>Liste todos os módulos com os títulos reais.</ol></div>
+
+Se for Manual do Professor, inclua também: Como usar este manual, como ele se relaciona com a apostila do aluno, por que ele traz respostas e orientação de ministração, e como usar a bibliografia recomendada.
+Se for Livro de Apoio, inclua também: Como usar este apoio no preparo das aulas, deixando claro que ele é material extra de aprofundamento e não repetição do manual.
+Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pastoral/didática.
+      `.trim();
+    }
+
+    function promptCursoModulo(base,modulo,numero,total){
+      const termos = termosCursoV8(base);
+      const temaCentral = tituloTemaCursoV9(base);
+      const bibliografiaSecao = base.cursoTipo === "professor"
+        ? `<div class="course-section"><h3>Materiais recomendados para o professor</h3><p>Inclua livros reais e conhecidos relacionados a ${temaCentral}. Explique como o professor pode usar cada obra. Não invente títulos, autores ou editoras.</p></div>`
+        : base.cursoTipo === "apoio-professor"
+          ? `<div class="course-section"><h3>Bibliografia comentada e materiais de aprofundamento</h3><p>Inclua uma bibliografia comentada com obras reais, conhecidas e verificáveis sobre ${temaCentral}. Explique a contribuição de cada material para este módulo. Não invente títulos, autores ou editoras.</p></div>`
+          : `<div class="course-section"><h3>Leitura recomendada opcional</h3><p>Se for útil, recomende uma obra real e conhecida para leitura complementar. Não invente materiais.</p></div>`;
+
+      const revisao = base.cursoTipo === "aluno"
+        ? "Perguntas de revisão sem respostas, com espaço para o aluno responder."
+        : "Perguntas de revisão com respostas comentadas e orientação de correção.";
+
+      const metaExtensao = base.cursoTipo === "professor"
+        ? "Este módulo do MANUAL DO PROFESSOR deve ser mais completo que o módulo do aluno: mantenha o conteúdo-base e acrescente roteiro de aula de 4 horas, respostas, comentários, didática, exemplos extras, alertas, dinâmica, avaliação e bibliografia real. Não entregue menos que o aluno."
+        : base.cursoTipo === "apoio-professor"
+          ? "Este módulo do LIVRO DE APOIO deve ser o mais aprofundado: não repita o manual; amplie com estudo complementar robusto, argumento bíblico, argumento teológico, casos práticos, estratégias, modelos, checklists e bibliografia comentada real."
+          : "Este módulo da APOSTILA DO ALUNO deve ser completo, claro e didático, com profundidade suficiente para uma aula/formação de aproximadamente 4 horas, atividades e espaço de resposta.";
+
+      return `
+Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão em HTML interno.
+
+CURSO: ${base.title}
+TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+CARGA HORÁRIA: ${base.cursoCargaHoraria}
+TEMA GERAL DO CURSO: ${base.theme}
+TEMA CENTRAL A SER MANTIDO: ${temaCentral}
+MÓDULO: ${modulo.titulo}
+TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
+FOCO DO MÓDULO: ${modulo.foco}
+DESAFIOS/NECESSIDADES: ${modulo.dores}
+PÚBLICO-ALVO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
+DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+
+${instrucoesTravaTemaCursoV9(base)}
+
+${regrasTipoCurso(base)}
+
+BASES SALVAS DO CURSO:
+${contextoBasesCurso(base)}
+
+META DE QUALIDADE E EXTENSÃO:
+${metaExtensao}
+
+REGRAS ABSOLUTAS:
+- Entregue conteúdo final, não instruções.
+- Proibido repetir o prompt do usuário.
+- Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
+- Proibido deixar genérico.
+- Proibido fazer sermão, apelo ou devocional.
+- Não use muitos cards. Use visual de apostila limpa.
+- Não invente leis, normas, certificados, autorização profissional, livros, autores ou editoras.
+- Não puxe tema antigo: mantenha o módulo em ${temaCentral}.
+- HTML interno apenas.
+
+DENSIDADE OBRIGATÓRIA:
+- Este módulo representa aproximadamente 4 horas de formação.
+- Escreva explicações amplas, com parágrafos desenvolvidos.
+- Inclua argumento bíblico, argumento teológico/pastoral, exemplos práticos, estudo de caso, atividade e revisão.
+- Não entregue um módulo curto.
+
+Estruture exatamente assim:
+<div class="course-section"><h2>Módulo ${numero} — ${modulo.titulo}</h2><p>Introdução robusta com 3 a 5 parágrafos focados no tema do módulo.</p></div>
+<div class="course-section"><h3>Objetivo do módulo</h3><p>...</p></div>
+<div class="course-section"><h3>Texto bíblico base</h3><p>Escreva a referência e explique a aplicação. Se souber o texto bíblico, inclua-o com responsabilidade.</p></div>
+<div class="course-section"><h3>1. Fundamento bíblico do módulo</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>2. Argumento teológico e pastoral</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>3. Explicação principal do tema</h3><p>...</p><p>...</p><p>...</p></div>
+<div class="course-section"><h3>4. Desafios reais encontrados neste assunto</h3><p>...</p><ul>...</ul></div>
+<div class="course-section"><h3>5. Postura correta do participante cristão</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>6. Aplicações práticas</h3><ol>...</ol></div>
+<div class="course-section"><h3>7. Exemplos práticos</h3><p>Inclua pelo menos 3 exemplos desenvolvidos.</p></div>
+<div class="course-section"><h3>8. Erros que devem ser evitados</h3><ul>...</ul></div>
+<div class="course-section"><h3>9. Limites, ética e responsabilidade</h3><p>Trate de ${termos.limites} dentro do tema atual.</p></div>
+<div class="course-section"><h3>10. Estudo de caso</h3><p>Apresente um caso prático e comente a resposta adequada.</p></div>
+<div class="course-section"><h3>11. Atividade prática</h3><p>...</p></div>
+<div class="course-section"><h3>12. ${revisao}</h3><ol>Inclua 5 a 8 perguntas.</ol></div>
+${bibliografiaSecao}
+<div class="course-section"><h3>Resumo do módulo</h3><p>Resumo específico do conteúdo de ${modulo.titulo}, sem frase genérica e sem repetir “o módulo mostra que o módulo”.</p></div>
+
+Se for Manual do Professor, acrescente dentro do módulo, obrigatoriamente:
+<div class="course-section"><h3>Orientação ao professor</h3><p>...</p></div>
+<div class="course-section"><h3>Plano de aula de 4 horas</h3><ol>Distribua tempo, exposição, debate, atividade e fechamento.</ol></div>
+<div class="course-section"><h3>Comentários para aprofundamento em sala</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Respostas comentadas e critérios de correção</h3><ol>...</ol></div>
+<div class="course-section"><h3>Dinâmica ou debate sugerido</h3><p>...</p></div>
+<div class="course-section"><h3>Alertas pastorais ao ministrar este módulo</h3><ul>...</ul></div>
+
+Se for Livro de Apoio, acrescente dentro do módulo, obrigatoriamente:
+<div class="course-section"><h3>Estudo complementar robusto</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Aprofundamento bíblico</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Aprofundamento teológico e ministerial</h3><p>...</p><p>...</p></div>
+<div class="course-section"><h3>Estudo de caso comentado</h3><p>...</p></div>
+<div class="course-section"><h3>Estratégias práticas para aplicação ministerial</h3><ol>...</ol></div>
+<div class="course-section"><h3>Modelo prático ou roteiro aplicável</h3><p>...</p></div>
+<div class="course-section"><h3>Checklist de preparo do professor</h3><ul>...</ul></div>
+<div class="course-section"><h3>Recursos e leituras orientadas</h3><p>...</p></div>
+
+Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicável ao tema atual.
+      `.trim();
+    }
+
+
     function generateDevotional(base){
       return `
         <div class="doc">
