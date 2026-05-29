@@ -2204,6 +2204,52 @@
         min-height:calc(100vh - 40mm) !important;
       }
     }
+  
+    /* v13.5 — E-book visual premium */
+    .ebook-visual .page{
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.95), rgba(255,255,255,.85)),
+        linear-gradient(135deg, rgba(255,247,229,.95), rgba(238,247,255,.95));
+      border:1px solid rgba(120,95,60,.16);
+    }
+    .ebook-visual .ebook-hero{
+      border-radius:28px;
+      padding:30px;
+      margin-bottom:24px;
+      background:linear-gradient(135deg, rgba(64,36,18,.95), rgba(144,92,35,.86));
+      color:#fff;
+      box-shadow:0 20px 45px rgba(50,30,15,.16);
+      position:relative;
+      overflow:hidden;
+    }
+    .ebook-visual .ebook-hero:after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -60px auto;
+      width:220px;
+      height:220px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+    }
+    .ebook-visual .ebook-hero h1,
+    .ebook-visual .ebook-hero h2{color:#fff;margin:0 0 10px;letter-spacing:-.03em;}
+    .ebook-visual .ebook-hero p{color:rgba(255,255,255,.9);font-size:1.08rem;line-height:1.75;max-width:820px;}
+    .ebook-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0;}
+    .ebook-card{background:rgba(255,255,255,.86);border:1px solid rgba(80,60,35,.13);border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(40,30,20,.08);}
+    .ebook-card h3{margin-top:0;font-size:1.05rem;color:#3b2a1b;}
+    .ebook-highlight{border-left:6px solid rgba(155,96,32,.65);background:rgba(255,250,238,.9);border-radius:18px;padding:18px 20px;margin:22px 0;box-shadow:0 10px 25px rgba(60,40,20,.07);}
+    .ebook-action{background:rgba(236,247,239,.95);border:1px solid rgba(34,120,62,.18);border-radius:20px;padding:18px 20px;margin:22px 0;}
+    .ebook-reflection{background:rgba(238,244,255,.96);border:1px solid rgba(54,92,160,.16);border-radius:20px;padding:18px 20px;margin:22px 0;}
+    .ebook-checklist li,.ebook-steps li{margin-bottom:10px;line-height:1.65;}
+    .ebook-quote{font-size:1.2rem;line-height:1.55;font-weight:800;letter-spacing:-.02em;color:#3a2616;padding:20px 24px;border-radius:22px;background:linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,244,222,.9));border:1px solid rgba(150,100,40,.17);margin:24px 0;}
+    .ebook-visual .course-section{border-radius:22px;background:rgba(255,255,255,.78);border:1px solid rgba(70,50,30,.1);box-shadow:0 10px 26px rgba(35,25,15,.06);}
+    .ebook-visual .page-title{letter-spacing:-.04em;}
+    @media(max-width:720px){.ebook-grid{grid-template-columns:1fr;}.ebook-visual .ebook-hero{padding:24px;}}
+    @media print{
+      .ebook-visual .page,.book-chapter-page,.ebook-chapter-page{break-before:page;page-break-before:always;}
+      .ebook-visual .cover-page{break-before:auto;page-break-before:auto;}
+    }
+
   </style>
 </head>
 
@@ -10193,6 +10239,224 @@ Crie:
       return { ok:false, source:"erro-controlado", image:"" };
     }
 
+    function promptEbookAberturaV135(base,capitulos,tema,perfil){
+      return `
+Você é o VERBO IA gerando a ABERTURA de um E-BOOK cristão visual premium em HTML interno.
+Trabalhe somente nesta etapa. Não antecipe capítulos, fechamento ou contracapa.
+
+TÍTULO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR: ${base.author}
+TEMA CENTRAL FIXO: ${tema.nome}
+FOCO: ${tema.foco}
+TEXTO BÍBLICO BASE: ${base.biblicalBase}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+
+REGRAS DO E-BOOK VISUAL:
+- Entregue conteúdo final, pronto para leitura.
+- NÃO repita o prompt do usuário.
+- NÃO escreva “desenvolva esta parte”.
+- NÃO faça sermão, revista EBD, curso nem livro longo.
+- Escreva de forma visual, leve, bonita, colorida, didática e prática.
+- Use blocos com classes visuais: ebook-hero, ebook-card, ebook-grid, ebook-highlight, ebook-action, ebook-reflection, ebook-quote.
+- Não invente imagens externas. Use sugestões visuais em texto, quadros e elementos editoriais.
+- HTML interno apenas, sem markdown.
+
+CAPÍTULOS DO E-BOOK:
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\\n")}
+
+Crie somente:
+<div class="ebook-hero"><h1>${base.title}</h1><p>${base.subtitle}</p></div>
+<div class="ebook-grid">
+  <div class="ebook-card"><h3>O que você vai aprender</h3><p>...</p></div>
+  <div class="ebook-card"><h3>Como usar este e-book</h3><p>...</p></div>
+</div>
+<div class="ebook-highlight"><h2>Apresentação</h2><p>Texto acolhedor, prático e espiritual.</p></div>
+<div class="course-section"><h2>Sumário</h2><ol>Liste todos os capítulos.</ol></div>
+
+O texto deve ser bonito, acessível, envolvente e prático.
+      `.trim();
+    }
+
+    function promptEbookCapituloV135(base,titulo,numero,total,tema,perfil){
+      return `
+Você é o VERBO IA escrevendo o CAPÍTULO ${numero} de ${total} de um E-BOOK cristão visual premium em HTML interno.
+Trabalhe somente este capítulo. Não escreva outros capítulos e não volte para etapas anteriores.
+
+E-BOOK: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR: ${base.author}
+TEMA CENTRAL FIXO: ${tema.nome}
+CAPÍTULO ${numero}: ${titulo}
+TEXTO BÍBLICO BASE: ${base.biblicalBase}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+
+REGRAS DO E-BOOK VISUAL:
+- Entregue conteúdo final, pronto para leitura.
+- NÃO repita o prompt do usuário.
+- NÃO escreva “desenvolva esta parte”.
+- NÃO faça livro pesado, sermão, apostila formal, curso ou revista.
+- O capítulo deve ser bonito, colorido, prático, com leitura leve e aplicação clara.
+- Use texto corrido, mas intercalado com cards, destaques, listas, passos e quadros.
+- Use classes: ebook-hero, ebook-grid, ebook-card, ebook-highlight, ebook-action, ebook-reflection, ebook-checklist, ebook-steps, ebook-quote.
+- Não invente imagens externas. Sugira visual simbólico se necessário, mas não escreva prompt de imagem no corpo.
+- HTML interno apenas.
+
+Estruture exatamente assim:
+<div class="ebook-hero"><h2>Capítulo ${numero} — ${titulo}</h2><p>Abertura curta, envolvente e prática.</p></div>
+<div class="course-section"><p>Desenvolvimento principal com texto claro, bíblico, pastoral e aplicável.</p><p>...</p></div>
+<div class="ebook-highlight"><h3>Ideia central</h3><p>Explique a lição principal do capítulo em linguagem forte e memorável.</p></div>
+<div class="ebook-grid">
+  <div class="ebook-card"><h3>Observe</h3><p>Mostre o que o leitor precisa perceber.</p></div>
+  <div class="ebook-card"><h3>Entenda</h3><p>Explique o princípio bíblico.</p></div>
+</div>
+<div class="ebook-action"><h3>Na prática</h3><ol class="ebook-steps"><li>Passos aplicáveis e simples.</li></ol></div>
+<div class="ebook-reflection"><h3>Pense nisso</h3><p>Pergunta ou reflexão para o leitor.</p></div>
+<div class="ebook-quote">Inclua uma frase curta e forte do capítulo.</div>
+<div class="course-section"><h3>Resumo rápido</h3><ul class="ebook-checklist"><li>3 a 5 pontos de revisão.</li></ul></div>
+<div class="course-section"><h3>Oração</h3><p>Oração curta e coerente com o capítulo.</p></div>
+
+O capítulo deve ser visual, prático, bonito e útil.
+      `.trim();
+    }
+
+    function promptEbookFechamentoV135(base,capitulos,tema,perfil){
+      const bibliografia = tema.bibliografia.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+
+      return `
+Você é o VERBO IA gerando o FECHAMENTO de um E-BOOK cristão visual premium em HTML interno.
+Trabalhe somente nesta etapa final. Não recrie capítulos.
+
+E-BOOK: ${base.title}
+TEMA CENTRAL: ${tema.nome}
+CAPÍTULOS:
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\\n")}
+
+REGRAS:
+- Não repita o prompt.
+- Não escreva instruções.
+- Não invente livros, autores ou editoras.
+- HTML interno apenas.
+
+Crie:
+<div class="ebook-hero"><h2>Conclusão</h2><p>Conclusão encorajadora e prática.</p></div>
+<div class="ebook-action"><h2>Plano prático para começar hoje</h2><ol>Inclua passos claros e aplicáveis.</ol></div>
+<div class="ebook-reflection"><h2>Para continuar refletindo</h2><p>Inclua perguntas profundas e simples.</p></div>
+<div class="course-section"><h2>Oração final</h2><p>Oração pastoral curta.</p></div>
+<div class="course-section"><h2>Bibliografia recomendada segura</h2><p>Leituras reais e conhecidas para aprofundamento.</p><ul>${bibliografia}</ul></div>
+      `.trim();
+    }
+
+    function fallbackEbookCapituloV135(base,titulo,numero,tema){
+      return `
+        <div class="ebook-hero">
+          <h2>Capítulo ${numero} — ${escapeHtml(titulo)}</h2>
+          ${paragraph(`Este capítulo apresenta uma orientação prática e bíblica sobre ${titulo}, ajudando o leitor a transformar conhecimento em vida diária.`)}
+        </div>
+        <div class="course-section">
+          ${paragraph(`A vida cristã amadurece quando a verdade deixa de ser apenas informação e passa a orientar decisões, hábitos e atitudes. Por isso, este capítulo deve ser lido devagar, com oração e disposição para praticar.`)}
+          ${paragraph(`O objetivo é simples: ajudar o leitor a compreender melhor o tema, enxergar onde precisa crescer e dar passos concretos em direção a uma fé mais firme e produtiva.`)}
+        </div>
+        <div class="ebook-highlight"><h3>Ideia central</h3>${paragraph(`Aprender bem exige reverência, constância e aplicação.`)}</div>
+        <div class="ebook-action"><h3>Na prática</h3><ol class="ebook-steps"><li>Leia com atenção.</li><li>Anote uma verdade principal.</li><li>Ore sobre o que aprendeu.</li><li>Pratique uma decisão simples ainda hoje.</li></ol></div>
+        <div class="ebook-reflection"><h3>Pense nisso</h3>${paragraph(`Que atitude prática este capítulo pede de você hoje?`)}</div>
+      `;
+    }
+
+    async function generateEbookVisualAsync(base){
+      const perfil = { modo:"E-book visual", alvoPaginas:"25 a 40 páginas" };
+      const quantity = Number(getValue("quantity") || 8);
+      const count = Math.max(4,Math.min(quantity || 8,12));
+      const tema = temaLivroV11(base);
+      const capitulos = extrairCapitulosLivroV11(base,count);
+      const info = { label:"E-book" };
+
+      let html = `<div class="doc ebook-visual">`;
+
+      if(base.coverMode === "com-capa"){
+        setStep(0,"Etapa 1/7 — Gerando capa visual do e-book...");
+        anunciarEtapaLivroV133("Etapa 1/7","criando capa bonita e coerente com o tema.");
+        const imageData = await safeImagemLivroV132(promptCapaImagem(base,info),{ tipo:base.type, titulo:base.title });
+        html += renderCover(base,info,imageData);
+        renderGenerated(html + `</div>`);
+      }
+
+      setStep(0,"Etapa 2/7 — Montando folha de rosto...");
+      html += renderBookTitlePage(base);
+      renderGenerated(html + `</div>`);
+
+      setStep(1,"Etapa 3/7 — Gerando abertura visual e sumário...");
+      let abertura = await safeTextoLivroV132(
+        [promptEbookAberturaV135(base,capitulos,tema,perfil)],
+        "Abertura visual do e-book",
+        { minimo:520, minQuality:"abertura visual de e-book, com cards, apresentação e sumário" }
+      );
+
+      if(!validarConteudoLivroV11(abertura)){
+        abertura = `
+          <div class="ebook-hero"><h1>${escapeHtml(base.title)}</h1><p>${escapeHtml(base.subtitle)}</p></div>
+          <div class="ebook-grid"><div class="ebook-card"><h3>O que você vai aprender</h3>${paragraph(`Você aprenderá princípios práticos e bíblicos para viver este tema com mais clareza, constância e aplicação.`)}</div><div class="ebook-card"><h3>Como usar este e-book</h3>${paragraph(`Leia com calma, anote os pontos principais e pratique uma orientação por vez.`)}</div></div>
+          <div class="course-section"><h2>Sumário</h2><ol>${capitulos.map(c=>`<li>${escapeHtml(c)}</li>`).join("")}</ol></div>
+        `;
+      }
+
+      html += renderPage(abertura,"ebook-opening-page");
+      renderGenerated(html + `</div>`);
+
+      for(let i = 0; i < capitulos.length; i++){
+        setStep(2,`Etapa 4/7 — Gerando capítulo visual ${i + 1} de ${capitulos.length}...`);
+        anunciarEtapaLivroV133(`Capítulo visual ${i + 1} de ${capitulos.length}`,`desenvolvendo "${capitulos[i]}" com cards e aplicação prática.`);
+        let capitulo = await safeTextoLivroV132(
+          [promptEbookCapituloV135(base,capitulos[i],i + 1,capitulos.length,tema,perfil)],
+          `Capítulo visual ${i + 1} do e-book`,
+          { minimo:850, minQuality:"capítulo visual de e-book, com cards, destaque, passos práticos e oração" }
+        );
+
+        if(!validarConteudoLivroV11(capitulo)){
+          capitulo = fallbackEbookCapituloV135(base,capitulos[i],i + 1,tema);
+        }
+
+        html += renderPage(capitulo,`ebook-chapter-page chapter-${i + 1}`);
+        renderGenerated(html + `</div>`);
+      }
+
+      setStep(3,"Etapa 5/7 — Gerando fechamento visual...");
+      let fechamento = await safeTextoLivroV132(
+        [promptEbookFechamentoV135(base,capitulos,tema,perfil)],
+        "Fechamento visual do e-book",
+        { minimo:520, minQuality:"conclusão visual de e-book, plano prático, oração e bibliografia" }
+      );
+
+      if(!validarConteudoLivroV11(fechamento)){
+        fechamento = `
+          <div class="ebook-hero"><h2>Conclusão</h2>${paragraph(`A leitura deste e-book é apenas o começo. O crescimento vem quando a verdade recebida se transforma em prática diária.`)}</div>
+          <div class="ebook-action"><h2>Plano prático para começar hoje</h2><ol><li>Escolha um horário simples.</li><li>Leia com calma.</li><li>Anote uma lição.</li><li>Ore e pratique.</li></ol></div>
+          <div class="course-section"><h2>Bibliografia recomendada segura</h2><ul>${tema.bibliografia.map(b=>`<li>${escapeHtml(b)}</li>`).join("")}</ul></div>
+        `;
+      }
+
+      html += renderPage(fechamento,"ebook-closing-page");
+      renderGenerated(html + `</div>`);
+
+      if(base.coverMode === "com-capa"){
+        setStep(3,"Etapa 6/7 — Gerando contracapa visual...");
+        const contracapa = `
+          <h1 class="cover-title">${escapeHtml(base.title)}</h1>
+          <p class="cover-subtitle">${escapeHtml(base.subtitle)}</p>
+          <div class="summary-box">${paragraph(`Este e-book foi preparado para conduzir o leitor por uma jornada simples, bonita e prática de aprendizado, reflexão e aplicação. Cada página foi pensada para facilitar a leitura e transformar conhecimento em passos concretos.`)}</div>
+          <div class="summary-box"><h4>Frase em destaque</h4>${paragraph(`Aprender de verdade é permitir que a Palavra ilumine a mente, alcance o coração e transforme a prática diária.`)}</div>
+        `;
+        html += renderBookBackCover(base,contracapa);
+        renderGenerated(html + `</div>`);
+      }
+
+      html += `</div>`;
+      renderGenerated(html);
+      finishSteps("E-book visual premium gerado com sucesso.");
+    }
+
     async function generateLongMaterialAsync(base){
       const perfil = perfilLivroV12(base);
       const quantity = Number(getValue("quantity") || perfil.capPadrao);
@@ -10381,7 +10645,11 @@ Crie:
             finishSteps("Material gerado com sucesso.");
           }
 
-          if(["ebook","livro"].includes(base.type)){
+          if(base.type === "ebook"){
+            await generateEbookVisualAsync(base);
+          }
+
+          if(base.type === "livro"){
             await generateLongMaterialAsync(base);
           }
         }
@@ -10601,6 +10869,52 @@ Crie:
         max-width:100% !important;
       }
     }
+  
+    /* v13.5 — E-book visual premium */
+    .ebook-visual .page{
+      background:
+        radial-gradient(circle at top left, rgba(255,255,255,.95), rgba(255,255,255,.85)),
+        linear-gradient(135deg, rgba(255,247,229,.95), rgba(238,247,255,.95));
+      border:1px solid rgba(120,95,60,.16);
+    }
+    .ebook-visual .ebook-hero{
+      border-radius:28px;
+      padding:30px;
+      margin-bottom:24px;
+      background:linear-gradient(135deg, rgba(64,36,18,.95), rgba(144,92,35,.86));
+      color:#fff;
+      box-shadow:0 20px 45px rgba(50,30,15,.16);
+      position:relative;
+      overflow:hidden;
+    }
+    .ebook-visual .ebook-hero:after{
+      content:"";
+      position:absolute;
+      inset:auto -40px -60px auto;
+      width:220px;
+      height:220px;
+      border-radius:999px;
+      background:rgba(255,255,255,.12);
+    }
+    .ebook-visual .ebook-hero h1,
+    .ebook-visual .ebook-hero h2{color:#fff;margin:0 0 10px;letter-spacing:-.03em;}
+    .ebook-visual .ebook-hero p{color:rgba(255,255,255,.9);font-size:1.08rem;line-height:1.75;max-width:820px;}
+    .ebook-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:22px 0;}
+    .ebook-card{background:rgba(255,255,255,.86);border:1px solid rgba(80,60,35,.13);border-radius:22px;padding:20px;box-shadow:0 12px 30px rgba(40,30,20,.08);}
+    .ebook-card h3{margin-top:0;font-size:1.05rem;color:#3b2a1b;}
+    .ebook-highlight{border-left:6px solid rgba(155,96,32,.65);background:rgba(255,250,238,.9);border-radius:18px;padding:18px 20px;margin:22px 0;box-shadow:0 10px 25px rgba(60,40,20,.07);}
+    .ebook-action{background:rgba(236,247,239,.95);border:1px solid rgba(34,120,62,.18);border-radius:20px;padding:18px 20px;margin:22px 0;}
+    .ebook-reflection{background:rgba(238,244,255,.96);border:1px solid rgba(54,92,160,.16);border-radius:20px;padding:18px 20px;margin:22px 0;}
+    .ebook-checklist li,.ebook-steps li{margin-bottom:10px;line-height:1.65;}
+    .ebook-quote{font-size:1.2rem;line-height:1.55;font-weight:800;letter-spacing:-.02em;color:#3a2616;padding:20px 24px;border-radius:22px;background:linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,244,222,.9));border:1px solid rgba(150,100,40,.17);margin:24px 0;}
+    .ebook-visual .course-section{border-radius:22px;background:rgba(255,255,255,.78);border:1px solid rgba(70,50,30,.1);box-shadow:0 10px 26px rgba(35,25,15,.06);}
+    .ebook-visual .page-title{letter-spacing:-.04em;}
+    @media(max-width:720px){.ebook-grid{grid-template-columns:1fr;}.ebook-visual .ebook-hero{padding:24px;}}
+    @media print{
+      .ebook-visual .page,.book-chapter-page,.ebook-chapter-page{break-before:page;page-break-before:always;}
+      .ebook-visual .cover-page{break-before:auto;page-break-before:auto;}
+    }
+
   </style>
 </head>
 <body class="${classeFormato}">
