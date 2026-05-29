@@ -7461,6 +7461,7 @@ A dedicatória deve honrar as pessoas citadas pelo usuário e combinar com o tem
     function promptLivroContracapaV13(base,tema,perfil,capitulos){
       return `
 Você é o VERBO IA escrevendo o texto da CONTRACAPA de um ${perfil.modo.toLowerCase()} cristão em HTML interno.
+Trabalhe somente nesta etapa de contracapa. Não recrie o livro.
 
 LIVRO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
@@ -9960,6 +9961,7 @@ LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
     function promptLivroAberturaV11(base,capitulos,tema,perfil){
       return `
 Você é o VERBO IA gerando a ABERTURA de um LIVRO cristão em HTML interno.
+Trabalhe somente nesta etapa. Não antecipe capítulos, fechamento ou contracapa.
 
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
@@ -10002,6 +10004,7 @@ Escreva com densidade, beleza, verdade bíblica e linguagem que toque a alma.
 
       return `
 Você é o VERBO IA escrevendo o CAPÍTULO ${numero} de ${total} de um LIVRO cristão em HTML interno.
+Trabalhe somente este capítulo. Não escreva outros capítulos, não escreva fechamento e não volte para etapas anteriores.
 
 LIVRO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
@@ -10062,6 +10065,7 @@ Escreva com profundidade real. Não entregue rascunho nem instrução.
 
       return `
 Você é o VERBO IA gerando o fechamento de um LIVRO cristão em HTML interno.
+Trabalhe somente nesta etapa final. Não recrie capítulos anteriores.
 
 LIVRO: ${base.title}
 TEMA CENTRAL: ${tema.nome}
@@ -10127,6 +10131,60 @@ Crie:
       `;
     }
 
+    function anunciarEtapaLivroV133(nome,descricao = ""){
+      const msg = descricao ? `${nome}: ${descricao}` : nome;
+      setStatus(msg);
+      return msg;
+    }
+
+    async function safeTextoLivroV132(prompts,etapa,opcoes = {}){
+      const lista = Array.isArray(prompts) ? prompts : [prompts];
+
+      for(let tentativa = 1; tentativa <= 3; tentativa++){
+        try{
+          setStatus(`${etapa}: tentativa ${tentativa} de 3...`);
+          const html = await chamarTextoIAComTentativas(lista,`${etapa} — tentativa ${tentativa}`,opcoes);
+
+          if(validarConteudoLivroV11(html)){
+            setStatus(`${etapa}: concluída.`,"ok");
+            return html;
+          }
+
+          console.warn("Etapa do livro retornou conteúdo inválido:",etapa,tentativa);
+        }catch(error){
+          console.warn("Falha controlada na etapa do livro:",etapa,`tentativa ${tentativa}`,error);
+        }
+
+        if(tentativa < 3) await pause(500);
+      }
+
+      setStatus(`${etapa}: não concluiu após 3 tentativas. O app vai pular esta etapa e seguir com conteúdo de segurança.`,"error");
+      return "";
+    }
+
+    async function safeImagemLivroV132(prompt,meta = {}){
+      for(let tentativa = 1; tentativa <= 3; tentativa++){
+        try{
+          setStatus(`Capa do livro: tentativa ${tentativa} de 3...`);
+          const res = await chamarImagemIA(prompt,meta);
+
+          if(res?.ok && res?.image){
+            setStatus("Capa do livro: concluída.","ok");
+            return res;
+          }
+
+          console.warn("Capa do livro sem imagem válida:",tentativa,res);
+        }catch(error){
+          console.warn("Falha controlada na capa do livro:",`tentativa ${tentativa}`,error);
+        }
+
+        if(tentativa < 3) await pause(500);
+      }
+
+      setStatus("Capa do livro: não concluiu após 3 tentativas. O app vai seguir com capa textual.","error");
+      return { ok:false, source:"erro-controlado", image:"" };
+    }
+
     async function generateLongMaterialAsync(base){
       const perfil = perfilLivroV12(base);
       const quantity = Number(getValue("quantity") || perfil.capPadrao);
@@ -10138,18 +10196,22 @@ Crie:
       let html = `<div class="doc">`;
 
       if(base.coverMode === "com-capa"){
-        setStep(0,"Gerando capa profissional do livro...");
-        const imageData = await chamarImagemIA(promptCapaImagem(base,info),{ tipo:base.type, titulo:base.title });
+        setStep(0,"Etapa 1/7 — Gerando capa profissional do livro...");
+        anunciarEtapaLivroV133("Etapa 1/7","criando a capa do livro sem texto do prompt.");
+        const imageData = await safeImagemLivroV132(promptCapaImagem(base,info),{ tipo:base.type, titulo:base.title });
         html += renderCover(base,info,imageData);
         renderGenerated(html + `</div>`);
       }
 
+      setStep(0,"Etapa 2/7 — Montando folha de rosto...");
+      anunciarEtapaLivroV133("Etapa 2/7","montando a folha de rosto.");
       html += renderBookTitlePage(base);
       renderGenerated(html + `</div>`);
 
       if(shouldGenerateBookDedication(base)){
-        setStep(1,"Gerando dedicatória...");
-        let dedic = await chamarTextoIAComTentativas(
+        setStep(1,"Etapa 3/7 — Gerando dedicatória...");
+        anunciarEtapaLivroV133("Etapa 3/7","gerando a dedicatória antes da apresentação.");
+        let dedic = await safeTextoLivroV132(
           [promptLivroDedicatoriaV13(base,tema,perfil)],
           `Dedicatória do ${perfil.modo.toLowerCase()}`,
           { minimo:260, aceitarCurto:true, minQuality:"dedicatória sensível, elegante e coerente com o tema do livro" }
@@ -10163,8 +10225,9 @@ Crie:
         renderGenerated(html + `</div>`);
       }
 
-      setStep(2,"Gerando apresentação e sumário do livro...");
-      let abertura = await chamarTextoIAComTentativas(
+      setStep(1,"Etapa 4/7 — Gerando apresentação, orientação de leitura e sumário...");
+      anunciarEtapaLivroV133("Etapa 4/7","concentrando na abertura editorial do livro.");
+      let abertura = await safeTextoLivroV132(
         [promptLivroAberturaV11(base,capitulos,tema,perfil)],
         `Abertura do ${perfil.modo.toLowerCase()}`,
         { minimo:perfil.minimoAbertura, minQuality:`abertura robusta de ${perfil.modo.toLowerCase()}, sem repetir prompt, com apresentação e sumário` }
@@ -10183,8 +10246,9 @@ Crie:
       renderGenerated(html + `</div>`);
 
       for(let i = 0; i < capitulos.length; i++){
-        setStep(2,`Gerando capítulo ${i + 1} de ${capitulos.length}...`);
-        let capitulo = await chamarTextoIAComTentativas(
+        setStep(2,`Etapa 5/7 — Gerando capítulo ${i + 1} de ${capitulos.length}...`);
+        anunciarEtapaLivroV133(`Capítulo ${i + 1} de ${capitulos.length}`,`desenvolvendo "${capitulos[i]}" com foco exclusivo nesta parte.`);
+        let capitulo = await safeTextoLivroV132(
           [promptLivroCapituloV11(base,capitulos[i],i + 1,capitulos.length,tema,perfil)],
           `Capítulo ${i + 1} do ${perfil.modo.toLowerCase()}`,
           { minimo:perfil.minimoCapitulo, minQuality:`capítulo robusto de ${perfil.modo.toLowerCase()} cristão, profundo, prático, sem repetir prompt` }
@@ -10198,8 +10262,9 @@ Crie:
         renderGenerated(html + `</div>`);
       }
 
-      setStep(3,"Gerando fechamento, oração final e bibliografia segura...");
-      let fechamento = await chamarTextoIAComTentativas(
+      setStep(3,"Etapa 6/7 — Gerando fechamento, oração final e bibliografia segura...");
+      anunciarEtapaLivroV133("Etapa 6/7","concluindo o livro com cuidado pastoral.");
+      let fechamento = await safeTextoLivroV132(
         [promptLivroFechamentoV11(base,capitulos,tema,perfil)],
         `Fechamento do ${perfil.modo.toLowerCase()}`,
         { minimo:perfil.minimoFechamento, minQuality:"conclusão pastoral, direções práticas e bibliografia real segura" }
@@ -10217,8 +10282,9 @@ Crie:
       renderGenerated(html + `</div>`);
 
       if(base.coverMode === "com-capa"){
-        setStep(4,"Gerando contracapa do livro...");
-        let contracapa = await chamarTextoIAComTentativas(
+        setStep(3,"Etapa 7/7 — Gerando contracapa do livro...");
+        anunciarEtapaLivroV133("Etapa 7/7","criando síntese editorial e frase de destaque para a contracapa.");
+        let contracapa = await safeTextoLivroV132(
           [promptLivroContracapaV13(base,tema,perfil,capitulos)],
           `Contracapa do ${perfil.modo.toLowerCase()}`,
           { minimo:240, aceitarCurto:true, minQuality:"contracapa editorial forte, com síntese e frase de impacto" }
@@ -10315,7 +10381,7 @@ Crie:
         result.scrollIntoView({ behavior:"smooth", block:"start" });
       }catch(error){
         console.error(error);
-        setStatus("Erro ao gerar material. O app preservou o que já foi gerado na tela.","error");
+        setStatus("Erro ao gerar material. O app preservou o que já foi gerado na tela. Detalhe: " + (error?.message || "falha desconhecida"),"error");
       }finally{
         isGenerating = false;
         btnGenerate.disabled = false;
