@@ -7798,19 +7798,23 @@ TIPO DE MATERIAL: APOSTILA DO ALUNO.
       if(base.cursoTipo === "professor"){
         return `
 TIPO DE MATERIAL: MANUAL DO PROFESSOR.
-- Use a apostila do aluno como base central.
-- Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base.
-- Acrescente respostas, orientações didáticas, plano de aula, sugestões de explicação, exemplos extras, alertas éticos, como conduzir a turma e critérios de avaliação.
-- Não crie um curso diferente do aluno; aprofunde e oriente o professor.`.trim();
+- Use OBRIGATORIAMENTE a apostila do aluno como base central.
+- Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
+- NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo que a apostila do aluno.
+- Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula, roteiro de exposição, respostas das perguntas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
+- O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
+- Não crie um curso diferente do aluno; amplie, explique, responda, oriente e aprofunde.`.trim();
       }
 
       if(base.cursoTipo === "apoio-professor"){
         return `
 TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
-- Use a apostila do aluno e o manual do professor como base.
-- Aprofunde os temas com conteúdo bíblico, pastoral, ético e prático.
-- Inclua estudos complementares, casos práticos, modelos de atendimento, leituras orientadas, alertas ministeriais e aprofundamentos.
-- Não substitua a apostila nem o manual; sirva como material de preparo e aprofundamento.`.trim();
+- Use OBRIGATORIAMENTE a apostila do aluno e o manual do professor como base.
+- O livro de apoio NÃO é uma repetição do manual do professor. Ele deve ser o material mais aprofundado do curso.
+- NÃO entregue conteúdo menor, igual ou parecido com o manual. Amplie cada módulo com estudo bíblico, teologia aplicada, contextualização histórica quando útil, estratégias ministeriais, estudos de caso, modelos práticos, leituras orientadas, checklists, alertas ministeriais e aprofundamentos.
+- Para cada módulo, acrescente seções novas que não aparecem no aluno: estudo complementar, aprofundamento bíblico, aplicações avançadas, caso prático comentado, erros comuns, perguntas de reflexão para o professor, roteiro de preparo e recursos de apoio.
+- O livro de apoio deve preparar o professor por trás da aula, oferecendo conteúdo extra para enriquecer a ministração.
+- Não substitua a apostila nem o manual; sirva como biblioteca de preparo, aprofundamento e ampliação.`.trim();
       }
 
       if(base.cursoTipo === "divulgacao"){
@@ -7934,8 +7938,8 @@ Crie a abertura do material como apostila limpa, com estas seções:
 <div class="course-section"><h2>Metodologia</h2>...</div>
 <div class="course-section"><h2>Sumário dos módulos</h2><ol>...</ol></div>
 
-Se for Manual do Professor, inclua também: Como usar este manual.
-Se for Livro de Apoio, inclua também: Como usar este apoio no preparo das aulas.
+Se for Manual do Professor, inclua também: Como usar este manual, como ele se relaciona com a apostila do aluno e por que ele traz respostas e orientação de ministração.
+Se for Livro de Apoio, inclua também: Como usar este apoio no preparo das aulas, deixando claro que ele é material extra de aprofundamento e não repetição do manual.
 Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pastoral/didática.
       `.trim();
     }
@@ -7944,6 +7948,12 @@ Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pasto
       const revisao = base.cursoTipo === "aluno"
         ? "Perguntas de revisão sem respostas, com espaço para o aluno responder."
         : "Perguntas de revisão com respostas e orientação de correção.";
+
+      const metaExtensao = base.cursoTipo === "professor"
+        ? "Este módulo do MANUAL DO PROFESSOR deve ser mais completo que o módulo do aluno: mantenha o conteúdo-base e acrescente respostas, plano de aula, comentários, didática, exemplos extras e alertas."
+        : base.cursoTipo === "apoio-professor"
+          ? "Este módulo do LIVRO DE APOIO deve ser o mais aprofundado: não repita o manual; amplie com estudo complementar, teologia aplicada, casos práticos, estratégias, modelos e checklists."
+          : "Este módulo da APOSTILA DO ALUNO deve ser completo, claro e didático, com atividades e espaço de resposta.";
 
       return `
 Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão em HTML interno.
@@ -7965,6 +7975,9 @@ ${regrasTipoCurso(base)}
 
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
+
+META DE QUALIDADE E EXTENSÃO:
+${metaExtensao}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
@@ -7993,9 +8006,22 @@ Estruture exatamente assim:
 <div class="course-section"><h3>10. ${revisao}</h3><ol>...</ol></div>
 <div class="course-section"><h3>Resumo do módulo</h3><p>...</p></div>
 
-Se for Manual do Professor, acrescente dentro do módulo: orientação didática, plano de aula, respostas e como conduzir a discussão.
-Se for Livro de Apoio, aprofunde o conteúdo com estudos complementares, casos práticos e modelos úteis.
-Escreva com profundidade. O módulo deve ter conteúdo próprio e aplicável.
+Se for Manual do Professor, acrescente dentro do módulo, obrigatoriamente:
+<div class="course-section"><h3>Orientação ao professor</h3><p>...</p></div>
+<div class="course-section"><h3>Plano de aula sugerido</h3><ol>...</ol></div>
+<div class="course-section"><h3>Comentários para aprofundamento em sala</h3><p>...</p></div>
+<div class="course-section"><h3>Respostas e critérios de correção</h3><ol>...</ol></div>
+<div class="course-section"><h3>Dinâmica ou debate sugerido</h3><p>...</p></div>
+
+Se for Livro de Apoio, acrescente dentro do módulo, obrigatoriamente:
+<div class="course-section"><h3>Estudo complementar</h3><p>...</p></div>
+<div class="course-section"><h3>Aprofundamento bíblico e pastoral</h3><p>...</p></div>
+<div class="course-section"><h3>Estudo de caso comentado</h3><p>...</p></div>
+<div class="course-section"><h3>Estratégias práticas para aplicação ministerial</h3><ol>...</ol></div>
+<div class="course-section"><h3>Checklist de preparo do professor</h3><ul>...</ul></div>
+<div class="course-section"><h3>Recursos e leituras orientadas</h3><p>...</p></div>
+
+Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicável.
       `.trim();
     }
 
@@ -8037,6 +8063,86 @@ Estrutura sugerida:
 <div class="course-section"><h2>Avaliação final</h2><ol>...</ol></div>
 <div class="course-section"><h2>Certificado simbólico de conclusão</h2>...</div>
       `.trim();
+    }
+
+    function extrasManualProfessorFallback(base,modulo,numero){
+      if(base.cursoTipo !== "professor") return "";
+      return `
+        <div class="course-section">
+          <h3>Orientação ao professor</h3>
+          ${paragraph(`Ao ministrar este módulo, comece retomando o conteúdo da apostila do aluno e mostre como ele se aplica ao serviço cristão. O professor deve conduzir a turma com clareza, evitando transformar a aula em sermão e promovendo participação, perguntas e reflexão prática.`)}
+        </div>
+        <div class="course-section">
+          <h3>Plano de aula sugerido</h3>
+          <ol class="list">
+            <li><strong>Abertura:</strong> apresente o objetivo do módulo e ore brevemente.</li>
+            <li><strong>Revisão:</strong> conecte o módulo anterior com o tema atual.</li>
+            <li><strong>Exposição:</strong> explique os conceitos centrais com base bíblica.</li>
+            <li><strong>Discussão:</strong> conduza uma pergunta prática para a turma.</li>
+            <li><strong>Atividade:</strong> aplique um exercício de simulação ou estudo de caso.</li>
+            <li><strong>Fechamento:</strong> resuma o aprendizado e indique a aplicação da semana.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Comentários para aprofundamento em sala</h3>
+          ${paragraph(`O professor pode destacar que conhecimento ministerial sem maturidade espiritual produz atuação insegura. A turma deve compreender que serviço cristão exige amor, preparo, ética, humildade e constância.`)}
+          ${paragraph(`Use exemplos reais de forma anônima e respeitosa. Evite expor pessoas, instituições ou situações específicas sem autorização.`)}
+        </div>
+        <div class="course-section">
+          <h3>Respostas e critérios de correção</h3>
+          <ol class="list">
+            <li><strong>Resposta esperada:</strong> o aluno deve demonstrar compreensão bíblica, postura ética e aplicação prática.</li>
+            <li><strong>Critério:</strong> avaliar clareza, fidelidade bíblica, responsabilidade e maturidade.</li>
+            <li><strong>Observação:</strong> respostas não precisam ser idênticas, mas devem preservar o princípio ensinado.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Dinâmica ou debate sugerido</h3>
+          ${paragraph(`Divida a turma em pequenos grupos e apresente uma situação prática ligada ao módulo. Cada grupo deve responder: qual seria a abordagem correta, quais limites precisam ser respeitados e qual encaminhamento seria prudente.`)}
+        </div>`;
+    }
+
+    function extrasLivroApoioFallback(base,modulo,numero){
+      if(base.cursoTipo !== "apoio-professor") return "";
+      return `
+        <div class="course-section">
+          <h3>Estudo complementar</h3>
+          ${paragraph(`Este apoio amplia o módulo ${numero}, oferecendo ao professor conteúdo extra para enriquecer a preparação. O objetivo não é repetir a apostila nem o manual, mas aprofundar a compreensão bíblica, pastoral e prática do tema.`)}
+          ${paragraph(`O professor deve estudar este conteúdo antes da aula e selecionar os elementos mais úteis para a realidade da turma, preservando a unidade do curso.`)}
+        </div>
+        <div class="course-section">
+          <h3>Aprofundamento bíblico e pastoral</h3>
+          ${paragraph(`A aplicação bíblica deve ser feita com equilíbrio: a Escritura orienta a missão, molda o caráter do servo e estabelece limites para uma atuação fiel. O professor deve evitar tanto o ativismo sem espiritualidade quanto a espiritualidade sem responsabilidade prática.`)}
+        </div>
+        <div class="course-section">
+          <h3>Estudo de caso comentado</h3>
+          ${paragraph(`Caso: um aluno deseja agir rapidamente diante de uma situação difícil, mas ainda não compreende todos os limites envolvidos. Comentário: o professor deve mostrar que zelo sem prudência pode causar dano. A resposta madura começa com escuta, avaliação, oração, orientação e encaminhamento quando necessário.`)}
+        </div>
+        <div class="course-section">
+          <h3>Estratégias práticas para aplicação ministerial</h3>
+          <ol class="list">
+            <li>Preparar a equipe com oração, estudo e orientação clara.</li>
+            <li>Definir responsabilidades antes da ação ministerial.</li>
+            <li>Registrar aprendizados e dificuldades após cada atividade.</li>
+            <li>Promover acompanhamento dos alunos e voluntários.</li>
+            <li>Revisar limites éticos antes de ações em campo.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Checklist de preparo do professor</h3>
+          <ul class="list">
+            <li>Li a apostila do aluno?</li>
+            <li>Revisei o manual do professor?</li>
+            <li>Separei exemplos práticos?</li>
+            <li>Preparei perguntas para debate?</li>
+            <li>Revisei os limites éticos e pastorais?</li>
+            <li>Planejei o fechamento e a atividade?</li>
+          </ul>
+        </div>
+        <div class="course-section">
+          <h3>Recursos e leituras orientadas</h3>
+          ${paragraph(`Sugira leitura bíblica complementar, revisão dos textos principais do módulo, estudo dirigido em grupo e pesquisa supervisionada sobre práticas ministeriais responsáveis. Evite recomendar materiais sem segurança doutrinária ou fontes sem credibilidade.`)}
+        </div>`;
     }
 
     function gerarModuloCursoFallback(base,modulo,numero,total){
@@ -8121,6 +8227,9 @@ Estrutura sugerida:
 
         ${blocoPerguntasCursoFallback(base)}
 
+        ${extrasManualProfessorFallback(base,modulo,numero)}
+        ${extrasLivroApoioFallback(base,modulo,numero)}
+
         <div class="course-section">
           <h3>Resumo do módulo</h3>
           ${paragraph(`A ${modulo.titulo} exige amor cristão, preparo, humildade e responsabilidade. O capelão serve melhor quando entende que sua missão é estar presente, ouvir, acolher, orar com respeito e encaminhar com sabedoria.`)}
@@ -8151,10 +8260,11 @@ Estrutura sugerida:
       let html = `<div class="doc">`;
 
       setStep(0,"Gerando apresentação limpa do curso...");
+      const minimoApresentacaoCurso = base.cursoTipo === "apoio-professor" ? 1200 : base.cursoTipo === "professor" ? 1000 : 700;
       let apresentacao = await chamarTextoIAComTentativas(
         [promptCursoApresentacao(base,modulos)],
         "Apresentação do curso",
-        { minimo:700, aceitarCurto:true, aceitarMuitoCurto:true }
+        { minimo:minimoApresentacaoCurso, aceitarCurto:base.cursoTipo === "aluno", aceitarMuitoCurto:false }
       );
 
       if(!validarConteudoCurso(apresentacao)){
@@ -8194,10 +8304,11 @@ Estrutura sugerida:
         await pause(500);
         setStep(stepIndex,`Gerando Módulo ${numero}: ${modulo.titulo}...`);
 
+        const minimoModuloCurso = base.cursoTipo === "apoio-professor" ? 1850 : base.cursoTipo === "professor" ? 1550 : 1050;
         let moduloHtml = await chamarTextoIAComTentativas(
           [promptCursoModulo(base,modulo,numero,modulos.length)],
           `Módulo ${numero} do curso`,
-          { minimo:950, aceitarCurto:true, aceitarMuitoCurto:true }
+          { minimo:minimoModuloCurso, aceitarCurto:base.cursoTipo === "aluno", aceitarMuitoCurto:false }
         );
 
         if(!validarConteudoCurso(moduloHtml)){
@@ -8212,10 +8323,11 @@ Estrutura sugerida:
       await pause(500);
       setStep(stepsByType.curso.length - 1,"Gerando conclusão, avaliação e modelos práticos...");
 
+      const minimoFechamentoCurso = base.cursoTipo === "apoio-professor" ? 1200 : base.cursoTipo === "professor" ? 1000 : 700;
       let fechamento = await chamarTextoIAComTentativas(
         [promptCursoFechamento(base,modulos)],
         "Fechamento do curso",
-        { minimo:700, aceitarCurto:true, aceitarMuitoCurto:true }
+        { minimo:minimoFechamentoCurso, aceitarCurto:base.cursoTipo === "aluno", aceitarMuitoCurto:false }
       );
 
       if(!validarConteudoCurso(fechamento)){
