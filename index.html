@@ -2415,6 +2415,70 @@
       }
     }
 
+  
+    /* v13.8 — Revista EBD: Leitura Bíblica em Classe em uma coluna; comentário/tópicos em duas colunas */
+    .doc.magazine-layout .lesson-page > .compact-comment-header,
+    .doc.magazine-layout .lesson-page > .scripture-full{
+      column-span:all;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .doc.magazine-layout .lesson-page > .scripture-full{margin-bottom:18px;}
+    .doc.magazine-layout .lesson-page > .magazine-columns{
+      column-count:2;
+      column-gap:28px;
+      column-rule:1px solid rgba(60,80,120,.16);
+      text-align:justify;
+      hyphens:auto;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns .lesson-topic{
+      break-inside:auto;
+      page-break-inside:auto;
+      border-left:5px solid #0c5fc4;
+      padding-left:12px;
+      margin-bottom:16px;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns .subtopic{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      border-left:4px solid #d89600;
+      padding:10px 11px;
+      margin:8px 0;
+      border-radius:12px;
+      box-shadow:none;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns .block,
+    .doc.magazine-layout .lesson-page > .magazine-columns .knowledge-box,
+    .doc.magazine-layout .lesson-page > .magazine-columns .summary-box,
+    .doc.magazine-layout .lesson-page > .magazine-columns .personal-application{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      padding:12px 13px;
+      margin:10px 0;
+      border-radius:14px;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns p{
+      line-height:1.58;
+      margin-bottom:.65rem;
+    }
+    @media(max-width:820px){
+      .doc.magazine-layout .lesson-page > .magazine-columns{column-count:1;column-rule:none;}
+    }
+    @media print{
+      .doc.magazine-layout .lesson-page > .magazine-columns{
+        column-count:2 !important;
+        column-gap:20px !important;
+        column-rule:1px solid rgba(60,80,120,.16) !important;
+        font-size:.92rem !important;
+        line-height:1.52 !important;
+      }
+      .doc.magazine-layout .lesson-page > .scripture-full{
+        font-size:.94rem !important;
+        line-height:1.48 !important;
+      }
+      .doc.magazine-layout .lesson-page > .scripture-full p{margin-bottom:.45rem !important;}
+    }
+
   </style>
 </head>
 
@@ -5430,6 +5494,14 @@ Não inventar bibliografia.
         { teste:["efésios 2.8","ef 2.8"], texto:"Porque pela graça sois salvos, por meio da fé; e isso não vem de vós; é dom de Deus." },
         { teste:["efésios 2.10","ef 2.10"], texto:"Porque somos feitura sua, criados em Cristo Jesus para as boas obras." },
         { teste:["mateus 28.19","mt 28.19"], texto:"Ide, ensinai todas as nações, batizando-as em nome do Pai, e do Filho, e do Espírito Santo." },
+        { teste:["mateus 16.18","mt 16.18"], texto:"Edificarei a minha igreja, e as portas do inferno não prevalecerão contra ela." },
+        { teste:["atos 2.42","at 2.42"], texto:"E perseveravam na doutrina dos apóstolos, e na comunhão, e no partir do pão, e nas orações." },
+        { teste:["1 coríntios 12.27","1co 12.27","1 co 12.27"], texto:"Ora, vós sois o corpo de Cristo e seus membros em particular." },
+        { teste:["efésios 4.12","ef 4.12"], texto:"Querendo o aperfeiçoamento dos santos, para a obra do ministério, para edificação do corpo de Cristo." },
+        { teste:["hebreus 10.25","hb 10.25"], texto:"Não deixando a nossa congregação, como é costume de alguns; antes, admoestando-nos uns aos outros." },
+        { teste:["efésios 2.19","ef 2.19"], texto:"Assim que já não sois estrangeiros, nem forasteiros, mas concidadãos dos Santos e da família de Deus." },
+        { teste:["1 pedro 2.9","1pe 2.9","1 pe 2.9"], texto:"Mas vós sois a geração eleita, o sacerdócio real, a nação santa, o povo adquirido." },
+
         { teste:["atos 1.8","at 1.8"], texto:"Recebereis a virtude do Espírito Santo, que há de vir sobre vós; e ser-me-eis testemunhas." }
       ];
 
@@ -5644,19 +5716,45 @@ Não inventar bibliografia.
         const titulo = extrairTituloLicao(match[2],numero);
 
         const inicio = match.index;
-        const resto = raw.slice(inicio + 10);
+        const resto = raw.slice(inicio + match[0].length);
         const proximo = resto.search(/li[cç][aã]o\s*[1-4]\s*[:\-–—]/i);
-        const fim = proximo >= 0 ? inicio + 10 + proximo : Math.min(raw.length,inicio + 2800);
+        const fim = proximo >= 0 ? inicio + match[0].length + proximo : Math.min(raw.length,inicio + 4200);
         const bloco = raw.slice(inicio,fim);
 
-        const textoBaseMatch = bloco.match(/texto\s*base\s*[:\-–—]\s*([^\n]+)/i);
-        const objetivoMatch = bloco.match(/objetivo\s*[:\-–—]\s*([^\n]+)/i);
+        const textoBase = extrairCampoLicaoV138(bloco,[
+          "texto\\s*b[ií]blico\\s*base",
+          "texto\\s*base",
+          "textos\\s*principais",
+          "texto\\s*principal"
+        ]);
 
-        const textoBase = textoBaseMatch ? textoBaseMatch[1].trim() : "";
-        const objetivo = objetivoMatch ? objetivoMatch[1].trim() : "";
+        const leituraClasse = referenciasPrincipaisRevistaV138(
+          extrairCampoLicaoV138(bloco,["leitura\\s*b[ií]blica\\s*em\\s*classe","leitura\\s*em\\s*classe"]) || textoBase
+        );
+
+        const textoAureo = extrairCampoLicaoV138(bloco,["texto\\s*[aá]ureo"]);
+        const verdadePratica = extrairCampoLicaoV138(bloco,["verdade\\s*pr[aá]tica"]);
+        const objetivo = extrairCampoLicaoV138(bloco,["objetivo","dire[cç][aã]o\\s*da\\s*li[cç][aã]o"]);
         const topicos = extrairTopicosDoBloco(bloco);
 
-        encontradas[numero - 1] = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase,topicos);
+        const licao = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase,topicos);
+
+        if(textoAureo){
+          licao.textoAureoRef = reduzirParaUmVersiculo(textoAureo);
+          licao.textoAureo = licao.textoAureoRef;
+          licao.textoAureoTexto = textoBiblicoCurtoPorReferencia(licao.textoAureoRef) || licao.textoAureoTexto;
+        }
+
+        if(leituraClasse){
+          licao.leituraClasse = leituraClasse;
+        }
+
+        if(verdadePratica){
+          licao.sintese = verdadePratica;
+          licao.tese = verdadePratica;
+        }
+
+        encontradas[numero - 1] = ajustarLicaoRevistaV138(licao,numero,base);
       }
 
       const filtradas = encontradas.filter(Boolean);
@@ -5673,6 +5771,115 @@ Não inventar bibliografia.
         montarLicaoUniversal(`A Transmissão e a Preservação de ${temaLimpo}`,3,base),
         montarLicaoUniversal(`A Confiança Cristã em ${temaLimpo}`,4,base)
       ];
+    }
+
+    function referenciasPrincipaisRevistaV138(texto){
+      const refs = dividirReferenciasBiblicas(texto)
+        .map(r => limparReferencia(r))
+        .filter(Boolean);
+
+      const unicas = [];
+      refs.forEach(ref => {
+        const n = ref.toLowerCase();
+        if(!unicas.some(x => x.toLowerCase() === n)) unicas.push(ref);
+      });
+
+      return unicas.slice(0,2).join("; ");
+    }
+
+    function extrairCampoLicaoV138(bloco,nomes){
+      const lista = Array.isArray(nomes) ? nomes : [nomes];
+
+      for(const nome of lista){
+        const regex = new RegExp(nome + "\\s*[:\\-–—]\\s*([^\\n]+)","i");
+        const m = bloco.match(regex);
+        if(m && m[1]) return m[1].trim();
+      }
+
+      return "";
+    }
+
+    function resumoEclesiologiaV138(titulo,numero){
+      const t = String(titulo || "").toLowerCase();
+
+      if(/plano de deus|fundamento|cristo/.test(t)){
+        return "A lição mostra que a igreja local pertence a Cristo, nasce do plano de Deus e expressa visivelmente o povo do Senhor reunido em comunhão, fé e missão.";
+      }
+
+      if(/comunh|corpo|santos/.test(t)){
+        return "A lição ensina que a igreja é Corpo de Cristo, onde cada membro tem valor, função e responsabilidade no cuidado e na edificação mútua.";
+      }
+
+      if(/discipulado|servi|escola|ensino/.test(t)){
+        return "A lição apresenta a igreja local como ambiente de ensino, discipulado, maturidade espiritual e preparo dos santos para o serviço cristão.";
+      }
+
+      if(/miss|mundo|evangel|reino/.test(t)){
+        return "A lição mostra que a igreja local existe para glorificar a Deus, edificar os santos e anunciar o Evangelho ao mundo com fidelidade e amor.";
+      }
+
+      return `A lição ${numero} desenvolve o tema da igreja local com base bíblica, aplicação prática e compromisso com a vida em comunidade.`;
+    }
+
+    function ajustarLicaoRevistaV138(dados,numero,base){
+      const d = { ...(dados || {}) };
+      const titulo = d.titulo || `Lição ${numero}`;
+      const textoGeral = `${base.title} ${base.theme} ${base.extraNotes}`.toLowerCase();
+      const igrejaLocal = /igreja local|corpo de cristo|comunh[aã]o dos santos|plano de deus/.test(textoGeral);
+
+      const padrao = igrejaLocal ? [
+        {
+          textoAureo:"Mateus 16.18",
+          textoAureoTexto:"Edificarei a minha igreja, e as portas do inferno não prevalecerão contra ela.",
+          leituraClasse:"Mateus 16.18; Efésios 2.19-22",
+          sintese:"A igreja local é uma expressão visível do povo de Deus, edificada por Cristo e chamada para viver em comunhão, fé, santidade e missão.",
+          palavraChave:"Igreja"
+        },
+        {
+          textoAureo:"1 Coríntios 12.27",
+          textoAureoTexto:"Ora, vós sois o corpo de Cristo e seus membros em particular.",
+          leituraClasse:"Atos 2.42-47; 1 Coríntios 12.12-27",
+          sintese:"Nenhum cristão foi chamado para viver isolado, mas para crescer em comunhão, cuidado e serviço no Corpo de Cristo.",
+          palavraChave:"Comunhão"
+        },
+        {
+          textoAureo:"Efésios 4.12",
+          textoAureoTexto:"Querendo o aperfeiçoamento dos santos, para a obra do ministério, para edificação do corpo de Cristo.",
+          leituraClasse:"Efésios 4.11-16; 2 Timóteo 2.2",
+          sintese:"A igreja local é lugar de ensino, discipulado, formação espiritual e preparo dos santos para servir com maturidade.",
+          palavraChave:"Discipulado"
+        },
+        {
+          textoAureo:"Mateus 28.19",
+          textoAureoTexto:"Ide, ensinai todas as nações, batizando-as em nome do Pai, e do Filho, e do Espírito Santo.",
+          leituraClasse:"Mateus 28.18-20; Atos 1.8",
+          sintese:"A igreja local existe para glorificar a Deus, edificar os santos e anunciar o Evangelho ao mundo.",
+          palavraChave:"Missão"
+        }
+      ][numero - 1] : null;
+
+      const leituraLimitada = referenciasPrincipaisRevistaV138(d.leituraClasse || d.textoBase || base.biblicalBase);
+
+      if(padrao){
+        d.textoAureoRef = d.textoAureoRef || d.textoAureo || padrao.textoAureo;
+        d.textoAureo = d.textoAureo || d.textoAureoRef || padrao.textoAureo;
+        d.textoAureoTexto = textoBiblicoCurtoPorReferencia(d.textoAureoRef || d.textoAureo) || padrao.textoAureoTexto;
+        d.leituraClasse = referenciasPrincipaisRevistaV138(d.leituraClasse || padrao.leituraClasse) || padrao.leituraClasse;
+        d.sintese = /verdade bíblica estudada orienta a fé|fortalece a esperança|conduz o cristão/i.test(d.sintese || "") ? padrao.sintese : (d.sintese || padrao.sintese);
+        d.palavraChave = d.palavraChave || padrao.palavraChave;
+      }else{
+        d.textoAureoRef = d.textoAureoRef || d.textoAureo || escolherTextoAureoPrincipal(d.leituraClasse,base);
+        d.textoAureo = d.textoAureo || d.textoAureoRef;
+        d.textoAureoTexto = textoBiblicoCurtoPorReferencia(d.textoAureoRef || d.textoAureo) || d.textoAureoTexto || "";
+        d.leituraClasse = leituraLimitada || d.leituraClasse || base.biblicalBase;
+        d.sintese = /verdade bíblica estudada orienta a fé|fortalece a esperança|conduz o cristão/i.test(d.sintese || "") ? resumoEclesiologiaV138(titulo,numero) : (d.sintese || resumoEclesiologiaV138(titulo,numero));
+      }
+
+      d.textoAureoRef = reduzirParaUmVersiculo(d.textoAureoRef || d.textoAureo);
+      d.textoAureo = d.textoAureoRef;
+      d.leituraClasse = referenciasPrincipaisRevistaV138(d.leituraClasse) || d.leituraClasse;
+
+      return d;
     }
 
     function dadosLicoesMensais(base,info){
@@ -5749,6 +5956,10 @@ REGRAS DE QUALIDADE:
 - Evitar repetição de ideias apenas para preencher espaço.
 - Cada tópico precisa acrescentar algo novo.
 - A Revista do Aluno deve ser profunda, compacta, econômica para impressão e com aparência de livreto de EBD.
+- Leitura Bíblica em Classe deve usar no máximo 2 referências principais, nunca uma lista grande.
+- Texto Áureo, Leitura Bíblica em Classe e Síntese precisam combinar exatamente com o tema da lição.
+- Evite sínteses genéricas como “a verdade bíblica estudada orienta a fé”.
+- Na diagramação da lição: Leitura Bíblica em Classe fica em uma coluna; comentário, introdução, tópicos e subtópicos ficam em duas colunas.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
     }
@@ -5831,8 +6042,11 @@ Crie SOMENTE este bloco:
 <div class="scripture-full"><h3>Leitura Bíblica em Classe</h3>...</div>
 
 REGRAS:
-- Use as referências indicadas: ${dados.leituraClasse}
+- Use somente estas referências principais: ${dados.leituraClasse}
+- Use no máximo 2 referências.
 - Escreva os versículos completos ou uma seleção fiel e clara dos versículos principais.
+- Não acrescente outras referências além das indicadas.
+- O texto escrito precisa corresponder exatamente à referência exibida.
 - Não escreva Texto Áureo aqui.
 - O Texto Áureo já apareceu na abertura da lição.
 - Não repita o Texto Áureo.
@@ -7259,16 +7473,17 @@ Regras:
     }
 
     async function gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados){
-      const partes = [];
+      const topo = [];
+      const corpo = [];
 
-      partes.push(`
+      topo.push(`
         <div class="compact-comment-header">
           <h2>Comentário</h2>
           <p>Lição ${numero} • ${escapeHtml(dados.titulo)} • Palavra-chave: ${escapeHtml(dados.palavraChave || "Lição")}</p>
         </div>
       `);
 
-      partes.push(await gerarLeituraClasse(base,info,licoes,numero,dados));
+      topo.push(await gerarLeituraClasse(base,info,licoes,numero,dados));
 
       const intro = await gerarParteAluno(
         base,
@@ -7287,7 +7502,7 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         160
       );
 
-      partes.push(intro || blocoManualVazio("block","Introdução"));
+      corpo.push(intro || blocoManualVazio("block","Introdução"));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -7298,7 +7513,7 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         };
 
         const topicoHtml = await gerarTopicoAlunoEmBlocos(base,info,licoes,numero,dados,topico,i);
-        partes.push(topicoHtml);
+        corpo.push(topicoHtml);
       }
 
       const ampliando = await gerarParteAluno(
@@ -7320,7 +7535,7 @@ Regras:
         110
       );
 
-      partes.push(ampliando || blocoManualVazio("knowledge","Ampliando o Conhecimento"));
+      corpo.push(ampliando || blocoManualVazio("knowledge","Ampliando o Conhecimento"));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -7338,7 +7553,7 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         140
       );
 
-      partes.push(conclusao || blocoManualVazio("block","Conclusão"));
+      corpo.push(conclusao || blocoManualVazio("block","Conclusão"));
 
       const revisao = await gerarParteAluno(
         base,
@@ -7357,7 +7572,7 @@ Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong
         110
       );
 
-      partes.push(revisao || `
+      corpo.push(revisao || `
         <div class="summary-box">
           <h4>Revisando o Conteúdo</h4>
           ${(dados.perguntas || []).slice(0,4).map((q,i) => `
@@ -7369,7 +7584,12 @@ Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong
         </div>
       `);
 
-      return limparLinguagemAluno(partes.join("\n"));
+      return limparLinguagemAluno(`
+        ${topo.join("\n")}
+        <div class="magazine-columns">
+          ${corpo.join("\n")}
+        </div>
+      `);
     }
 
     async function gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto){
@@ -7858,22 +8078,26 @@ Estruture assim:
       }
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
-        if(page.querySelector(".magazine-columns")) return;
+        if(page.querySelector(":scope > .magazine-columns")) return;
 
-        const hero = page.querySelector(".lesson-hero");
         const nodes = Array.from(page.childNodes);
         const wrap = document.createElement("div");
         wrap.className = "magazine-columns";
 
+        let foundScripture = false;
+
         nodes.forEach(node => {
-          if(hero && node === hero) return;
-          wrap.appendChild(node);
+          if(node.nodeType === 1 && node.matches(".scripture-full")){
+            foundScripture = true;
+            return;
+          }
+
+          if(foundScripture){
+            wrap.appendChild(node);
+          }
         });
 
-        if(hero){
-          page.appendChild(wrap);
-        }else{
-          page.innerHTML = "";
+        if(wrap.childNodes.length){
           page.appendChild(wrap);
         }
       });
@@ -7890,11 +8114,13 @@ Estruture assim:
 
       for(let i = 0; i < licoes.length; i++){
         const numero = i + 1;
-        const dados = licoes[i];
-        const ref = reduzirParaUmVersiculo(dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base));
-        dados.textoAureoRef = ref;
-        dados.textoAureo = ref;
-        dados.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || "Permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido.";
+        const ajustada = ajustarLicaoRevistaV138(licoes[i],numero,base);
+        const ref = reduzirParaUmVersiculo(ajustada.textoAureoRef || ajustada.textoAureo || escolherTextoAureoPrincipal(ajustada.leituraClasse,base));
+        ajustada.textoAureoRef = ref;
+        ajustada.textoAureo = ref;
+        ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || ajustada.textoAureoTexto || "Texto bíblico relacionado ao tema central da lição.";
+        ajustada.leituraClasse = referenciasPrincipaisRevistaV138(ajustada.leituraClasse || base.biblicalBase);
+        licoes[i] = ajustada;
       }
 
       if(info.isSupportBook){
@@ -11351,6 +11577,70 @@ Crie:
         padding:12px 14px !important;
         margin:10px 0 !important;
       }
+    }
+
+  
+    /* v13.8 — Revista EBD: Leitura Bíblica em Classe em uma coluna; comentário/tópicos em duas colunas */
+    .doc.magazine-layout .lesson-page > .compact-comment-header,
+    .doc.magazine-layout .lesson-page > .scripture-full{
+      column-span:all;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+    .doc.magazine-layout .lesson-page > .scripture-full{margin-bottom:18px;}
+    .doc.magazine-layout .lesson-page > .magazine-columns{
+      column-count:2;
+      column-gap:28px;
+      column-rule:1px solid rgba(60,80,120,.16);
+      text-align:justify;
+      hyphens:auto;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns .lesson-topic{
+      break-inside:auto;
+      page-break-inside:auto;
+      border-left:5px solid #0c5fc4;
+      padding-left:12px;
+      margin-bottom:16px;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns .subtopic{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      border-left:4px solid #d89600;
+      padding:10px 11px;
+      margin:8px 0;
+      border-radius:12px;
+      box-shadow:none;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns .block,
+    .doc.magazine-layout .lesson-page > .magazine-columns .knowledge-box,
+    .doc.magazine-layout .lesson-page > .magazine-columns .summary-box,
+    .doc.magazine-layout .lesson-page > .magazine-columns .personal-application{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      padding:12px 13px;
+      margin:10px 0;
+      border-radius:14px;
+    }
+    .doc.magazine-layout .lesson-page > .magazine-columns p{
+      line-height:1.58;
+      margin-bottom:.65rem;
+    }
+    @media(max-width:820px){
+      .doc.magazine-layout .lesson-page > .magazine-columns{column-count:1;column-rule:none;}
+    }
+    @media print{
+      .doc.magazine-layout .lesson-page > .magazine-columns{
+        column-count:2 !important;
+        column-gap:20px !important;
+        column-rule:1px solid rgba(60,80,120,.16) !important;
+        font-size:.92rem !important;
+        line-height:1.52 !important;
+      }
+      .doc.magazine-layout .lesson-page > .scripture-full{
+        font-size:.94rem !important;
+        line-height:1.48 !important;
+      }
+      .doc.magazine-layout .lesson-page > .scripture-full p{margin-bottom:.45rem !important;}
     }
 
   </style>
