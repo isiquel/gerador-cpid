@@ -5872,6 +5872,10 @@ Use HTML com:
         return "visual de igreja firme em meio à confusão, Bíblia iluminada como centro, pessoas caminhando entre sombras e luz, contraste entre verdade e engano, atmosfera atual e urgente";
       }
 
+      if(/perdas|perda|renuncia|renúncia|solidao|solidão|lagrima|lágrima|chamado|ministerio|ministério|exaustao|exaustão|esgotamento/.test(texto)){
+        return "visual cristão editorial profundo e sensível, pessoa em oração ou em silêncio, lágrimas discretas, Bíblia ou altar em segundo plano, atmosfera de renúncia, consolo, esperança e presença do Espírito Santo, sem dramatização exagerada";
+      }
+
       if(/família|lar|casamento|filhos|casa/.test(texto)){
         return "visual familiar cristão, família em oração, lar acolhedor, luz suave entrando pela janela, Bíblia sobre a mesa, ambiente de paz";
       }
@@ -7287,6 +7291,10 @@ Seja completo, mas sem desperdiçar páginas.
     }
 
     function renderCover(base,info = {},imageData = null){
+      if(base.type === "livro" || base.type === "ebook"){
+        return renderBookCover(base,info,imageData);
+      }
+
       const hasImage = imageData?.ok && imageData?.image;
 
       const imageTag = hasImage
@@ -7325,7 +7333,80 @@ Seja completo, mas sem desperdiçar páginas.
       `;
     }
 
+    function renderBookCover(base,info = {},imageData = null){
+      const hasImage = imageData?.ok && imageData?.image;
+      const imageTag = hasImage
+        ? `<img class="cover-image" src="${escapeHtml(imageData.image)}" alt="Arte da capa do livro" loading="eager" decoding="sync" />`
+        : "";
+      const tipoLabel = info.label || getTypeLabel(base.type);
+
+      return `
+        <section class="page cover-page book-cover-page">
+          <div class="cover-bg"></div>
+          ${imageTag}
+          <div class="cover-overlay"></div>
+          <div class="cover-content">
+            <div class="cover-frame">
+              <div class="cover-top">
+                <span class="cover-badge">${escapeHtml(tipoLabel)}</span>
+              </div>
+              <div class="cover-main">
+                <h1 class="cover-title">${escapeHtml(base.title)}</h1>
+                <p class="cover-subtitle">${escapeHtml(base.subtitle)}</p>
+              </div>
+              <div class="cover-footer">
+                <p>Autor: <strong>${escapeHtml(base.author)}</strong></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderBookTitlePage(base){
+      return renderPage(`
+        <div class="course-section title-page-block">
+          <h1 class="page-title">${escapeHtml(base.title)}</h1>
+          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+        </div>
+        <div class="course-section title-page-meta">
+          <p><strong>Autor:</strong> ${escapeHtml(base.author)}</p>
+        </div>
+      `,"book-title-page");
+    }
+
+    function renderBookBackCover(base,html){
+      return `
+        <section class="page back-cover-page book-back-cover-page">
+          <div class="cover-bg"></div>
+          <div class="cover-overlay"></div>
+          <div class="cover-content">
+            <div class="cover-frame">
+              <div class="cover-top">
+                <span class="cover-badge">Contracapa</span>
+              </div>
+              <div class="cover-main back-cover-main">
+                ${html}
+              </div>
+              <div class="cover-footer">
+                <p>${escapeHtml(base.title)}</p>
+                <p><strong>${escapeHtml(base.author)}</strong></p>
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
     function renderBackCover(base,info = {}){
+      if(base.type === "livro" || base.type === "ebook"){
+        const bloco = `
+          <h1 class="cover-title">${escapeHtml(base.title)}</h1>
+          <p class="cover-subtitle">Uma leitura preparada para edificação, reflexão e amadurecimento espiritual.</p>
+        `;
+        return renderBookBackCover(base,bloco);
+      }
+
       return `
         <section class="page back-cover-page">
           <div class="cover-bg"></div>
@@ -7345,6 +7426,64 @@ Seja completo, mas sem desperdiçar páginas.
           </div>
         </section>
       `;
+    }
+
+    function shouldGenerateBookDedication(base){
+      const texto = normalizarLivroV11(`${base.extraNotes || ""} ${base.theme || ""}`);
+      return /(dedicatoria|dedicatória|dedico este livro|ao meu pai|a minha mae|à minha mae|à minha mãe|a minha mãe)/.test(texto);
+    }
+
+    function promptLivroDedicatoriaV13(base,tema,perfil){
+      return `
+Você é o VERBO IA escrevendo somente a DEDICATÓRIA de um ${perfil.modo.toLowerCase()} cristão em HTML interno.
+
+LIVRO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR: ${base.author}
+TEMA CENTRAL: ${tema.nome}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES DO USUÁRIO: ${base.extraNotes || "nenhuma"}
+
+REGRAS ABSOLUTAS:
+- Entregue somente a dedicatória, pronta para leitura.
+- Não repita o prompt do usuário.
+- Não escreva instruções.
+- Não escreva apresentação, sumário, capítulo, conclusão nem qualquer outra seção.
+- HTML interno apenas.
+
+Estruture exatamente assim:
+<div class="course-section"><h2>Dedicatória</h2><p>Texto emocionante, elegante e profissional.</p><p>...</p></div>
+
+A dedicatória deve honrar as pessoas citadas pelo usuário e combinar com o tema do livro.
+      `.trim();
+    }
+
+    function promptLivroContracapaV13(base,tema,perfil,capitulos){
+      return `
+Você é o VERBO IA escrevendo o texto da CONTRACAPA de um ${perfil.modo.toLowerCase()} cristão em HTML interno.
+
+LIVRO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR: ${base.author}
+TEMA CENTRAL: ${tema.nome}
+FOCO: ${tema.foco}
+CAPÍTULOS: ${capitulos.join("; ")}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+
+REGRAS ABSOLUTAS:
+- Não repita o prompt do usuário.
+- Não escreva a palavra “contracapa” como título principal do texto.
+- Não cite ministério, igreja, editora ou instituição, a menos que o usuário tenha pedido explicitamente.
+- Não escreva instruções.
+- HTML interno apenas.
+
+Estruture assim:
+<h1 class="cover-title">${base.title}</h1>
+<p class="cover-subtitle">${base.subtitle}</p>
+<div class="summary-box"><p>Faça uma síntese editorial forte, envolvente e coerente com o tema do livro, em 2 ou 3 parágrafos.</p></div>
+<div class="summary-box"><h4>Frase em destaque</h4><p>Inclua uma frase forte, curta e memorável que represente o coração do livro.</p></div>
+      `.trim();
     }
 
     async function generateSupportBookAsync(base,info,licoes){
@@ -9820,12 +9959,11 @@ LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
 
     function promptLivroAberturaV11(base,capitulos,tema,perfil){
       return `
-Você é o VERBO IA gerando um LIVRO cristão em HTML interno.
+Você é o VERBO IA gerando a ABERTURA de um LIVRO cristão em HTML interno.
 
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 AUTOR: ${base.author}
-MINISTÉRIO/EDITORA: ${base.ministry}
 TEMA CENTRAL FIXO: ${tema.nome}
 FOCO: ${tema.foco}
 TEXTO BÍBLICO BASE: ${base.biblicalBase}
@@ -9840,16 +9978,17 @@ REGRAS ABSOLUTAS:
 - NÃO repita o prompt do usuário.
 - NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um livro” ou instruções semelhantes.
 - NÃO faça sermão, curso, apostila curta, devocional ou revista EBD.
+- NÃO recrie capa, folha de rosto, dedicatória, contracapa nem capítulos.
+- NÃO repita novamente o título principal em formato de capa.
 - ${tema.proibido}.
 - Escreva com profundidade, progressão, sensibilidade pastoral e aplicação prática.
 - HTML interno apenas, sem markdown.
 
 CAPÍTULOS DO LIVRO:
-${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("
+")}
 
-Crie a abertura do ${perfil.modo.toLowerCase()} com:
-<h1 class="page-title">${base.title}</h1>
-<p class="subtitle">${base.subtitle}</p>
+Crie somente estas seções, nesta ordem:
 <div class="course-section"><h2>Apresentação</h2><p>Texto autoral, sensível e profundo, introduzindo a dor central do livro e a esperança bíblica.</p></div>
 <div class="course-section"><h2>Por que este livro é necessário</h2><p>Explique a relevância espiritual, pastoral e prática do tema.</p></div>
 <div class="course-section"><h2>Como ler este livro</h2><p>Oriente o leitor a caminhar com honestidade, oração, reflexão e prática.</p></div>
@@ -9884,6 +10023,8 @@ REGRAS ABSOLUTAS:
 - NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um livro”, “estrutura desejada” ou instruções semelhantes.
 - NÃO faça resumo curto. NÃO economize argumento.
 - NÃO transforme em sermão, devocional, curso ou revista EBD.
+- NÃO repita capa, folha de rosto, dedicatória, apresentação, sumário ou contracapa.
+- Comece diretamente no conteúdo do capítulo.
 - ${tema.proibido}.
 - Não invente livros, autores, editoras, leis ou promessas.
 - HTML interno apenas, sem markdown.
@@ -9897,7 +10038,7 @@ QUALIDADE OBRIGATÓRIA:
 - Se for Livro grande, expanda mais a argumentação, desenvolva melhor os exemplos e evite pressa.
 
 Estruture exatamente assim:
-<div class="course-section"><h2>Capítulo ${numero} — ${titulo}</h2><p>Introdução tocante com 3 a 5 parágrafos, conectando o tema do capítulo à vida real do leitor.</p></div>
+<h1 class="page-title">Capítulo ${numero} — ${titulo}</h1><p class="subtitle">Desenvolvimento progressivo, bíblico, pastoral e prático.</p><div class="course-section"><p>Introdução tocante com 3 a 5 parágrafos, conectando o tema do capítulo à vida real do leitor.</p></div>
 <div class="course-section"><h3>1. A realidade que precisa ser encarada</h3><p>...</p><p>...</p><p>...</p></div>
 <div class="course-section"><h3>2. Fundamento bíblico</h3><p>Use a Bíblia com fidelidade. Explique as referências, não apenas cite.</p><p>...</p></div>
 <div class="course-section"><h3>3. Argumento pastoral e espiritual</h3><p>...</p><p>...</p><p>...</p></div>
@@ -9934,6 +10075,7 @@ ${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
 REGRAS:
 - Não repita o prompt.
 - Não escreva instruções.
+- Não recrie capa, folha de rosto, dedicatória, sumário ou contracapa.
 - Não invente livros, autores ou editoras.
 - ${tema.proibido}.
 - HTML interno apenas.
@@ -10000,9 +10142,29 @@ Crie:
         setStep(0,"Gerando capa profissional do livro...");
         const imageData = await chamarImagemIA(promptCapaImagem(base,info),{ tipo:base.type, titulo:base.title });
         html += renderCover(base,info,imageData);
+        renderGenerated(html + `</div>`);
       }
 
-      setStep(1,"Gerando apresentação e sumário do livro...");
+      html += renderBookTitlePage(base);
+      renderGenerated(html + `</div>`);
+
+      if(shouldGenerateBookDedication(base)){
+        setStep(1,"Gerando dedicatória...");
+        let dedic = await chamarTextoIAComTentativas(
+          [promptLivroDedicatoriaV13(base,tema,perfil)],
+          `Dedicatória do ${perfil.modo.toLowerCase()}`,
+          { minimo:260, aceitarCurto:true, minQuality:"dedicatória sensível, elegante e coerente com o tema do livro" }
+        );
+
+        if(!validarConteudoLivroV11(dedic)){
+          dedic = `<div class="course-section"><h2>Dedicatória</h2>${paragraph(`Este livro é dedicado com amor, honra e gratidão às pessoas que ajudaram a formar a visão espiritual, o caráter e a compreensão do autor sobre o chamado de Deus e o peso do ministério.`)}</div>`;
+        }
+
+        html += renderPage(dedic,"book-dedication-page");
+        renderGenerated(html + `</div>`);
+      }
+
+      setStep(2,"Gerando apresentação e sumário do livro...");
       let abertura = await chamarTextoIAComTentativas(
         [promptLivroAberturaV11(base,capitulos,tema,perfil)],
         `Abertura do ${perfil.modo.toLowerCase()}`,
@@ -10011,14 +10173,15 @@ Crie:
 
       if(!validarConteudoLivroV11(abertura)){
         abertura = `
-          <h1 class="page-title">${escapeHtml(base.title)}</h1>
-          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
           <div class="course-section"><h2>Apresentação</h2>${paragraph(`Este livro nasce para tratar de ${tema.nome} com profundidade bíblica, sensibilidade pastoral e direção prática. A proposta é conduzir o leitor a uma caminhada de discernimento, restauração e maturidade diante de Deus.`)}</div>
+          <div class="course-section"><h2>Por que este livro é necessário</h2>${paragraph(`O tema precisa ser encarado com honestidade, fé e maturidade. Por isso, esta obra procura unir verdade bíblica, cuidado pastoral e aplicação concreta.`)}</div>
+          <div class="course-section"><h2>Como ler este livro</h2>${paragraph(`Leia devagar, com oração, reflexão e desejo sincero de praticar o que a Palavra de Deus iluminar ao longo das páginas.`)}</div>
           <div class="course-section"><h2>Sumário</h2><ol>${capitulos.map(c=>`<li>${escapeHtml(c)}</li>`).join("")}</ol></div>
         `;
       }
 
-      html += renderPage(abertura);
+      html += renderPage(abertura,"book-opening-page");
+      renderGenerated(html + `</div>`);
 
       for(let i = 0; i < capitulos.length; i++){
         setStep(2,`Gerando capítulo ${i + 1} de ${capitulos.length}...`);
@@ -10032,7 +10195,8 @@ Crie:
           capitulo = fallbackCapituloLivroV11(base,capitulos[i],i + 1,tema);
         }
 
-        html += renderPage(capitulo);
+        html += renderPage(capitulo,`book-chapter-page chapter-${i + 1}`);
+        renderGenerated(html + `</div>`);
       }
 
       setStep(3,"Gerando fechamento, oração final e bibliografia segura...");
@@ -10050,7 +10214,30 @@ Crie:
         `;
       }
 
-      html += renderPage(fechamento);
+      html += renderPage(fechamento,"book-closing-page");
+      renderGenerated(html + `</div>`);
+
+      if(base.coverMode === "com-capa"){
+        setStep(4,"Gerando contracapa do livro...");
+        let contracapa = await chamarTextoIAComTentativas(
+          [promptLivroContracapaV13(base,tema,perfil,capitulos)],
+          `Contracapa do ${perfil.modo.toLowerCase()}`,
+          { minimo:240, aceitarCurto:true, minQuality:"contracapa editorial forte, com síntese e frase de impacto" }
+        );
+
+        if(!validarConteudoLivroV11(contracapa)){
+          contracapa = `
+            <h1 class="cover-title">${escapeHtml(base.title)}</h1>
+            <p class="cover-subtitle">${escapeHtml(base.subtitle)}</p>
+            <div class="summary-box">${paragraph(`Esta obra convida o leitor a caminhar por páginas de verdade, dor, cura, renúncia e esperança, sempre à luz da Palavra de Deus. Cada capítulo busca unir profundidade espiritual, sensibilidade pastoral e direção prática para uma vida mais madura diante do Senhor.`)}${paragraph(`Mais do que informar, o livro procura tocar a alma, iluminar caminhos e chamar o leitor a uma resposta sincera diante de Deus.`)}</div>
+            <div class="summary-box"><h4>Frase em destaque</h4>${paragraph(`Nenhuma perda entregue a Cristo é vazia quando o Espírito Santo sustenta o coração do servo de Deus.`)}</div>
+          `;
+        }
+
+        html += renderBookBackCover(base,contracapa);
+        renderGenerated(html + `</div>`);
+      }
+
       html += `</div>`;
 
       renderGenerated(html);
