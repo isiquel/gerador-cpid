@@ -2250,6 +2250,63 @@
       .ebook-visual .cover-page{break-before:auto;page-break-before:auto;}
     }
 
+  
+    /* v13.6 — Ajustes de impressão/PDF e travas de tema do e-book */
+    @media print{
+      .ebook-visual .page{
+        padding:14mm 13mm !important;
+        min-height:auto !important;
+        overflow:visible !important;
+      }
+
+      .ebook-visual .ebook-card,
+      .ebook-visual .ebook-highlight,
+      .ebook-visual .ebook-action,
+      .ebook-visual .ebook-reflection,
+      .ebook-visual .ebook-quote,
+      .ebook-visual .summary-box,
+      .ebook-visual .course-section{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      .ebook-visual .ebook-grid{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      .ebook-visual h1,
+      .ebook-visual h2,
+      .ebook-visual h3,
+      .ebook-visual h4{
+        break-after:avoid !important;
+        page-break-after:avoid !important;
+        orphans:3;
+        widows:3;
+      }
+
+      .ebook-visual p,
+      .ebook-visual li{
+        orphans:3;
+        widows:3;
+      }
+
+      .ebook-visual .ebook-hero{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+        margin-bottom:14px !important;
+        padding:22px !important;
+      }
+
+      .ebook-visual .ebook-card,
+      .ebook-visual .ebook-highlight,
+      .ebook-visual .ebook-action,
+      .ebook-visual .ebook-reflection{
+        padding:14px 16px !important;
+        margin:14px 0 !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -9876,6 +9933,30 @@ LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
         };
       }
 
+      if(/biblia|bíblia|escritura|escrituras|palavra de deus|septuaginta|vulgata|manuscrito|manuscritos|pergaminho|pergaminhos|papiro|papiros|gutenberg|imprensa|capitulos|capítulos|versiculos|versículos|traducoes|traduções|leitura biblica|leitura bíblica|interpretacao biblica|interpretação bíblica|canon|cânon|canone|cânone/.test(n)){
+        return {
+          nome:"conhecimento bíblico, história da Bíblia e leitura produtiva da Palavra de Deus",
+          foco:"inspiração das Escrituras, transmissão do texto bíblico, manuscritos, traduções, divisões em capítulos e versículos, versões bíblicas e prática de leitura contextual e transformadora",
+          proibido:"não desviar para casamento, família, capelania, missões, finanças, liderança ou outro tema; manter todo o e-book no assunto Bíblia, história da Bíblia, leitura bíblica, interpretação, tradução, transmissão e aplicação da Palavra de Deus",
+          defaultChapters:[
+            "O que é a Bíblia",
+            "Como era a Bíblia no tempo antigo e no tempo dos apóstolos",
+            "Septuaginta, Vulgata Latina e o processo de transmissão",
+            "A primeira impressão da Bíblia e a chegada às versões modernas",
+            "Capítulos, versículos e a leitura correta da Bíblia",
+            "Como ler a Bíblia de forma produtiva"
+          ],
+          bibliografia:[
+            "Entendes o que Lês? — Gordon D. Fee e Douglas Stuart",
+            "Como Ler a Bíblia Livro por Livro — Gordon D. Fee e Douglas Stuart",
+            "Introdução Bíblica — Norman Geisler e William Nix",
+            "A Origem da Bíblia — Philip Wesley Comfort",
+            "Crítica Textual do Novo Testamento — Wilson Paroschi",
+            "A Bíblia e sua História — Sociedade Bíblica do Brasil"
+          ]
+        };
+      }
+
       if(/casal|casamento|familia|conjugal|lar/.test(n)){
         return {
           nome:"casamento cristão e família",
@@ -10259,6 +10340,9 @@ REGRAS DO E-BOOK VISUAL:
 - NÃO escreva “desenvolva esta parte”.
 - NÃO faça sermão, revista EBD, curso nem livro longo.
 - Escreva de forma visual, leve, bonita, colorida, didática e prática.
+- TEMA TRAVADO: ${tema.nome}. FOCO: ${tema.foco}.
+- REGRA DE TEMA: ${tema.proibido}.
+- Não puxe exemplos, bibliografia ou linguagem de tema anterior.
 - Use blocos com classes visuais: ebook-hero, ebook-card, ebook-grid, ebook-highlight, ebook-action, ebook-reflection, ebook-quote.
 - Não invente imagens externas. Use sugestões visuais em texto, quadros e elementos editoriais.
 - HTML interno apenas, sem markdown.
@@ -10299,6 +10383,9 @@ REGRAS DO E-BOOK VISUAL:
 - NÃO escreva “desenvolva esta parte”.
 - NÃO faça livro pesado, sermão, apostila formal, curso ou revista.
 - O capítulo deve ser bonito, colorido, prático, com leitura leve e aplicação clara.
+- TEMA TRAVADO: ${tema.nome}. FOCO: ${tema.foco}.
+- REGRA DE TEMA: ${tema.proibido}.
+- Não puxe casamento, família, capelania, missões ou qualquer tema estranho ao assunto atual.
 - Use texto corrido, mas intercalado com cards, destaques, listas, passos e quadros.
 - Use classes: ebook-hero, ebook-grid, ebook-card, ebook-highlight, ebook-action, ebook-reflection, ebook-checklist, ebook-steps, ebook-quote.
 - Não invente imagens externas. Sugira visual simbólico se necessário, mas não escreva prompt de imagem no corpo.
@@ -10338,6 +10425,8 @@ REGRAS:
 - Não repita o prompt.
 - Não escreva instruções.
 - Não invente livros, autores ou editoras.
+- Use somente bibliografia coerente com o TEMA TRAVADO: ${tema.nome}.
+- REGRA DE TEMA: ${tema.proibido}.
 - HTML interno apenas.
 
 Crie:
@@ -10363,6 +10452,37 @@ Crie:
         <div class="ebook-action"><h3>Na prática</h3><ol class="ebook-steps"><li>Leia com atenção.</li><li>Anote uma verdade principal.</li><li>Ore sobre o que aprendeu.</li><li>Pratique uma decisão simples ainda hoje.</li></ol></div>
         <div class="ebook-reflection"><h3>Pense nisso</h3>${paragraph(`Que atitude prática este capítulo pede de você hoje?`)}</div>
       `;
+    }
+
+    function limparVazamentoTemaEbookV136(html,tema){
+      let saida = String(html || "");
+      const nTema = normalizarLivroV11(tema?.nome || "");
+
+      if(/biblia|escritura|palavra de deus|historia da biblia|leitura produtiva/.test(nTema)){
+        const trocas = [
+          [/casamento e sua família/gi,"leitura bíblica e sua caminhada com Deus"],
+          [/casamento e família/gi,"leitura bíblica e vida cristã"],
+          [/seu casamento e sua família/gi,"sua caminhada com a Palavra de Deus"],
+          [/seu lar, casamento e família/gi,"sua vida devocional, sua mente e sua prática diária"],
+          [/aliança conjugal/gi,"aliança com a Palavra"],
+          [/cônjuge/gi,"vida com Deus"],
+          [/conjugal/gi,"bíblica"],
+          [/casamento cristão/gi,"vida cristã fundamentada na Bíblia"],
+          [/Timothy Keller e Kathy Keller/gi,"Gordon D. Fee e Douglas Stuart"],
+          [/Gary Chapman/gi,"Gordon D. Fee e Douglas Stuart"],
+          [/Wayne Mack/gi,"Norman Geisler e William Nix"],
+          [/O Significado do Casamento — Gordon D\\. Fee e Douglas Stuart/gi,"Entendes o que Lês? — Gordon D. Fee e Douglas Stuart"],
+          [/As Cinco Linguagens do Amor — Gordon D\\. Fee e Douglas Stuart/gi,"Como Ler a Bíblia Livro por Livro — Gordon D. Fee e Douglas Stuart"],
+          [/Casamento Segundo a Bíblia — Norman Geisler e William Nix/gi,"Introdução Bíblica — Norman Geisler e William Nix"],
+          [/A Família Segundo Deus — Sociedade Bíblica do Brasil/gi,"A Bíblia e sua História — Sociedade Bíblica do Brasil"]
+        ];
+
+        trocas.forEach(([regex,sub]) => {
+          saida = saida.replace(regex,sub);
+        });
+      }
+
+      return saida;
     }
 
     async function generateEbookVisualAsync(base){
@@ -10394,6 +10514,8 @@ Crie:
         { minimo:520, minQuality:"abertura visual de e-book, com cards, apresentação e sumário" }
       );
 
+      abertura = limparVazamentoTemaEbookV136(abertura,tema);
+
       if(!validarConteudoLivroV11(abertura)){
         abertura = `
           <div class="ebook-hero"><h1>${escapeHtml(base.title)}</h1><p>${escapeHtml(base.subtitle)}</p></div>
@@ -10414,6 +10536,8 @@ Crie:
           { minimo:850, minQuality:"capítulo visual de e-book, com cards, destaque, passos práticos e oração" }
         );
 
+        capitulo = limparVazamentoTemaEbookV136(capitulo,tema);
+
         if(!validarConteudoLivroV11(capitulo)){
           capitulo = fallbackEbookCapituloV135(base,capitulos[i],i + 1,tema);
         }
@@ -10428,6 +10552,8 @@ Crie:
         "Fechamento visual do e-book",
         { minimo:520, minQuality:"conclusão visual de e-book, plano prático, oração e bibliografia" }
       );
+
+      fechamento = limparVazamentoTemaEbookV136(fechamento,tema);
 
       if(!validarConteudoLivroV11(fechamento)){
         fechamento = `
@@ -10505,6 +10631,8 @@ Crie:
         { minimo:perfil.minimoAbertura, minQuality:`abertura robusta de ${perfil.modo.toLowerCase()}, sem repetir prompt, com apresentação e sumário` }
       );
 
+      abertura = limparVazamentoTemaEbookV136(abertura,tema);
+
       if(!validarConteudoLivroV11(abertura)){
         abertura = `
           <div class="course-section"><h2>Apresentação</h2>${paragraph(`Este livro nasce para tratar de ${tema.nome} com profundidade bíblica, sensibilidade pastoral e direção prática. A proposta é conduzir o leitor a uma caminhada de discernimento, restauração e maturidade diante de Deus.`)}</div>
@@ -10526,6 +10654,8 @@ Crie:
           { minimo:perfil.minimoCapitulo, minQuality:`capítulo robusto de ${perfil.modo.toLowerCase()} cristão, profundo, prático, sem repetir prompt` }
         );
 
+        capitulo = limparVazamentoTemaEbookV136(capitulo,tema);
+
         if(!validarConteudoLivroV11(capitulo)){
           capitulo = fallbackCapituloLivroV11(base,capitulos[i],i + 1,tema);
         }
@@ -10541,6 +10671,8 @@ Crie:
         `Fechamento do ${perfil.modo.toLowerCase()}`,
         { minimo:perfil.minimoFechamento, minQuality:"conclusão pastoral, direções práticas e bibliografia real segura" }
       );
+
+      fechamento = limparVazamentoTemaEbookV136(fechamento,tema);
 
       if(!validarConteudoLivroV11(fechamento)){
         fechamento = `
@@ -10913,6 +11045,63 @@ Crie:
     @media print{
       .ebook-visual .page,.book-chapter-page,.ebook-chapter-page{break-before:page;page-break-before:always;}
       .ebook-visual .cover-page{break-before:auto;page-break-before:auto;}
+    }
+
+  
+    /* v13.6 — Ajustes de impressão/PDF e travas de tema do e-book */
+    @media print{
+      .ebook-visual .page{
+        padding:14mm 13mm !important;
+        min-height:auto !important;
+        overflow:visible !important;
+      }
+
+      .ebook-visual .ebook-card,
+      .ebook-visual .ebook-highlight,
+      .ebook-visual .ebook-action,
+      .ebook-visual .ebook-reflection,
+      .ebook-visual .ebook-quote,
+      .ebook-visual .summary-box,
+      .ebook-visual .course-section{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      .ebook-visual .ebook-grid{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      .ebook-visual h1,
+      .ebook-visual h2,
+      .ebook-visual h3,
+      .ebook-visual h4{
+        break-after:avoid !important;
+        page-break-after:avoid !important;
+        orphans:3;
+        widows:3;
+      }
+
+      .ebook-visual p,
+      .ebook-visual li{
+        orphans:3;
+        widows:3;
+      }
+
+      .ebook-visual .ebook-hero{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+        margin-bottom:14px !important;
+        padding:22px !important;
+      }
+
+      .ebook-visual .ebook-card,
+      .ebook-visual .ebook-highlight,
+      .ebook-visual .ebook-action,
+      .ebook-visual .ebook-reflection{
+        padding:14px 16px !important;
+        margin:14px 0 !important;
+      }
     }
 
   </style>
