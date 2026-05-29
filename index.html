@@ -9697,6 +9697,14 @@ Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicá
       `;
     }
 
+    function cleanText(text){
+      return String(text || "")
+        .replace(/<[^>]*>/g," ")
+        .replace(/&nbsp;/gi," ")
+        .replace(/\s+/g," ")
+        .trim();
+    }
+
     function normalizarLivroV11(text){
       return String(text || "")
         .toLowerCase()
