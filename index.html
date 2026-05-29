@@ -2509,6 +2509,9 @@
       }
     }
 
+  
+    /* v13.10 — Capa Revista EBD com trava temática rígida */
+    .doc .cover-page .cover-badge{letter-spacing:.04em;}
   </style>
 </head>
 
@@ -6309,10 +6312,10 @@ Use HTML com:
     }
 
     function detectarEstiloVisualCapa(base,info){
-      const texto = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${info.revistaClasse || ""}`.toLowerCase();
+      const texto = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${info.revistaClasse || ""} ${base.targetAudience || ""}`.toLowerCase();
 
       if(/igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(texto)){
-        return "visual cristão editorial sobre igreja local, congregação reunida em culto e comunhão, pessoas adultas e famílias adorando juntas, Bíblia aberta no púlpito ou mesa, ambiente de templo local acolhedor, unidade, serviço, discipulado e missão, luz reverente e presença de Deus; NÃO usar criança lendo Bíblia, NÃO usar visual infantil, NÃO usar imagem genérica de estudo bíblico individual";
+        return "capa editorial cristã sobre IGREJA LOCAL: congregação adulta reunida em culto, irmãos adultos adorando em unidade, ambiente de templo local, púlpito discreto com Bíblia aberta, comunhão cristã, oração coletiva, serviço, discipulado e missão; composição horizontal/vertical profissional; NÃO mostrar criança; NÃO mostrar adolescente sozinho; NÃO mostrar pessoa individual lendo Bíblia; NÃO mostrar estudo bíblico infantil; NÃO mostrar cena doméstica infantil; NÃO parecer capa de material infantil";
       }
 
       if(/adolescentes|adolescência|escolhas|futuro|internet|pressão|redes sociais|identidade/.test(texto)){
@@ -6356,20 +6359,47 @@ Use HTML com:
 
     function promptCapaImagem(base,info = {}){
       const estiloVisual = detectarEstiloVisualCapa(base,info);
-      const textoTema = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme}`.toLowerCase();
+      const textoTema = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${base.targetAudience || ""} ${info.revistaClasse || ""}`.toLowerCase();
       const isRevista = base.type === "revista" || /revista|ebd|escola b[ií]blica/.test(info.label || "");
+      const isInfantil = /crianças|infantil|criança/.test(`${info.revistaClasse || ""} ${base.targetAudience || ""}`.toLowerCase());
+      const igrejaLocalTema = /igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(textoTema);
+
+      if(isRevista && igrejaLocalTema){
+        return `
+Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de REVISTA EBD para jovens e adultos.
+NÃO escreva nenhum texto na imagem.
+NÃO coloque letras, logotipos, nomes de igreja ou marcas.
+
+TEMA OBRIGATÓRIO DA CAPA: A IGREJA LOCAL E SUA IMPORTÂNCIA NO PLANO DE DEUS.
+TÍTULO DO MATERIAL: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+TIPO: ${info.label || getTypeLabel(base.type)}
+
+CENA PRINCIPAL OBRIGATÓRIA:
+- Uma igreja local/congregação reunida em culto e comunhão.
+- Pessoas ADULTAS adorando juntas, em unidade, reverência e vida congregacional.
+- Ambiente de templo local ou salão de igreja, com púlpito discreto, Bíblia aberta no púlpito ou na mesa, luz reverente e atmosfera de presença de Deus.
+- Transmitir corpo de Cristo, comunhão dos santos, serviço cristão, discipulado, unidade e missão.
+
+PROIBIÇÕES ABSOLUTAS:
+- Não mostrar criança.
+- Não mostrar adolescente sozinho.
+- Não mostrar criança lendo Bíblia.
+- Não mostrar pessoa individual lendo Bíblia como cena principal.
+- Não mostrar quarto, sala de casa, escola infantil ou imagem infantil.
+- Não criar capa de devocional infantil.
+- Não criar capa genérica de estudo bíblico individual.
+
+Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa de revista EBD adulta, composição bonita, luz bem trabalhada, alta qualidade.
+        `.trim();
+      }
+
       const capaRevistaTema = isRevista
         ? `
 REGRAS ESPECÍFICAS PARA CAPA DE REVISTA EBD:
 - A imagem precisa representar diretamente o tema da revista, não apenas alguém lendo a Bíblia.
-- Não usar imagem infantil genérica, criança lendo Bíblia ou capa de material infantil, a menos que o público seja infantil.
-- Se o tema for igreja local, mostrar congregação reunida, comunhão cristã, culto, oração, discipulado, serviço, unidade e missão.
+- Não usar imagem infantil genérica, criança lendo Bíblia ou capa de material infantil${isInfantil ? ", exceto porque o público selecionado é infantil" : "."}
 - Não usar visual aleatório que não explique o argumento central da revista.`
-        : "";
-      const igrejaLocal = /igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(textoTema)
-        ? `
-TEMA DETECTADO: IGREJA LOCAL.
-Crie arte de fundo com igreja local reunida, irmãos em comunhão, culto congregacional, oração, serviço, discipulado e missão. Evite criança lendo Bíblia e evite cena individual de estudo bíblico, pois isso não representa o tema.`
         : "";
 
       return `
@@ -6381,7 +6411,7 @@ TEMA: ${base.visibleTheme || base.theme}
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO: ${info.label || getTypeLabel(base.type)}
-${capaRevistaTema}${igrejaLocal}
+${capaRevistaTema}
 
 DIREÇÃO VISUAL:
 ${estiloVisual}
