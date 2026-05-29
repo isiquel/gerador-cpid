@@ -2479,6 +2479,36 @@
       .doc.magazine-layout .lesson-page > .scripture-full p{margin-bottom:.45rem !important;}
     }
 
+  
+    /* v13.9 — Revista EBD: revisão final em coluna única e capa temática reforçada */
+    .doc.magazine-layout .lesson-page > .lesson-review-full{
+      column-span:all;
+      display:block;
+      margin-top:18px;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .doc.magazine-layout .lesson-page > .lesson-review-full .summary-box{
+      width:100%;
+      max-width:100%;
+      margin-top:0;
+      background:linear-gradient(180deg,#fff3f3,#ffe7e7);
+      border:1px solid #c94a4a;
+      border-left:7px solid #b92424;
+    }
+
+    @media print{
+      .doc.magazine-layout .lesson-page > .lesson-review-full{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+        margin-top:12px !important;
+      }
+      .doc.magazine-layout .lesson-page > .lesson-review-full .summary-box{
+        padding:12px 14px !important;
+      }
+    }
+
   </style>
 </head>
 
@@ -5959,7 +5989,7 @@ REGRAS DE QUALIDADE:
 - Leitura Bíblica em Classe deve usar no máximo 2 referências principais, nunca uma lista grande.
 - Texto Áureo, Leitura Bíblica em Classe e Síntese precisam combinar exatamente com o tema da lição.
 - Evite sínteses genéricas como “a verdade bíblica estudada orienta a fé”.
-- Na diagramação da lição: Leitura Bíblica em Classe fica em uma coluna; comentário, introdução, tópicos e subtópicos ficam em duas colunas.
+- Na diagramação da lição: Leitura Bíblica em Classe fica em uma coluna; comentário, introdução, tópicos e subtópicos ficam em duas colunas; Revisando o Conteúdo/perguntas finais fica novamente em uma coluna, fora das colunas.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
     }
@@ -6281,6 +6311,10 @@ Use HTML com:
     function detectarEstiloVisualCapa(base,info){
       const texto = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${info.revistaClasse || ""}`.toLowerCase();
 
+      if(/igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(texto)){
+        return "visual cristão editorial sobre igreja local, congregação reunida em culto e comunhão, pessoas adultas e famílias adorando juntas, Bíblia aberta no púlpito ou mesa, ambiente de templo local acolhedor, unidade, serviço, discipulado e missão, luz reverente e presença de Deus; NÃO usar criança lendo Bíblia, NÃO usar visual infantil, NÃO usar imagem genérica de estudo bíblico individual";
+      }
+
       if(/adolescentes|adolescência|escolhas|futuro|internet|pressão|redes sociais|identidade/.test(texto)){
         return "visual cristão atual para adolescentes, moderno e reverente, jovem lendo a Bíblia ou caminhando diante de escolhas, luz suave e esperançosa, elementos discretos de escola, celular e caminho, sem parecer infantil e sem parecer secular demais";
       }
@@ -6322,6 +6356,21 @@ Use HTML com:
 
     function promptCapaImagem(base,info = {}){
       const estiloVisual = detectarEstiloVisualCapa(base,info);
+      const textoTema = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme}`.toLowerCase();
+      const isRevista = base.type === "revista" || /revista|ebd|escola b[ií]blica/.test(info.label || "");
+      const capaRevistaTema = isRevista
+        ? `
+REGRAS ESPECÍFICAS PARA CAPA DE REVISTA EBD:
+- A imagem precisa representar diretamente o tema da revista, não apenas alguém lendo a Bíblia.
+- Não usar imagem infantil genérica, criança lendo Bíblia ou capa de material infantil, a menos que o público seja infantil.
+- Se o tema for igreja local, mostrar congregação reunida, comunhão cristã, culto, oração, discipulado, serviço, unidade e missão.
+- Não usar visual aleatório que não explique o argumento central da revista.`
+        : "";
+      const igrejaLocal = /igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(textoTema)
+        ? `
+TEMA DETECTADO: IGREJA LOCAL.
+Crie arte de fundo com igreja local reunida, irmãos em comunhão, culto congregacional, oração, serviço, discipulado e missão. Evite criança lendo Bíblia e evite cena individual de estudo bíblico, pois isso não representa o tema.`
+        : "";
 
       return `
 Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de material cristão.
@@ -6332,6 +6381,7 @@ TEMA: ${base.visibleTheme || base.theme}
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO: ${info.label || getTypeLabel(base.type)}
+${capaRevistaTema}${igrejaLocal}
 
 DIREÇÃO VISUAL:
 ${estiloVisual}
@@ -7568,11 +7618,12 @@ Faça 4 perguntas.
 Não coloque respostas, pois esta é Revista do Aluno.
 Use <div class="summary-box"><h4>Revisando o Conteúdo</h4>.
 Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong><div class="student-space">Resposta:</div></div>.
+A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve ficar em bloco único, fora das duas colunas.
         `,
         110
       );
 
-      corpo.push(revisao || `
+      const revisaoFinal = revisao || `
         <div class="summary-box">
           <h4>Revisando o Conteúdo</h4>
           ${(dados.perguntas || []).slice(0,4).map((q,i) => `
@@ -7582,12 +7633,15 @@ Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong
             </div>
           `).join("")}
         </div>
-      `);
+      `;
 
       return limparLinguagemAluno(`
-        ${topo.join("\n")}
+        ${topo.join("\\n")}
         <div class="magazine-columns">
-          ${corpo.join("\n")}
+          ${corpo.join("\\n")}
+        </div>
+        <div class="lesson-review-full magazine-full">
+          ${revisaoFinal}
         </div>
       `);
     }
@@ -8078,27 +8132,43 @@ Estruture assim:
       }
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
-        if(page.querySelector(":scope > .magazine-columns")) return;
+        const existingCols = page.querySelector(":scope > .magazine-columns");
 
-        const nodes = Array.from(page.childNodes);
-        const wrap = document.createElement("div");
-        wrap.className = "magazine-columns";
+        if(!existingCols){
+          const nodes = Array.from(page.childNodes);
+          const wrap = document.createElement("div");
+          wrap.className = "magazine-columns";
 
-        let foundScripture = false;
+          let foundScripture = false;
 
-        nodes.forEach(node => {
-          if(node.nodeType === 1 && node.matches(".scripture-full")){
-            foundScripture = true;
-            return;
+          nodes.forEach(node => {
+            if(node.nodeType === 1 && node.matches(".scripture-full")){
+              foundScripture = true;
+              return;
+            }
+
+            if(foundScripture){
+              wrap.appendChild(node);
+            }
+          });
+
+          if(wrap.childNodes.length){
+            page.appendChild(wrap);
           }
+        }
 
-          if(foundScripture){
-            wrap.appendChild(node);
+        const cols = page.querySelector(":scope > .magazine-columns");
+        if(cols){
+          const summaries = Array.from(cols.querySelectorAll(".summary-box"));
+          const revisao = summaries.reverse().find(el => /revisando\s+o\s+conte[uú]do|perguntas/i.test(el.innerText || ""));
+
+          if(revisao && !page.querySelector(":scope > .lesson-review-full")){
+            const full = document.createElement("div");
+            full.className = "lesson-review-full magazine-full";
+            revisao.parentNode.removeChild(revisao);
+            full.appendChild(revisao);
+            page.appendChild(full);
           }
-        });
-
-        if(wrap.childNodes.length){
-          page.appendChild(wrap);
         }
       });
 
@@ -11641,6 +11711,36 @@ Crie:
         line-height:1.48 !important;
       }
       .doc.magazine-layout .lesson-page > .scripture-full p{margin-bottom:.45rem !important;}
+    }
+
+  
+    /* v13.9 — Revista EBD: revisão final em coluna única e capa temática reforçada */
+    .doc.magazine-layout .lesson-page > .lesson-review-full{
+      column-span:all;
+      display:block;
+      margin-top:18px;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .doc.magazine-layout .lesson-page > .lesson-review-full .summary-box{
+      width:100%;
+      max-width:100%;
+      margin-top:0;
+      background:linear-gradient(180deg,#fff3f3,#ffe7e7);
+      border:1px solid #c94a4a;
+      border-left:7px solid #b92424;
+    }
+
+    @media print{
+      .doc.magazine-layout .lesson-page > .lesson-review-full{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+        margin-top:12px !important;
+      }
+      .doc.magazine-layout .lesson-page > .lesson-review-full .summary-box{
+        padding:12px 14px !important;
+      }
     }
 
   </style>
