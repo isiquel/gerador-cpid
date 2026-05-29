@@ -2663,6 +2663,17 @@
                 </select>
               </div>
             </div>
+
+            <div id="bookSizeField" class="field">
+              <label for="bookSizeMode">Extensão do livro</label>
+              <select id="bookSizeMode">
+                <option value="livreto">Livreto — 25 a 40 páginas, menor, profundo e objetivo</option>
+                <option value="livro-grande" selected>Livro grande — 80 páginas ou mais, robusto e expandido</option>
+              </select>
+              <div class="chip-note">
+                Use Livreto para uma obra breve. Use Livro grande para capítulos longos, texto corrido, progressão, argumentação e profundidade.
+              </div>
+            </div>
           </div>
         </details>
 
@@ -3293,6 +3304,16 @@
       if(["ebook","livro","curso"].includes(type)){
         bookFields.classList.remove("hidden");
         bookFields.open = true;
+        const bookSizeField = document.getElementById("bookSizeField");
+        if(bookSizeField){
+          bookSizeField.classList.toggle("hidden", type === "curso");
+        }
+        if(type === "livro" && !getValue("bookSizeMode")){
+          setValue("bookSizeMode","livro-grande");
+        }
+        if(type === "ebook" && !getValue("bookSizeMode")){
+          setValue("bookSizeMode","livreto");
+        }
       }
 
       if(type === "curso" && cursoFields){
@@ -3396,6 +3417,7 @@
         depthLevel:getValue("depthLevel") || "profundo",
         coverMode:type === "sermao" || type === "estudo" ? "sem-capa" : (type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa")),
         cursoTipo:getValue("cursoTipo") || "aluno",
+        bookSizeMode:getValue("bookSizeMode") || "livro-grande",
         cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
         cursoObservacao:getValue("cursoObservacao") || "",
         extraNotes:getValue("extraNotes") || ""
@@ -9535,21 +9557,518 @@ Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicá
       `;
     }
 
-    function generateLongMaterial(base){
-      const quantity = Number(getValue("quantity") || 10);
-      const quantityType = getValue("quantityType") || "capítulos";
-      const count = Math.min(quantity,20);
+    function normalizarLivroV11(text){
+      return String(text || "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"");
+    }
 
-      let content = "";
+    function perfilLivroV12(base){
+      const modo = base.bookSizeMode || "livro-grande";
+      const isLivreto = modo === "livreto" || base.type === "ebook";
 
-      for(let i = 1; i <= count; i++){
-        content += `
-          <div class="block">
-            <h3>${capitalize(quantityType.slice(0,-1) || quantityType)} ${i}</h3>
-            ${paragraph("Desenvolva esta parte com base no tema \"" + base.theme + "\".")}
-          </div>
+      if(isLivreto){
+        return {
+          modo:"Livreto",
+          alvoPaginas:"25 a 40 páginas",
+          descricao:"obra breve, objetiva, porém profunda, com texto corrido, progressão clara e aplicação prática sem excesso de subdivisões",
+          capMin:4,
+          capMax:10,
+          capPadrao:7,
+          minimoAbertura:700,
+          minimoCapitulo:1100,
+          minimoFechamento:600,
+          regra:"Livreto não é resumo raso. Deve ser menor que um livro grande, mas precisa ter densidade, beleza, argumento e utilidade espiritual."
+        };
+      }
+
+      return {
+        modo:"Livro grande",
+        alvoPaginas:"80 páginas ou mais",
+        descricao:"obra robusta, expandida, com capítulos longos, texto corrido, progressão literária, argumentação bíblica e pastoral, exemplos e direções práticas",
+        capMin:8,
+        capMax:24,
+        capPadrao:12,
+        minimoAbertura:1200,
+        minimoCapitulo:2400,
+        minimoFechamento:900,
+        regra:"Livro grande deve parecer livro de verdade: leitura prazerosa, profunda, sem economizar argumento, sem capítulos curtos e sem aparência de apostila ou curso."
+      };
+    }
+
+    function instrucaoLivroUniversalV12(base,tema,perfil){
+      return `
+LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
+- Esta lógica vale para qualquer tema escolhido pelo usuário, não apenas exaustão ministerial.
+- Identifique o tema central e permaneça nele do começo ao fim.
+- Não misture assuntos de cursos, livros ou prompts anteriores.
+- Não transforme o livro em curso, apostila, EBD, sermão, devocional ou esboço.
+- Escreva como livro cristão normal: texto corrido, capítulos progressivos, parágrafos bem desenvolvidos e leitura agradável.
+- Evite repetição de palavras, frases e ideias. Varie a linguagem sem perder clareza.
+- Cada capítulo deve avançar o argumento do livro, não repetir o capítulo anterior.
+- O tema central fixo é: ${tema.nome}.
+- Foco do tema: ${tema.foco}.
+- Extensão escolhida: ${perfil.modo} (${perfil.alvoPaginas}).
+- Regra de extensão: ${perfil.regra}
+- Perfil editorial: ${perfil.descricao}.
+      `.trim();
+    }
+
+    function validarConteudoLivroV11(html){
+      const texto = normalizarLivroV11(extrairTextoDeHtml(html || "")).replace(/\s+/g," ").trim();
+
+      if(!texto || texto.length < 260) return false;
+
+      const proibidos = [
+        "desenvolva esta parte",
+        "com base no tema",
+        "crie um livro",
+        "nao escreva como sermao",
+        "nao escreva como devocional",
+        "nao escreva como apostila",
+        "nao repita este prompt",
+        "entregue conteudo final",
+        "quero um livro robusto",
+        "capitulo 1 desenvolva",
+        "capitulo 2 desenvolva",
+        "a resposta deve",
+        "estrutura desejada",
+        "capitulos sugeridos",
+        "o livro deve tratar",
+        "quero um livro",
+        "livro robusto",
+        "nao escreva",
+        "regras absolutas",
+        "qualidade obrigatoria",
+        "estrutura desejada"
+      ];
+
+      return !proibidos.some(p => texto.includes(p));
+    }
+
+    function temaLivroV11(base){
+      const texto = `${base.title} ${base.subtitle} ${base.theme} ${base.extraNotes}`;
+      const n = normalizarLivroV11(texto);
+
+      if(/exaustao|esgotamento|cansaco|ministerio|ministerial|alma cansada/.test(n)){
+        return {
+          nome:"exaustão ministerial",
+          foco:"cansaço da alma, sobrecarga espiritual, feridas do serviço cristão, descanso em Cristo e restauração do servo de Deus",
+          proibido:"não desviar para curso, EBD, capelania, missões ou casamento; manter o livro no tema da exaustão ministerial",
+          defaultChapters:[
+            "Quando servir começa a doer",
+            "A diferença entre cansaço e exaustão",
+            "Elias debaixo do zimbro",
+            "O perigo de servir sem ser cuidado",
+            "Ativismo não é unção",
+            "A alma ferida atrás do púlpito",
+            "Jesus também se retirava",
+            "Limites também são espirituais",
+            "Quando a motivação enfraquece",
+            "Restaurando a vida devocional",
+            "Direções práticas para vencer a exaustão ministerial",
+            "Servir a partir do descanso"
+          ],
+          bibliografia:[
+            "A Celebração da Disciplina — Richard J. Foster",
+            "O Pastor Aprovado — Richard Baxter",
+            "O Pastor Contemplativo — Eugene H. Peterson",
+            "O Perfil do Pregador — John Stott",
+            "Aconselhamento Cristão — Gary R. Collins",
+            "O Cuidado da Alma — David G. Benner",
+            "O Cristão de Alma Descansada — John Ortberg"
+          ]
+        };
+      }
+
+      if(/casal|casamento|familia|conjugal|lar/.test(n)){
+        return {
+          nome:"casamento cristão e família",
+          foco:"aliança, diálogo, perdão, vida espiritual no lar, intimidade saudável, finanças, criação de filhos e restauração conjugal",
+          proibido:"não desviar para capelania, missões ou exaustão ministerial; manter o livro no tema de casamento e família",
+          defaultChapters:[
+            "O projeto de Deus para o casamento",
+            "Aliança, amor e compromisso",
+            "Comunicação saudável no casamento",
+            "Perdão e cura emocional",
+            "Papéis, responsabilidades e parceria no lar",
+            "Intimidade, afeto e proteção do relacionamento",
+            "Finanças e administração familiar",
+            "Criação de filhos e vida familiar",
+            "Crises, conflitos e reconstrução da confiança",
+            "O casal como testemunho e legado"
+          ],
+          bibliografia:[
+            "O Significado do Casamento — Timothy Keller e Kathy Keller",
+            "As Cinco Linguagens do Amor — Gary Chapman",
+            "Casamento: Sexo, Romance e o Valor da Aliança — Timothy Keller",
+            "O Ato Conjugal — Tim LaHaye e Beverly LaHaye",
+            "Amor e Respeito — Emerson Eggerichs",
+            "A Família Segundo Deus — Wayne Mack"
+          ]
+        };
+      }
+
+      if(/missao|missoes|evangelismo|evangelizacao|missionario/.test(n)){
+        return {
+          nome:"missões e evangelismo",
+          foco:"Grande Comissão, evangelização, discipulado, envio, oração, contribuição, povos não alcançados e igreja missionária",
+          proibido:"não desviar para capelania, casamento ou exaustão ministerial; manter o livro no tema de missões e evangelismo",
+          defaultChapters:[
+            "A missão de Deus na Bíblia",
+            "A Grande Comissão de Jesus",
+            "O evangelho que pregamos",
+            "O chamado missionário e a vocação cristã",
+            "Evangelismo pessoal",
+            "Evangelismo urbano e comunitário",
+            "Missões transculturais",
+            "A igreja local e o departamento de missões",
+            "O Espírito Santo e a obra missionária",
+            "Discipulado, consolidação e fruto permanente"
+          ],
+          bibliografia:[
+            "A Missão de Deus — Christopher J. H. Wright",
+            "Pacto de Lausanne — Movimento Lausanne",
+            "Evangelismo e Soberania de Deus — J. I. Packer",
+            "Missões: Preparando-se para a Grande Comissão — Ronaldo Lidório",
+            "O Supremacia de Deus em Missões — John Piper",
+            "Ide e Fazei Discípulos — Keith Phillips"
+          ]
+        };
+      }
+
+      if(/capelania|capelao|hospitalar|prisional|luto/.test(n)){
+        return {
+          nome:"capelania cristã",
+          foco:"presença pastoral, escuta, acolhimento, limites, ética, cuidado espiritual, sofrimento e encaminhamento responsável",
+          proibido:"não desviar para casamento, missões ou exaustão ministerial; manter o livro no tema de capelania cristã",
+          defaultChapters:[
+            "Fundamentos bíblicos da capelania",
+            "Identidade e postura do capelão cristão",
+            "Capelania hospitalar",
+            "Capelania prisional",
+            "Capelania escolar",
+            "Capelania militar e forças de segurança",
+            "Capelania empresarial",
+            "Capelania familiar",
+            "Capelania em luto, crises e dependência química",
+            "Capelania comunitária e social"
+          ],
+          bibliografia:[
+            "Aconselhamento Cristão — Gary R. Collins",
+            "O Pastor como Conselheiro — Charles W. Taylor",
+            "Introdução ao Aconselhamento Bíblico — John MacArthur e Wayne Mack",
+            "O Cuidado da Alma — David G. Benner",
+            "Teologia do Aconselhamento Cristão — Jay E. Adams"
+          ]
+        };
+      }
+
+      return {
+        nome:base.title || "formação cristã",
+        foco:base.theme || "vida cristã, formação espiritual e aplicação prática da Palavra de Deus",
+        proibido:"não desviar do tema informado pelo usuário; não usar assunto de materiais anteriores",
+        defaultChapters:[],
+        bibliografia:[
+          "A Celebração da Disciplina — Richard J. Foster",
+          "Conhecimento de Deus — J. I. Packer",
+          "Cristianismo Puro e Simples — C. S. Lewis",
+          "Discipulado — Dietrich Bonhoeffer"
+        ]
+      };
+    }
+
+    function extrairCapitulosLivroV11(base,count){
+      const texto = `${base.theme}\n${base.extraNotes}\n${base.cursoObservacao || ""}`;
+      const linhas = texto.split(/\n+/).map(l => l.trim()).filter(Boolean);
+      const capitulos = [];
+
+      linhas.forEach(linha => {
+        const match = linha.match(/(?:cap[ií]tulo|capitulo)\s*(\d+)\s*[—–\-:]\s*(.+)$/i);
+        if(match){
+          const titulo = cleanText(match[2]).replace(/[.;]+$/g,"");
+          if(titulo && !capitulos.includes(titulo)) capitulos.push(titulo);
+        }
+      });
+
+      if(capitulos.length) return capitulos.slice(0,count);
+
+      const tema = temaLivroV11(base);
+      if(tema.defaultChapters.length) return tema.defaultChapters.slice(0,count);
+
+      const tituloBase = cleanText(base.title || "Tema central");
+      const genericos = [
+        `O coração de ${tituloBase}`,
+        `Por que ${tituloBase} importa para a vida cristã`,
+        `A base bíblica para compreender ${tituloBase}`,
+        `As marcas visíveis e invisíveis deste assunto`,
+        `O confronto necessário e a graça que restaura`,
+        `Caminhos práticos para viver ${tituloBase}`,
+        `Perseverança, maturidade e recomeço`,
+        `O fruto espiritual de uma vida transformada`,
+        `Lições para a família, a igreja e o ministério`,
+        `Conclusões para uma caminhada fiel`
+      ];
+
+      while(genericos.length < count){
+        genericos.push(`Desdobramento prático de ${tituloBase} — Parte ${genericos.length + 1}`);
+      }
+
+      return genericos.slice(0,count);
+    }
+
+    function promptLivroAberturaV11(base,capitulos,tema,perfil){
+      return `
+Você é o VERBO IA gerando um LIVRO cristão em HTML interno.
+
+TÍTULO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR: ${base.author}
+MINISTÉRIO/EDITORA: ${base.ministry}
+TEMA CENTRAL FIXO: ${tema.nome}
+FOCO: ${tema.foco}
+TEXTO BÍBLICO BASE: ${base.biblicalBase}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+EXTENSÃO ESCOLHIDA: ${perfil.modo} — ${perfil.alvoPaginas}
+
+${instrucaoLivroUniversalV12(base,tema,perfil)}
+
+REGRAS ABSOLUTAS:
+- Entregue conteúdo final, pronto para leitura.
+- NÃO repita o prompt do usuário.
+- NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um livro” ou instruções semelhantes.
+- NÃO faça sermão, curso, apostila curta, devocional ou revista EBD.
+- ${tema.proibido}.
+- Escreva com profundidade, progressão, sensibilidade pastoral e aplicação prática.
+- HTML interno apenas, sem markdown.
+
+CAPÍTULOS DO LIVRO:
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
+
+Crie a abertura do ${perfil.modo.toLowerCase()} com:
+<h1 class="page-title">${base.title}</h1>
+<p class="subtitle">${base.subtitle}</p>
+<div class="course-section"><h2>Apresentação</h2><p>Texto autoral, sensível e profundo, introduzindo a dor central do livro e a esperança bíblica.</p></div>
+<div class="course-section"><h2>Por que este livro é necessário</h2><p>Explique a relevância espiritual, pastoral e prática do tema.</p></div>
+<div class="course-section"><h2>Como ler este livro</h2><p>Oriente o leitor a caminhar com honestidade, oração, reflexão e prática.</p></div>
+<div class="course-section"><h2>Sumário</h2><ol>Liste os capítulos com títulos reais.</ol></div>
+
+Escreva com densidade, beleza, verdade bíblica e linguagem que toque a alma.
+      `.trim();
+    }
+
+    function promptLivroCapituloV11(base,titulo,numero,total,tema,perfil){
+      const bibliografia = tema.bibliografia.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+
+      return `
+Você é o VERBO IA escrevendo o CAPÍTULO ${numero} de ${total} de um LIVRO cristão em HTML interno.
+
+LIVRO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR: ${base.author}
+TEMA CENTRAL FIXO: ${tema.nome}
+FOCO DO LIVRO: ${tema.foco}
+CAPÍTULO ${numero}: ${titulo}
+TEXTO BÍBLICO BASE DO LIVRO: ${base.biblicalBase}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+EXTENSÃO ESCOLHIDA: ${perfil.modo} — ${perfil.alvoPaginas}
+
+${instrucaoLivroUniversalV12(base,tema,perfil)}
+
+REGRAS ABSOLUTAS:
+- Entregue conteúdo final, pronto para leitura.
+- NÃO repita o prompt do usuário.
+- NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um livro”, “estrutura desejada” ou instruções semelhantes.
+- NÃO faça resumo curto. NÃO economize argumento.
+- NÃO transforme em sermão, devocional, curso ou revista EBD.
+- ${tema.proibido}.
+- Não invente livros, autores, editoras, leis ou promessas.
+- HTML interno apenas, sem markdown.
+
+QUALIDADE OBRIGATÓRIA:
+- O capítulo deve ser robusto, progressivo e relevante dentro do tamanho escolhido: ${perfil.modo}.
+- Escreva parágrafos desenvolvidos, com profundidade espiritual, argumento bíblico, argumento pastoral, exemplos reais e direções práticas.
+- O capítulo precisa valer a leitura, não apenas preencher páginas.
+- Use tom sensível, maduro, humano e bíblico.
+- Se for Livreto, seja mais direto, mas ainda profundo.
+- Se for Livro grande, expanda mais a argumentação, desenvolva melhor os exemplos e evite pressa.
+
+Estruture exatamente assim:
+<div class="course-section"><h2>Capítulo ${numero} — ${titulo}</h2><p>Introdução tocante com 3 a 5 parágrafos, conectando o tema do capítulo à vida real do leitor.</p></div>
+<div class="course-section"><h3>1. A realidade que precisa ser encarada</h3><p>...</p><p>...</p><p>...</p></div>
+<div class="course-section"><h3>2. Fundamento bíblico</h3><p>Use a Bíblia com fidelidade. Explique as referências, não apenas cite.</p><p>...</p></div>
+<div class="course-section"><h3>3. Argumento pastoral e espiritual</h3><p>...</p><p>...</p><p>...</p></div>
+<div class="course-section"><h3>4. Sinais, perigos e consequências</h3><p>...</p><ul>...</ul></div>
+<div class="course-section"><h3>5. Exemplos da vida cristã e ministerial</h3><p>Inclua pelo menos 3 exemplos desenvolvidos, sem expor pessoas reais identificáveis.</p></div>
+<div class="course-section"><h3>6. Caminhos práticos de restauração e vitória</h3><ol>Inclua direções práticas aplicáveis, explicadas com profundidade.</ol></div>
+<div class="course-section"><h3>7. Perguntas de reflexão</h3><ol>Inclua 5 a 8 perguntas profundas para exame pessoal.</ol></div>
+<div class="course-section"><h3>8. Oração ao final do capítulo</h3><p>Oração curta, pastoral e coerente com o assunto do capítulo.</p></div>
+<div class="course-section"><h3>Resumo do capítulo</h3><p>Resumo específico de ${titulo}, sem frase genérica.</p></div>
+
+Se for coerente com o capítulo, inclua 1 ou 2 frases de impacto no meio do texto.
+
+Bibliografia segura de apoio ao tema geral, se precisar citar no final do livro:
+<ul>${bibliografia}</ul>
+
+Escreva com profundidade real. Não entregue rascunho nem instrução.
+      `.trim();
+    }
+
+    function promptLivroFechamentoV11(base,capitulos,tema,perfil){
+      const bibliografia = tema.bibliografia.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+
+      return `
+Você é o VERBO IA gerando o fechamento de um LIVRO cristão em HTML interno.
+
+LIVRO: ${base.title}
+TEMA CENTRAL: ${tema.nome}
+FOCO: ${tema.foco}
+EXTENSÃO ESCOLHIDA: ${perfil.modo} — ${perfil.alvoPaginas}
+${instrucaoLivroUniversalV12(base,tema,perfil)}
+CAPÍTULOS:
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
+
+REGRAS:
+- Não repita o prompt.
+- Não escreva instruções.
+- Não invente livros, autores ou editoras.
+- ${tema.proibido}.
+- HTML interno apenas.
+
+Crie:
+<div class="course-section"><h2>Conclusão pastoral</h2><p>Conclusão profunda, sensível e esperançosa.</p></div>
+<div class="course-section"><h2>Direções práticas para continuar a caminhada</h2><ol>Inclua 10 a 15 direções práticas, explicadas.</ol></div>
+<div class="course-section"><h2>Oração final</h2><p>Oração de entrega, restauração e recomeço.</p></div>
+<div class="course-section"><h2>Bibliografia recomendada segura</h2><p>Explique que são leituras reais e conhecidas para aprofundamento.</p><ul>${bibliografia}</ul></div>
+      `.trim();
+    }
+
+    function fallbackCapituloLivroV11(base,titulo,numero,tema){
+      return `
+        <div class="course-section">
+          <h2>Capítulo ${numero} — ${escapeHtml(titulo)}</h2>
+          ${paragraph(`Este capítulo trata de ${titulo} dentro do tema ${tema.nome}. O objetivo é conduzir o leitor a enxergar a realidade com honestidade, interpretar a experiência à luz da Palavra de Deus e responder com decisões práticas e espiritualmente maduras.`)}
+          ${paragraph(`A vida cristã não pode ser tratada apenas com frases prontas. Quando o assunto toca dores profundas, feridas acumuladas, pressões internas ou responsabilidades pesadas, é necessário unir verdade bíblica, cuidado pastoral, discernimento e passos concretos de obediência.`)}
+        </div>
+        <div class="course-section">
+          <h3>Fundamento bíblico e pastoral</h3>
+          ${paragraph(`A Escritura mostra que Deus não ignora a condição humana. Ele chama, sustenta, corrige, consola e restaura. Por isso, este capítulo deve ser lido como um convite à maturidade: reconhecer limites, abandonar falsas culpas, ordenar prioridades e voltar ao centro da comunhão com Deus.`)}
+          ${paragraph(`O tema precisa ser vivido com equilíbrio. Não basta identificar o problema; é necessário permitir que a Palavra ilumine a consciência, cure motivações e direcione a prática diária.`)}
+        </div>
+        <div class="course-section">
+          <h3>Direções práticas</h3>
+          <ol>
+            <li>Reconheça com sinceridade o estado atual da alma.</li>
+            <li>Ore sem tentar esconder de Deus o que já está evidente no coração.</li>
+            <li>Procure reorganizar rotina, prioridades e responsabilidades.</li>
+            <li>Busque acompanhamento pastoral responsável quando necessário.</li>
+            <li>Não despreze ajuda profissional quando houver sofrimento intenso.</li>
+            <li>Transforme o aprendizado em atitudes mensuráveis durante a semana.</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Perguntas de reflexão</h3>
+          <ol>
+            <li>O que este capítulo revela sobre minha condição atual?</li>
+            <li>Que limite eu tenho ignorado?</li>
+            <li>Que verdade bíblica preciso voltar a praticar?</li>
+            <li>Que decisão concreta posso tomar ainda esta semana?</li>
+            <li>Quem pode caminhar comigo com maturidade e discrição?</li>
+          </ol>
+        </div>
+        <div class="course-section">
+          <h3>Oração</h3>
+          ${paragraph(`Senhor, dá-me humildade para reconhecer o que precisa ser tratado, sabedoria para obedecer à tua Palavra e força para continuar caminhando sem perder a alma no caminho. Amém.`)}
+        </div>
+      `;
+    }
+
+    async function generateLongMaterialAsync(base){
+      const perfil = perfilLivroV12(base);
+      const quantity = Number(getValue("quantity") || perfil.capPadrao);
+      const count = Math.max(perfil.capMin,Math.min(quantity || perfil.capPadrao,perfil.capMax));
+      const tema = temaLivroV11(base);
+      const capitulos = extrairCapitulosLivroV11(base,count);
+      const info = { label:getTypeLabel(base.type) };
+
+      let html = `<div class="doc">`;
+
+      if(base.coverMode === "com-capa"){
+        setStep(0,"Gerando capa profissional do livro...");
+        const imageData = await chamarImagemIA(promptCapaImagem(base,info),{ tipo:base.type, titulo:base.title });
+        html += renderCover(base,info,imageData);
+      }
+
+      setStep(1,"Gerando apresentação e sumário do livro...");
+      let abertura = await chamarTextoIAComTentativas(
+        [promptLivroAberturaV11(base,capitulos,tema,perfil)],
+        `Abertura do ${perfil.modo.toLowerCase()}`,
+        { minimo:perfil.minimoAbertura, minQuality:`abertura robusta de ${perfil.modo.toLowerCase()}, sem repetir prompt, com apresentação e sumário` }
+      );
+
+      if(!validarConteudoLivroV11(abertura)){
+        abertura = `
+          <h1 class="page-title">${escapeHtml(base.title)}</h1>
+          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+          <div class="course-section"><h2>Apresentação</h2>${paragraph(`Este livro nasce para tratar de ${tema.nome} com profundidade bíblica, sensibilidade pastoral e direção prática. A proposta é conduzir o leitor a uma caminhada de discernimento, restauração e maturidade diante de Deus.`)}</div>
+          <div class="course-section"><h2>Sumário</h2><ol>${capitulos.map(c=>`<li>${escapeHtml(c)}</li>`).join("")}</ol></div>
         `;
       }
+
+      html += renderPage(abertura);
+
+      for(let i = 0; i < capitulos.length; i++){
+        setStep(2,`Gerando capítulo ${i + 1} de ${capitulos.length}...`);
+        let capitulo = await chamarTextoIAComTentativas(
+          [promptLivroCapituloV11(base,capitulos[i],i + 1,capitulos.length,tema,perfil)],
+          `Capítulo ${i + 1} do ${perfil.modo.toLowerCase()}`,
+          { minimo:perfil.minimoCapitulo, minQuality:`capítulo robusto de ${perfil.modo.toLowerCase()} cristão, profundo, prático, sem repetir prompt` }
+        );
+
+        if(!validarConteudoLivroV11(capitulo)){
+          capitulo = fallbackCapituloLivroV11(base,capitulos[i],i + 1,tema);
+        }
+
+        html += renderPage(capitulo);
+      }
+
+      setStep(3,"Gerando fechamento, oração final e bibliografia segura...");
+      let fechamento = await chamarTextoIAComTentativas(
+        [promptLivroFechamentoV11(base,capitulos,tema,perfil)],
+        `Fechamento do ${perfil.modo.toLowerCase()}`,
+        { minimo:perfil.minimoFechamento, minQuality:"conclusão pastoral, direções práticas e bibliografia real segura" }
+      );
+
+      if(!validarConteudoLivroV11(fechamento)){
+        fechamento = `
+          <div class="course-section"><h2>Conclusão pastoral</h2>${paragraph(`A caminhada proposta neste livro não termina na leitura. Ela precisa continuar em decisões concretas, oração sincera, reorganização de prioridades e dependência renovada de Deus.`)}</div>
+          <div class="course-section"><h2>Direções práticas para continuar</h2><ol><li>Volte ao descanso em Deus.</li><li>Reorganize sua rotina.</li><li>Cuide da vida devocional sem culpa religiosa.</li><li>Busque ajuda madura quando necessário.</li><li>Transforme reflexão em prática.</li></ol></div>
+          <div class="course-section"><h2>Bibliografia recomendada segura</h2><ul>${tema.bibliografia.map(b=>`<li>${escapeHtml(b)}</li>`).join("")}</ul></div>
+        `;
+      }
+
+      html += renderPage(fechamento);
+      html += `</div>`;
+
+      renderGenerated(html);
+      finishSteps(`${perfil.modo} gerado com sucesso.`);
+    }
+
+    function generateLongMaterial(base){
+      const perfil = perfilLivroV12(base);
+      const quantity = Number(getValue("quantity") || perfil.capPadrao);
+      const count = Math.max(perfil.capMin,Math.min(quantity || perfil.capPadrao,perfil.capMax));
+      const tema = temaLivroV11(base);
+      const capitulos = extrairCapitulosLivroV11(base,count);
+      const content = capitulos.map((titulo,i) => `
+        <div class="block">
+          <h3>Capítulo ${i + 1} — ${escapeHtml(titulo)}</h3>
+          ${paragraph(`Este capítulo desenvolve ${titulo} dentro do tema ${tema.nome}, com base bíblica, explicação pastoral, exemplos práticos e direção para aplicação pessoal.`)}
+        </div>
+      `).join("");
 
       return `
         <div class="doc">
@@ -9596,11 +10115,15 @@ Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicá
           setStep(0,"Gerando material...");
 
           let html = "";
-          if(base.type === "devocional") html = generateDevotional(base);
-          if(["ebook","livro"].includes(base.type)) html = generateLongMaterial(base);
+          if(base.type === "devocional"){
+            html = generateDevotional(base);
+            renderGenerated(html);
+            finishSteps("Material gerado com sucesso.");
+          }
 
-          renderGenerated(html);
-          finishSteps("Material gerado com sucesso.");
+          if(["ebook","livro"].includes(base.type)){
+            await generateLongMaterialAsync(base);
+          }
         }
 
         result.scrollIntoView({ behavior:"smooth", block:"start" });
