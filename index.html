@@ -5822,11 +5822,16 @@ Não inventar bibliografia.
 
     function extrairCampoLicaoV138(bloco,nomes){
       const lista = Array.isArray(nomes) ? nomes : [nomes];
+      const texto = String(bloco || "");
 
       for(const nome of lista){
-        const regex = new RegExp(nome + "\\s*[:\\-–—]\\s*([^\\n]+)","i");
-        const m = bloco.match(regex);
-        if(m && m[1]) return m[1].trim();
+        const regexMesmaLinha = new RegExp(nome + "\\s*[:\\-–—]\\s*([^\\n]+)","i");
+        const m1 = texto.match(regexMesmaLinha);
+        if(m1 && m1[1] && m1[1].trim()) return m1[1].trim();
+
+        const regexLinhaSeguinte = new RegExp(nome + "\\s*[:\\-–—]?\\s*\\n\\s*([^\\n]+)","i");
+        const m2 = texto.match(regexLinhaSeguinte);
+        if(m2 && m2[1] && m2[1].trim()) return m2[1].trim();
       }
 
       return "";
@@ -5894,12 +5899,15 @@ Não inventar bibliografia.
       const leituraLimitada = referenciasPrincipaisRevistaV138(d.leituraClasse || d.textoBase || base.biblicalBase);
 
       if(padrao){
-        d.textoAureoRef = d.textoAureoRef || d.textoAureo || padrao.textoAureo;
-        d.textoAureo = d.textoAureo || d.textoAureoRef || padrao.textoAureo;
-        d.textoAureoTexto = textoBiblicoCurtoPorReferencia(d.textoAureoRef || d.textoAureo) || padrao.textoAureoTexto;
-        d.leituraClasse = referenciasPrincipaisRevistaV138(d.leituraClasse || padrao.leituraClasse) || padrao.leituraClasse;
-        d.sintese = /verdade bíblica estudada orienta a fé|fortalece a esperança|conduz o cristão/i.test(d.sintese || "") ? padrao.sintese : (d.sintese || padrao.sintese);
-        d.palavraChave = d.palavraChave || padrao.palavraChave;
+        // v13.11: para a revista "Igreja Local", cada lição precisa ter sua própria Leitura Bíblica em Classe.
+        // Não herdar o texto bíblico geral da revista, pois isso fazia a leitura repetir igual nas 4 lições.
+        d.textoAureoRef = padrao.textoAureo;
+        d.textoAureo = padrao.textoAureo;
+        d.textoAureoTexto = padrao.textoAureoTexto;
+        d.leituraClasse = padrao.leituraClasse;
+        d.sintese = padrao.sintese;
+        d.tese = padrao.sintese;
+        d.palavraChave = padrao.palavraChave;
       }else{
         d.textoAureoRef = d.textoAureoRef || d.textoAureo || escolherTextoAureoPrincipal(d.leituraClasse,base);
         d.textoAureo = d.textoAureo || d.textoAureoRef;
@@ -8219,7 +8227,7 @@ Estruture assim:
         ajustada.textoAureoRef = ref;
         ajustada.textoAureo = ref;
         ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || ajustada.textoAureoTexto || "Texto bíblico relacionado ao tema central da lição.";
-        ajustada.leituraClasse = referenciasPrincipaisRevistaV138(ajustada.leituraClasse || base.biblicalBase);
+        ajustada.leituraClasse = referenciasPrincipaisRevistaV138(ajustada.leituraClasse) || referenciasPrincipaisRevistaV138(base.biblicalBase);
         licoes[i] = ajustada;
       }
 
