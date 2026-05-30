@@ -1640,6 +1640,199 @@
       line-height:1.65;
     }
 
+    /* v13.22 — Certificado RCID frente e verso */
+    .certificate-doc .page{
+      background:#f7efe2;
+    }
+
+    .certificate-page{
+      background:
+        radial-gradient(circle at top left,rgba(255,221,135,.35),transparent 32%),
+        radial-gradient(circle at bottom right,rgba(126,73,32,.18),transparent 34%),
+        linear-gradient(135deg,#fffdf7,#fff6e5 55%,#f4dfb5);
+      border-radius:22px;
+      padding:28px;
+      color:#3b2518;
+      min-height:940px;
+    }
+
+    .cert-border{
+      min-height:880px;
+      border:6px double #8a5a22;
+      outline:2px solid rgba(255,255,255,.8);
+      border-radius:20px;
+      padding:34px;
+      background:rgba(255,255,255,.68);
+      box-shadow:0 14px 40px rgba(75,44,16,.18);
+    }
+
+    .cert-header{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:18px;
+      text-align:left;
+      border-bottom:2px solid rgba(138,90,34,.35);
+      padding-bottom:20px;
+      margin-bottom:32px;
+    }
+
+    .cert-header h1{
+      margin:0;
+      font-size:44px;
+      color:#5d3417;
+      letter-spacing:.5px;
+    }
+
+    .cert-header p{
+      margin:6px 0 0;
+      font-size:18px;
+      color:#79512a;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .cert-header-small h1{
+      font-size:34px;
+    }
+
+    .cert-ministry{
+      width:88px;
+      height:88px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg,#5d3417,#a6712c);
+      color:#fff8df;
+      font-size:28px;
+      font-weight:900;
+      border:4px solid #e4c67d;
+      box-shadow:0 8px 18px rgba(80,47,21,.28);
+      flex:0 0 auto;
+    }
+
+    .cert-body{
+      text-align:center;
+    }
+
+    .cert-text{
+      font-size:22px;
+      margin:0 0 20px;
+      color:#4e3121;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:800;
+    }
+
+    .cert-name-line{
+      width:78%;
+      height:52px;
+      border-bottom:3px solid #5d3417;
+      margin:0 auto 6px;
+      background:rgba(255,255,255,.45);
+    }
+
+    .cert-small{
+      margin:0 0 28px;
+      color:#725437;
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:800;
+    }
+
+    .cert-message{
+      max-width:820px;
+      margin:18px auto;
+      font-size:20px;
+      line-height:1.72;
+      color:#3d2b20;
+      text-align:center;
+    }
+
+    .cert-date{
+      margin:34px auto;
+      font-size:18px;
+      font-weight:800;
+      color:#4e3121;
+    }
+
+    .cert-signatures{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:44px;
+      margin-top:42px;
+      align-items:end;
+    }
+
+    .cert-sign-line{
+      border-bottom:2px solid #4e3121;
+      height:42px;
+      background:rgba(255,255,255,.35);
+    }
+
+    .cert-signatures p{
+      margin:8px 0 0;
+      font-size:14px;
+      line-height:1.4;
+      color:#5f4634;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .cert-footer{
+      margin-top:38px;
+      text-align:center;
+      font-size:13px;
+      color:#755638;
+      font-weight:800;
+      border-top:1px solid rgba(138,90,34,.35);
+      padding-top:14px;
+    }
+
+    .cert-table{
+      width:100%;
+      border-collapse:collapse;
+      font-size:15px;
+      background:rgba(255,255,255,.72);
+      border-radius:12px;
+      overflow:hidden;
+    }
+
+    .cert-table th,
+    .cert-table td{
+      border:1px solid rgba(117,86,56,.28);
+      padding:10px 12px;
+      text-align:left;
+    }
+
+    .cert-table th{
+      background:#6b432b;
+      color:#fff7df;
+    }
+
+    .cert-curriculum h2{
+      color:#5d3417;
+    }
+
+    @media print{
+      .certificate-print-page{
+        break-after:page;
+        page-break-after:always;
+      }
+      .certificate-page{
+        min-height:calc(100vh - 20mm);
+        box-shadow:none !important;
+      }
+      .cert-border{
+        min-height:calc(100vh - 45mm);
+        box-shadow:none !important;
+      }
+    }
+
     @media (max-width:1180px){
       .layout{ grid-template-columns:1fr; }
       .left-panel{ position:relative; top:auto; max-height:none; }
@@ -2790,6 +2983,7 @@
                 <select id="studyType">
                   <option value="estudo-biblico" selected>Estudo bíblico</option>
                   <option value="estudo-teologico">Estudo teológico profundo</option>
+                  <option value="pesquisa-teologica">Pesquisa teológica / doutrina específica</option>
                   <option value="apostila-aluno">Apostila do aluno</option>
                   <option value="apostila-professor">Apostila do professor</option>
                 </select>
@@ -3043,16 +3237,16 @@
             </div>
 
             <div class="truth-note" style="margin-top:14px;">
-              <strong>Trilha Teológica Progressiva:</strong> gere o Básico, salve como base; depois gere o Intermediário usando o Básico; por fim gere o Avançado usando Básico + Intermediário.
+              <strong>Nível do curso:</strong> todo curso pode ser gerado em nível Básico, Médio ou Avançado. O nível controla a profundidade real do conteúdo.
             </div>
 
             <div class="grid-2">
               <div class="field">
-                <label for="cursoNivelTeologico">Nível da trilha teológica</label>
+                <label for="cursoNivelTeologico">Nível do curso</label>
                 <select id="cursoNivelTeologico">
-                  <option value="basico" selected>Básico — linguagem simples, conteúdo forte</option>
-                  <option value="intermediario">Intermediário — expansão doutrinária</option>
-                  <option value="avancado">Avançado — nível técnico / faculdade</option>
+                  <option value="basico" selected>Básico — fundamentos bem explicados</option>
+                  <option value="intermediario">Médio / Intermediário — expansão e argumentação</option>
+                  <option value="avancado">Avançado — técnico / faculdade</option>
                 </select>
               </div>
 
@@ -3070,7 +3264,7 @@
               <div id="baseTeologiaBasicoStatus" class="status-mini warn">Base teológica básica: não salva.</div>
               <div id="baseTeologiaIntermediarioStatus" class="status-mini warn">Base teológica intermediária: não salva.</div>
               <div id="baseTeologiaAvancadoStatus" class="status-mini warn">Base teológica avançada: não salva.</div>
-              <div class="status-mini ok">Modo seguro: por padrão, o curso novo não usa base anterior. Use base salva somente quando quiser expandir uma trilha já revisada.</div>
+              <div class="status-mini ok">Modo seguro: por padrão, o curso novo não usa base anterior. Use base salva somente quando quiser criar professor/apoio ou expandir um curso já revisado.</div>
             </div>
 
             <div class="actions-grid" style="margin-top:0;">
@@ -3578,6 +3772,7 @@
       const labels = {
         "estudo-biblico":"Estudo Bíblico",
         "estudo-teologico":"Estudo Teológico Profundo",
+        "pesquisa-teologica":"Pesquisa Teológica / Doutrina Específica",
         "apostila-aluno":"Apostila do Aluno",
         "apostila-professor":"Apostila do Professor"
       };
@@ -3828,7 +4023,7 @@
         cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
         cursoObservacao:getValue("cursoObservacao") || "",
         cursoNivelTeologico:getValue("cursoNivelTeologico") || "basico",
-        cursoBaseTeologicaModo:getValue("cursoBaseTeologicaModo") || "auto",
+        cursoBaseTeologicaModo:getValue("cursoBaseTeologicaModo") || "nenhuma",
         extraNotes:getValue("extraNotes") || ""
       };
     }
@@ -8885,6 +9080,47 @@ TRAVA UNIVERSAL DE TEMA DO CURSO:
       `.trim();
     }
 
+    function labelNivelCursoUniversalV1322(nivel){
+      const mapa = { basico:"Básico", intermediario:"Médio / Intermediário", avancado:"Avançado" };
+      return mapa[nivel] || "Básico";
+    }
+
+    function regrasNivelCursoUniversalV1322(base){
+      const nivel = base.cursoNivelTeologico || "basico";
+
+      if(nivel === "intermediario"){
+        return `
+NÍVEL DO CURSO: MÉDIO / INTERMEDIÁRIO.
+- Não repita o básico com palavras diferentes.
+- Parta dos fundamentos e avance em argumentação, conexões bíblicas, conceitos mais completos, exemplos mais maduros e aplicações mais exigentes.
+- Inclua debates moderados, cuidados, erros comuns, comparações e desenvolvimento mais robusto.
+- O aluno já deve sair do módulo com domínio intermediário do tema.
+- O Manual do Professor deste nível deve trazer respostas mais completas, sugestões de debate e orientação didática mais aprofundada.
+        `.trim();
+      }
+
+      if(nivel === "avancado"){
+        return `
+NÍVEL DO CURSO: AVANÇADO / TÉCNICO.
+- Não entregue conteúdo básico disfarçado.
+- Trabalhe em nível alto: precisão conceitual, linguagem técnica explicada, argumentos contrários, respostas, debates históricos, bibliografia por módulo, pesquisa e aplicação madura.
+- O conteúdo deve ter densidade de seminário, faculdade ou formação ministerial avançada, sem perder clareza.
+- O aluno deve ser conduzido a análise crítica, síntese, pesquisa e aplicação responsável.
+- O Manual do Professor deste nível deve conter notas técnicas, respostas completas, alertas, questões difíceis e roteiro de aula robusto.
+        `.trim();
+      }
+
+      return `
+NÍVEL DO CURSO: BÁSICO.
+- Básico não significa raso.
+- Use linguagem simples, explique conceitos do zero e dê fundamentos sólidos.
+- Evite excesso de tecnicismo, mas não entregue conteúdo fraco.
+- Defina termos, explique a base bíblica, mostre exemplos e aplicações.
+- O aluno iniciante precisa entender o tema com segurança e interesse.
+- O Manual do Professor deste nível deve acompanhar a mesma base, com respostas, plano de aula e orientação didática clara.
+      `.trim();
+    }
+
     function limparVazamentoUniversalCursoV1321(html,base){
       let out = String(html || "");
       const temaNorm = normalizarTemaUniversalCursoV1321(`${base.title || ""} ${base.theme || ""} ${base.cursoObservacao || ""}`);
@@ -9048,28 +9284,102 @@ TIPO DE MATERIAL: CERTIFICADO.
     }
 
     function gerarCertificadoCursoFallback(base){
-      return `<div class="doc">
+      const ministerioCert = "RCID — Renovação Cristã da Igreja de Deus";
+      const tituloCurso = escapeHtml(base.title || "Curso Ministerial");
+      const carga = escapeHtml(base.cursoCargaHoraria || "40 horas");
+      const nivel = escapeHtml(labelNivelCursoUniversalV1322(base.cursoNivelTeologico || "basico"));
+      const professor = escapeHtml(base.author || "Professor responsável");
+      const tema = escapeHtml(base.theme || base.title || "conteúdo ministrado");
+      const modulos = extrairModulosCurso(base);
+
+      const grade = modulos.map((m,i)=>{
+        const chTotal = parseInt(String(base.cursoCargaHoraria || "40").replace(/\D/g,""),10) || 40;
+        const ch = Math.max(1,Math.round(chTotal / Math.max(1,modulos.length)));
+        return `<tr><td>Módulo ${i + 1}</td><td>${escapeHtml(m.titulo || `Módulo ${i + 1}`)}</td><td>${ch}h</td></tr>`;
+      }).join("");
+
+      return `<div class="doc certificate-doc">
         ${renderPage(`
-          <div class="course-clean-page">
-            <div class="course-cover-box">
-              <h1>Certificado de Conclusão</h1>
-              <p>${escapeHtml(base.title)}</p>
-            </div>
-            <div class="course-section" style="text-align:center;">
-              <h2>Certificamos que</h2>
-              <p class="text" style="font-size:24px;text-align:center;"><strong>________________________________________</strong></p>
-              ${paragraph(`concluiu o curso ${base.title}, com carga horária de ${base.cursoCargaHoraria}, dedicado à formação cristã para serviço, cuidado, escuta, presença e responsabilidade ética.`)}
-              ${paragraph(`Ministério/Editora: ${base.ministry}`)}
-              ${paragraph(`Responsável: ${base.author}`)}
-              ${paragraph("Data: ____ / ____ / ______")}
-              ${paragraph("Assinatura: ________________________________________")}
-            </div>
-            <div class="course-section">
-              <h2>Observação</h2>
-              ${paragraph("Este certificado é simbólico e ministerial, não representando autorização profissional, credenciamento civil ou validade legal automática.")}
+          <div class="certificate-page certificate-front">
+            <div class="cert-border">
+              <div class="cert-header">
+                <div class="cert-ministry">RCID</div>
+                <div>
+                  <h1>Certificado de Conclusão</h1>
+                  <p>Renovação Cristã da Igreja de Deus</p>
+                </div>
+              </div>
+
+              <div class="cert-body">
+                <p class="cert-text">Certificamos que</p>
+                <div class="cert-name-line"></div>
+                <p class="cert-small">Nome do(a) aluno(a)</p>
+
+                <p class="cert-message">
+                  concluiu com aproveitamento o curso <strong>${tituloCurso}</strong>, em nível <strong>${nivel}</strong>,
+                  com carga horária de <strong>${carga}</strong>, recebendo formação bíblica, cristã e ministerial
+                  sobre o conteúdo abordado: <strong>${tema}</strong>.
+                </p>
+
+                <p class="cert-message">
+                  Este certificado é concedido como reconhecimento ministerial pela participação, dedicação,
+                  desenvolvimento e conclusão do percurso formativo proposto.
+                </p>
+
+                <div class="cert-date">Data: ____ / ____ / ______</div>
+
+                <div class="cert-signatures">
+                  <div>
+                    <div class="cert-sign-line"></div>
+                    <p>Assinatura do(a) aluno(a)</p>
+                  </div>
+                  <div>
+                    <div class="cert-sign-line"></div>
+                    <p>${professor}<br/>Professor / Responsável</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="cert-footer">
+                RCID — Renovação Cristã da Igreja de Deus • Certificado ministerial de conclusão
+              </div>
             </div>
           </div>
-        `,"course-page intro-page")}
+        `,"course-page certificate-print-page")}
+
+        ${renderPage(`
+          <div class="certificate-page certificate-back">
+            <div class="cert-border">
+              <div class="cert-header cert-header-small">
+                <div class="cert-ministry">RCID</div>
+                <div>
+                  <h1>Histórico / Currículo do Curso</h1>
+                  <p>${tituloCurso} • Nível ${nivel} • Carga horária ${carga}</p>
+                </div>
+              </div>
+
+              <div class="course-section cert-curriculum">
+                <h2>Componentes curriculares</h2>
+                <table class="cert-table">
+                  <thead><tr><th>Etapa</th><th>Matéria / Módulo</th><th>C.H.</th></tr></thead>
+                  <tbody>${grade}</tbody>
+                </table>
+              </div>
+
+              <div class="course-section cert-curriculum">
+                <h2>Registro ministerial</h2>
+                <p class="text">Aluno(a): ________________________________________________</p>
+                <p class="text">Professor / responsável: __________________________________</p>
+                <p class="text">Local: ____________________________ Data: ____ / ____ / ______</p>
+              </div>
+
+              <div class="course-section cert-curriculum">
+                <h2>Observação</h2>
+                ${paragraph("Este certificado possui finalidade ministerial, eclesiástica e formativa, emitido no contexto da RCID — Renovação Cristã da Igreja de Deus.")}
+              </div>
+            </div>
+          </div>
+        `,"course-page certificate-print-page")}
       </div>`;
     }
 
@@ -9081,6 +9391,7 @@ TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA DO USUÁRIO: ${base.theme}
 PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
@@ -9090,6 +9401,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9126,10 +9439,10 @@ Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pasto
         : "Perguntas de revisão com respostas e orientação de correção.";
 
       const metaExtensao = base.cursoTipo === "professor"
-        ? "Este módulo do MANUAL DO PROFESSOR deve ser mais completo que o módulo do aluno: mantenha o conteúdo-base e acrescente respostas, plano de aula, comentários, didática, exemplos extras e alertas."
+        ? "Este módulo do MANUAL DO PROFESSOR deve ser mais completo que o módulo do aluno: mantenha o conteúdo-base e acrescente respostas, plano de aula, comentários, didática, exemplos extras e alertas, respeitando o nível escolhido do curso."
         : base.cursoTipo === "apoio-professor"
-          ? "Este módulo do LIVRO DE APOIO deve ser o mais aprofundado: não repita o manual; amplie com estudo complementar, teologia aplicada, casos práticos, estratégias, modelos e checklists."
-          : "Este módulo da APOSTILA DO ALUNO deve ser completo, claro e didático, com atividades e espaço de resposta.";
+          ? "Este módulo do LIVRO DE APOIO deve ser o mais aprofundado: não repita o manual; amplie com estudo complementar, pesquisa, casos práticos, estratégias, modelos e checklists, respeitando o nível escolhido."
+          : "Este módulo da APOSTILA DO ALUNO deve ser completo, claro e didático, com atividades e espaço de resposta, respeitando o nível escolhido.";
 
       const estruturaModulo = cursoEhTeologiaSistematicaV1313(base)
         ? `
@@ -9186,6 +9499,8 @@ ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9632,6 +9947,7 @@ TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA DO USUÁRIO: ${base.theme}
 PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
@@ -9641,6 +9957,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9691,6 +10009,7 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA GERAL DO CURSO: ${base.theme}
 MÓDULO: ${modulo.titulo}
 TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
@@ -9704,6 +10023,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9784,6 +10105,8 @@ ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -10571,6 +10894,7 @@ TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA DO USUÁRIO: ${base.theme}
 PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
@@ -10582,6 +10906,8 @@ ${instrucoesTravaTemaCursoV9(base)}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -10641,6 +10967,7 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA GERAL DO CURSO: ${base.theme}
 TEMA CENTRAL A SER MANTIDO: ${temaCentral}
 MÓDULO: ${modulo.titulo}
@@ -10657,6 +10984,8 @@ ${instrucoesTravaTemaCursoV9(base)}
 ${regrasTipoCurso(base)}
 
 ${travaUniversalCursoV1321(base)}
+
+${regrasNivelCursoUniversalV1322(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -12923,7 +13252,7 @@ async function generateMaterial(){
       updateSteps(currentType);
       atualizarStatusBasesEBD();
       atualizarStatusBasesApostila();
-      setStatus("Campos limpos. O próximo material começa do zero; nenhuma base anterior será usada automaticamente.","ok");
+      setStatus("Campos limpos. O próximo material começa do zero; cursos não usam base anterior automaticamente.","ok");
     }
 
     function ativarEdicao(){
@@ -13190,7 +13519,7 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     if(btnClearTeologiaBases) btnClearTeologiaBases.addEventListener("click",apagarBasesTeologia);
 
     if(cursoNivelTeologico){
-      cursoNivelTeologico.addEventListener("change",() => setStatus("Nível da trilha teológica selecionado: " + labelNivelTeologicoV1319(getValue("cursoNivelTeologico") || "basico") + ".","ok"));
+      cursoNivelTeologico.addEventListener("change",() => setStatus("Nível do curso selecionado: " + labelNivelTeologicoV1319(getValue("cursoNivelTeologico") || "basico") + ".","ok"));
     }
     if(cursoBaseTeologicaModo){
       cursoBaseTeologicaModo.addEventListener("change",() => setStatus("Modo de base anterior atualizado para a Trilha Teológica.","ok"));
