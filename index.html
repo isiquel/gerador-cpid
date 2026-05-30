@@ -7730,9 +7730,11 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
       `;
 
       return limparLinguagemAluno(`
-        ${topo.join("")}
+        ${topo.join("
+")}
         <div class="magazine-columns">
-          ${corpo.join("")}
+          ${corpo.join("
+")}
         </div>
         <div class="lesson-review-full magazine-full">
           ${revisaoFinal}
@@ -8517,7 +8519,83 @@ Estruture assim:
       ];
     }
 
+    function cursoEhTeologiaSistematicaV1313(base){
+      const t = `${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.extraNotes || ""} ${base.biblicalBase || ""}`.toLowerCase();
+      return /teologia sistem[aá]tica|doutrina(s)? da f[eé]|bibliologia|teontologia|trindade|cristologia|pneumatologia|soteriologia|eclesiologia|escatologia|hamartiologia/.test(t);
+    }
+
+    function modulosTeologiaSistematicaV1313(){
+      return [
+        { titulo:"Introdução à Teologia Sistemática", textoBase:"2 Timóteo 3.16-17; João 17.17", foco:"natureza, importância, método e limites da teologia sistemática", dores:"confusão doutrinária, superficialidade bíblica e separação entre doutrina e vida piedosa" },
+        { titulo:"Bibliologia: A Doutrina das Escrituras", textoBase:"2 Timóteo 3.16-17; 2 Pedro 1.20-21", foco:"inspiração, autoridade, suficiência, interpretação e aplicação da Bíblia", dores:"relativização da Escritura, má interpretação bíblica e doutrinas sem fundamento" },
+        { titulo:"Teontologia: A Doutrina de Deus", textoBase:"Deuteronômio 6.4; Isaías 6.1-8", foco:"existência, natureza, atributos, santidade, soberania, amor e justiça de Deus", dores:"visões distorcidas de Deus, informalidade diante da santidade divina e fé sem reverência" },
+        { titulo:"Trindade: O Deus Triúno", textoBase:"Mateus 28.19; 2 Coríntios 13.13", foco:"um só Deus em essência e três pessoas: Pai, Filho e Espírito Santo", dores:"confusão sobre a Trindade, modalismo, triteísmo e linguagem imprecisa sobre Deus" },
+        { titulo:"Cristologia: A Pessoa e a Obra de Cristo", textoBase:"João 1.1-14; Colossenses 1.15-20", foco:"divindade, humanidade, encarnação, expiação, ressurreição, exaltação e intercessão de Cristo", dores:"cristologia rasa, evangelho sem cruz e fé não centrada em Cristo" },
+        { titulo:"Antropologia e Hamartiologia: O Homem e o Pecado", textoBase:"Gênesis 1.26-28; Romanos 3.23", foco:"imagem de Deus, queda, pecado, corrupção humana e necessidade da graça", dores:"humanismo sem pecado, culpa sem esperança e desconhecimento da condição humana" },
+        { titulo:"Soteriologia: A Doutrina da Salvação", textoBase:"Efésios 2.8-10; Romanos 3.23-26", foco:"graça, fé, arrependimento, justificação, regeneração, adoção, santificação e perseverança", dores:"salvação por mérito, graça barata, legalismo e falta de segurança bíblica" },
+        { titulo:"Pneumatologia: O Espírito Santo, o Batismo e os Dons Espirituais", textoBase:"João 14.16-17; Atos 1.8; 1 Coríntios 12–14", foco:"pessoa e obra do Espírito Santo, vida cheia do Espírito, dons, fruto, ordem e edificação", dores:"confusão sobre dons, extremismos, desprezo às línguas ou uso das línguas como medida única de espiritualidade" },
+        { titulo:"Eclesiologia: A Doutrina da Igreja", textoBase:"Mateus 16.18; Atos 2.42-47; Efésios 4.11-16", foco:"igreja como povo de Deus, Corpo de Cristo, comunhão, governo, ordenanças, ministérios e missão", dores:"individualismo cristão, desprezo à igreja local e serviço sem unidade" },
+        { titulo:"Escatologia: A Doutrina das Últimas Coisas", textoBase:"1 Tessalonicenses 4.13-18; Apocalipse 21.1-5", foco:"volta de Cristo, ressurreição, juízo, destino eterno, novos céus e nova terra", dores:"sensacionalismo escatológico, medo, especulação e falta de esperança bíblica" }
+      ];
+    }
+
+    function regrasTemaTeologiaCursoV1313(base){
+      if(!cursoEhTeologiaSistematicaV1313(base)) return "";
+
+      return `
+TRAVA ABSOLUTA DE TEMA — TEOLOGIA SISTEMÁTICA:
+- Este curso é exclusivamente sobre Teologia Sistemática Avançada.
+- Não misture com curso de família, casamento, capelania, missões, liderança familiar, aconselhamento conjugal, educação de filhos ou temas domésticos.
+- Não use títulos, exemplos e seções de família/casamento, a menos que apareçam apenas como aplicação breve dentro de uma doutrina e nunca como tema central.
+- Não use estrutura de capelania, como “o que é esta área da capelania”, “postura correta do capelão”, “atendimento”, “encaminhamento institucional” ou “pessoas atendidas e dores do ambiente”.
+- Cada módulo deve permanecer na doutrina indicada: Bibliologia, Teontologia, Trindade, Cristologia, Antropologia/Hamartiologia, Soteriologia, Pneumatologia, Eclesiologia e Escatologia.
+- A linguagem deve ser teológica, bíblica, pastoral e didática.
+- O conteúdo deve explicar definições, base bíblica, erros doutrinários a evitar, aplicação à igreja e perguntas de revisão.
+
+REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
+- Valorize a atualidade dos dons espirituais e a tradição pentecostal clássica com respeito.
+- Ensine que o dom de línguas é bíblico, maravilhoso, atual e edificante quando praticado com ordem.
+- Não trate o dom de línguas como evidência única e obrigatória do batismo com o Espírito Santo.
+- Mostre que há cristãos cheios do Espírito que manifestam outros dons e frutos espirituais sem falar em línguas.
+- Ensine que o Espírito distribui os dons como quer, para edificação do Corpo de Cristo.
+- Não ridicularize quem fala em línguas e não negue a atualidade dos dons.
+      `.trim();
+    }
+
+    function limparVazamentoTemaCursoV1313(html,base){
+      let out = String(html || "");
+      if(!cursoEhTeologiaSistematicaV1313(base)) return out;
+
+      const substituicoes = [
+        [/curso\s+para\s+casais/gi,"curso de teologia sistemática"],
+        [/casamento\s+crist[aã]o/gi,"doutrina cristã"],
+        [/vida\s+conjugal/gi,"vida cristã"],
+        [/marido\s+e\s+esposa/gi,"cristão e igreja"],
+        [/fam[ií]lia\s+crist[aã]/gi,"igreja cristã"],
+        [/educa[cç][aã]o\s+de\s+filhos/gi,"formação doutrinária"],
+        [/capelania/gi,"teologia aplicada"],
+        [/capel[aã]o/gi,"estudante de teologia"],
+        [/atendimento\s+capel[aã]o/gi,"aplicação pastoral da doutrina"],
+        [/pessoas\s+atendidas\s+e\s+principais\s+dores/gi,"questões doutrinárias principais"],
+        [/postura\s+correta\s+do\s+capel[aã]o\s+crist[aã]o/gi,"postura correta do estudante da Palavra"],
+        [/o que o capel[aã]o pode fazer/gi,"como aplicar esta doutrina"],
+        [/o que o capel[aã]o n[aã]o deve fazer/gi,"erros doutrinários a evitar"],
+        [/limites\s+[eé]ticos\s+e\s+encaminhamentos/gi,"limites de interpretação e aplicação"],
+        [/como abordar a pessoa em sofrimento/gi,"como ensinar esta doutrina com clareza"]
+      ];
+
+      substituicoes.forEach(([padrao, valor]) => {
+        out = out.replace(padrao, valor);
+      });
+
+      return out.replace(/\\n|\/n/g," ");
+    }
+
     function extrairModulosCurso(base){
+      if(cursoEhTeologiaSistematicaV1313(base)){
+        return modulosTeologiaSistematicaV1313().slice(0, Math.min(Number(getValue("quantity") || 10), 10));
+      }
+
       const texto = String(base.theme || "") + "\n" + String(base.extraNotes || "");
       const linhas = texto.split(/\n+/).map(l => l.trim()).filter(Boolean);
       const encontrados = [];
@@ -8739,6 +8817,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 
 ${regrasTipoCurso(base)}
 
+${regrasTemaTeologiaCursoV1313(base)}
+
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
 
@@ -8777,56 +8857,26 @@ Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pasto
           ? "Este módulo do LIVRO DE APOIO deve ser o mais aprofundado: não repita o manual; amplie com estudo complementar, teologia aplicada, casos práticos, estratégias, modelos e checklists."
           : "Este módulo da APOSTILA DO ALUNO deve ser completo, claro e didático, com atividades e espaço de resposta.";
 
-      return `
-Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão em HTML interno.
-
-CURSO: ${base.title}
-TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
-CARGA HORÁRIA: ${base.cursoCargaHoraria}
-TEMA GERAL DO CURSO: ${base.theme}
-MÓDULO: ${modulo.titulo}
-TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
-FOCO DO MÓDULO: ${modulo.foco}
-DORES/NECESSIDADES DO AMBIENTE: ${modulo.dores}
-PÚBLICO-ALVO: ${base.targetAudience}
-TOM: ${base.tone}
-OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
-DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
-
-${regrasTipoCurso(base)}
-
-BASES SALVAS DO CURSO:
-${contextoBasesCurso(base)}
-
-META DE QUALIDADE E EXTENSÃO:
-${metaExtensao}
-
-REGRAS ABSOLUTAS:
-- Entregue conteúdo final, não instruções.
-- Proibido repetir o prompt do usuário.
-- Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
-- Proibido deixar genérico.
-- Proibido fazer sermão, apelo ou devocional.
-- Não use muitos cards. Use visual de apostila limpa.
-- Não invente leis, normas, certificados ou autorização profissional.
-- Deixe claro que capelania respeita ética, sigilo, limites institucionais e encaminhamento profissional.
-- HTML interno apenas.
-
+      const estruturaModulo = cursoEhTeologiaSistematicaV1313(base)
+        ? `
 Estruture exatamente assim:
-<div class="course-section"><h2>Módulo ${numero} — ${modulo.titulo}</h2><p>Introdução robusta...</p></div>
-<div class="course-section"><h3>Objetivo do módulo</h3><p>...</p></div>
-<div class="course-section"><h3>Texto bíblico base</h3><p>Escreva a referência e explique a aplicação. Se souber o texto bíblico, inclua-o com responsabilidade.</p></div>
-<div class="course-section"><h3>1. O que é esta área da capelania</h3><p>...</p></div>
-<div class="course-section"><h3>2. Pessoas atendidas e principais dores</h3><p>...</p><ul>...</ul></div>
-<div class="course-section"><h3>3. Postura correta do capelão cristão</h3><p>...</p></div>
-<div class="course-section"><h3>4. O que o capelão pode fazer</h3><ul>...</ul></div>
-<div class="course-section"><h3>5. O que o capelão não deve fazer</h3><ul>...</ul></div>
-<div class="course-section"><h3>6. Limites éticos e encaminhamentos</h3><p>...</p></div>
-<div class="course-section"><h3>7. Como abordar a pessoa em sofrimento</h3><p>...</p></div>
-<div class="course-section"><h3>8. Exemplo prático de atendimento</h3><p>...</p></div>
-<div class="course-section"><h3>9. Atividade prática</h3><p>...</p></div>
-<div class="course-section"><h3>10. ${revisao}</h3><ol>...</ol></div>
+<div class="course-section"><h2>Módulo ${numero} — ${modulo.titulo}</h2><p>Introdução robusta e teológica...</p></div>
+<div class="course-section"><h3>Objetivos do módulo</h3><ol>...</ol></div>
+<div class="course-section"><h3>Texto bíblico base</h3><p>Referência, explicação e relação com a doutrina estudada.</p></div>
+<div class="course-section"><h3>1. Definição doutrinária</h3><p>Explique o que esta doutrina significa em linguagem simples e profunda.</p></div>
+<div class="course-section"><h3>2. Fundamento bíblico</h3><p>Mostre a base nas Escrituras com fidelidade ao contexto.</p></div>
+<div class="course-section"><h3>3. Desenvolvimento teológico</h3><p>Aprofunde a doutrina, seus termos e suas implicações.</p></div>
+<div class="course-section"><h3>4. Erros doutrinários a evitar</h3><ul>...</ul></div>
+<div class="course-section"><h3>5. Aplicação para a vida cristã e para a igreja</h3><p>Mostre como a doutrina forma adoração, santidade, serviço e missão.</p></div>
+<div class="course-section"><h3>6. Síntese teológica do módulo</h3><p>Resumo claro e forte.</p></div>
+<div class="course-section"><h3>7. Atividade prática</h3><p>Atividade de estudo bíblico, análise doutrinária ou aplicação ministerial.</p></div>
+<div class="course-section"><h3>8. ${revisao}</h3><ol>...</ol></div>
 <div class="course-section"><h3>Resumo do módulo</h3><p>...</p></div>
+
+Se este for o Módulo 8 de Pneumatologia, trate com profundidade o Espírito Santo, o batismo/revestimento de poder, o fruto do Espírito e os dons espirituais. Ensine que línguas é dom bíblico, maravilhoso e atual, mas não evidência única obrigatória do batismo com o Espírito Santo. Mostre outros dons e frutos como evidências da ação do Espírito, mantendo respeito pela tradição pentecostal e submissão às Escrituras.
+`
+        : `
+${estruturaModulo}
 
 Se for Manual do Professor, acrescente dentro do módulo, obrigatoriamente:
 <div class="course-section"><h3>Orientação ao professor</h3><p>...</p></div>
@@ -8860,6 +8910,8 @@ MÓDULOS:
 ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
 
 ${regrasTipoCurso(base)}
+
+${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
@@ -9089,6 +9141,8 @@ Estrutura sugerida:
         { minimo:minimoApresentacaoCurso, aceitarCurto:base.cursoTipo === "aluno", aceitarMuitoCurto:false }
       );
 
+      apresentacao = limparVazamentoTemaCursoV1313(apresentacao,base);
+
       if(!validarConteudoCurso(apresentacao)){
         apresentacao = `
           <div class="course-cover-box">
@@ -9132,6 +9186,8 @@ Estrutura sugerida:
           `Módulo ${numero} do curso`,
           { minimo:minimoModuloCurso, aceitarCurto:base.cursoTipo === "aluno", aceitarMuitoCurto:false }
         );
+
+        moduloHtml = limparVazamentoTemaCursoV1313(moduloHtml,base);
 
         if(!validarConteudoCurso(moduloHtml)){
           moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
@@ -9319,6 +9375,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 
 ${regrasTipoCurso(base)}
 
+${regrasTemaTeologiaCursoV1313(base)}
+
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
 
@@ -9377,6 +9435,8 @@ OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 
 ${regrasTipoCurso(base)}
+
+${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
@@ -9453,6 +9513,8 @@ MÓDULOS:
 ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
 
 ${regrasTipoCurso(base)}
+
+${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
@@ -9726,6 +9788,8 @@ Estrutura sugerida:
         { minimo:minimoApresentacaoCurso, aceitarCurto:false, aceitarMuitoCurto:false }
       );
 
+      apresentacao = limparVazamentoTemaCursoV1313(apresentacao,base);
+
       if(!validarConteudoCurso(apresentacao)){
         apresentacao = `
           <div class="course-cover-box">
@@ -9771,6 +9835,8 @@ Estrutura sugerida:
           `Módulo ${numero} aprofundado do curso`,
           { minimo:minimoModuloCurso, aceitarCurto:false, aceitarMuitoCurto:false }
         );
+
+        moduloHtml = limparVazamentoTemaCursoV1313(moduloHtml,base);
 
         if(!validarConteudoCurso(moduloHtml)){
           moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
@@ -9857,6 +9923,7 @@ Estrutura sugerida:
 
     function detectarTemaCursoV9(base){
       const t = corpusCursoV9(base);
+      if(cursoEhTeologiaSistematicaV1313(base)) return "teologia";
       if(/casal|casais|casamento|conjugal|marido|esposa|noivo|noiva|familia|lar|filhos/.test(t)) return "casais";
       if(/missao|missoes|mission|evangelismo|evangeliz|grande comissao|discipulado|novos convertidos/.test(t)) return "missoes";
       if(/capelania|capelao|capela|hospitalar|prisional|luto|dependencia quimica/.test(t)) return "capelania";
@@ -9869,6 +9936,7 @@ Estrutura sugerida:
         casais:"casamento cristão, família, aliança conjugal, diálogo, perdão, vida espiritual no lar, filhos, finanças e restauração do relacionamento",
         missoes:"missões, evangelismo, Grande Comissão, discipulado, igreja local, envio, oração, contribuição e dependência do Espírito Santo",
         capelania:"capelania cristã, presença pastoral, escuta, cuidado espiritual, ética, limites, acolhimento e encaminhamento responsável",
+        teologia:"teologia sistemática avançada, doutrinas bíblicas, Bibliologia, Teontologia, Trindade, Cristologia, Soteriologia, Pneumatologia, Eclesiologia e Escatologia",
         geral:"tema central do curso informado pelo usuário"
       };
       return mapa[tema] || mapa.geral;
@@ -9952,6 +10020,78 @@ Todo o conteúdo deve permanecer fiel ao tema atual informado pelo usuário: ${b
         {titulo:"Conflitos, Crises e Reconstrução da Confiança", textoBase:"Eclesiastes 4.9-12; Romanos 12.18", foco:"manejo de crises, reconstrução, arrependimento, limites e ajuda responsável", dores:"traição, mentiras, crises intensas, ameaças, violência, vícios e sofrimento emocional"},
         {titulo:"O Casal como Ministério, Testemunho e Legado", textoBase:"Mateus 5.14-16; Josué 24.15", foco:"família como testemunho, serviço cristão, legado espiritual e missão do lar", dores:"vida espiritual fraca, falta de propósito, rotina sem oração e ausência de legado"}
       ];
+    }
+
+    function cursoEhTeologiaSistematicaV1313(base){
+      const t = `${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.extraNotes || ""} ${base.biblicalBase || ""}`.toLowerCase();
+      return /teologia sistem[aá]tica|doutrina(s)? da f[eé]|bibliologia|teontologia|trindade|cristologia|pneumatologia|soteriologia|eclesiologia|escatologia|hamartiologia/.test(t);
+    }
+
+    function modulosTeologiaSistematicaV1313(){
+      return [
+        { titulo:"Introdução à Teologia Sistemática", textoBase:"2 Timóteo 3.16-17; João 17.17", foco:"natureza, importância, método e limites da teologia sistemática", dores:"confusão doutrinária, superficialidade bíblica e separação entre doutrina e vida piedosa" },
+        { titulo:"Bibliologia: A Doutrina das Escrituras", textoBase:"2 Timóteo 3.16-17; 2 Pedro 1.20-21", foco:"inspiração, autoridade, suficiência, interpretação e aplicação da Bíblia", dores:"relativização da Escritura, má interpretação bíblica e doutrinas sem fundamento" },
+        { titulo:"Teontologia: A Doutrina de Deus", textoBase:"Deuteronômio 6.4; Isaías 6.1-8", foco:"existência, natureza, atributos, santidade, soberania, amor e justiça de Deus", dores:"visões distorcidas de Deus, informalidade diante da santidade divina e fé sem reverência" },
+        { titulo:"Trindade: O Deus Triúno", textoBase:"Mateus 28.19; 2 Coríntios 13.13", foco:"um só Deus em essência e três pessoas: Pai, Filho e Espírito Santo", dores:"confusão sobre a Trindade, modalismo, triteísmo e linguagem imprecisa sobre Deus" },
+        { titulo:"Cristologia: A Pessoa e a Obra de Cristo", textoBase:"João 1.1-14; Colossenses 1.15-20", foco:"divindade, humanidade, encarnação, expiação, ressurreição, exaltação e intercessão de Cristo", dores:"cristologia rasa, evangelho sem cruz e fé não centrada em Cristo" },
+        { titulo:"Antropologia e Hamartiologia: O Homem e o Pecado", textoBase:"Gênesis 1.26-28; Romanos 3.23", foco:"imagem de Deus, queda, pecado, corrupção humana e necessidade da graça", dores:"humanismo sem pecado, culpa sem esperança e desconhecimento da condição humana" },
+        { titulo:"Soteriologia: A Doutrina da Salvação", textoBase:"Efésios 2.8-10; Romanos 3.23-26", foco:"graça, fé, arrependimento, justificação, regeneração, adoção, santificação e perseverança", dores:"salvação por mérito, graça barata, legalismo e falta de segurança bíblica" },
+        { titulo:"Pneumatologia: O Espírito Santo, o Batismo e os Dons Espirituais", textoBase:"João 14.16-17; Atos 1.8; 1 Coríntios 12–14", foco:"pessoa e obra do Espírito Santo, vida cheia do Espírito, dons, fruto, ordem e edificação", dores:"confusão sobre dons, extremismos, desprezo às línguas ou uso das línguas como medida única de espiritualidade" },
+        { titulo:"Eclesiologia: A Doutrina da Igreja", textoBase:"Mateus 16.18; Atos 2.42-47; Efésios 4.11-16", foco:"igreja como povo de Deus, Corpo de Cristo, comunhão, governo, ordenanças, ministérios e missão", dores:"individualismo cristão, desprezo à igreja local e serviço sem unidade" },
+        { titulo:"Escatologia: A Doutrina das Últimas Coisas", textoBase:"1 Tessalonicenses 4.13-18; Apocalipse 21.1-5", foco:"volta de Cristo, ressurreição, juízo, destino eterno, novos céus e nova terra", dores:"sensacionalismo escatológico, medo, especulação e falta de esperança bíblica" }
+      ];
+    }
+
+    function regrasTemaTeologiaCursoV1313(base){
+      if(!cursoEhTeologiaSistematicaV1313(base)) return "";
+
+      return `
+TRAVA ABSOLUTA DE TEMA — TEOLOGIA SISTEMÁTICA:
+- Este curso é exclusivamente sobre Teologia Sistemática Avançada.
+- Não misture com curso de família, casamento, capelania, missões, liderança familiar, aconselhamento conjugal, educação de filhos ou temas domésticos.
+- Não use títulos, exemplos e seções de família/casamento, a menos que apareçam apenas como aplicação breve dentro de uma doutrina e nunca como tema central.
+- Não use estrutura de capelania, como “o que é esta área da capelania”, “postura correta do capelão”, “atendimento”, “encaminhamento institucional” ou “pessoas atendidas e dores do ambiente”.
+- Cada módulo deve permanecer na doutrina indicada: Bibliologia, Teontologia, Trindade, Cristologia, Antropologia/Hamartiologia, Soteriologia, Pneumatologia, Eclesiologia e Escatologia.
+- A linguagem deve ser teológica, bíblica, pastoral e didática.
+- O conteúdo deve explicar definições, base bíblica, erros doutrinários a evitar, aplicação à igreja e perguntas de revisão.
+
+REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
+- Valorize a atualidade dos dons espirituais e a tradição pentecostal clássica com respeito.
+- Ensine que o dom de línguas é bíblico, maravilhoso, atual e edificante quando praticado com ordem.
+- Não trate o dom de línguas como evidência única e obrigatória do batismo com o Espírito Santo.
+- Mostre que há cristãos cheios do Espírito que manifestam outros dons e frutos espirituais sem falar em línguas.
+- Ensine que o Espírito distribui os dons como quer, para edificação do Corpo de Cristo.
+- Não ridicularize quem fala em línguas e não negue a atualidade dos dons.
+      `.trim();
+    }
+
+    function limparVazamentoTemaCursoV1313(html,base){
+      let out = String(html || "");
+      if(!cursoEhTeologiaSistematicaV1313(base)) return out;
+
+      const substituicoes = [
+        [/curso\s+para\s+casais/gi,"curso de teologia sistemática"],
+        [/casamento\s+crist[aã]o/gi,"doutrina cristã"],
+        [/vida\s+conjugal/gi,"vida cristã"],
+        [/marido\s+e\s+esposa/gi,"cristão e igreja"],
+        [/fam[ií]lia\s+crist[aã]/gi,"igreja cristã"],
+        [/educa[cç][aã]o\s+de\s+filhos/gi,"formação doutrinária"],
+        [/capelania/gi,"teologia aplicada"],
+        [/capel[aã]o/gi,"estudante de teologia"],
+        [/atendimento\s+capel[aã]o/gi,"aplicação pastoral da doutrina"],
+        [/pessoas\s+atendidas\s+e\s+principais\s+dores/gi,"questões doutrinárias principais"],
+        [/postura\s+correta\s+do\s+capel[aã]o\s+crist[aã]o/gi,"postura correta do estudante da Palavra"],
+        [/o que o capel[aã]o pode fazer/gi,"como aplicar esta doutrina"],
+        [/o que o capel[aã]o n[aã]o deve fazer/gi,"erros doutrinários a evitar"],
+        [/limites\s+[eé]ticos\s+e\s+encaminhamentos/gi,"limites de interpretação e aplicação"],
+        [/como abordar a pessoa em sofrimento/gi,"como ensinar esta doutrina com clareza"]
+      ];
+
+      substituicoes.forEach(([padrao, valor]) => {
+        out = out.replace(padrao, valor);
+      });
+
+      return out.replace(/\\n|\/n/g," ");
     }
 
     function extrairModulosCurso(base){
@@ -10168,6 +10308,8 @@ ${instrucoesTravaTemaCursoV9(base)}
 
 ${regrasTipoCurso(base)}
 
+${regrasTemaTeologiaCursoV1313(base)}
+
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
 
@@ -10238,6 +10380,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 ${instrucoesTravaTemaCursoV9(base)}
 
 ${regrasTipoCurso(base)}
+
+${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
 ${contextoBasesCurso(base)}
