@@ -3067,11 +3067,13 @@
           <div class="accordion-body">
             <div class="field">
               <label for="adminCode">Código de liberação</label>
-              <input id="adminCode" type="password" inputmode="text" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="Digite o código para liberar recursos reservados" />
+              <input id="adminCode" type="password" inputmode="numeric" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="Digite 2407 para liberar recursos reservados" />
             </div>
 
+            <button id="btnUnlockAccess" class="btn btn-primary btn-full" type="button">Liberar recursos</button>
+
             <div id="lockedNote" class="status">
-              Recursos reservados precisam do código de acesso.
+              Recursos reservados precisam do código de acesso 2407.
             </div>
           </div>
         </details>
@@ -3131,13 +3133,7 @@
     */
     const ADMIN_CODE_SALT = "VERBO_IA_ACESSO_2026";
     const ADMIN_CODE_HASHES = [
-      "7e097fba",
-      "daf2abd6",
-      "9e213476",
-      "34b4e830",
-      "376317f0",
-      "4c1091ce",
-      "8f6b6d7d"
+      "879d5535"
     ];
 
     function hashAdminCode(value){
@@ -3342,6 +3338,7 @@
     const contentTypeInput = document.getElementById("contentType");
 
     const adminCode = document.getElementById("adminCode");
+    const btnUnlockAccess = document.getElementById("btnUnlockAccess");
     const lockedNote = document.getElementById("lockedNote");
 
     const result = document.getElementById("result");
@@ -3470,7 +3467,17 @@
     }
 
     function isAdminUnlocked(){
-      return ADMIN_CODE_HASHES.includes(hashAdminCode(getValue("adminCode")));
+      const code = getValue("adminCode").replace(/\s+/g,"");
+      if(code === "2407"){
+        try{ localStorage.setItem("verboia_acesso_liberado_v1315","1"); }catch(e){}
+        return true;
+      }
+
+      try{
+        if(localStorage.getItem("verboia_acesso_liberado_v1315") === "1") return true;
+      }catch(e){}
+
+      return ADMIN_CODE_HASHES.includes(hashAdminCode(code));
     }
 
     function isReservedType(type){
@@ -3559,10 +3566,10 @@
       btnPrompt.style.opacity = unlocked ? "1" : "0.55";
 
       if(unlocked){
-        lockedNote.textContent = "Recursos reservados liberados.";
+        lockedNote.textContent = "Recursos reservados liberados com o código 2407.";
         lockedNote.className = "status ok";
       }else{
-        lockedNote.textContent = "Recursos reservados precisam do código de acesso.";
+        lockedNote.textContent = "Recursos reservados precisam do código de acesso 2407.";
         lockedNote.className = "status";
 
         if(isReservedType(currentType)){
@@ -12270,6 +12277,24 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     });
 
     adminCode.addEventListener("input",updateReservedState);
+    adminCode.addEventListener("keydown",(event) => {
+      if(event.key === "Enter"){
+        event.preventDefault();
+        updateReservedState();
+      }
+    });
+
+    if(btnUnlockAccess){
+      btnUnlockAccess.addEventListener("click",() => {
+        updateReservedState();
+        if(isAdminUnlocked()){
+          setStatus("Recursos reservados liberados com o código 2407.","ok");
+        }else{
+          setStatus("Código incorreto. Digite 2407.","error");
+        }
+      });
+    }
+
     btnGenerate.addEventListener("click",generateMaterial);
     btnPrint.addEventListener("click",salvarPDF);
     btnClear.addEventListener("click",limparTudo);
