@@ -5859,6 +5859,53 @@ Não inventar bibliografia.
       return `A lição ${numero} desenvolve o tema da igreja local com base bíblica, aplicação prática e compromisso com a vida em comunidade.`;
     }
 
+    function leituraDiariaIgrejaLocalV1312(numero){
+      const listas = [
+        [
+          ["Segunda","Mateus 16.18","Cristo edifica a sua igreja e sustenta o seu povo."],
+          ["Terça","Efésios 2.19","A igreja é a família de Deus, formada por concidadãos dos santos."],
+          ["Quarta","Efésios 2.20","Cristo é a principal pedra de esquina da edificação espiritual."],
+          ["Quinta","Efésios 2.21","O povo de Deus cresce como templo santo no Senhor."],
+          ["Sexta","Efésios 2.22","A igreja é morada de Deus no Espírito."],
+          ["Sábado","Atos 2.42","A igreja persevera na doutrina, comunhão, partir do pão e orações."]
+        ],
+        [
+          ["Segunda","Atos 2.42","A comunhão da igreja nasce da perseverança na doutrina e na oração."],
+          ["Terça","Atos 2.44","A vida em comunidade revela cuidado, unidade e responsabilidade mútua."],
+          ["Quarta","1 Coríntios 12.12","O corpo tem muitos membros, mas permanece uma só realidade em Cristo."],
+          ["Quinta","1 Coríntios 12.18","Deus coloca cada membro no corpo conforme a sua vontade."],
+          ["Sexta","1 Coríntios 12.25","O corpo deve viver sem divisão, com cuidado recíproco."],
+          ["Sábado","1 Coríntios 12.27","A igreja é o Corpo de Cristo e cada membro tem sua função."]
+        ],
+        [
+          ["Segunda","Efésios 4.11","Cristo concede ministérios para servir e edificar a igreja."],
+          ["Terça","Efésios 4.12","Os santos são aperfeiçoados para a obra do ministério."],
+          ["Quarta","Efésios 4.13","A igreja deve caminhar para maturidade e unidade da fé."],
+          ["Quinta","Efésios 4.15","A verdade em amor conduz o crescimento em Cristo."],
+          ["Sexta","2 Timóteo 2.2","O ensino fiel deve ser transmitido a pessoas idôneas."],
+          ["Sábado","Colossenses 1.28","O alvo do ensino é apresentar todo homem perfeito em Cristo."]
+        ],
+        [
+          ["Segunda","Mateus 28.18","Toda autoridade pertence a Cristo, o Senhor da missão."],
+          ["Terça","Mateus 28.19","A igreja é enviada a fazer discípulos de todas as nações."],
+          ["Quarta","Mateus 28.20","Cristo promete estar com a sua igreja até a consumação dos séculos."],
+          ["Quinta","Atos 1.8","O Espírito Santo capacita a igreja para testemunhar."],
+          ["Sexta","1 Pedro 2.9","A igreja anuncia as virtudes daquele que a chamou das trevas."],
+          ["Sábado","Mateus 5.16","A luz da igreja deve glorificar o Pai diante dos homens."]
+        ]
+      ];
+
+      return listas[(numero || 1) - 1] || listas[0];
+    }
+
+    function limparQuebrasLiteraisV1312(html){
+      return String(html || "")
+        .replace(/\\\\n/g," ")
+        .replace(/\\n/g," ")
+        .replace(/\/n/g," ")
+        .replace(/\s{2,}/g," ");
+    }
+
     function ajustarLicaoRevistaV138(dados,numero,base){
       const d = { ...(dados || {}) };
       const titulo = d.titulo || `Lição ${numero}`;
@@ -5905,6 +5952,7 @@ Não inventar bibliografia.
         d.textoAureo = padrao.textoAureo;
         d.textoAureoTexto = padrao.textoAureoTexto;
         d.leituraClasse = padrao.leituraClasse;
+        d.leituraDiaria = leituraDiariaIgrejaLocalV1312(numero);
         d.sintese = padrao.sintese;
         d.tese = padrao.sintese;
         d.palavraChave = padrao.palavraChave;
@@ -5919,6 +5967,12 @@ Não inventar bibliografia.
       d.textoAureoRef = reduzirParaUmVersiculo(d.textoAureoRef || d.textoAureo);
       d.textoAureo = d.textoAureoRef;
       d.leituraClasse = referenciasPrincipaisRevistaV138(d.leituraClasse) || d.leituraClasse;
+
+      if(igrejaLocal){
+        d.leituraDiaria = leituraDiariaIgrejaLocalV1312(numero);
+      }else{
+        d.leituraDiaria = criarLeituraDiariaUniversal(base,d,d.leituraClasse || d.textoAureoRef || base.biblicalBase);
+      }
 
       return d;
     }
@@ -7105,6 +7159,8 @@ Gere somente esta etapa.`;
         out = out.replace(padrao, substituto);
       });
 
+      out = limparQuebrasLiteraisV1312(out);
+
       return out;
     }
 
@@ -7674,9 +7730,9 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
       `;
 
       return limparLinguagemAluno(`
-        ${topo.join("\\n")}
+        ${topo.join("")}
         <div class="magazine-columns">
-          ${corpo.join("\\n")}
+          ${corpo.join("")}
         </div>
         <div class="lesson-review-full magazine-full">
           ${revisaoFinal}
