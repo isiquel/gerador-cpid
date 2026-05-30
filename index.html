@@ -2512,7 +2512,21 @@
   
     /* v13.10 — Capa Revista EBD com trava temática rígida */
     .doc .cover-page .cover-badge{letter-spacing:.04em;}
-  </style>
+  
+    .answer-line{
+      border-bottom:1px solid #b8b8b8;
+      height:28px;
+      margin:6px 0;
+    }
+    .question-answer{
+      break-inside:avoid;
+      margin:14px 0;
+      padding:12px 14px;
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:14px;
+      background:#fff;
+    }
+</style>
 </head>
 
 <body>
@@ -3028,6 +3042,44 @@
               <button id="btnClearCursoBases" class="btn btn-red" type="button">Apagar bases do curso</button>
             </div>
 
+            <div class="truth-note" style="margin-top:14px;">
+              <strong>Trilha Teológica Progressiva:</strong> gere o Básico, salve como base; depois gere o Intermediário usando o Básico; por fim gere o Avançado usando Básico + Intermediário.
+            </div>
+
+            <div class="grid-2">
+              <div class="field">
+                <label for="cursoNivelTeologico">Nível da trilha teológica</label>
+                <select id="cursoNivelTeologico">
+                  <option value="basico" selected>Básico — linguagem simples, conteúdo forte</option>
+                  <option value="intermediario">Intermediário — expansão doutrinária</option>
+                  <option value="avancado">Avançado — nível técnico / faculdade</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="cursoBaseTeologicaModo">Base anterior para expansão</label>
+                <select id="cursoBaseTeologicaModo">
+                  <option value="nenhuma" selected>Não usar base anterior</option>
+                  <option value="basico">Usar Curso Básico salvo para expansão</option>
+                  <option value="basico-intermediario">Usar Básico + Intermediário salvos para expansão</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="status-mini-grid">
+              <div id="baseTeologiaBasicoStatus" class="status-mini warn">Base teológica básica: não salva.</div>
+              <div id="baseTeologiaIntermediarioStatus" class="status-mini warn">Base teológica intermediária: não salva.</div>
+              <div id="baseTeologiaAvancadoStatus" class="status-mini warn">Base teológica avançada: não salva.</div>
+              <div class="status-mini ok">Modo seguro: por padrão, o curso novo não usa base anterior. Use base salva somente quando quiser expandir uma trilha já revisada.</div>
+            </div>
+
+            <div class="actions-grid" style="margin-top:0;">
+              <button id="btnSaveTeologiaBasicoBase" class="btn btn-gold" type="button">Salvar como Base Básica</button>
+              <button id="btnSaveTeologiaIntermediarioBase" class="btn btn-gold" type="button">Salvar como Base Intermediária</button>
+              <button id="btnSaveTeologiaAvancadoBase" class="btn btn-gold" type="button">Salvar como Base Avançada</button>
+              <button id="btnClearTeologiaBases" class="btn btn-red" type="button">Apagar bases da trilha</button>
+            </div>
+
             <div class="field" style="margin-top:12px;">
               <label for="cursoObservacao">Direção específica do curso</label>
               <textarea id="cursoObservacao" placeholder="Ex: módulos, carga horária, atividades, avaliação, regras, público, observações para divulgação ou certificado..."></textarea>
@@ -3173,6 +3225,15 @@
 
     const STORAGE_CURSO_APOIO_BASE = "verboia_curso_apoio_base_v1060";
     const STORAGE_CURSO_APOIO_META = "verboia_curso_apoio_meta_v1060";
+
+    const STORAGE_TEOLOGIA_BASICO_BASE = "verboia_trilha_teologia_basico_base_v1319";
+    const STORAGE_TEOLOGIA_BASICO_META = "verboia_trilha_teologia_basico_meta_v1319";
+
+    const STORAGE_TEOLOGIA_INTERMEDIARIO_BASE = "verboia_trilha_teologia_intermediario_base_v1319";
+    const STORAGE_TEOLOGIA_INTERMEDIARIO_META = "verboia_trilha_teologia_intermediario_meta_v1319";
+
+    const STORAGE_TEOLOGIA_AVANCADO_BASE = "verboia_trilha_teologia_avancado_base_v1319";
+    const STORAGE_TEOLOGIA_AVANCADO_META = "verboia_trilha_teologia_avancado_meta_v1319";
 
     const SAFE_BIBLIOGRAPHY = [
       {
@@ -3365,9 +3426,14 @@
     const cursoTipo = document.getElementById("cursoTipo");
     const cursoCargaHoraria = document.getElementById("cursoCargaHoraria");
     const cursoObservacao = document.getElementById("cursoObservacao");
+    const cursoNivelTeologico = document.getElementById("cursoNivelTeologico");
+    const cursoBaseTeologicaModo = document.getElementById("cursoBaseTeologicaModo");
     const baseCursoAlunoStatus = document.getElementById("baseCursoAlunoStatus");
     const baseCursoProfessorStatus = document.getElementById("baseCursoProfessorStatus");
     const baseCursoApoioStatus = document.getElementById("baseCursoApoioStatus");
+    const baseTeologiaBasicoStatus = document.getElementById("baseTeologiaBasicoStatus");
+    const baseTeologiaIntermediarioStatus = document.getElementById("baseTeologiaIntermediarioStatus");
+    const baseTeologiaAvancadoStatus = document.getElementById("baseTeologiaAvancadoStatus");
 
     const btnGenerate = document.getElementById("btnGenerate");
     const btnPrint = document.getElementById("btnPrint");
@@ -3761,6 +3827,8 @@
         bookSizeMode:getValue("bookSizeMode") || "livro-grande",
         cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
         cursoObservacao:getValue("cursoObservacao") || "",
+        cursoNivelTeologico:getValue("cursoNivelTeologico") || "basico",
+        cursoBaseTeologicaModo:getValue("cursoBaseTeologicaModo") || "auto",
         extraNotes:getValue("extraNotes") || ""
       };
     }
@@ -3923,6 +3991,73 @@
 
     function obterMetaCursoApoio(){
       return obterMetaCurso(STORAGE_CURSO_APOIO_META);
+    }
+
+
+    function obterBaseTeologiaBasico(){ return localStorage.getItem(STORAGE_TEOLOGIA_BASICO_BASE) || ""; }
+    function obterBaseTeologiaIntermediario(){ return localStorage.getItem(STORAGE_TEOLOGIA_INTERMEDIARIO_BASE) || ""; }
+    function obterBaseTeologiaAvancado(){ return localStorage.getItem(STORAGE_TEOLOGIA_AVANCADO_BASE) || ""; }
+    function obterMetaTeologiaBasico(){ return obterMetaCurso(STORAGE_TEOLOGIA_BASICO_META); }
+    function obterMetaTeologiaIntermediario(){ return obterMetaCurso(STORAGE_TEOLOGIA_INTERMEDIARIO_META); }
+    function obterMetaTeologiaAvancado(){ return obterMetaCurso(STORAGE_TEOLOGIA_AVANCADO_META); }
+
+    function labelNivelTeologicoV1319(nivel){
+      const mapa = { basico:"Básico", intermediario:"Intermediário", avancado:"Avançado" };
+      return mapa[nivel] || "Básico";
+    }
+
+    function chavesNivelTeologicoV1319(nivel){
+      if(nivel === "intermediario") return { base:STORAGE_TEOLOGIA_INTERMEDIARIO_BASE, meta:STORAGE_TEOLOGIA_INTERMEDIARIO_META, label:"Base Intermediária" };
+      if(nivel === "avancado") return { base:STORAGE_TEOLOGIA_AVANCADO_BASE, meta:STORAGE_TEOLOGIA_AVANCADO_META, label:"Base Avançada" };
+      return { base:STORAGE_TEOLOGIA_BASICO_BASE, meta:STORAGE_TEOLOGIA_BASICO_META, label:"Base Básica" };
+    }
+
+    function salvarBaseTrilhaTeologicaManual(nivel){
+      if(!result.innerText.trim() || result.querySelector(".placeholder")){
+        setStatus("Gere o curso de Teologia antes de salvar como base da trilha.","error");
+        return;
+      }
+      const html = removerCapasEImagensPesadas(result.innerHTML);
+      const texto = extrairTextoDeHtml(html);
+      const minimos = { basico:3500, intermediario:4500, avancado:5500 };
+      const min = minimos[nivel] || 3500;
+      if(texto.length < min){
+        setStatus(`O material atual parece curto demais para salvar como ${labelNivelTeologicoV1319(nivel)}. Gere um curso mais completo antes de salvar.`,"error");
+        return;
+      }
+      const base = buildBase();
+      const chaves = chavesNivelTeologicoV1319(nivel);
+      const okBase = salvarSeguroLocalStorage(chaves.base,html);
+      const okMeta = salvarSeguroLocalStorage(chaves.meta,JSON.stringify({ title:base.title, theme:base.theme, nivel, cursoTipo:base.cursoTipo, cargaHoraria:base.cursoCargaHoraria, savedAt:new Date().toISOString(), tamanho:texto.length, baseSemImagem:true }));
+      atualizarStatusBasesTeologia();
+      setStatus(okBase && okMeta ? `${chaves.label} salva para a Trilha Teológica Progressiva.` : `Não foi possível salvar ${chaves.label}.`, okBase && okMeta ? "ok" : "error");
+    }
+
+    function salvarBaseTrilhaTeologicaAutomatica(base,html){
+      // v13.20: desativado para evitar contaminação entre temas.
+      // A base teológica só será salva quando o usuário clicar manualmente em "Salvar como Base".
+      return false;
+    }
+
+    function apagarBasesTeologia(){
+      localStorage.removeItem(STORAGE_TEOLOGIA_BASICO_BASE); localStorage.removeItem(STORAGE_TEOLOGIA_BASICO_META);
+      localStorage.removeItem(STORAGE_TEOLOGIA_INTERMEDIARIO_BASE); localStorage.removeItem(STORAGE_TEOLOGIA_INTERMEDIARIO_META);
+      localStorage.removeItem(STORAGE_TEOLOGIA_AVANCADO_BASE); localStorage.removeItem(STORAGE_TEOLOGIA_AVANCADO_META);
+      atualizarStatusBasesTeologia();
+      setStatus("Bases da Trilha Teológica apagadas.","ok");
+    }
+
+    function atualizarStatusBasesTeologia(){
+      const atualizar = (statusEl,html,meta,label) => {
+        if(!statusEl) return;
+        if(!html){ statusEl.className = "status-mini warn"; statusEl.textContent = `${label}: não salva.`; return; }
+        const texto = extrairTextoDeHtml(html);
+        statusEl.className = "status-mini ok";
+        statusEl.textContent = `${label}: salva • ${meta.title || "sem título"} • ${texto.length.toLocaleString("pt-BR")} caracteres.`;
+      };
+      atualizar(baseTeologiaBasicoStatus,obterBaseTeologiaBasico(),obterMetaTeologiaBasico(),"Base teológica básica");
+      atualizar(baseTeologiaIntermediarioStatus,obterBaseTeologiaIntermediario(),obterMetaTeologiaIntermediario(),"Base teológica intermediária");
+      atualizar(baseTeologiaAvancadoStatus,obterBaseTeologiaAvancado(),obterMetaTeologiaAvancado(),"Base teológica avançada");
     }
 
     function salvarBaseCursoManual(chaveBase,chaveMeta,label,minimo){
@@ -8677,7 +8812,8 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
         "a resposta deve"
       ];
 
-      return !proibidos.some(p => texto.includes(p));
+      if(proibidos.some(p => texto.includes(p))) return false;
+      return true;
     }
 
     function nomeTipoCurso(tipo){
@@ -8691,28 +8827,133 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
       return nomes[tipo] || "Apostila do Aluno";
     }
 
+    function normalizarTemaUniversalCursoV1321(texto){
+      return String(texto || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/[^a-z0-9\s]/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+    }
+
+    function palavrasTemaUniversalCursoV1321(texto){
+      const stop = new Set(["curso","basico","medio","avancado","apostila","manual","professor","aluno","modulo","modulos","cristao","crista","igreja","biblico","biblica","sobre","para","com","sem","uma","um","das","dos","de","da","do","em","e","a","o"]);
+      return normalizarTemaUniversalCursoV1321(texto)
+        .split(" ")
+        .filter(p => p.length >= 4 && !stop.has(p));
+    }
+
+    function assinaturaTemaCursoV1321(base){
+      const bruto = `${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.cursoObservacao || ""}`;
+      const palavras = palavrasTemaUniversalCursoV1321(bruto);
+      return [...new Set(palavras)].slice(0,18).join(" ");
+    }
+
+    function baseCursoCompativelV1321(base,meta){
+      if(!meta || (!meta.title && !meta.theme)) return false;
+      const atual = new Set(palavrasTemaUniversalCursoV1321(`${base.title || ""} ${base.theme || ""} ${base.cursoObservacao || ""}`));
+      const salvo = new Set(palavrasTemaUniversalCursoV1321(`${meta.title || ""} ${meta.theme || ""}`));
+      if(!atual.size || !salvo.size) return false;
+
+      let inter = 0;
+      atual.forEach(p => { if(salvo.has(p)) inter++; });
+
+      const tituloAtual = normalizarTemaUniversalCursoV1321(base.title || "");
+      const tituloSalvo = normalizarTemaUniversalCursoV1321(meta.title || "");
+      const tituloCombina = tituloAtual && tituloSalvo && (tituloAtual.includes(tituloSalvo) || tituloSalvo.includes(tituloAtual));
+
+      return tituloCombina || inter >= 2;
+    }
+
+    function travaUniversalCursoV1321(base){
+      const tema = `${base.title || ""} — ${base.theme || ""}`.trim();
+      const assinatura = assinaturaTemaCursoV1321(base) || "tema informado pelo usuário";
+
+      return `
+TRAVA UNIVERSAL DE TEMA DO CURSO:
+- O curso atual deve se concentrar somente no tema informado pelo usuário.
+- Tema/título do curso atual: ${tema}.
+- Palavras-chave centrais do tema: ${assinatura}.
+- Não use tema antigo, curso antigo, exemplo antigo, base antiga ou lógica anterior se não fizer parte deste tema.
+- Não misture capelania, missões, família, casamento, teologia, música, liderança, EBD ou qualquer outro assunto, a menos que esse assunto faça parte explicitamente do tema atual.
+- Se o tema for musicalidade da igreja, fale de música, culto, história, teologia da adoração, liturgia, serviço musical e prática musical; não transforme em capelania, missões ou teologia sistemática.
+- Se o tema for teologia, fale de doutrinas; não transforme em missões, capelania ou família.
+- Se o tema for família, fale de família; não transforme em teologia sistemática ou capelania.
+- Cada módulo deve nascer do tema atual, não de modelos antigos.
+- Exemplos práticos devem ser exemplos do próprio tema atual.
+- Conteúdo que não pertence ao tema atual é proibido.
+      `.trim();
+    }
+
+    function limparVazamentoUniversalCursoV1321(html,base){
+      let out = String(html || "");
+      const temaNorm = normalizarTemaUniversalCursoV1321(`${base.title || ""} ${base.theme || ""} ${base.cursoObservacao || ""}`);
+
+      const ehCapelania = /capelania|capelao|hospitalar|prisional/.test(temaNorm);
+      const ehMissoes = /missoes|missao|missionario|evangelismo|evangelizacao|grande comissao/.test(temaNorm);
+      const ehFamilia = /familia|casamento|casais|conjugal|marido|esposa|filhos/.test(temaNorm);
+      const ehTeologia = /teologia|doutrina|bibliologia|cristologia|pneumatologia|soteriologia|eclesiologia|escatologia/.test(temaNorm);
+      const ehMusica = /musica|musicalidade|louvor|adoracao|liturgia|cantor|instrumento|ministerio de louvor/.test(temaNorm);
+
+      if(!ehCapelania){
+        out = out.replace(/capelania|capelão|capelao|atendimento capelão|atendimento capelao/gi,"serviço cristão relacionado ao tema");
+        out = out.replace(/pessoas atendidas e principais dores/gi,"público-alvo e necessidades do tema");
+      }
+
+      if(!ehMissoes){
+        out = out.replace(/atuação missionária e evangelística/gi,"aplicação prática do tema");
+        out = out.replace(/missionário, evangelista, líder ou aluno em formação/gi,"aluno, líder ou participante em formação");
+        out = out.replace(/missionário|missionária|evangelística|evangelista|área de missões e evangelismo/gi,"aplicado ao tema");
+      }
+
+      if(!ehFamilia){
+        out = out.replace(/casamento conjugal|vida conjugal|marido e esposa|curso para casais/gi,"vida cristã e aplicação prática");
+      }
+
+      if(!ehTeologia){
+        // Não remover a palavra teologia quando ela aparecer como reflexão sobre Deus, mas impedir que vire curso sistemático sem pedido.
+        out = out.replace(/Teologia Sistemática Avançada/gi,"aprofundamento do tema");
+        out = out.replace(/Bibliologia|Cristologia|Soteriologia|Hamartiologia|Escatologia/gi,"fundamento bíblico do tema");
+      }
+
+      if(!ehMusica){
+        out = out.replace(/ministério de louvor|musicalidade da igreja|liturgia musical/gi,"serviço cristão do tema");
+      }
+
+      return out.replace(/\\n|\/n/g," ");
+    }
+
     function contextoBasesCurso(base){
       const aluno = obterBaseCursoAluno();
       const professor = obterBaseCursoProfessor();
       const apoio = obterBaseCursoApoio();
+
+      const metaAluno = obterMetaCursoAluno();
+      const metaProfessor = obterMetaCursoProfessor();
+      const metaApoio = obterMetaCursoApoio();
+
+      const alunoOk = aluno && baseCursoCompativelV1321(base,metaAluno);
+      const professorOk = professor && baseCursoCompativelV1321(base,metaProfessor);
+      const apoioOk = apoio && baseCursoCompativelV1321(base,metaApoio);
+
       let partes = [];
 
       if(base.cursoTipo === "professor"){
-        partes.push("BASE DA APOSTILA DO ALUNO PARA MANTER O MESMO CONTEÚDO CENTRAL:\n" + (aluno ? limitarTexto(extrairTextoDeHtml(aluno),18000) : "Não há base do aluno salva. Mesmo assim, crie o manual preservando o eixo do curso e avisando que o ideal é gerar/salvar a apostila do aluno antes."));
+        partes.push("BASE DA APOSTILA DO ALUNO PARA MANTER O MESMO CONTEÚDO CENTRAL:\n" + (alunoOk ? limitarTexto(extrairTextoDeHtml(aluno),18000) : "Não foi usada base anterior porque não há Apostila do Aluno salva compatível com o tema atual. Crie o Manual do Professor a partir do tema atual, sem puxar assunto antigo."));
       }
 
       if(base.cursoTipo === "apoio-professor"){
-        partes.push("BASE DA APOSTILA DO ALUNO:\n" + (aluno ? limitarTexto(extrairTextoDeHtml(aluno),12000) : "Não há base do aluno salva."));
-        partes.push("BASE DO MANUAL DO PROFESSOR:\n" + (professor ? limitarTexto(extrairTextoDeHtml(professor),16000) : "Não há base do professor salva. O livro de apoio deve aprofundar sem contradizer a apostila do aluno."));
+        partes.push("BASE DA APOSTILA DO ALUNO:\n" + (alunoOk ? limitarTexto(extrairTextoDeHtml(aluno),12000) : "Base do aluno ignorada ou inexistente por não corresponder ao tema atual."));
+        partes.push("BASE DO MANUAL DO PROFESSOR:\n" + (professorOk ? limitarTexto(extrairTextoDeHtml(professor),16000) : "Base do professor ignorada ou inexistente por não corresponder ao tema atual."));
       }
 
       if(["divulgacao","certificado"].includes(base.cursoTipo)){
-        if(aluno) partes.push("RESUMO DA APOSTILA DO ALUNO:\n" + limitarTexto(extrairTextoDeHtml(aluno),9000));
-        if(professor) partes.push("RESUMO DO MANUAL DO PROFESSOR:\n" + limitarTexto(extrairTextoDeHtml(professor),7000));
-        if(apoio) partes.push("RESUMO DO LIVRO DE APOIO:\n" + limitarTexto(extrairTextoDeHtml(apoio),7000));
+        if(alunoOk) partes.push("RESUMO DA APOSTILA DO ALUNO:\n" + limitarTexto(extrairTextoDeHtml(aluno),9000));
+        if(professorOk) partes.push("RESUMO DO MANUAL DO PROFESSOR:\n" + limitarTexto(extrairTextoDeHtml(professor),7000));
+        if(apoioOk) partes.push("RESUMO DO LIVRO DE APOIO:\n" + limitarTexto(extrairTextoDeHtml(apoio),7000));
       }
 
-      return partes.length ? partes.join("\n\n---\n\n") : "Sem bases salvas ainda.";
+      return partes.length ? partes.join("\n\n---\n\n") : "Sem bases salvas compatíveis com o tema atual. Trabalhe apenas com o tema informado agora.";
     }
 
     function regrasTipoCurso(base){
@@ -8848,6 +9089,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 
 ${regrasTipoCurso(base)}
 
+${travaUniversalCursoV1321(base)}
+
 ${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
@@ -8941,6 +9184,8 @@ MÓDULOS:
 ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
 
 ${regrasTipoCurso(base)}
+
+${travaUniversalCursoV1321(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9051,93 +9296,80 @@ Estrutura sugerida:
     }
 
     function gerarModuloCursoFallback(base,modulo,numero,total){
+      const tema = escapeHtml(base.title || base.theme || "Tema do curso");
+      const titulo = escapeHtml(modulo.titulo);
+      const textoBase = escapeHtml(modulo.textoBase || base.biblicalBase || "Texto bíblico adequado");
+      const foco = escapeHtml(modulo.foco || "desenvolvimento progressivo do tema informado pelo usuário");
+      const tipo = nomeTipoCurso(base.cursoTipo);
+
+      const perguntasAluno = `
+        <div class="course-section">
+          <h3>Perguntas de revisão</h3>
+          <ol class="list">
+            <li>Explique com suas palavras o ponto central deste módulo.<div class="answer-line"></div><div class="answer-line"></div><div class="answer-line"></div></li>
+            <li>Como o texto bíblico base se relaciona com o tema estudado?<div class="answer-line"></div><div class="answer-line"></div><div class="answer-line"></div></li>
+            <li>Quais cuidados devem ser observados na aplicação deste conteúdo?<div class="answer-line"></div><div class="answer-line"></div><div class="answer-line"></div></li>
+          </ol>
+        </div>
+      `;
+
+      const respostasProfessor = `
+        <div class="course-section">
+          <h3>Respostas comentadas para o professor</h3>
+          <ol class="list">
+            <li>O aluno deve demonstrar compreensão do tema central do módulo, relacionando-o ao objetivo geral do curso.</li>
+            <li>A resposta deve conectar o texto bíblico base ao conteúdo estudado, evitando aplicação solta ou fora de contexto.</li>
+            <li>O professor deve observar se o aluno entendeu os limites, aplicações e responsabilidades ligadas ao tema.</li>
+          </ol>
+        </div>
+      `;
+
       return `
         <div class="course-section">
-          <h2>Módulo ${numero} — ${escapeHtml(modulo.titulo)}</h2>
-          ${paragraph(`Este módulo apresenta a área de ${modulo.titulo} como campo de serviço cristão responsável. A capelania não atua por curiosidade, improviso ou desejo de controle, mas por amor, presença, escuta, prudência e respeito às pessoas em sofrimento.`)}
+          <h2>Módulo ${numero} — ${titulo}</h2>
+          ${paragraph(`Este módulo pertence ao curso "${tema}" e deve ser entendido dentro desse tema específico. O objetivo é desenvolver o assunto com clareza, base bíblica, organização e aplicação prática, sem puxar temas antigos ou modelos de outros cursos.`)}
         </div>
 
         <div class="course-section">
           <h3>Objetivo do módulo</h3>
-          ${paragraph(`Capacitar o participante a compreender o ambiente de ${modulo.titulo}, reconhecer as principais necessidades das pessoas atendidas e agir com postura bíblica, ética, humana e responsável.`)}
+          ${paragraph(`Capacitar o participante a compreender ${foco}, relacionando o conteúdo ao tema geral do curso e à prática cristã responsável.`)}
         </div>
 
         <div class="course-section">
           <h3>Texto bíblico base</h3>
-          ${paragraph(`${modulo.textoBase}. Este texto deve ser aplicado como fundamento de cuidado, compaixão e serviço. O capelão aprende que sua presença não substitui a ação de Deus, nem o trabalho dos profissionais habilitados, mas pode ser instrumento de consolo, esperança e apoio espiritual.`)}
+          ${paragraph(`${textoBase}. O texto deve ser explicado com cuidado e aplicado somente ao tema deste módulo, sem forçar assuntos que não pertencem ao curso atual.`)}
         </div>
 
         <div class="course-section">
-          <h3>1. O que é esta área da capelania</h3>
-          ${paragraph(`A ${modulo.titulo} é uma atuação de cuidado espiritual direcionada a pessoas que enfrentam ${modulo.dores}. O capelão cristão se aproxima com humildade, sem invadir, sem pressionar e sem transformar a dor do outro em palco religioso.`)}
-          ${paragraph(`Seu papel é oferecer presença, escuta, oração quando apropriada, orientação espiritual básica e encaminhamento responsável quando a situação ultrapassa os limites da capelania.`)}
+          <h3>1. Conceito principal</h3>
+          ${paragraph(`Nesta etapa, o aluno deve compreender o conceito central do módulo. O conteúdo deve ser apresentado de forma progressiva: primeiro a definição, depois a explicação, em seguida a base bíblica e por fim a aplicação prática.`)}
         </div>
 
         <div class="course-section">
-          <h3>2. Pessoas atendidas e principais dores</h3>
-          <ul>
-            <li>Pessoas em sofrimento direto, emocional ou espiritual.</li>
-            <li>Familiares, cuidadores ou pessoas próximas afetadas pela crise.</li>
-            <li>Profissionais ou líderes envolvidos no ambiente de cuidado.</li>
-            <li>Pessoas fragilizadas por culpa, medo, vergonha, perdas ou insegurança.</li>
-          </ul>
+          <h3>2. Desenvolvimento do tema</h3>
+          ${paragraph(`O tema deve ser desenvolvido com argumentos coerentes, exemplos ligados ao próprio curso e linguagem acessível. Nenhum conteúdo deve ser importado de cursos antigos se não fizer parte do assunto atual.`)}
         </div>
 
         <div class="course-section">
-          <h3>3. Postura correta do capelão cristão</h3>
-          ${paragraph(`O capelão deve agir com discrição, empatia, respeito, maturidade espiritual e domínio emocional. Deve ouvir antes de falar, perguntar antes de aconselhar e respeitar o tempo da pessoa atendida.`)}
+          <h3>3. Cuidados e erros a evitar</h3>
+          ${paragraph(`O aluno deve aprender a aplicar o conteúdo com equilíbrio, evitando exageros, confusões, improvisos e interpretações fora do tema proposto.`)}
         </div>
 
         <div class="course-section">
-          <h3>4. O que o capelão pode fazer</h3>
-          <ul>
-            <li>Ouvir com atenção e sem julgamento.</li>
-            <li>Oferecer presença pastoral e apoio espiritual.</li>
-            <li>Orar quando houver abertura e respeito ao ambiente.</li>
-            <li>Compartilhar uma palavra bíblica breve e adequada.</li>
-            <li>Encaminhar casos graves a profissionais competentes.</li>
-          </ul>
+          <h3>4. Aplicação prática</h3>
+          ${paragraph(`A aplicação deve nascer do tema do curso e ajudar o aluno a transformar conhecimento em prática responsável, madura e bíblica.`)}
         </div>
 
         <div class="course-section">
-          <h3>5. O que o capelão não deve fazer</h3>
-          <ul>
-            <li>Não deve prometer cura, solução imediata ou resultado garantido.</li>
-            <li>Não deve substituir médico, psicólogo, advogado, assistente social, autoridade ou liderança responsável.</li>
-            <li>Não deve expor informações pessoais sem autorização.</li>
-            <li>Não deve usar a dor da pessoa para impor opiniões.</li>
-            <li>Não deve ultrapassar regras institucionais do ambiente atendido.</li>
-          </ul>
+          <h3>Atividade prática</h3>
+          ${paragraph(`Escreva um pequeno plano de aplicação deste módulo dentro do tema "${tema}", destacando conceito, base bíblica, cuidado necessário e aplicação prática.`)}
         </div>
 
-        <div class="course-section">
-          <h3>6. Limites éticos e encaminhamentos</h3>
-          ${paragraph(`A capelania cristã precisa caminhar com ética. Sigilo, consentimento, prudência e respeito aos protocolos do ambiente são indispensáveis. Quando houver risco à vida, violência, abuso, ideação suicida, surto, dependência severa ou necessidade técnica, o caso deve ser encaminhado a profissionais habilitados.`)}
-        </div>
-
-        <div class="course-section">
-          <h3>7. Como abordar a pessoa em sofrimento</h3>
-          ${paragraph(`A abordagem deve ser simples: apresentar-se, pedir permissão, ouvir, validar a dor, evitar frases prontas, oferecer apoio e perguntar se a pessoa deseja oração. A presença do capelão deve transmitir paz, não pressão.`)}
-        </div>
-
-        <div class="course-section">
-          <h3>8. Exemplo prático de atendimento</h3>
-          ${paragraph(`Ao encontrar alguém fragilizado, o capelão pode dizer: “Estou aqui para ouvir e apoiar. Posso me sentar um pouco com você?” Depois de ouvir, pode oferecer uma palavra curta de esperança, respeitando a condição emocional da pessoa e as normas do local.`)}
-        </div>
-
-        <div class="course-section">
-          <h3>9. Atividade prática</h3>
-          ${paragraph(`Escreva um roteiro de visita de cinco minutos para esta área. Inclua apresentação, escuta, uma pergunta aberta, uma palavra bíblica breve, oração opcional e encaminhamento responsável se necessário.`)}
-        </div>
-
-        ${blocoPerguntasCursoFallback(base)}
-
-        ${extrasManualProfessorFallback(base,modulo,numero)}
-        ${extrasLivroApoioFallback(base,modulo,numero)}
+        ${base.cursoTipo === "professor" ? respostasProfessor : perguntasAluno}
 
         <div class="course-section">
           <h3>Resumo do módulo</h3>
-          ${paragraph(`A ${modulo.titulo} exige amor cristão, preparo, humildade e responsabilidade. O capelão serve melhor quando entende que sua missão é estar presente, ouvir, acolher, orar com respeito e encaminhar com sabedoria.`)}
+          ${paragraph(`O módulo ${numero} reforça o tema "${tema}" e ajuda o aluno a avançar com organização, clareza e fidelidade ao assunto proposto.`)}
         </div>
       `;
     }
@@ -9173,6 +9405,7 @@ Estrutura sugerida:
       );
 
       apresentacao = limparVazamentoTemaCursoV1313(apresentacao,base);
+      apresentacao = limparVazamentoUniversalCursoV1321(apresentacao,base);
 
       if(!validarConteudoCurso(apresentacao)){
         apresentacao = `
@@ -9182,15 +9415,15 @@ Estrutura sugerida:
           </div>
           <div class="course-section">
             <h2>Apresentação do curso</h2>
-            ${paragraph(`Este curso foi preparado para formar pessoas com visão bíblica, maturidade emocional, ética e prática ministerial. O objetivo é conduzir o participante a servir com amor, presença, escuta e responsabilidade em ambientes de sofrimento e vulnerabilidade.`)}
+            ${paragraph(`Este curso foi preparado para desenvolver o tema "${base.title || base.theme}" com organização, base bíblica, clareza, profundidade proporcional e aplicação prática. Todo o conteúdo deve permanecer concentrado no tema informado pelo usuário.`)}
           </div>
           <div class="course-section">
             <h2>Objetivos gerais</h2>
             <ol class="list">
-              <li>Compreender a natureza cristã do cuidado capelão.</li>
-              <li>Desenvolver postura ética, respeitosa e madura.</li>
-              <li>Aprender a ouvir, acolher, orientar e encaminhar com responsabilidade.</li>
-              <li>Conhecer as principais áreas de atuação da capelania.</li>
+              <li>Compreender os fundamentos principais do tema proposto.</li>
+              <li>Desenvolver conhecimento organizado, bíblico e aplicável.</li>
+              <li>Evitar confusões, improvisos e misturas com assuntos que não pertencem ao curso.</li>
+              <li>Aplicar o conteúdo de forma madura, responsável e fiel ao tema.</li>
             </ol>
           </div>
           <div class="course-section">
@@ -9219,6 +9452,7 @@ Estrutura sugerida:
         );
 
         moduloHtml = limparVazamentoTemaCursoV1313(moduloHtml,base);
+        moduloHtml = limparVazamentoUniversalCursoV1321(moduloHtml,base);
 
         if(!validarConteudoCurso(moduloHtml)){
           moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
@@ -9406,6 +9640,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 
 ${regrasTipoCurso(base)}
 
+${travaUniversalCursoV1321(base)}
+
 ${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
@@ -9466,6 +9702,8 @@ OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 
 ${regrasTipoCurso(base)}
+
+${travaUniversalCursoV1321(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9544,6 +9782,8 @@ MÓDULOS:
 ${modulos.map((m,i)=>`${i+1}. ${m.titulo}`).join("\n")}
 
 ${regrasTipoCurso(base)}
+
+${travaUniversalCursoV1321(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9789,7 +10029,7 @@ Estrutura sugerida:
       `;
     }
 
-    async function generateCourseAsync(base){
+    async function generateCourseAsyncPadraoV1318(base){
       manualPlaceholdersCount = 0;
       const modulos = extrairModulosCurso(base);
 
@@ -9820,6 +10060,7 @@ Estrutura sugerida:
       );
 
       apresentacao = limparVazamentoTemaCursoV1313(apresentacao,base);
+      apresentacao = limparVazamentoUniversalCursoV1321(apresentacao,base);
 
       if(!validarConteudoCurso(apresentacao)){
         apresentacao = `
@@ -9868,6 +10109,7 @@ Estrutura sugerida:
         );
 
         moduloHtml = limparVazamentoTemaCursoV1313(moduloHtml,base);
+        moduloHtml = limparVazamentoUniversalCursoV1321(moduloHtml,base);
 
         if(!validarConteudoCurso(moduloHtml)){
           moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
@@ -10339,6 +10581,8 @@ ${instrucoesTravaTemaCursoV9(base)}
 
 ${regrasTipoCurso(base)}
 
+${travaUniversalCursoV1321(base)}
+
 ${regrasTemaTeologiaCursoV1313(base)}
 
 BASES SALVAS DO CURSO:
@@ -10411,6 +10655,8 @@ DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
 ${instrucoesTravaTemaCursoV9(base)}
 
 ${regrasTipoCurso(base)}
+
+${travaUniversalCursoV1321(base)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -11443,7 +11689,592 @@ Crie:
       `;
     }
 
-    async function generateMaterial(){
+    
+    /* =========================================================
+       CURSO DE TEOLOGIA PROFUNDO v13.18 — geração por etapas
+       Preserva Sermões, Revista EBD, Estudos, PDF, Mobile e acesso.
+       Aplica foco por estrutura, apresentação, módulo e seção interna.
+    ========================================================= */
+
+    function cursoEhTeologiaProfundaV1318(base){
+      const t = normalizarTextoCursoV9(`${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.extraNotes || ""} ${base.biblicalBase || ""} ${base.cursoObservacao || ""}`);
+      return cursoEhTeologiaSistematicaV1313(base) || /curso basico de teologia|teologia basica|teologia crista|fundamentos da teologia|doutrina da biblia|doutrinas cristas/.test(t);
+    }
+
+    function limparSecaoTeologiaV1318(html){
+      let out = limparVazamentoTemaCursoV1313(String(html || ""),{title:"Teologia",theme:"Teologia"});
+      out = out.replace(/\\n|\/n/g," ");
+
+      // v13.20: remove vazamentos de cursos antigos que não pertencem à Teologia Sistemática.
+      out = out.replace(/atuação missionária e evangelística/gi,"aplicação doutrinária e eclesial");
+      out = out.replace(/missionário, evangelista, líder ou aluno em formação/gi,"aluno, obreiro ou professor em formação teológica");
+      out = out.replace(/missionário|missionária|evangelística|evangelista/gi,"teológico");
+      out = out.replace(/área de missões e evangelismo/gi,"área doutrinária estudada");
+      out = out.replace(/ação prática missionária|ação evangelística/gi,"aplicação teológica prática");
+      out = out.replace(/trabalho missionário/gi,"serviço cristão fundamentado na doutrina");
+      out = out.replace(/encaminhar corretamente/gi,"aplicar a doutrina com sabedoria");
+      out = out.replace(/pessoas atendidas/gi,"alunos e ouvintes");
+      out = out.replace(/capelania|capelão/gi,"teologia aplicada");
+      out = out.replace(/perguntas de revisão sem respostas, com espaço para o aluno responder\.?/gi,"Perguntas de revisão");
+      out = out.replace(/com espaço para o aluno responder/gi,"");
+      out = out.replace(/m[óo]dulo\s+(\d+)\s*[—-]\s*tim[oó]teo/gi,"Módulo $1 — Bibliologia");
+      out = out.replace(/<h2>\s*M[óo]dulo\s+(\d+)\s*[—-]\s*([^<]*?)<\/h2>/gi,(m,n,t)=>{
+        const titulo = String(t || "").trim();
+        if(/^\d?\s*tim[oó]teo|jo[aã]o|cor[ií]ntios|romanos|ef[eé]sios|g[eê]nesis/i.test(titulo)){
+          return `<h2>Módulo ${n}</h2>`;
+        }
+        return m;
+      });
+      return out;
+    }
+
+    function validarSecaoTeologiaV1318(html,minimo){
+      const texto = extrairTextoDeHtml(html || "").toLowerCase().replace(/\s+/g," ").trim();
+      if(!texto || texto.length < minimo) return false;
+      const proibidos = [
+        "capelania",
+        "capelão",
+        "curso para casais",
+        "casamento conjugal",
+        "marido e esposa",
+        "atuação missionária",
+        "missionária e evangelística",
+        "missionário",
+        "evangelista",
+        "área de missões",
+        "evangelismo pessoal",
+        "ação evangelística",
+        "grande comissão",
+        "trabalho missionário",
+        "pessoas atendidas",
+        "encaminhar corretamente",
+        "desenvolva esta parte",
+        "com base no tema",
+        "crie um curso",
+        "perguntas de revisão sem respostas, com espaço para o aluno responder"
+      ];
+      return !proibidos.some(p => texto.includes(p));
+    }
+
+    function secaoTeologiaContaminadaV1320(html){
+      const texto = extrairTextoDeHtml(html || "").toLowerCase().replace(/\s+/g," ").trim();
+      return /atuação missionária|missionária e evangelística|missionário|evangelista|área de missões|ação evangelística|capelania|capelão|casamento conjugal|marido e esposa|pessoas atendidas/.test(texto);
+    }
+
+    function linhasRespostaAlunoV1318(qtd){
+      return Array.from({length:qtd || 4}).map(()=>`<div class="answer-line"></div>`).join("");
+    }
+
+    function perguntasAlunoTeologiaV1318(modulo,numero){
+      const titulo = String(modulo.titulo || "").toLowerCase();
+      let perguntas = [
+        `Explique com suas palavras o tema central deste módulo.`,
+        `Qual texto bíblico estudado ajuda a fundamentar esta doutrina?`,
+        `Quais erros ou confusões devem ser evitados neste assunto?`,
+        `Como esta doutrina se aplica à vida cristã e à igreja?`
+      ];
+
+      if(/bibliologia|escrituras|bíblia|biblia/.test(titulo)){
+        perguntas = [
+          "O que é Bibliologia e por que esta doutrina é fundamento para todo estudo teológico?",
+          "Explique a diferença entre revelação geral e revelação especial.",
+          "O que significa afirmar que a Bíblia é inspirada por Deus?",
+          "Explique a inspiração verbal e plenária das Escrituras.",
+          "Por que a autoridade da Bíblia é essencial para a fé, a pregação e a vida da igreja?",
+          "O que significa suficiência das Escrituras?",
+          "Qual é a importância da iluminação do Espírito Santo na interpretação bíblica?",
+          "Cite um erro comum de interpretação bíblica e explique como evitá-lo."
+        ];
+      }
+
+      if(/pneumatologia|espírito|espirito|dons/.test(titulo)){
+        perguntas = [
+          "Quem é o Espírito Santo segundo as Escrituras?",
+          "Como o Espírito Santo atua na vida do crente?",
+          "Qual é a relação entre vida cheia do Espírito, santidade e serviço cristão?",
+          "Por que os dons espirituais devem ser exercidos com amor, ordem e discernimento?",
+          "Explique por que o dom de línguas é precioso, mas não deve ser tratado como evidência única e obrigatória do batismo com o Espírito Santo.",
+          "Como cristãos podem manifestar outros dons espirituais sem falar em línguas?",
+          "Qual é a importância do fruto do Espírito na vida cristã?"
+        ];
+      }
+
+      const lista = perguntas.map((p,i)=>`
+        <div class="question-answer">
+          <strong>${i + 1}. ${escapeHtml(p)}</strong>
+          <p><strong>Resposta:</strong></p>
+          ${linhasRespostaAlunoV1318(4)}
+        </div>
+      `).join("");
+
+      return `
+        <div class="course-section">
+          <h3>Perguntas de revisão</h3>
+          <p>Responda com atenção, usando o conteúdo estudado neste módulo.</p>
+          ${lista}
+        </div>
+      `;
+    }
+
+    function respostasProfessorTeologiaV1318(modulo,numero){
+      const titulo = String(modulo.titulo || "").toLowerCase();
+      let respostas = `
+        <div class="course-section">
+          <h3>Respostas comentadas para o professor</h3>
+          ${paragraph("As respostas devem verificar se o aluno compreendeu a definição da doutrina, sua base bíblica, os erros a evitar e sua aplicação prática à vida cristã. O professor deve corrigir com fidelidade bíblica e clareza pastoral.")}
+        </div>
+      `;
+
+      if(/bibliologia|escrituras|bíblia|biblia/.test(titulo)){
+        respostas = `
+          <div class="course-section">
+            <h3>Respostas comentadas para o professor — Bibliologia</h3>
+            <ol class="list">
+              <li><strong>Bibliologia:</strong> é a doutrina das Escrituras. Ela estuda a revelação, inspiração, autoridade, suficiência, clareza, confiabilidade, cânon, interpretação e aplicação da Bíblia.</li>
+              <li><strong>Revelação geral e especial:</strong> a revelação geral mostra Deus na criação, consciência e providência; a especial revela Deus de modo salvador por sua Palavra e culmina em Cristo.</li>
+              <li><strong>Inspiração:</strong> significa que Deus soprou sua Palavra por meio dos autores humanos, preservando sua mensagem verdadeira e autoritativa.</li>
+              <li><strong>Inspiração verbal e plenária:</strong> verbal indica que as palavras do texto importam; plenária indica que toda a Escritura é inspirada, não apenas partes espirituais.</li>
+              <li><strong>Autoridade:</strong> a Bíblia governa fé, doutrina, culto, ética, pregação e vida da igreja porque é Palavra de Deus.</li>
+              <li><strong>Suficiência:</strong> a Escritura contém tudo que Deus julgou necessário para a salvação, a fé e a obediência.</li>
+              <li><strong>Iluminação:</strong> o Espírito Santo abre o entendimento do crente para compreender e aplicar corretamente a Palavra.</li>
+              <li><strong>Má interpretação:</strong> ocorre quando o texto é isolado do contexto, usado para defender opinião pessoal ou lido sem submissão à intenção bíblica.</li>
+            </ol>
+          </div>
+        `;
+      }
+
+      if(/pneumatologia|espírito|espirito|dons/.test(titulo)){
+        respostas = `
+          <div class="course-section">
+            <h3>Respostas comentadas para o professor — Pneumatologia</h3>
+            <ol class="list">
+              <li><strong>O Espírito Santo:</strong> é Deus, a terceira pessoa da Trindade, pessoal, santo, eterno e ativo na salvação e santificação.</li>
+              <li><strong>Atuação no crente:</strong> regenera, habita, santifica, guia, consola, capacita e distribui dons para edificação da igreja.</li>
+              <li><strong>Vida cheia do Espírito:</strong> deve produzir santidade, testemunho, amor, serviço, fruto espiritual e edificação do Corpo.</li>
+              <li><strong>Dons com ordem:</strong> 1 Coríntios 12–14 mostra que os dons existem para edificar, não para vaidade, confusão ou superioridade espiritual.</li>
+              <li><strong>Línguas:</strong> é um dom bíblico, atual e precioso, mas não é evidência única, obrigatória e universal do batismo com o Espírito Santo.</li>
+              <li><strong>Outros dons:</strong> o Espírito distribui dons como quer; há crentes que manifestam profecia, ensino, fé, discernimento, misericórdia, serviço ou liderança sem falar em línguas.</li>
+              <li><strong>Fruto do Espírito:</strong> é indispensável, pois dons sem amor, caráter e santidade não edificam a igreja.</li>
+            </ol>
+          </div>
+        `;
+      }
+
+      return respostas;
+    }
+
+
+    function modoBaseTrilhaTeologicaV1319(base){
+      const nivel = base.cursoNivelTeologico || "basico";
+      const modo = base.cursoBaseTeologicaModo || "nenhuma";
+
+      // v13.20: modo seguro. Não usar base automaticamente, pois base antiga pode contaminar o tema.
+      if(modo === "auto") return "nenhuma";
+      if(nivel === "basico") return "nenhuma";
+      return modo;
+    }
+
+    function textoBaseTrilhaTeologicaV1319(base){
+      const modo = modoBaseTrilhaTeologicaV1319(base);
+      const partes = [];
+      const basico = obterBaseTeologiaBasico();
+      const intermediario = obterBaseTeologiaIntermediario();
+      if(["basico","basico-intermediario"].includes(modo)){
+        partes.push("BASE TEOLÓGICA NÍVEL 1 — CURSO BÁSICO SALVO:\n" + (basico ? limitarTexto(extrairTextoDeHtml(basico), base.cursoNivelTeologico === "avancado" ? 9000 : 14000) : "Não há Curso Básico salvo. Gere e salve o Básico para uma expansão mais fiel."));
+      }
+      if(modo === "basico-intermediario"){
+        partes.push("BASE TEOLÓGICA NÍVEL 2 — CURSO INTERMEDIÁRIO SALVO:\n" + (intermediario ? limitarTexto(extrairTextoDeHtml(intermediario), 12000) : "Não há Curso Intermediário salvo. Gere e salve o Intermediário antes de gerar o Avançado para maior profundidade."));
+      }
+      return partes.length ? partes.join("\n\n---\n\n") : "Nenhuma base anterior selecionada para esta geração.";
+    }
+
+    function regrasNivelTeologicoV1319(base){
+      const nivel = base.cursoNivelTeologico || "basico";
+      if(nivel === "intermediario") return `NÍVEL DA TRILHA: INTERMEDIÁRIO.
+Use o Curso Básico salvo como fundamento doutrinário, mas NÃO copie as mesmas palavras, os mesmos parágrafos nem a mesma argumentação.
+Expanda cada doutrina para outro nível: mais conceitos, mais conexões bíblicas, mais termos teológicos explicados, mais debates moderados, mais erros a evitar e mais aplicação doutrinária, eclesial e pastoral.
+A linguagem continua acessível, mas o conteúdo deve ir além do básico.
+Mostre continuidade com o curso básico sem repetir o básico.`.trim();
+      if(nivel === "avancado") return `NÍVEL DA TRILHA: AVANÇADO / TÉCNICO.
+Use o Curso Básico e o Curso Intermediário como banco de base doutrinária, mas NÃO repita o texto deles.
+Eleve o conteúdo para nível de seminário/faculdade: precisão conceitual, argumentação técnica, análise bíblica, debates históricos, escolas de interpretação, termos teológicos, respostas a objeções e bibliografia por módulo.
+Não simplifique demais. Explique termos técnicos, mas mantenha alto nível.
+Trabalhe com pesquisa, desenvolvimento doutrinário, coerência sistemática e aplicação doutrinária, eclesial e pastoral madura.
+Se for Manual do Professor, acrescente notas técnicas, respostas completas, alertas doutrinários, roteiro de ensino, questões difíceis e sugestões bibliográficas.`.trim();
+      return `NÍVEL DA TRILHA: BÁSICO AO MÉDIO.
+O curso deve ser introdutório na linguagem, mas não raso no conteúdo.
+Explique conceitos, termos, textos bíblicos, erros comuns e aplicações de forma clara, profunda e organizada.
+Não pressuponha formação teológica anterior, mas também não entregue conteúdo superficial.`.trim();
+    }
+
+    function tituloNivelCursoV1319(base){
+      return `${labelNivelTeologicoV1319(base.cursoNivelTeologico || "basico")} • ${nomeTipoCurso(base.cursoTipo)}`;
+    }
+
+    function promptTeologiaEstruturaV1318(base,modulos){
+      return `
+Você é o VERBO IA gerando a ESTRUTURA GERAL de um curso de teologia em HTML interno.
+
+CURSO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+TIPO: ${nomeTipoCurso(base.cursoTipo)}
+TEMA: ${base.theme}
+PÚBLICO: ${base.targetAudience}
+TOM: ${base.tone}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+
+TRAVA DE TEMA:
+Gere somente estrutura de curso de Teologia Básica ao nível médio.
+Não misture família, casamento, capelania, missões, evangelismo, missiologia ou revista EBD.
+Não escreva sermão.
+
+MÓDULOS:
+${modulos.map((m,i)=>`${i + 1}. ${m.titulo} — ${m.foco}`).join("\n")}
+
+Entregue somente HTML interno.
+Crie:
+<div class="course-cover-box">...</div>
+<div class="course-section"><h2>Estrutura geral do curso</h2>...</div>
+<div class="course-section"><h2>Progressão pedagógica</h2>...</div>
+<div class="course-section"><h2>Sumário dos módulos</h2>...</div>
+Explique que o curso é básico na linguagem, mas profundo no conteúdo.
+      `.trim();
+    }
+
+    function promptTeologiaApresentacaoV1318(base,modulos){
+      return `
+Você é o VERBO IA gerando a APRESENTAÇÃO de um curso de teologia em HTML interno.
+
+CURSO: ${base.title}
+TIPO: ${nomeTipoCurso(base.cursoTipo)}
+TEMA: ${base.theme}
+PÚBLICO: ${base.targetAudience}
+TOM: ${base.tone}
+
+Escreva uma apresentação robusta, pastoral e teológica.
+Explique a importância de estudar teologia, a autoridade das Escrituras, a relação entre doutrina e vida cristã, e a proposta do curso.
+
+Não misture família, casamento, capelania, missões, evangelismo ou missiologia.
+Não repita o prompt.
+Não escreva instruções.
+Somente HTML interno.
+
+Estruture:
+<div class="course-section"><h2>Apresentação do curso</h2>...</div>
+<div class="course-section"><h2>Objetivos gerais</h2><ol>...</ol></div>
+<div class="course-section"><h2>Como estudar este curso</h2>...</div>
+<div class="course-section"><h2>Perfil do aluno</h2>...</div>
+      `.trim();
+    }
+
+    function promptTeologiaSecaoModuloV1318(base,modulo,numero,total,secao){
+      const professor = base.cursoTipo === "professor";
+      const aluno = base.cursoTipo === "aluno";
+      const extraProfessor = professor ? `
+Como MANUAL DO PROFESSOR, acrescente orientação didática, roteiro de explicação, pontos de atenção, perguntas de debate e respostas comentadas quando a seção pedir revisão.
+Não resuma a apostila do aluno; aprofunde e ajude o professor a ensinar.
+` : `
+Como APOSTILA DO ALUNO, entregue conteúdo para estudo, sem respostas completas nas perguntas. Quando houver perguntas, crie espaço real de resposta com linhas.
+`;
+
+      const regraLinguas = /pneumatologia|espírito|espirito|dons/i.test(modulo.titulo) ? `
+REGRA ESPECIAL DE PNEUMATOLOGIA:
+Valorize os dons espirituais e o dom de línguas como bíblicos, atuais, preciosos e edificantes.
+Apresente com respeito a posição pentecostal clássica que entende línguas como evidência inicial, mas NÃO defenda essa posição como obrigatória.
+A posição defendida neste curso: o dom de línguas não é evidência única, obrigatória e universal do batismo com o Espírito Santo. É um dom entre vários dons distribuídos soberanamente pelo Espírito.
+Mostre que cristãos cheios do Espírito podem manifestar outros dons e frutos espirituais sem falar em línguas.
+` : "";
+
+      const regrasBibliologia = /bibliologia|escrituras|bíblia|biblia/i.test(modulo.titulo) ? `
+REGRA ESPECIAL DE BIBLIOLOGIA:
+Não seja raso. Explique revelação geral e especial, inspiração, theopneustos, inspiração verbal e plenária, autoridade, suficiência, necessidade, clareza, inerrância, confiabilidade, cânon, iluminação e interpretação.
+Mostre por que a Bíblia governa fé, doutrina, culto, pregação, igreja e vida cristã.
+` : "";
+
+      const instrucoes = {
+        abertura: `
+Gere a ABERTURA do módulo com introdução robusta, objetivos, texto bíblico base explicado e visão geral da doutrina.
+Não entre ainda em todos os detalhes; prepare o aluno para estudar o tema.
+`,
+        conceitos: `
+Gere a seção de CONCEITOS E DEFINIÇÕES do módulo.
+Explique termos teológicos em linguagem simples e profunda.
+Defina a doutrina, seus elementos principais e por que ela importa.
+`,
+        base: `
+Gere a seção de BASE BÍBLICA EXPLICADA do módulo.
+Exponha os textos principais com fidelidade ao contexto.
+Mostre como os textos sustentam a doutrina estudada.
+`,
+        desenvolvimento: `
+Gere o DESENVOLVIMENTO DOUTRINÁRIO E ARGUMENTATIVO do módulo.
+Aprofunde a doutrina. Desenvolva raciocínio teológico.
+Mostre relações, implicações, debates básicos e conexões com a fé cristã.
+`,
+        aplicacao: `
+Gere a seção de ERROS DOUTRINÁRIOS A EVITAR E APLICAÇÕES.
+Mostre confusões comuns, riscos doutrinários, aplicações para vida cristã, interpretação bíblica, ensino, pregação fiel, culto, formação teológica e igreja.
+Não crie exemplos de atuação missionária/evangelística. Não transforme esta seção em missiologia.
+`,
+        revisao: `
+Gere a seção final do módulo: RESUMO, ATIVIDADE PRÁTICA e PERGUNTAS DE REVISÃO.
+Se for Apostila do Aluno, as perguntas devem vir sem respostas, mas com espaço real abaixo de cada pergunta.
+Se for Manual do Professor, as perguntas devem vir com respostas completas e comentadas.
+`
+      };
+
+      return `
+Você é o VERBO IA gerando uma seção específica de um CURSO DE TEOLOGIA em HTML interno.
+
+CURSO: ${base.title}
+TIPO: ${nomeTipoCurso(base.cursoTipo)}
+MÓDULO ${numero} de ${total}: ${modulo.titulo}
+TEXTO BÍBLICO BASE: ${modulo.textoBase}
+FOCO EXCLUSIVO DO MÓDULO: ${modulo.foco}
+SEÇÃO ATUAL: ${secao.toUpperCase()}
+NÍVEL TEOLÓGICO: ${labelNivelTeologicoV1319(base.cursoNivelTeologico || "basico")}
+
+${regrasNivelTeologicoV1319(base)}
+
+BASE ANTERIOR SELECIONADA:
+${textoBaseTrilhaTeologicaV1319(base)}
+
+${extraProfessor}
+
+TRAVA ABSOLUTA:
+- Concentre-se somente nesta seção e somente neste módulo.
+- Não misture com outro módulo.
+- Não misture família, casamento, capelania, missões, evangelismo, sermão ou revista EBD.
+- Não crie seção de atuação missionária, evangelística, capelania, aconselhamento conjugal ou família.
+- Não use exemplos missionários/evangelísticos, a menos que o módulo seja especificamente Eclesiologia e ainda assim apenas como aplicação breve da doutrina da igreja.
+- Os exemplos práticos devem ser exemplos doutrinários: interpretação bíblica, ensino, pregação fiel, correção de erro, vida cristã, culto, igreja e formação teológica.
+- Não escreva conteúdo genérico.
+- Não repita o prompt.
+- Não escreva “desenvolva esta parte”.
+- Entregue conteúdo final em HTML interno.
+
+${regrasBibliologia}
+${regraLinguas}
+
+INSTRUÇÃO DA SEÇÃO:
+${instrucoes[secao]}
+
+Use esta estrutura base:
+<div class="course-section">
+  <h3>${secao === "abertura" ? `Módulo ${numero} — ${modulo.titulo}` : secao.toUpperCase()}</h3>
+  <p>...</p>
+</div>
+
+Escreva com profundidade proporcional a um curso básico ao médio: linguagem simples, conteúdo forte.
+      `.trim();
+    }
+
+    function fallbackSecaoTeologiaV1318(base,modulo,numero,secao){
+      const titulo = escapeHtml(modulo.titulo);
+      const textoBase = escapeHtml(modulo.textoBase);
+      const foco = escapeHtml(modulo.foco);
+      if(secao === "revisao"){
+        return `
+          <div class="course-section">
+            <h3>Resumo do módulo</h3>
+            ${paragraph(`Este módulo apresentou ${modulo.titulo} como parte essencial da formação teológica cristã. O aluno deve compreender o conceito, sua base bíblica, seus erros comuns e sua aplicação para a vida cristã e para a igreja.`)}
+          </div>
+          <div class="course-section">
+            <h3>Atividade prática</h3>
+            ${paragraph("Leia os textos bíblicos principais do módulo, anote as palavras-chave, explique a doutrina com suas próprias palavras e escreva uma aplicação prática para sua vida e ministério.")}
+          </div>
+          ${base.cursoTipo === "professor" ? respostasProfessorTeologiaV1318(modulo,numero) : perguntasAlunoTeologiaV1318(modulo,numero)}
+        `;
+      }
+
+      const labels = {
+        abertura:"Abertura do módulo",
+        conceitos:"Conceitos e definições",
+        base:"Base bíblica explicada",
+        desenvolvimento:"Desenvolvimento doutrinário",
+        aplicacao:"Erros doutrinários a evitar e aplicações teológicas"
+      };
+
+      return `
+        <div class="course-section">
+          <h3>${labels[secao] || "Seção do módulo"} — ${titulo}</h3>
+          ${paragraph(`Texto bíblico base: ${textoBase}.`)}
+          ${paragraph(`Esta seção desenvolve o foco do módulo: ${foco}. O conteúdo deve ser estudado com atenção, pois a teologia cristã exige clareza bíblica, precisão doutrinária e aplicação prática.`)}
+          ${paragraph("A doutrina cristã não deve ser tratada como informação solta, mas como verdade revelada por Deus para formar a fé, corrigir erros, orientar a igreja e conduzir o cristão à maturidade.")}
+        </div>
+      `;
+    }
+
+    function revisarHtmlTeologiaPuraV1320(html){
+      let out = limparSecaoTeologiaV1318(html);
+      // Remove subtítulos/seções contaminadas que tenham sobrevivido.
+      out = out.replace(/<div class="course-section">\s*<h3>\s*\d+\.\s*Exemplos práticos de atuação[^<]*<\/h3>[\s\S]*?<\/div>/gi,"");
+      out = out.replace(/<div class="course-section">\s*<h3>\s*Exemplos práticos de atuação[^<]*<\/h3>[\s\S]*?<\/div>/gi,"");
+      out = out.replace(/Exemplos práticos de atuação[^<\n.]*/gi,"Exemplos práticos de aplicação doutrinária");
+      return out;
+    }
+
+    async function gerarCursoTeologiaProfundoV1318(base,modulos){
+      manualPlaceholdersCount = 0;
+      let html = `<div class="doc">`;
+
+      setStep(0,`Estruturando a Trilha Teológica — ${tituloNivelCursoV1319(base)}...`);
+
+      let estrutura = await chamarTextoIAComTentativas(
+        [promptTeologiaEstruturaV1318(base,modulos)],
+        "Estrutura geral do curso de Teologia",
+        { minimo:1600, aceitarCurto:false, aceitarMuitoCurto:false }
+      );
+      estrutura = revisarHtmlTeologiaPuraV1320(estrutura);
+      if(!validarSecaoTeologiaV1318(estrutura,700) || secaoTeologiaContaminadaV1320(estrutura)){
+        estrutura = `
+          <div class="course-cover-box">
+            <h1>${escapeHtml(base.title)}</h1>
+            <p>${escapeHtml(base.subtitle)}</p>
+          </div>
+          <div class="course-section">
+            <h2>Estrutura geral do curso</h2>
+            ${paragraph("Este curso foi organizado para apresentar os fundamentos da teologia cristã com linguagem simples e conteúdo profundo. O objetivo é conduzir o aluno da introdução à doutrina cristã até as principais áreas da Teologia Sistemática.")}
+            ${orderedList(modulos.map((m,i)=>`Módulo ${i + 1} — ${m.titulo}`))}
+          </div>
+        `;
+        manualPlaceholdersCount++;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${estrutura}</div>`,"course-page intro-page");
+      renderGenerated(html + `</div>`);
+
+      await pause(400);
+      setStep(0,`Gerando apresentação teológica — ${tituloNivelCursoV1319(base)}...`);
+
+      let apresentacao = await chamarTextoIAComTentativas(
+        [promptTeologiaApresentacaoV1318(base,modulos)],
+        "Apresentação teológica do curso",
+        { minimo:1700, aceitarCurto:false, aceitarMuitoCurto:false }
+      );
+      apresentacao = revisarHtmlTeologiaPuraV1320(apresentacao);
+      if(!validarSecaoTeologiaV1318(apresentacao,700) || secaoTeologiaContaminadaV1320(apresentacao)){
+        apresentacao = `
+          <div class="course-section">
+            <h2>Apresentação do curso</h2>
+            ${paragraph("Estudar teologia é aprender a pensar sobre Deus, sua Palavra, sua obra, sua igreja e sua vontade revelada. Este curso é básico na linguagem, mas não é raso no conteúdo. Ele foi preparado para formar alunos capazes de compreender as doutrinas centrais da fé cristã com reverência, clareza e aplicação prática.")}
+          </div>
+          <div class="course-section">
+            <h2>Objetivos gerais</h2>
+            <ol class="list"><li>Conhecer as principais doutrinas bíblicas.</li><li>Desenvolver maturidade doutrinária.</li><li>Aprender a aplicar a teologia à vida e à igreja.</li><li>Evitar erros comuns de interpretação e doutrina.</li></ol>
+          </div>
+        `;
+        manualPlaceholdersCount++;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${apresentacao}</div>`,"course-page intro-page");
+      renderGenerated(html + `</div>`);
+
+      const secoes = ["abertura","conceitos","base","desenvolvimento","aplicacao","revisao"];
+
+      for(let i = 0; i < modulos.length; i++){
+        const numero = i + 1;
+        const modulo = modulos[i];
+        const stepIndex = Math.min(1 + i, Math.max(1, stepsByType.curso.length - 2));
+
+        let moduloHtml = "";
+        setStep(stepIndex,`Módulo ${numero}: concentrando na doutrina — ${modulo.titulo}...`);
+
+        for(const secao of secoes){
+          await pause(250);
+          setStatus(`Gerando Módulo ${numero} — ${modulo.titulo}: ${secao}...`);
+
+          const fatorNivel = base.cursoNivelTeologico === "avancado" ? 1.45 : base.cursoNivelTeologico === "intermediario" ? 1.22 : 1;
+          const baseMinimo = base.cursoTipo === "professor"
+            ? (secao === "desenvolvimento" ? 1900 : secao === "revisao" ? 1200 : 1200)
+            : (secao === "desenvolvimento" ? 1600 : secao === "revisao" ? 1000 : 950);
+          const minimo = Math.round(baseMinimo * fatorNivel);
+
+          let secaoHtml = await chamarTextoIAComTentativas(
+            [promptTeologiaSecaoModuloV1318(base,modulo,numero,modulos.length,secao)],
+            `Módulo ${numero} — ${secao}`,
+            { minimo, aceitarCurto:false, aceitarMuitoCurto:false }
+          );
+
+          secaoHtml = revisarHtmlTeologiaPuraV1320(secaoHtml);
+
+          if(!validarSecaoTeologiaV1318(secaoHtml,Math.min(650,minimo - 250)) || secaoTeologiaContaminadaV1320(secaoHtml)){
+            secaoHtml = fallbackSecaoTeologiaV1318(base,modulo,numero,secao);
+            manualPlaceholdersCount++;
+          }
+
+          moduloHtml += secaoHtml + "\n";
+          renderGenerated(html + renderPage(`<div class="course-clean-page">${moduloHtml}</div>`,"course-page lesson-page") + `</div>`);
+        }
+
+        html += renderPage(`<div class="course-clean-page">${moduloHtml}</div>`,"course-page lesson-page");
+        renderGenerated(html + `</div>`);
+      }
+
+      await pause(400);
+      setStep(stepsByType.curso.length - 1,"Gerando avaliação final, bibliografia e conclusão...");
+
+      let fechamento = await chamarTextoIAComTentativas(
+        [promptCursoFechamento(base,modulos) + `
+
+TRAVA FINAL PARA CURSO DE TEOLOGIA:
+Gere fechamento de Teologia: avaliação final, bibliografia teológica real, conclusão pastoral e orientação de continuidade.
+Não mencione capelania, família, casamento ou missões como tema central.
+Se for apostila do aluno, avaliação sem respostas e com linhas de resposta.
+Se for manual do professor, avaliação com respostas comentadas.`],
+        "Fechamento do curso de Teologia",
+        { minimo:1400, aceitarCurto:false, aceitarMuitoCurto:false }
+      );
+
+      fechamento = revisarHtmlTeologiaPuraV1320(fechamento);
+      if(!validarSecaoTeologiaV1318(fechamento,600) || secaoTeologiaContaminadaV1320(fechamento)){
+        fechamento = `
+          <div class="course-section">
+            <h2>Avaliação final</h2>
+            ${base.cursoTipo === "professor" ? respostasProfessorTeologiaV1318({titulo:"Avaliação geral de Teologia"},0) : perguntasAlunoTeologiaV1318({titulo:"Avaliação geral de Teologia"},0)}
+          </div>
+          <div class="course-section">
+            <h2>Bibliografia recomendada</h2>
+            <ul class="list">
+              <li>Conhecendo as Doutrinas da Bíblia — Myer Pearlman</li>
+              <li>Teologia Sistemática: Uma Perspectiva Pentecostal — Stanley M. Horton</li>
+              <li>Teologia Sistemática — Wayne Grudem</li>
+              <li>Introdução à Teologia Sistemática — Millard J. Erickson</li>
+              <li>Entendes o que Lês? — Gordon D. Fee e Douglas Stuart</li>
+            </ul>
+          </div>
+          <div class="course-section">
+            <h2>Conclusão</h2>
+            ${paragraph("A teologia cristã deve conduzir o aluno à adoração, à fidelidade bíblica, à maturidade espiritual e ao serviço responsável na igreja.")}
+          </div>
+        `;
+        manualPlaceholdersCount++;
+      }
+
+      html += renderPage(`<div class="course-clean-page">${fechamento}</div>`,"course-page summary-page");
+      html += `</div>`;
+
+      renderGenerated(html);
+      salvarBaseCursoAutomatico(base,html);
+      salvarBaseTrilhaTeologicaAutomatica(base,html);
+
+      finishSteps(manualPlaceholdersCount > 0
+        ? "Curso de Teologia finalizado por etapas. Algumas partes usaram modelo interno seguro."
+        : "Curso de Teologia finalizado com geração concentrada por estrutura, módulo e seção.");
+    }
+
+    async function generateCourseAsync(base){
+      const modulos = extrairModulosCurso(base);
+
+      if(cursoEhTeologiaProfundaV1318(base) && ["aluno","professor","apoio-professor"].includes(base.cursoTipo)){
+        await gerarCursoTeologiaProfundoV1318(base,modulos);
+        return;
+      }
+
+      await generateCourseAsyncPadraoV1318(base);
+    }
+
+async function generateMaterial(){
       if(isGenerating) return;
 
       const base = buildBase();
@@ -12066,6 +12897,9 @@ Crie:
       setValue("bibliographyMode","segura");
       setValue("printFormat","a4");
       setValue("quantityType","capítulos");
+      setValue("cursoBaseTeologicaModo","nenhuma");
+      setValue("cursoNivelTeologico","basico");
+      setValue("cursoObservacao","");
 
       currentHtml = "";
       currentText = "";
@@ -12089,7 +12923,7 @@ Crie:
       updateSteps(currentType);
       atualizarStatusBasesEBD();
       atualizarStatusBasesApostila();
-      setStatus("Campos limpos. As bases salvas continuam guardadas no navegador.","ok");
+      setStatus("Campos limpos. O próximo material começa do zero; nenhuma base anterior será usada automaticamente.","ok");
     }
 
     function ativarEdicao(){
@@ -12345,6 +13179,23 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     if(btnSaveCursoApoioBase) btnSaveCursoApoioBase.addEventListener("click",salvarBaseCursoApoioManual);
     if(btnClearCursoBases) btnClearCursoBases.addEventListener("click",apagarBasesCurso);
 
+    const btnSaveTeologiaBasicoBase = document.getElementById("btnSaveTeologiaBasicoBase");
+    const btnSaveTeologiaIntermediarioBase = document.getElementById("btnSaveTeologiaIntermediarioBase");
+    const btnSaveTeologiaAvancadoBase = document.getElementById("btnSaveTeologiaAvancadoBase");
+    const btnClearTeologiaBases = document.getElementById("btnClearTeologiaBases");
+
+    if(btnSaveTeologiaBasicoBase) btnSaveTeologiaBasicoBase.addEventListener("click",() => salvarBaseTrilhaTeologicaManual("basico"));
+    if(btnSaveTeologiaIntermediarioBase) btnSaveTeologiaIntermediarioBase.addEventListener("click",() => salvarBaseTrilhaTeologicaManual("intermediario"));
+    if(btnSaveTeologiaAvancadoBase) btnSaveTeologiaAvancadoBase.addEventListener("click",() => salvarBaseTrilhaTeologicaManual("avancado"));
+    if(btnClearTeologiaBases) btnClearTeologiaBases.addEventListener("click",apagarBasesTeologia);
+
+    if(cursoNivelTeologico){
+      cursoNivelTeologico.addEventListener("change",() => setStatus("Nível da trilha teológica selecionado: " + labelNivelTeologicoV1319(getValue("cursoNivelTeologico") || "basico") + ".","ok"));
+    }
+    if(cursoBaseTeologicaModo){
+      cursoBaseTeologicaModo.addEventListener("change",() => setStatus("Modo de base anterior atualizado para a Trilha Teológica.","ok"));
+    }
+
     if(cursoTipo){
       cursoTipo.addEventListener("change",() => {
         const label = cursoTipo.options[cursoTipo.selectedIndex]?.textContent || "material do curso";
@@ -12356,6 +13207,7 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     atualizarStatusBasesEBD();
     atualizarStatusBasesApostila();
     atualizarStatusBasesCurso();
+    atualizarStatusBasesTeologia();
     setContentType("sermao");
   </script>
 </body>
