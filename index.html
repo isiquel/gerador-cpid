@@ -3222,6 +3222,28 @@
               </div>
             </div>
 
+            <div class="grid-2">
+              <div class="field">
+                <label for="cursoAulasPorModulo">Aulas por módulo</label>
+                <select id="cursoAulasPorModulo">
+                  <option value="1">1 aula por módulo</option>
+                  <option value="2" selected>2 aulas por módulo</option>
+                  <option value="3">3 aulas por módulo</option>
+                  <option value="4">4 aulas por módulo</option>
+                </select>
+                <div class="chip-note">
+                  O Manual do Professor deve organizar cada módulo em aulas com plano de aula, conteúdo, atividade e fechamento.
+                </div>
+              </div>
+
+              <div class="field">
+                <label>Organização pedagógica</label>
+                <div class="chip-note">
+                  Todo curso será organizado por módulos e aulas: Aula 1, Aula 2, etc.
+                </div>
+              </div>
+            </div>
+
             <div class="status-mini-grid">
               <div id="baseCursoAlunoStatus" class="status-mini warn">Curso aluno: base não salva.</div>
               <div id="baseCursoProfessorStatus" class="status-mini warn">Curso professor: base não salva.</div>
@@ -3248,6 +3270,17 @@
                   <option value="intermediario">Médio / Intermediário — expansão e argumentação</option>
                   <option value="avancado">Avançado — técnico / faculdade</option>
                 </select>
+              </div>
+
+              <div class="field">
+                <label for="cursoEstruturaTipo">Tipo de estrutura do curso</label>
+                <select id="cursoEstruturaTipo">
+                  <option value="geral-materias" selected>Curso geral por matérias — equilíbrio entre módulos</option>
+                  <option value="especifico-materia">Curso específico por uma matéria — aprofundamento concentrado</option>
+                </select>
+                <div class="chip-note">
+                  Geral: cada módulo é uma matéria e nenhuma matéria domina o curso. Específico: o curso inteiro aprofunda uma única matéria.
+                </div>
               </div>
 
               <div class="field">
@@ -3619,8 +3652,10 @@
     const cursoFields = document.getElementById("cursoFields");
     const cursoTipo = document.getElementById("cursoTipo");
     const cursoCargaHoraria = document.getElementById("cursoCargaHoraria");
+    const cursoAulasPorModulo = document.getElementById("cursoAulasPorModulo");
     const cursoObservacao = document.getElementById("cursoObservacao");
     const cursoNivelTeologico = document.getElementById("cursoNivelTeologico");
+    const cursoEstruturaTipo = document.getElementById("cursoEstruturaTipo");
     const cursoBaseTeologicaModo = document.getElementById("cursoBaseTeologicaModo");
     const baseCursoAlunoStatus = document.getElementById("baseCursoAlunoStatus");
     const baseCursoProfessorStatus = document.getElementById("baseCursoProfessorStatus");
@@ -4021,8 +4056,10 @@
         cursoTipo:getValue("cursoTipo") || "aluno",
         bookSizeMode:getValue("bookSizeMode") || "livro-grande",
         cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
+        cursoAulasPorModulo:getValue("cursoAulasPorModulo") || "2",
         cursoObservacao:getValue("cursoObservacao") || "",
         cursoNivelTeologico:getValue("cursoNivelTeologico") || "basico",
+        cursoEstruturaTipo:getValue("cursoEstruturaTipo") || "geral-materias",
         cursoBaseTeologicaModo:getValue("cursoBaseTeologicaModo") || "nenhuma",
         extraNotes:getValue("extraNotes") || ""
       };
@@ -8953,8 +8990,23 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
     }
 
     function extrairModulosCurso(base){
-      if(cursoEhTeologiaSistematicaV1313(base)){
+      if(cursoEhTeologiaSistematicaV1313(base) && !cursoEhEspecificoPorMateriaV1324(base)){
         return modulosTeologiaSistematicaV1313().slice(0, Math.min(Number(getValue("quantity") || 10), 10));
+      }
+
+      if(cursoEhEspecificoPorMateriaV1324(base)){
+        const quantidadeEsp = Math.min(Number(getValue("quantity") || 10),20);
+        const tituloBase = base.title || base.theme || "Matéria central";
+        const modulosEsp = [];
+        for(let i = 1; i <= quantidadeEsp; i++){
+          modulosEsp.push({
+            titulo:`${tituloBase} — Aula/Módulo ${i}`,
+            textoBase:base.biblicalBase || "Texto bíblico adequado ao tema",
+            foco:`aprofundamento progressivo da matéria central "${tituloBase}"`,
+            dores:"dúvidas e necessidades ligadas à matéria central"
+          });
+        }
+        return modulosEsp;
       }
 
       const texto = String(base.theme || "") + "\n" + String(base.extraNotes || "");
@@ -9192,11 +9244,110 @@ NÍVEL DO CURSO: BÁSICO.
       return partes.length ? partes.join("\n\n---\n\n") : "Sem bases salvas compatíveis com o tema atual. Trabalhe apenas com o tema informado agora.";
     }
 
+    function numeroAulasPorModuloV1323(base){
+      const n = parseInt(base.cursoAulasPorModulo || getValue("cursoAulasPorModulo") || "2",10);
+      if(!Number.isFinite(n)) return 2;
+      return Math.min(4,Math.max(1,n));
+    }
+
+    function listaAulasModuloV1323(base,modulo){
+      const n = numeroAulasPorModuloV1323(base);
+      const titulo = modulo && modulo.titulo ? modulo.titulo : "tema do módulo";
+      const modelos = [];
+      for(let i = 1; i <= n; i++){
+        modelos.push(`Aula ${i}: desenvolver uma etapa real do módulo "${titulo}", com objetivo, conteúdo, texto bíblico, explicação, atividade e fechamento.`);
+      }
+      return modelos.join("\n");
+    }
+
+    function regraCursoPorAulasV1323(base){
+      const n = numeroAulasPorModuloV1323(base);
+      return `
+ORGANIZAÇÃO UNIVERSAL DO CURSO POR AULAS:
+- Todo curso deve ser organizado por MÓDULOS e AULAS.
+- Cada módulo deve ser dividido em ${n} aula(s).
+- Use sempre a nomenclatura: Aula 1, Aula 2, Aula 3, Aula 4, conforme a quantidade escolhida.
+- A Apostila do Aluno deve mostrar a organização do módulo por aulas, com conteúdo real em cada aula.
+- O Manual do Professor deve trazer PLANO DE AULA detalhado para cada aula do módulo.
+- Não escreva apenas “plano de aula”; crie o plano real.
+- Cada aula deve ter: objetivo, texto/base, conteúdo a ministrar, metodologia, perguntas para interação, atividade ou exercício e fechamento.
+- Um módulo não deve ser um bloco solto. Ele precisa ser ensinável em sala.
+- A profundidade do conteúdo deve respeitar o nível escolhido do curso.
+      `.trim();
+    }
+
+    function labelEstruturaCursoV1324(tipo){
+      const mapa = {
+        "geral-materias":"Curso geral por matérias",
+        "especifico-materia":"Curso específico por uma matéria"
+      };
+      return mapa[tipo] || "Curso geral por matérias";
+    }
+
+    function cursoEhGeralPorMateriasV1324(base){
+      return (base.cursoEstruturaTipo || "geral-materias") === "geral-materias";
+    }
+
+    function cursoEhEspecificoPorMateriaV1324(base){
+      return (base.cursoEstruturaTipo || "geral-materias") === "especifico-materia";
+    }
+
+    function regraEstruturaCursoV1324(base,modulos){
+      const quantidade = Math.max(1,(modulos || []).length || Number(getValue("quantity") || 10));
+      if(cursoEhEspecificoPorMateriaV1324(base)){
+        return `
+ESTRUTURA DO CURSO: CURSO ESPECÍFICO POR UMA MATÉRIA.
+- O curso inteiro deve aprofundar uma única matéria/assunto: ${base.title || base.theme}.
+- Todos os módulos devem nascer dessa matéria central.
+- Não distribua o curso em várias doutrinas diferentes, a menos que sejam subtópicos da matéria central.
+- Cada módulo deve aprofundar uma dimensão da matéria escolhida.
+- Pode aprofundar mais, pois o curso não precisa dividir espaço com outras matérias.
+- Evite fugir para temas paralelos.
+        `.trim();
+      }
+
+      return `
+ESTRUTURA DO CURSO: CURSO GERAL POR MATÉRIAS.
+- O curso deve ser distribuído em ${quantidade} matérias/módulos com equilíbrio.
+- Cada módulo deve focar exclusivamente na matéria dele.
+- Não deixe uma matéria dominar o curso inteiro.
+- Não gaste profundidade demais em um módulo a ponto de reduzir os demais.
+- Cada módulo deve ter estrutura, tamanho e profundidade semelhantes, respeitando o nível escolhido.
+- Ao mudar de módulo, encerre o assunto anterior e concentre-se na nova matéria.
+- Não repita o mesmo texto bíblico como base principal em todos os módulos.
+- Cada matéria deve usar textos bíblicos próprios e coerentes com seu conteúdo.
+- Em Teologia Sistemática: sistematize as doutrinas por tema. Bibliologia é Bibliologia; Teontologia é Teontologia; Cristologia é Cristologia; Pneumatologia é Pneumatologia; e assim por diante.
+        `.trim();
+    }
+
+    function focoModuloCursoV1324(base,modulo,numero,total){
+      if(cursoEhEspecificoPorMateriaV1324(base)){
+        return `
+FOCO DO MÓDULO:
+- Este é o módulo ${numero} de ${total} de um curso específico.
+- O módulo deve aprofundar uma parte da matéria central: ${base.title || base.theme}.
+- Não transforme este módulo em outra matéria.
+- O tema central permanece o mesmo, mas a abordagem deve avançar em nova etapa.
+        `.trim();
+      }
+      return `
+FOCO DO MÓDULO:
+- Este é o módulo ${numero} de ${total} de um curso geral por matérias.
+- A matéria atual é: ${modulo.titulo}.
+- Concentre-se somente nesta matéria.
+- Não retome longamente matéria anterior.
+- Não antecipe longamente matéria futura.
+- Não use textos bíblicos de outro módulo como base principal se eles não forem necessários.
+- A profundidade deste módulo deve ser equivalente à dos demais módulos.
+        `.trim();
+    }
+
     function regrasTipoCurso(base){
       if(base.cursoTipo === "aluno"){
         return `
 TIPO DE MATERIAL: APOSTILA DO ALUNO.
 - Gere material para o aluno estudar e acompanhar as aulas.
+- Organize cada módulo em aulas reais: Aula 1, Aula 2, conforme a quantidade escolhida.
 - Não inclua respostas completas nas atividades e perguntas.
 - Inclua espaços de resposta/anotações quando adequado.
 - Use linguagem limpa, didática, contínua e organizada.
@@ -9209,7 +9360,8 @@ TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Use OBRIGATORIAMENTE a apostila do aluno como base central.
 - Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
 - NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo que a apostila do aluno.
-- Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula, roteiro de exposição, respostas das perguntas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
+- Para cada módulo, preserve o ensino do aluno e acrescente: plano de aulas completo, objetivo de cada aula, tempo sugerido, conteúdo a ministrar, metodologia, roteiro de exposição, respostas das perguntas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
+- O professor precisa saber exatamente como ministrar cada módulo aula por aula.
 - O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
 - Não crie um curso diferente do aluno; amplie, explique, responda, oriente e aprofunde.`.trim();
       }
@@ -9359,7 +9511,7 @@ TIPO DE MATERIAL: CERTIFICADO.
               </div>
 
               <div class="course-section cert-curriculum">
-                <h2>Componentes curriculares</h2>
+                <h2>Componentes curriculares e carga horária</h2>
                 <table class="cert-table">
                   <thead><tr><th>Etapa</th><th>Matéria / Módulo</th><th>C.H.</th></tr></thead>
                   <tbody>${grade}</tbody>
@@ -9391,7 +9543,9 @@ TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+AULAS POR MÓDULO: ${numeroAulasPorModuloV1323(base)}
 NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
+TIPO DE ESTRUTURA: ${labelEstruturaCursoV1324(base.cursoEstruturaTipo)}
 TEMA DO USUÁRIO: ${base.theme}
 PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
@@ -9403,6 +9557,10 @@ ${regrasTipoCurso(base)}
 ${travaUniversalCursoV1321(base)}
 
 ${regrasNivelCursoUniversalV1322(base)}
+
+${regraCursoPorAulasV1323(base)}
+
+${regraEstruturaCursoV1324(base,modulos)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9501,6 +9659,12 @@ ${regrasTipoCurso(base)}
 ${travaUniversalCursoV1321(base)}
 
 ${regrasNivelCursoUniversalV1322(base)}
+
+${regraCursoPorAulasV1323(base)}
+
+${regraEstruturaCursoV1324(base,[modulo])}
+
+${focoModuloCursoV1324(base,modulo,numero,total)}
 
 ${regrasTemaTeologiaCursoV1313(base)}
 
@@ -9616,6 +9780,21 @@ Estrutura sugerida:
       const textoBase = escapeHtml(modulo.textoBase || base.biblicalBase || "Texto bíblico adequado");
       const foco = escapeHtml(modulo.foco || "desenvolvimento progressivo do tema informado pelo usuário");
       const tipo = nomeTipoCurso(base.cursoTipo);
+      const aulas = Array.from({length:numeroAulasPorModuloV1323(base)}).map((_,idx) => {
+        const aulaNum = idx + 1;
+        return `<li><strong>Aula ${aulaNum}:</strong> objetivo, conteúdo principal, base bíblica, explicação, atividade e fechamento relacionados ao módulo ${numero}.</li>`;
+      }).join("");
+
+      const planoProfessor = `
+        <div class="course-section">
+          <h3>Plano de aulas do módulo</h3>
+          <ol class="list">${aulas}</ol>
+        </div>
+        <div class="course-section">
+          <h3>Orientação ao professor</h3>
+          ${paragraph("Ministre cada aula com introdução, explicação progressiva, interação com os alunos, atividade prática e fechamento. Não transforme o módulo em palestra solta; conduza a aprendizagem por etapas.")}
+        </div>
+      `;
 
       const perguntasAluno = `
         <div class="course-section">
@@ -9643,6 +9822,7 @@ Estrutura sugerida:
         <div class="course-section">
           <h2>Módulo ${numero} — ${titulo}</h2>
           ${paragraph(`Este módulo pertence ao curso "${tema}" e deve ser entendido dentro desse tema específico. O objetivo é desenvolver o assunto com clareza, base bíblica, organização e aplicação prática, sem puxar temas antigos ou modelos de outros cursos.`)}
+          ${paragraph(cursoEhGeralPorMateriasV1324(base) ? "Como este é um curso geral por matérias, este módulo não deve dominar o curso inteiro. Ele precisa ter profundidade equilibrada em relação aos demais módulos." : "Como este é um curso específico por uma matéria, este módulo deve aprofundar uma etapa da matéria central, sem sair do assunto principal.")}
         </div>
 
         <div class="course-section">
@@ -9674,6 +9854,13 @@ Estrutura sugerida:
           <h3>4. Aplicação prática</h3>
           ${paragraph(`A aplicação deve nascer do tema do curso e ajudar o aluno a transformar conhecimento em prática responsável, madura e bíblica.`)}
         </div>
+
+        <div class="course-section">
+          <h3>Organização das aulas do módulo</h3>
+          <ol class="list">${aulas}</ol>
+        </div>
+
+        ${base.cursoTipo === "professor" ? planoProfessor : ""}
 
         <div class="course-section">
           <h3>Atividade prática</h3>
@@ -10009,7 +10196,9 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
+AULAS POR MÓDULO: ${numeroAulasPorModuloV1323(base)}
 NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
+TIPO DE ESTRUTURA: ${labelEstruturaCursoV1324(base.cursoEstruturaTipo)}
 TEMA GERAL DO CURSO: ${base.theme}
 MÓDULO: ${modulo.titulo}
 TEXTO BÍBLICO BASE SUGERIDO: ${modulo.textoBase}
@@ -12300,10 +12489,12 @@ Estruture:
       const professor = base.cursoTipo === "professor";
       const aluno = base.cursoTipo === "aluno";
       const extraProfessor = professor ? `
-Como MANUAL DO PROFESSOR, acrescente orientação didática, roteiro de explicação, pontos de atenção, perguntas de debate e respostas comentadas quando a seção pedir revisão.
+Como MANUAL DO PROFESSOR, acrescente orientação didática, plano de aulas, roteiro de explicação, pontos de atenção, perguntas de debate e respostas comentadas quando a seção pedir revisão.
 Não resuma a apostila do aluno; aprofunde e ajude o professor a ensinar.
+O professor precisa receber orientação clara de como ministrar o módulo por aulas: Aula 1, Aula 2 etc.
 ` : `
 Como APOSTILA DO ALUNO, entregue conteúdo para estudo, sem respostas completas nas perguntas. Quando houver perguntas, crie espaço real de resposta com linhas.
+Inclua organização do módulo por aulas para o aluno acompanhar: Aula 1, Aula 2 etc.
 `;
 
       const regraLinguas = /pneumatologia|espírito|espirito|dons/i.test(modulo.titulo) ? `
@@ -12364,6 +12555,12 @@ SEÇÃO ATUAL: ${secao.toUpperCase()}
 NÍVEL TEOLÓGICO: ${labelNivelTeologicoV1319(base.cursoNivelTeologico || "basico")}
 
 ${regrasNivelTeologicoV1319(base)}
+
+${regraCursoPorAulasV1323(base)}
+
+${regraEstruturaCursoV1324(base,[modulo])}
+
+${focoModuloCursoV1324(base,modulo,numero,total)}
 
 BASE ANTERIOR SELECIONADA:
 ${textoBaseTrilhaTeologicaV1319(base)}
@@ -13228,6 +13425,8 @@ async function generateMaterial(){
       setValue("quantityType","capítulos");
       setValue("cursoBaseTeologicaModo","nenhuma");
       setValue("cursoNivelTeologico","basico");
+      setValue("cursoEstruturaTipo","geral-materias");
+      setValue("cursoAulasPorModulo","2");
       setValue("cursoObservacao","");
 
       currentHtml = "";
@@ -13520,6 +13719,9 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
 
     if(cursoNivelTeologico){
       cursoNivelTeologico.addEventListener("change",() => setStatus("Nível do curso selecionado: " + labelNivelTeologicoV1319(getValue("cursoNivelTeologico") || "basico") + ".","ok"));
+    }
+    if(cursoEstruturaTipo){
+      cursoEstruturaTipo.addEventListener("change",() => setStatus("Estrutura do curso selecionada: " + labelEstruturaCursoV1324(getValue("cursoEstruturaTipo") || "geral-materias") + ".","ok"));
     }
     if(cursoBaseTeologicaModo){
       cursoBaseTeologicaModo.addEventListener("change",() => setStatus("Modo de base anterior atualizado para a Trilha Teológica.","ok"));
