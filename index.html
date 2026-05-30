@@ -3247,7 +3247,7 @@
                   <option value="4">4 aulas por módulo</option>
                 </select>
                 <div class="chip-note">
-                  O Manual do Professor deve organizar cada módulo em aulas com plano de aula, conteúdo, atividade e fechamento.
+                  Apostila do Aluno = conteúdo para aprender. Manual do Professor = conteúdo para ensinar + roteiro de aula, tempo sugerido e orientação didática.
                 </div>
               </div>
 
@@ -3275,6 +3275,10 @@
 
             <div class="truth-note" style="margin-top:14px;">
               <strong>Nível do curso:</strong> todo curso pode ser gerado em nível Básico, Médio ou Avançado. O nível controla a profundidade real do conteúdo.
+            </div>
+
+            <div class="sermon-note" style="margin-top:14px;">
+              <strong>Separação correta:</strong> na Apostila do Aluno use “Conteúdo da Aula”, “Desenvolvimento do Estudo”, “Resumo” e “Atividades”. No Manual do Professor use “Conteúdo a Ministrar”, “Tempo sugerido”, “Como conduzir a aula”, “Discussão” e “Respostas sugeridas”.
             </div>
 
             <div class="grid-2">
@@ -9409,6 +9413,7 @@ TIPO DE MATERIAL: APOSTILA DO ALUNO.
 TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Use OBRIGATORIAMENTE a apostila do aluno como base central.
 - Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
+- O Manual do Professor deve ter algo a mais para quem vai dar aula: “Conteúdo a Ministrar”, “Objetivo Pedagógico”, “Tempo Sugerido”, “Como iniciar a aula”, “Como explicar o tema”, “Como conduzir a discussão”, “Perguntas para interação”, “Possíveis dúvidas dos alunos”, “Respostas sugeridas”, “Atividade em sala”, “Aplicação pastoral” e “Como concluir a aula”.
 - NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo que a apostila do aluno.
 - Para cada módulo, preserve o ensino do aluno e acrescente: plano de aulas completo, objetivo de cada aula, tempo sugerido, conteúdo a ministrar, metodologia, roteiro de exposição, respostas das perguntas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
 - O professor precisa saber exatamente como ministrar cada módulo aula por aula.
@@ -9970,6 +9975,7 @@ Estrutura sugerida:
 
       apresentacao = limparVazamentoTemaCursoV1313(apresentacao,base);
       apresentacao = limparVazamentoUniversalCursoV1321(apresentacao,base);
+      apresentacao = ajustarCursoAlunoProfessorV1326(apresentacao,base);
 
       if(!validarConteudoCurso(apresentacao)){
         apresentacao = `
@@ -10017,6 +10023,7 @@ Estrutura sugerida:
 
         moduloHtml = limparVazamentoTemaCursoV1313(moduloHtml,base);
         moduloHtml = limparVazamentoUniversalCursoV1321(moduloHtml,base);
+        moduloHtml = ajustarCursoAlunoProfessorV1326(moduloHtml,base);
 
         if(!validarConteudoCurso(moduloHtml)){
           moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
@@ -10036,6 +10043,8 @@ Estrutura sugerida:
         "Fechamento do curso",
         { minimo:minimoFechamentoCurso, aceitarCurto:base.cursoTipo === "aluno", aceitarMuitoCurto:false }
       );
+
+      fechamento = ajustarCursoAlunoProfessorV1326(fechamento,base);
 
       if(!validarConteudoCurso(fechamento)){
         fechamento = `
@@ -10135,7 +10144,10 @@ Estrutura sugerida:
       if(base.cursoTipo === "aluno"){
         return `
 TIPO DE MATERIAL: APOSTILA DO ALUNO.
-- Gere material para o aluno estudar e acompanhar as aulas.
+- Gere material para o aluno estudar, acompanhar as aulas, revisar e responder atividades.
+- A Apostila do Aluno NÃO é roteiro de ministração e NÃO deve falar como se o aluno fosse dar aula.
+- PROIBIDO usar na Apostila do Aluno títulos como “Conteúdo a Ministrar”, “Orientação ao Professor”, “Tempo Sugerido”, “Como conduzir a aula”, “Perguntas para discussão em sala”, “Respostas comentadas” ou “Roteiro de ministração”.
+- Na Apostila do Aluno, use títulos como “Conteúdo da Aula”, “Desenvolvimento do Estudo”, “Resumo da Aula”, “Texto Base”, “Referências Bíblicas”, “Atividade de Fixação”, “Perguntas para Revisão”, “Espaço para Anotações” e “Aplicação Prática”.
 - Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma unidade de aproximadamente 4 horas.
 - NÃO faça apostila resumida. Cada módulo deve ser robusto, com argumento bíblico, explicação teológica/pastoral, desenvolvimento prático, exemplos, estudo de caso, atividade e revisão.
 - Para 10 módulos/40h, mire uma apostila expandida, com densidade equivalente a 80 a 120 páginas quando salva em PDF.
@@ -10149,6 +10161,7 @@ TIPO DE MATERIAL: APOSTILA DO ALUNO.
 TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Use OBRIGATORIAMENTE a apostila do aluno como base central.
 - Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
+- O Manual do Professor deve ter algo a mais para quem vai dar aula: “Conteúdo a Ministrar”, “Objetivo Pedagógico”, “Tempo Sugerido”, “Como iniciar a aula”, “Como explicar o tema”, “Como conduzir a discussão”, “Perguntas para interação”, “Possíveis dúvidas dos alunos”, “Respostas sugeridas”, “Atividade em sala”, “Aplicação pastoral” e “Como concluir a aula”.
 - NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo, mais didático e mais orientador que a apostila do aluno.
 - Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma aula/formação de aproximadamente 4 horas.
 - Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula de 4 horas, roteiro de exposição, respostas comentadas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
@@ -10635,6 +10648,7 @@ Estrutura sugerida:
 
       apresentacao = limparVazamentoTemaCursoV1313(apresentacao,base);
       apresentacao = limparVazamentoUniversalCursoV1321(apresentacao,base);
+      apresentacao = ajustarCursoAlunoProfessorV1326(apresentacao,base);
 
       if(!validarConteudoCurso(apresentacao)){
         apresentacao = `
@@ -10684,6 +10698,7 @@ Estrutura sugerida:
 
         moduloHtml = limparVazamentoTemaCursoV1313(moduloHtml,base);
         moduloHtml = limparVazamentoUniversalCursoV1321(moduloHtml,base);
+        moduloHtml = ajustarCursoAlunoProfessorV1326(moduloHtml,base);
 
         if(!validarConteudoCurso(moduloHtml)){
           moduloHtml = gerarModuloCursoFallback(base,modulo,numero,modulos.length);
@@ -11046,7 +11061,10 @@ REGRAS DE BIBLIOGRAFIA:
       if(base.cursoTipo === "aluno"){
         return `
 TIPO DE MATERIAL: APOSTILA DO ALUNO.
-- Gere material para o aluno estudar e acompanhar as aulas.
+- Gere material para o aluno estudar, acompanhar as aulas, revisar e responder atividades.
+- A Apostila do Aluno NÃO é roteiro de ministração e NÃO deve falar como se o aluno fosse dar aula.
+- PROIBIDO usar na Apostila do Aluno títulos como “Conteúdo a Ministrar”, “Orientação ao Professor”, “Tempo Sugerido”, “Como conduzir a aula”, “Perguntas para discussão em sala”, “Respostas comentadas” ou “Roteiro de ministração”.
+- Na Apostila do Aluno, use títulos como “Conteúdo da Aula”, “Desenvolvimento do Estudo”, “Resumo da Aula”, “Texto Base”, “Referências Bíblicas”, “Atividade de Fixação”, “Perguntas para Revisão”, “Espaço para Anotações” e “Aplicação Prática”.
 - Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma unidade de aproximadamente 4 horas.
 - NÃO faça apostila resumida. Cada módulo deve ser robusto, com argumento bíblico, explicação teológica/pastoral, desenvolvimento prático, exemplos, estudo de caso, atividade e revisão.
 - Para 10 módulos/40h, mire uma apostila expandida, com densidade equivalente a 80 a 120 páginas quando salva em PDF.
@@ -11061,6 +11079,7 @@ ${bibliografia}`.trim();
 TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Use OBRIGATORIAMENTE a apostila do aluno como base central.
 - Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
+- O Manual do Professor deve ter algo a mais para quem vai dar aula: “Conteúdo a Ministrar”, “Objetivo Pedagógico”, “Tempo Sugerido”, “Como iniciar a aula”, “Como explicar o tema”, “Como conduzir a discussão”, “Perguntas para interação”, “Possíveis dúvidas dos alunos”, “Respostas sugeridas”, “Atividade em sala”, “Aplicação pastoral” e “Como concluir a aula”.
 - NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo, mais didático e mais orientador que a apostila do aluno.
 - Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma aula/formação de aproximadamente 4 horas.
 - Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula de 4 horas, roteiro de exposição, respostas comentadas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação, orientação de fechamento e bibliografia recomendada real.
@@ -12551,11 +12570,15 @@ Estruture:
       const professor = base.cursoTipo === "professor";
       const aluno = base.cursoTipo === "aluno";
       const extraProfessor = professor ? `
-Como MANUAL DO PROFESSOR, acrescente orientação didática, plano de aulas, roteiro de explicação, pontos de atenção, perguntas de debate e respostas comentadas quando a seção pedir revisão.
+Como MANUAL DO PROFESSOR, mantenha o conteúdo-base da Apostila do Aluno e acrescente orientação didática real para quem vai ensinar.
+Inclua, quando adequado: Conteúdo a Ministrar, Objetivo Pedagógico, Tempo Sugerido, Como iniciar a aula, Como explicar o tema, Como conduzir a discussão, Perguntas para interação, Possíveis dúvidas dos alunos, Respostas sugeridas, Atividade em sala, Aplicação pastoral e Como concluir a aula.
+Distribua o tempo da aula com clareza, por exemplo: abertura, desenvolvimento, discussão, atividade, revisão e fechamento.
 Não resuma a apostila do aluno; aprofunde e ajude o professor a ensinar.
 O professor precisa receber orientação clara de como ministrar o módulo por aulas: Aula 1, Aula 2 etc.
 ` : `
-Como APOSTILA DO ALUNO, entregue conteúdo para estudo, sem respostas completas nas perguntas. Quando houver perguntas, crie espaço real de resposta com linhas.
+Como APOSTILA DO ALUNO, entregue conteúdo para estudo, acompanhamento, revisão e atividades, sem respostas completas nas perguntas. Quando houver perguntas, crie espaço real de resposta com linhas.
+A Apostila do Aluno NÃO deve conter linguagem de professor. NÃO use “Conteúdo a Ministrar”, “Orientação ao Professor”, “Tempo Sugerido”, “Como conduzir a aula”, “Perguntas para discussão em sala”, “Respostas comentadas” ou roteiro de ministração.
+Use linguagem voltada ao estudante: Conteúdo da Aula, Desenvolvimento do Estudo, Resumo da Aula, Texto Base, Referências Bíblicas, Atividade de Fixação, Perguntas para Revisão, Espaço para Anotações e Aplicação Prática.
 Inclua organização do módulo por aulas para o aluno acompanhar: Aula 1, Aula 2 etc.
 `;
 
@@ -12600,8 +12623,8 @@ Não crie exemplos de atuação missionária/evangelística. Não transforme est
 `,
         revisao: `
 Gere a seção final do módulo: RESUMO, ATIVIDADE PRÁTICA e PERGUNTAS DE REVISÃO.
-Se for Apostila do Aluno, as perguntas devem vir sem respostas, mas com espaço real abaixo de cada pergunta.
-Se for Manual do Professor, as perguntas devem vir com respostas completas e comentadas.
+Se for Apostila do Aluno, as perguntas devem vir sem respostas, mas com espaço real abaixo de cada pergunta e sem qualquer orientação de ministração.
+Se for Manual do Professor, as perguntas devem vir com respostas completas e comentadas, critérios de correção e orientação de como usar a revisão em sala.
 `
       };
 
@@ -12693,6 +12716,58 @@ Escreva com profundidade proporcional a um curso básico ao médio: linguagem si
       `;
     }
 
+    function ajustarCursoAlunoProfessorV1326(html,base){
+      let out = String(html || "");
+
+      if(base && base.cursoTipo === "aluno"){
+        const trocasAluno = [
+          [/Conteúdo\s+a\s+Ministrar/gi,"Conteúdo da Aula"],
+          [/Conteúdo\s+para\s+Ministrar/gi,"Conteúdo da Aula"],
+          [/Orientação\s+ao\s+Professor/gi,"Orientação de Estudo"],
+          [/Orientações\s+ao\s+Professor/gi,"Orientações de Estudo"],
+          [/Tempo\s+Sugerido/gi,"Organização do Estudo"],
+          [/Plano\s+de\s+Aula/gi,"Plano de Estudo"],
+          [/Roteiro\s+de\s+Ministração/gi,"Roteiro de Estudo"],
+          [/Como\s+conduzir\s+a\s+aula/gi,"Como estudar esta aula"],
+          [/Como\s+iniciar\s+a\s+aula/gi,"Como iniciar o estudo"],
+          [/Perguntas\s+para\s+discussão\s+em\s+sala/gi,"Perguntas para revisão"],
+          [/Perguntas\s+para\s+debate/gi,"Perguntas para revisão"],
+          [/Respostas\s+comentadas/gi,"Espaço para resposta"],
+          [/Critérios\s+de\s+correção/gi,"Critérios de revisão pessoal"],
+          [/Dinâmica\s+ou\s+debate\s+sugerido/gi,"Atividade de fixação"],
+          [/Alertas\s+pastorais\s+ao\s+ministrar\s+este\s+módulo/gi,"Cuidados doutrinários neste módulo"]
+        ];
+        trocasAluno.forEach(([padrao,valor]) => { out = out.replace(padrao,valor); });
+      }
+
+      if(base && base.cursoTipo === "professor"){
+        const temRoteiro = /Conteúdo\s+a\s+Ministrar|Tempo\s+Sugerido|Orientação\s+ao\s+Professor|Plano\s+de\s+Aula|Como\s+conduzir/i.test(out);
+        if(!temRoteiro){
+          out += `
+            <div class="course-section">
+              <h3>Orientação ao Professor</h3>
+              ${paragraph("Use o conteúdo-base desta aula como exposição principal, preservando a sequência da Apostila do Aluno. Antes de ministrar, leia o módulo, selecione os textos bíblicos principais, prepare exemplos simples e organize a participação dos alunos.")}
+            </div>
+            <div class="course-section">
+              <h3>Tempo sugerido e condução da aula</h3>
+              <ol class="list">
+                <li><strong>10 minutos:</strong> abertura, oração e retomada da aula anterior.</li>
+                <li><strong>25 minutos:</strong> exposição do conteúdo principal.</li>
+                <li><strong>15 minutos:</strong> perguntas, interação e discussão dirigida.</li>
+                <li><strong>10 minutos:</strong> atividade de fixação ou estudo em grupo.</li>
+                <li><strong>5 minutos:</strong> resumo, aplicação final e encaminhamento da próxima aula.</li>
+              </ol>
+            </div>
+            <div class="course-section">
+              <h3>Possíveis dúvidas dos alunos</h3>
+              ${paragraph("Prepare respostas bíblicas, simples e pastorais. Quando uma pergunta exigir maior pesquisa, anote a dúvida, confirme a resposta com segurança e retome o assunto na aula seguinte.")}
+            </div>`;
+        }
+      }
+
+      return out;
+    }
+
     function revisarHtmlTeologiaPuraV1320(html){
       let out = limparSecaoTeologiaV1318(html);
       // Remove subtítulos/seções contaminadas que tenham sobrevivido.
@@ -12714,6 +12789,7 @@ Escreva com profundidade proporcional a um curso básico ao médio: linguagem si
         { minimo:1600, aceitarCurto:false, aceitarMuitoCurto:false }
       );
       estrutura = revisarHtmlTeologiaPuraV1320(estrutura);
+      estrutura = ajustarCursoAlunoProfessorV1326(estrutura,base);
       if(!validarSecaoTeologiaV1318(estrutura,700) || secaoTeologiaContaminadaV1320(estrutura)){
         estrutura = `
           <div class="course-cover-box">
@@ -12741,6 +12817,7 @@ Escreva com profundidade proporcional a um curso básico ao médio: linguagem si
         { minimo:1700, aceitarCurto:false, aceitarMuitoCurto:false }
       );
       apresentacao = revisarHtmlTeologiaPuraV1320(apresentacao);
+      apresentacao = ajustarCursoAlunoProfessorV1326(apresentacao,base);
       if(!validarSecaoTeologiaV1318(apresentacao,700) || secaoTeologiaContaminadaV1320(apresentacao)){
         apresentacao = `
           <div class="course-section">
@@ -12785,6 +12862,7 @@ Escreva com profundidade proporcional a um curso básico ao médio: linguagem si
           );
 
           secaoHtml = revisarHtmlTeologiaPuraV1320(secaoHtml);
+          secaoHtml = ajustarCursoAlunoProfessorV1326(secaoHtml,base);
 
           if(!validarSecaoTeologiaV1318(secaoHtml,Math.min(650,minimo - 250)) || secaoTeologiaContaminadaV1320(secaoHtml)){
             secaoHtml = fallbackSecaoTeologiaV1318(base,modulo,numero,secao);
@@ -12815,6 +12893,7 @@ Se for manual do professor, avaliação com respostas comentadas.`],
       );
 
       fechamento = revisarHtmlTeologiaPuraV1320(fechamento);
+      fechamento = ajustarCursoAlunoProfessorV1326(fechamento,base);
       if(!validarSecaoTeologiaV1318(fechamento,600) || secaoTeologiaContaminadaV1320(fechamento)){
         fechamento = `
           <div class="course-section">
