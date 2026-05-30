@@ -2705,6 +2705,21 @@
   
     /* v13.10 — Capa Revista EBD com trava temática rígida */
     .doc .cover-page .cover-badge{letter-spacing:.04em;}
+
+    /* v13.25 — Capa profissional para Curso */
+    .cover-page .cover-badge{
+      background:rgba(255,255,255,.16);
+    }
+    .cover-page .cover-series{
+      max-width:72%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .cover-page .cover-title{
+      letter-spacing:-.02em;
+    }
+
   
     .answer-line{
       border-bottom:1px solid #b8b8b8;
@@ -3958,7 +3973,8 @@
         cursoFields.open = true;
         setValue("quantityType","módulos");
         if(!getValue("quantity")) setValue("quantity","10");
-        setValue("coverMode", getValue("coverMode") || "com-capa");
+        // v13.25: curso deve vir com capa profissional por padrão.
+        setValue("coverMode","com-capa");
       }
 
       updateSteps(type);
@@ -6823,8 +6839,42 @@ Use HTML com:
       const estiloVisual = detectarEstiloVisualCapa(base,info);
       const textoTema = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${base.targetAudience || ""} ${info.revistaClasse || ""}`.toLowerCase();
       const isRevista = base.type === "revista" || /revista|ebd|escola b[ií]blica/.test(info.label || "");
+      const isCurso = base.type === "curso" || /curso|apostila do aluno|manual do professor|livro de apoio/i.test(info.label || "");
       const isInfantil = /crianças|infantil|criança/.test(`${info.revistaClasse || ""} ${base.targetAudience || ""}`.toLowerCase());
       const igrejaLocalTema = /igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(textoTema);
+      const teologiaCursoTema = /teologia|teol[oó]gic|sistem[aá]tica|doutrina|bibliologia|teontologia|cristologia|pneumatologia|soteriologia|eclesiologia|escatologia|trindade|hamartiologia/.test(textoTema);
+
+      if(isCurso && teologiaCursoTema){
+        return `
+Crie SOMENTE A ARTE DE FUNDO de uma capa profissional para CURSO DE TEOLOGIA.
+NÃO escreva nenhum texto na imagem.
+NÃO coloque letras, logotipos, nomes de igreja, marcas ou frases.
+
+TÍTULO DO MATERIAL: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+TIPO: ${info.label || getTypeLabel(base.type)}
+TEMA: ${base.visibleTheme || base.theme}
+
+ESTILO VISUAL OBRIGATÓRIO:
+- Capa de curso teológico sério, premium, ministerial e acadêmico.
+- Bíblia aberta em destaque, livros teológicos, caderno de estudo, pena/caneta, ambiente de biblioteca ou sala de aula teológica.
+- Luz dourada ou azul profunda, atmosfera reverente, intelectual e espiritual.
+- Elementos discretos que remetam à doutrina cristã, estudo bíblico, seminário, formação teológica e profundidade.
+- Visual adulto, sofisticado, limpo, com profundidade e credibilidade.
+
+NÃO USAR:
+- criança lendo Bíblia;
+- imagem infantil;
+- pessoa isolada com aparência genérica de devocional;
+- púlpito de culto como tema principal;
+- microfone, show, palco ou multidão;
+- imagem de missões, família, casamento ou capelania;
+- símbolos estranhos, ocultistas ou místicos;
+- texto escrito dentro da imagem.
+
+Composição vertical editorial, alta qualidade, iluminação profissional, capa de apostila/curso teológico premium, sem texto.
+        `.trim();
+      }
 
       if(isRevista && igrejaLocalTema){
         return `
@@ -9897,6 +9947,18 @@ Estrutura sugerida:
       }
 
       let html = `<div class="doc">`;
+
+      if(base.coverMode === "com-capa"){
+        setStep(0,"Gerando capa profissional do curso...");
+        const infoCapaCurso = { label:nomeTipoCurso(base.cursoTipo) || "Curso" };
+        const imageDataCurso = await safeImagemLivroV132(
+          promptCapaImagem(base,infoCapaCurso),
+          { tipo:"curso", titulo:base.title, contexto:"capa de curso" }
+        );
+        html += renderCover(base,infoCapaCurso,imageDataCurso);
+        renderGenerated(html + `</div>`);
+        await pause(400);
+      }
 
       setStep(0,"Gerando apresentação limpa do curso...");
       const minimoApresentacaoCurso = base.cursoTipo === "apoio-professor" ? 1200 : base.cursoTipo === "professor" ? 1000 : 700;
@@ -13405,7 +13467,7 @@ async function generateMaterial(){
       ].forEach(id => setValue(id,""));
 
       setValue("depthLevel","profundo");
-      setValue("coverMode",currentType === "revista" ? "com-capa" : "sem-capa");
+      setValue("coverMode",currentType === "revista" || currentType === "curso" ? "com-capa" : "sem-capa");
       setValue("sermonPoints","4");
       setValue("sermonType","temático");
       setValue("sermonAppeal","com fechamento e apelo forte para ação");
