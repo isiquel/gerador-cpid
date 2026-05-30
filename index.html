@@ -3067,13 +3067,13 @@
           <div class="accordion-body">
             <div class="field">
               <label for="adminCode">Código de liberação</label>
-              <input id="adminCode" type="password" inputmode="numeric" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="Digite 2407 para liberar recursos reservados" />
+              <input id="adminCode" type="password" inputmode="numeric" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="Digite seu código de acesso" />
             </div>
 
             <button id="btnUnlockAccess" class="btn btn-primary btn-full" type="button">Liberar recursos</button>
 
             <div id="lockedNote" class="status">
-              Recursos reservados precisam do código de acesso 2407.
+              Recursos reservados precisam do código de acesso.
             </div>
           </div>
         </details>
@@ -3132,18 +3132,25 @@
       mas segurança total só existe com validação em servidor/backend.
     */
     const ADMIN_CODE_SALT = "VERBO_IA_ACESSO_2026";
-    const ADMIN_CODE_HASHES = [
-      "879d5535"
-    ];
+    const ADMIN_CODE_HASHES = ["879d5535"];
+    let adminAccessGranted = false;
+
+    function normalizeAdminCode(value){
+      return String(value || "").replace(/\D/g,"").trim();
+    }
 
     function hashAdminCode(value){
-      const text = ADMIN_CODE_SALT + "::" + String(value || "").trim();
+      const text = ADMIN_CODE_SALT + "::" + normalizeAdminCode(value);
       let hash = 2166136261;
       for(let i = 0; i < text.length; i++){
         hash ^= text.charCodeAt(i);
-        hash = Math.imul(hash, 16777619);
+        hash = Math.imul(hash,16777619);
       }
       return (hash >>> 0).toString(16).padStart(8,"0");
+    }
+
+    function isValidAdminCode(value){
+      return ADMIN_CODE_HASHES.includes(hashAdminCode(value));
     }
 
     const STORAGE_REVISTA_ALUNO_BASE = "verboia_revista_aluno_base_ebd_v1046";
@@ -3467,17 +3474,21 @@
     }
 
     function isAdminUnlocked(){
-      const code = getValue("adminCode").replace(/\s+/g,"");
-      if(code === "2407"){
-        try{ localStorage.setItem("verboia_acesso_liberado_v1315","1"); }catch(e){}
+      const code = adminCode ? adminCode.value : getValue("adminCode");
+
+      if(isValidAdminCode(code)){
+        adminAccessGranted = true;
+        try{ localStorage.setItem("verboia_acesso_liberado_reservado","1"); }catch(e){}
         return true;
       }
 
-      try{
-        if(localStorage.getItem("verboia_acesso_liberado_v1315") === "1") return true;
-      }catch(e){}
+      if(adminAccessGranted) return true;
 
-      return ADMIN_CODE_HASHES.includes(hashAdminCode(code));
+      try{
+        return localStorage.getItem("verboia_acesso_liberado_reservado") === "1";
+      }catch(e){
+        return false;
+      }
     }
 
     function isReservedType(type){
@@ -3566,22 +3577,37 @@
       btnPrompt.style.opacity = unlocked ? "1" : "0.55";
 
       if(unlocked){
-        lockedNote.textContent = "Recursos reservados liberados com o código 2407.";
+        lockedNote.textContent = "Recursos reservados liberados.";
         lockedNote.className = "status ok";
       }else{
-        lockedNote.textContent = "Recursos reservados precisam do código de acesso 2407.";
+        lockedNote.textContent = "Recursos reservados precisam do código de acesso.";
         lockedNote.className = "status";
-
-        if(isReservedType(currentType)){
-          setContentType("sermao");
-        }
       }
+    }
+
+    function liberarRecursosComCodigo(){
+      const code = adminCode ? adminCode.value : "";
+
+      if(isValidAdminCode(code)){
+        adminAccessGranted = true;
+        try{ localStorage.setItem("verboia_acesso_liberado_reservado","1"); }catch(e){}
+        updateReservedState();
+        setStatus("Recursos reservados liberados.","ok");
+        return true;
+      }
+
+      updateReservedState();
+      setStatus("Código incorreto.","error");
+      return false;
     }
 
     function setContentType(type){
       if(isReservedType(type) && !isAdminUnlocked()){
-        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.","error");
-        return;
+        liberarRecursosComCodigo();
+        if(!isAdminUnlocked()){
+          setStatus("Esse recurso é reservado. Digite o código de acesso e clique em Liberar recursos.","error");
+          return;
+        }
       }
 
       currentType = type;
@@ -7737,11 +7763,9 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
       `;
 
       return limparLinguagemAluno(`
-        ${topo.join("
-")}
+        ${topo.join("\n")}
         <div class="magazine-columns">
-          ${corpo.join("
-")}
+          ${corpo.join("\n")}
         </div>
         <div class="lesson-review-full magazine-full">
           ${revisaoFinal}
@@ -11430,8 +11454,11 @@ Crie:
       }
 
       if(isReservedType(base.type) && !isAdminUnlocked()){
-        setStatus("Esse recurso é reservado. Digite o código de acesso para liberar.","error");
-        return;
+        liberarRecursosComCodigo();
+        if(!isAdminUnlocked()){
+          setStatus("Esse recurso é reservado. Digite o código de acesso e clique em Liberar recursos.","error");
+          return;
+        }
       }
 
       isGenerating = true;
@@ -12280,20 +12307,19 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     adminCode.addEventListener("keydown",(event) => {
       if(event.key === "Enter"){
         event.preventDefault();
-        updateReservedState();
+        liberarRecursosComCodigo();
       }
     });
 
     if(btnUnlockAccess){
-      btnUnlockAccess.addEventListener("click",() => {
-        updateReservedState();
-        if(isAdminUnlocked()){
-          setStatus("Recursos reservados liberados com o código 2407.","ok");
-        }else{
-          setStatus("Código incorreto. Digite 2407.","error");
-        }
-      });
+      btnUnlockAccess.addEventListener("click",liberarRecursosComCodigo);
     }
+    adminCode.addEventListener("keydown",(event) => {
+      if(event.key === "Enter"){
+        event.preventDefault();
+        updateReservedState();
+      }
+    });
 
     btnGenerate.addEventListener("click",generateMaterial);
     btnPrint.addEventListener("click",salvarPDF);
