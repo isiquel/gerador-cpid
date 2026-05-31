@@ -3205,6 +3205,17 @@
                 Use Livreto para uma obra breve. Use Livro grande para capítulos longos, texto corrido, progressão, argumentação e profundidade.
               </div>
             </div>
+
+            <div id="bookGenreField" class="field">
+              <label for="bookGenre">Tipo de livro</label>
+              <select id="bookGenre">
+                <option value="cristao-comum" selected>Livro cristão comum — ensino, reflexão e aplicação</option>
+                <option value="biografico">Livro biográfico — narrativa de vida, testemunho e legado</option>
+              </select>
+              <div class="chip-note">
+                Use Livro biográfico para histórias de vida, testemunhos, pastor jubilado, legado ministerial e biografias. Ele remove perguntas, oração por capítulo, resumo e estrutura de apostila.
+              </div>
+            </div>
           </div>
         </details>
 
@@ -4075,6 +4086,7 @@
         coverMode:type === "sermao" || type === "estudo" ? "sem-capa" : (type === "revista" ? "com-capa" : (getValue("coverMode") || "sem-capa")),
         cursoTipo:getValue("cursoTipo") || "aluno",
         bookSizeMode:getValue("bookSizeMode") || "livro-grande",
+        bookGenre:getValue("bookGenre") || "cristao-comum",
         cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
         cursoAulasPorModulo:getValue("cursoAulasPorModulo") || "2",
         cursoObservacao:getValue("cursoObservacao") || "",
@@ -11366,36 +11378,66 @@ Escreva com profundidade. O módulo deve ter conteúdo próprio, amplo e aplicá
         .replace(/[\u0300-\u036f]/g,"");
     }
 
+
+    function isLivroBiograficoV1327(base){
+      const texto = normalizarLivroV11(`${base.bookGenre || ""} ${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.extraNotes || ""}`);
+      return (base.bookGenre === "biografico") || /biograf|biografia|biografico|biografica|testemunho de vida|historia de vida|história de vida|jubilado|jubilacao|jubilação|presidente de honra|conselheiro da equipe|legado ministerial|45 anos de pastorado|anos de pastorado/.test(texto);
+    }
+
+    function instrucaoLivroBiograficoV1327(base){
+      if(!isLivroBiograficoV1327(base)) return "";
+
+      return `
+LÓGICA ESPECIAL — LIVRO BIOGRÁFICO:
+- Este livro deve ser tratado como BIOGRAFIA CRISTÃ, testemunhal, honrosa e narrativa.
+- Não escreva como curso, apostila, estudo bíblico, sermão, devocional ou material de aula.
+- Cada capítulo deve ser uma narrativa contínua sobre a vida do biografado, com começo, desenvolvimento e fechamento literário.
+- O foco deve estar na pessoa biografada: vida, origem, fé, chamado, experiências, lutas, vitórias, ministério, jubilação, honra, conselho, legado e frutos espirituais.
+- Não use subtítulo fixo abaixo do capítulo como “Desenvolvimento progressivo, bíblico, pastoral e prático”.
+- Não use tópicos didáticos numerados dentro do capítulo.
+- Não use seções como “Argumento pastoral e espiritual”, “Caminhos práticos”, “Perguntas de reflexão”, “Oração ao final do capítulo”, “Resumo do capítulo”, “Objetivo do capítulo” ou “Aplicação prática”.
+- Não escreva perguntas para o leitor responder.
+- Não encerre capítulos com oração.
+- Não coloque resumo no fim do capítulo.
+- Use referências bíblicas apenas de forma natural dentro da narrativa, sem transformar o capítulo em sermão.
+- Não invente datas, nomes, lugares nem fatos específicos. Quando faltar detalhe real, escreva com linguagem respeitosa, aberta e biográfica.
+- O texto deve emocionar, honrar, inspirar e motivar o leitor a permanecer fiel a Deus.
+- Parágrafos devem ser bem desenvolvidos, humanos, literários, pastorais e fáceis de ler.
+      `.trim();
+    }
+
     function perfilLivroV12(base){
       const modo = base.bookSizeMode || "livro-grande";
       const isLivreto = modo === "livreto" || base.type === "ebook";
+
+      const biografico = isLivroBiograficoV1327(base);
 
       if(isLivreto){
         return {
           modo:"Livreto",
           alvoPaginas:"25 a 40 páginas",
-          descricao:"obra breve, objetiva, porém profunda, com texto corrido, progressão clara e aplicação prática sem excesso de subdivisões",
+          descricao: biografico ? "obra biográfica breve, narrativa, emocional, honrosa e sem estrutura didática" : "obra breve, objetiva, porém profunda, com texto corrido, progressão clara e aplicação prática sem excesso de subdivisões",
           capMin:4,
           capMax:10,
           capPadrao:7,
-          minimoAbertura:700,
-          minimoCapitulo:1100,
-          minimoFechamento:600,
-          regra:"Livreto não é resumo raso. Deve ser menor que um livro grande, mas precisa ter densidade, beleza, argumento e utilidade espiritual."
+          minimoAbertura:biografico ? 600 : 700,
+          minimoCapitulo:biografico ? 1200 : 1100,
+          minimoFechamento:biografico ? 500 : 600,
+          regra: biografico ? "Livreto biográfico deve parecer narrativa de vida: sem perguntas, sem oração por capítulo, sem resumo e sem tópicos de apostila." : "Livreto não é resumo raso. Deve ser menor que um livro grande, mas precisa ter densidade, beleza, argumento e utilidade espiritual."
         };
       }
 
       return {
         modo:"Livro grande",
         alvoPaginas:"80 páginas ou mais",
-        descricao:"obra robusta, expandida, com capítulos longos, texto corrido, progressão literária, argumentação bíblica e pastoral, exemplos e direções práticas",
+        descricao: biografico ? "obra biográfica robusta, narrativa, emocional, honrosa, com capítulos longos e leitura de livro real" : "obra robusta, expandida, com capítulos longos, texto corrido, progressão literária, argumentação bíblica e pastoral, exemplos e direções práticas",
         capMin:8,
         capMax:24,
         capPadrao:12,
-        minimoAbertura:1200,
-        minimoCapitulo:2400,
-        minimoFechamento:900,
-        regra:"Livro grande deve parecer livro de verdade: leitura prazerosa, profunda, sem economizar argumento, sem capítulos curtos e sem aparência de apostila ou curso."
+        minimoAbertura:biografico ? 900 : 1200,
+        minimoCapitulo:biografico ? 2300 : 2400,
+        minimoFechamento:biografico ? 700 : 900,
+        regra: biografico ? "Livro biográfico grande deve parecer uma biografia real: narrativa contínua, humana, honrosa, sem cara de aula, apostila, devocional ou estudo bíblico." : "Livro grande deve parecer livro de verdade: leitura prazerosa, profunda, sem economizar argumento, sem capítulos curtos e sem aparência de apostila ou curso."
       };
     }
 
@@ -11414,6 +11456,7 @@ LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
 - Extensão escolhida: ${perfil.modo} (${perfil.alvoPaginas}).
 - Regra de extensão: ${perfil.regra}
 - Perfil editorial: ${perfil.descricao}.
+${instrucaoLivroBiograficoV1327(base)}
       `.trim();
     }
 
@@ -11452,6 +11495,36 @@ LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
     function temaLivroV11(base){
       const texto = `${base.title} ${base.subtitle} ${base.theme} ${base.extraNotes}`;
       const n = normalizarLivroV11(texto);
+
+      if(isLivroBiograficoV1327(base)){
+        return {
+          nome: base.title || "biografia cristã",
+          foco:"vida, testemunho, chamado, caminhada de fé, experiências, lutas, vitórias, jubilação, honra, conselho, legado ministerial e fidelidade de Deus na trajetória do biografado",
+          proibido:"não transformar a biografia em curso, apostila, estudo bíblico, sermão, devocional ou material didático; manter o foco na pessoa biografada e em sua história real",
+          defaultChapters:[
+            "Quando Deus Começa a Escrever uma História",
+            "Os Primeiros Passos na Fé",
+            "O Despertar do Chamado",
+            "O Sim que Mudou uma Vida",
+            "Os Primeiros Passos no Ministério",
+            "Pastorear é Amar Pessoas",
+            "As Lutas que Também Fazem Parte do Chamado",
+            "A Fidelidade de Deus nos Dias Difíceis",
+            "Memórias de Uma Vida no Pastorado",
+            "Pregando, Cuidando e Perseverando",
+            "Lições que o Tempo Ensina",
+            "A Honra da Jubilação",
+            "Presidente de Honra e Conselheiro da Equipe",
+            "Combati o Bom Combate"
+          ],
+          bibliografia:[
+            "Bíblia Sagrada",
+            "Memórias, relatos e testemunhos do biografado",
+            "Registros familiares e ministeriais fornecidos pelo autor",
+            "Entrevistas, vídeos e anotações de pesquisa fornecidos pelo autor"
+          ]
+        };
+      }
 
       if(/exaustao|esgotamento|cansaco|ministerio|ministerial|alma cansada/.test(n)){
         return {
@@ -11645,6 +11718,46 @@ LÓGICA UNIVERSAL DE LIVRO/LIVRETO:
     }
 
     function promptLivroAberturaV11(base,capitulos,tema,perfil){
+      if(isLivroBiograficoV1327(base)){
+        return `
+Você é o VERBO IA gerando a ABERTURA de um LIVRO BIOGRÁFICO CRISTÃO em HTML interno.
+Trabalhe somente nesta etapa. Não antecipe capítulos, fechamento ou contracapa.
+
+TÍTULO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR/ESCRITOR DA BIOGRAFIA: ${base.author}
+PESSOA BIOGRAFADA / TEMA: ${tema.nome}
+FOCO BIOGRÁFICO: ${tema.foco}
+TEXTO BÍBLICO BASE: ${base.biblicalBase}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+EXTENSÃO ESCOLHIDA: ${perfil.modo} — ${perfil.alvoPaginas}
+
+${instrucaoLivroUniversalV12(base,tema,perfil)}
+
+REGRAS ABSOLUTAS DA ABERTURA BIOGRÁFICA:
+- Entregue conteúdo final, pronto para leitura.
+- NÃO repita o prompt do usuário.
+- NÃO faça aula, estudo, sermão, devocional, apostila ou revista.
+- NÃO use “Como ler este livro” com tom didático.
+- NÃO use perguntas de reflexão, oração, resumo, aplicações enumeradas ou tópicos práticos.
+- NÃO invente fatos específicos.
+- Escreva como abertura de biografia real, com honra, emoção e sensibilidade pastoral.
+- HTML interno apenas, sem markdown.
+
+CAPÍTULOS DO LIVRO:
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
+
+Crie somente estas seções, nesta ordem:
+<div class="course-section"><h2>Apresentação</h2><p>Apresentação biográfica escrita com honra, emoção e respeito, explicando a importância de preservar a história do biografado.</p></div>
+<div class="course-section"><h2>Prefácio</h2><p>Prefácio com tom pastoral, humano e inspirador, mostrando por que a vida narrada neste livro pode fortalecer outras pessoas.</p></div>
+<div class="course-section"><h2>Introdução</h2><p>Introdução narrativa, bonita e emocional, conduzindo o leitor para a história de vida, chamado, perseverança, jubilação, conselho e legado do biografado.</p></div>
+<div class="course-section"><h2>Sumário</h2><ol>Liste os capítulos com os títulos reais, sem explicar cada capítulo.</ol></div>
+
+Escreva com linguagem de livro biográfico, sem aparência de material didático.
+        `.trim();
+      }
+
       return `
 Você é o VERBO IA gerando a ABERTURA de um LIVRO cristão em HTML interno.
 Trabalhe somente nesta etapa. Não antecipe capítulos, fechamento ou contracapa.
@@ -11673,7 +11786,7 @@ REGRAS ABSOLUTAS:
 - HTML interno apenas, sem markdown.
 
 CAPÍTULOS DO LIVRO:
-${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\\n")}
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
 
 Crie somente estas seções, nesta ordem:
 <div class="course-section"><h2>Apresentação</h2><p>Texto autoral, sensível e profundo, introduzindo a dor central do livro e a esperança bíblica.</p></div>
@@ -11687,6 +11800,53 @@ Escreva com densidade, beleza, verdade bíblica e linguagem que toque a alma.
 
     function promptLivroCapituloV11(base,titulo,numero,total,tema,perfil){
       const bibliografia = tema.bibliografia.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+
+      if(isLivroBiograficoV1327(base)){
+        return `
+Você é o VERBO IA escrevendo o CAPÍTULO ${numero} de ${total} de um LIVRO BIOGRÁFICO CRISTÃO em HTML interno.
+Trabalhe somente este capítulo. Não escreva outros capítulos, não escreva fechamento e não volte para etapas anteriores.
+
+LIVRO: ${base.title}
+SUBTÍTULO: ${base.subtitle}
+AUTOR/ESCRITOR DA BIOGRAFIA: ${base.author}
+PESSOA BIOGRAFADA / TEMA: ${tema.nome}
+FOCO BIOGRÁFICO: ${tema.foco}
+CAPÍTULO ${numero}: ${titulo}
+TEXTO BÍBLICO BASE DO LIVRO: ${base.biblicalBase}
+PROMPT DO USUÁRIO: ${base.theme}
+OBSERVAÇÕES: ${base.extraNotes || "nenhuma"}
+EXTENSÃO ESCOLHIDA: ${perfil.modo} — ${perfil.alvoPaginas}
+
+${instrucaoLivroUniversalV12(base,tema,perfil)}
+
+REGRAS ABSOLUTAS DO CAPÍTULO BIOGRÁFICO:
+- Entregue conteúdo final, pronto para leitura.
+- NÃO repita o prompt do usuário.
+- NÃO escreva instruções ao autor.
+- NÃO use subtítulo fixo abaixo do título.
+- NÃO escreva “Desenvolvimento progressivo, bíblico, pastoral e prático”.
+- NÃO use seções internas como “Argumento pastoral e espiritual”, “Fundamento bíblico”, “Caminhos práticos”, “Perguntas de reflexão”, “Oração ao final do capítulo” ou “Resumo do capítulo”.
+- NÃO use tópicos numerados como aula ou estudo.
+- NÃO transforme em sermão, devocional, curso, apostila ou revista EBD.
+- NÃO invente datas, nomes, lugares nem acontecimentos específicos.
+- Comece diretamente no conteúdo do capítulo.
+- ${tema.proibido}.
+- HTML interno apenas, sem markdown.
+
+QUALIDADE OBRIGATÓRIA:
+- O capítulo deve ser uma narrativa biográfica contínua, com parágrafos longos, humanos, emocionantes, literários e pastorais.
+- O centro do capítulo deve ser a vida do biografado, sua caminhada, seu chamado, suas experiências, lutas, vitórias, jubilação, honra, conselho e legado.
+- Use referências bíblicas apenas de forma natural, quando ajudarem a iluminar a história, sem virar sermão.
+- O capítulo precisa emocionar, honrar, inspirar e motivar o leitor.
+- O fim do capítulo deve ter fechamento narrativo forte e bonito, sem resumo, sem pergunta e sem oração.
+
+Estruture exatamente assim:
+<h1 class="page-title">Capítulo ${numero} — ${titulo}</h1>
+<div class="course-section"><p>Escreva aqui a narrativa biográfica contínua deste capítulo, com 12 a 20 parágrafos bem desenvolvidos, sem subtítulos internos, sem listas, sem perguntas, sem oração e sem resumo.</p></div>
+
+Escreva em forma de biografia real. Não entregue rascunho nem estrutura de aula.
+        `.trim();
+      }
 
       return `
 Você é o VERBO IA escrevendo o CAPÍTULO ${numero} de ${total} de um LIVRO cristão em HTML interno.
@@ -11749,6 +11909,35 @@ Escreva com profundidade real. Não entregue rascunho nem instrução.
     function promptLivroFechamentoV11(base,capitulos,tema,perfil){
       const bibliografia = tema.bibliografia.map(item => `<li>${escapeHtml(item)}</li>`).join("");
 
+      if(isLivroBiograficoV1327(base)){
+        return `
+Você é o VERBO IA gerando o fechamento de um LIVRO BIOGRÁFICO CRISTÃO em HTML interno.
+Trabalhe somente nesta etapa final. Não recrie capítulos anteriores.
+
+LIVRO: ${base.title}
+PESSOA BIOGRAFADA / TEMA: ${tema.nome}
+FOCO BIOGRÁFICO: ${tema.foco}
+EXTENSÃO ESCOLHIDA: ${perfil.modo} — ${perfil.alvoPaginas}
+${instrucaoLivroUniversalV12(base,tema,perfil)}
+CAPÍTULOS:
+${capitulos.map((c,i)=>`${i+1}. ${c}`).join("\n")}
+
+REGRAS:
+- Não repita o prompt.
+- Não escreva instruções.
+- Não recrie capa, folha de rosto, dedicatória, sumário ou contracapa.
+- Não use perguntas de reflexão, oração final, resumo do capítulo, direções práticas ou listas didáticas.
+- Não invente fatos específicos.
+- ${tema.proibido}.
+- HTML interno apenas.
+
+Crie:
+<div class="course-section"><h2>Conclusão</h2><p>Conclusão biográfica, forte, honrosa, emocional e inspiradora, fechando a história com gratidão, legado e fidelidade de Deus.</p></div>
+<div class="course-section"><h2>Palavra de honra</h2><p>Texto breve e sensível reconhecendo o valor da trajetória, da jubilação, da experiência e do conselho do biografado para a nova geração.</p></div>
+<div class="course-section"><h2>O legado que permanece</h2><p>Fechamento narrativo mostrando que uma vida dedicada ao Reino continua falando por meio do exemplo, dos frutos, da memória e da sabedoria deixada.</p></div>
+        `.trim();
+      }
+
       return `
 Você é o VERBO IA gerando o fechamento de um LIVRO cristão em HTML interno.
 Trabalhe somente nesta etapa final. Não recrie capítulos anteriores.
@@ -11778,6 +11967,18 @@ Crie:
     }
 
     function fallbackCapituloLivroV11(base,titulo,numero,tema){
+      if(isLivroBiograficoV1327(base)){
+        return `
+          <h1 class="page-title">Capítulo ${numero} — ${escapeHtml(titulo)}</h1>
+          <div class="course-section">
+            ${paragraph(`A história ligada a ${titulo} precisa ser contada com respeito, calma e honra. Em uma biografia cristã, cada fase da vida do servo de Deus não é tratada como tópico de aula, mas como parte de uma caminhada real, marcada por fé, renúncia, amadurecimento e cuidado divino.`)}
+            ${paragraph(`Ao olhar para a trajetória do biografado, o leitor não encontra apenas eventos isolados, mas sinais de uma vida conduzida pela graça. Antes dos cargos, das responsabilidades e do reconhecimento, há uma pessoa sendo formada por Deus no silêncio da rotina, nas experiências simples, nas lutas enfrentadas e nas decisões tomadas diante do chamado.`)}
+            ${paragraph(`Este capítulo deve preservar essa atmosfera de memória, honra e inspiração. A narrativa precisa conduzir o leitor a enxergar que uma vida dedicada ao Reino não se resume ao que foi visto publicamente, mas também ao que foi construído nos bastidores: oração, perseverança, conselhos, lágrimas, obediência e fidelidade.`)}
+            ${paragraph(`Mesmo quando faltam detalhes específicos sobre determinados momentos, a biografia deve permanecer fiel, cuidadosa e respeitosa, deixando espaço para que o autor acrescente informações reais depois. O mais importante é manter o foco na pessoa biografada, em seu legado e na fidelidade de Deus ao longo da caminhada.`)}
+          </div>
+        `;
+      }
+
       return `
         <div class="course-section">
           <h2>Capítulo ${numero} — ${escapeHtml(titulo)}</h2>
@@ -11815,6 +12016,33 @@ Crie:
           ${paragraph(`Senhor, dá-me humildade para reconhecer o que precisa ser tratado, sabedoria para obedecer à tua Palavra e força para continuar caminhando sem perder a alma no caminho. Amém.`)}
         </div>
       `;
+    }
+
+    function limparEstruturaDidaticaBiografiaV1327(html,base){
+      if(!isLivroBiograficoV1327(base)) return html;
+      let out = String(html || "");
+
+      out = out.replace(/<p class=["']subtitle["']>\s*Desenvolvimento progressivo,?\s*b[ií]blico,?\s*pastoral\s*e\s*pr[aá]tico\.??\s*<\/p>/gi, "");
+
+      const blocosProibidos = [
+        "Argumento pastoral e espiritual",
+        "Caminhos práticos",
+        "Caminhos práticos de restauração e vitória",
+        "Perguntas de reflexão",
+        "Oração ao final do capítulo",
+        "Resumo do capítulo",
+        "Objetivo do capítulo",
+        "Aplicações práticas",
+        "Direções práticas"
+      ];
+
+      blocosProibidos.forEach(titulo => {
+        const safeTitle = titulo.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+        const re = new RegExp(`<div\\s+class=["']course-section["']>\\s*<h[23]>\\s*(?:\\d+\\.\\s*)?${safeTitle}[^<]*<\\/h[23]>[\\s\\S]*?<\\/div>`, "gi");
+        out = out.replace(re, "");
+      });
+
+      return out;
     }
 
     function anunciarEtapaLivroV133(nome,descricao = ""){
@@ -12066,6 +12294,7 @@ Crie:
       );
 
       abertura = limparVazamentoTemaEbookV136(abertura,tema);
+      abertura = limparEstruturaDidaticaBiografiaV1327(abertura,base);
 
       if(!validarConteudoLivroV11(abertura)){
         abertura = `
@@ -12088,6 +12317,7 @@ Crie:
         );
 
         capitulo = limparVazamentoTemaEbookV136(capitulo,tema);
+        capitulo = limparEstruturaDidaticaBiografiaV1327(capitulo,base);
 
         if(!validarConteudoLivroV11(capitulo)){
           capitulo = fallbackEbookCapituloV135(base,capitulos[i],i + 1,tema);
@@ -12105,6 +12335,7 @@ Crie:
       );
 
       fechamento = limparVazamentoTemaEbookV136(fechamento,tema);
+      fechamento = limparEstruturaDidaticaBiografiaV1327(fechamento,base);
 
       if(!validarConteudoLivroV11(fechamento)){
         fechamento = `
@@ -12185,12 +12416,21 @@ Crie:
       abertura = limparVazamentoTemaEbookV136(abertura,tema);
 
       if(!validarConteudoLivroV11(abertura)){
-        abertura = `
-          <div class="course-section"><h2>Apresentação</h2>${paragraph(`Este livro nasce para tratar de ${tema.nome} com profundidade bíblica, sensibilidade pastoral e direção prática. A proposta é conduzir o leitor a uma caminhada de discernimento, restauração e maturidade diante de Deus.`)}</div>
-          <div class="course-section"><h2>Por que este livro é necessário</h2>${paragraph(`O tema precisa ser encarado com honestidade, fé e maturidade. Por isso, esta obra procura unir verdade bíblica, cuidado pastoral e aplicação concreta.`)}</div>
-          <div class="course-section"><h2>Como ler este livro</h2>${paragraph(`Leia devagar, com oração, reflexão e desejo sincero de praticar o que a Palavra de Deus iluminar ao longo das páginas.`)}</div>
-          <div class="course-section"><h2>Sumário</h2><ol>${capitulos.map(c=>`<li>${escapeHtml(c)}</li>`).join("")}</ol></div>
-        `;
+        if(isLivroBiograficoV1327(base)){
+          abertura = `
+            <div class="course-section"><h2>Apresentação</h2>${paragraph(`Este livro nasce para honrar uma história de vida marcada por fé, chamado, perseverança e fidelidade. Uma biografia cristã não existe apenas para registrar acontecimentos, mas para preservar um legado que continua inspirando outras pessoas.`)}</div>
+            <div class="course-section"><h2>Prefácio</h2>${paragraph(`A trajetória aqui apresentada deve ser lida com respeito e gratidão. Cada página procura conduzir o leitor por uma caminhada real, humana e espiritual, reconhecendo que Deus escreve histórias através de servos que permanecem fiéis mesmo quando o caminho exige renúncia.`)}</div>
+            <div class="course-section"><h2>Introdução</h2>${paragraph(`Antes de qualquer reconhecimento público, há uma vida sendo formada no silêncio. Esta obra procura olhar para essa formação, para o chamado, para o ministério, para a jubilação, para o conselho e para o legado que permanece como testemunho da graça de Deus.`)}</div>
+            <div class="course-section"><h2>Sumário</h2><ol>${capitulos.map(c=>`<li>${escapeHtml(c)}</li>`).join("")}</ol></div>
+          `;
+        }else{
+          abertura = `
+            <div class="course-section"><h2>Apresentação</h2>${paragraph(`Este livro nasce para tratar de ${tema.nome} com profundidade bíblica, sensibilidade pastoral e direção prática. A proposta é conduzir o leitor a uma caminhada de discernimento, restauração e maturidade diante de Deus.`)}</div>
+            <div class="course-section"><h2>Por que este livro é necessário</h2>${paragraph(`O tema precisa ser encarado com honestidade, fé e maturidade. Por isso, esta obra procura unir verdade bíblica, cuidado pastoral e aplicação concreta.`)}</div>
+            <div class="course-section"><h2>Como ler este livro</h2>${paragraph(`Leia devagar, com oração, reflexão e desejo sincero de praticar o que a Palavra de Deus iluminar ao longo das páginas.`)}</div>
+            <div class="course-section"><h2>Sumário</h2><ol>${capitulos.map(c=>`<li>${escapeHtml(c)}</li>`).join("")}</ol></div>
+          `;
+        }
       }
 
       html += renderPage(abertura,"book-opening-page");
@@ -12202,7 +12442,7 @@ Crie:
         let capitulo = await safeTextoLivroV132(
           [promptLivroCapituloV11(base,capitulos[i],i + 1,capitulos.length,tema,perfil)],
           `Capítulo ${i + 1} do ${perfil.modo.toLowerCase()}`,
-          { minimo:perfil.minimoCapitulo, minQuality:`capítulo robusto de ${perfil.modo.toLowerCase()} cristão, profundo, prático, sem repetir prompt` }
+          { minimo:perfil.minimoCapitulo, minQuality:isLivroBiograficoV1327(base) ? `capítulo biográfico robusto, narrativo, honroso e sem estrutura didática` : `capítulo robusto de ${perfil.modo.toLowerCase()} cristão, profundo, prático, sem repetir prompt` }
         );
 
         capitulo = limparVazamentoTemaEbookV136(capitulo,tema);
@@ -12215,22 +12455,30 @@ Crie:
         renderGenerated(html + `</div>`);
       }
 
-      setStep(3,"Etapa 6/7 — Gerando fechamento, oração final e bibliografia segura...");
-      anunciarEtapaLivroV133("Etapa 6/7","concluindo o livro com cuidado pastoral.");
+      setStep(3,isLivroBiograficoV1327(base) ? "Etapa 6/7 — Gerando conclusão biográfica e legado..." : "Etapa 6/7 — Gerando fechamento, oração final e bibliografia segura...");
+      anunciarEtapaLivroV133("Etapa 6/7",isLivroBiograficoV1327(base) ? "fechando a biografia com honra, emoção e legado." : "concluindo o livro com cuidado pastoral.");
       let fechamento = await safeTextoLivroV132(
         [promptLivroFechamentoV11(base,capitulos,tema,perfil)],
         `Fechamento do ${perfil.modo.toLowerCase()}`,
-        { minimo:perfil.minimoFechamento, minQuality:"conclusão pastoral, direções práticas e bibliografia real segura" }
+        { minimo:perfil.minimoFechamento, minQuality:isLivroBiograficoV1327(base) ? "conclusão biográfica honrosa, emocional e focada no legado" : "conclusão pastoral, direções práticas e bibliografia real segura" }
       );
 
       fechamento = limparVazamentoTemaEbookV136(fechamento,tema);
 
       if(!validarConteudoLivroV11(fechamento)){
-        fechamento = `
-          <div class="course-section"><h2>Conclusão pastoral</h2>${paragraph(`A caminhada proposta neste livro não termina na leitura. Ela precisa continuar em decisões concretas, oração sincera, reorganização de prioridades e dependência renovada de Deus.`)}</div>
-          <div class="course-section"><h2>Direções práticas para continuar</h2><ol><li>Volte ao descanso em Deus.</li><li>Reorganize sua rotina.</li><li>Cuide da vida devocional sem culpa religiosa.</li><li>Busque ajuda madura quando necessário.</li><li>Transforme reflexão em prática.</li></ol></div>
-          <div class="course-section"><h2>Bibliografia recomendada segura</h2><ul>${tema.bibliografia.map(b=>`<li>${escapeHtml(b)}</li>`).join("")}</ul></div>
-        `;
+        if(isLivroBiograficoV1327(base)){
+          fechamento = `
+            <div class="course-section"><h2>Conclusão</h2>${paragraph(`Ao fechar esta biografia, permanece a convicção de que uma vida entregue a Deus nunca termina apenas em memória. Ela continua falando por meio do exemplo, da fidelidade, dos conselhos, das marcas deixadas nas pessoas e do legado que atravessa gerações.`)}</div>
+            <div class="course-section"><h2>Palavra de honra</h2>${paragraph(`A jubilação não apaga a história de um servo; antes, testemunha que houve uma caminhada longa, real e digna de gratidão. A experiência acumulada se transforma em conselho, e o conselho de quem permaneceu fiel se torna bênção para os que continuam a obra.`)}</div>
+            <div class="course-section"><h2>O legado que permanece</h2>${paragraph(`O maior reconhecimento de uma vida ministerial não está apenas nos cargos ocupados, mas nas vidas tocadas, nas sementes lançadas e na fidelidade mantida quando ninguém via. Esse é o legado que permanece diante de Deus.`)}</div>
+          `;
+        }else{
+          fechamento = `
+            <div class="course-section"><h2>Conclusão pastoral</h2>${paragraph(`A caminhada proposta neste livro não termina na leitura. Ela precisa continuar em decisões concretas, oração sincera, reorganização de prioridades e dependência renovada de Deus.`)}</div>
+            <div class="course-section"><h2>Direções práticas para continuar</h2><ol><li>Volte ao descanso em Deus.</li><li>Reorganize sua rotina.</li><li>Cuide da vida devocional sem culpa religiosa.</li><li>Busque ajuda madura quando necessário.</li><li>Transforme reflexão em prática.</li></ol></div>
+            <div class="course-section"><h2>Bibliografia recomendada segura</h2><ul>${tema.bibliografia.map(b=>`<li>${escapeHtml(b)}</li>`).join("")}</ul></div>
+          `;
+        }
       }
 
       html += renderPage(fechamento,"book-closing-page");
@@ -12273,7 +12521,7 @@ Crie:
       const content = capitulos.map((titulo,i) => `
         <div class="block">
           <h3>Capítulo ${i + 1} — ${escapeHtml(titulo)}</h3>
-          ${paragraph(`Este capítulo desenvolve ${titulo} dentro do tema ${tema.nome}, com base bíblica, explicação pastoral, exemplos práticos e direção para aplicação pessoal.`)}
+          ${isLivroBiograficoV1327(base) ? paragraph(`Este capítulo narra ${titulo} dentro da trajetória do biografado, preservando o tom de vida real, testemunho, honra, emoção e legado, sem aparência de aula, apostila ou estudo.`) : paragraph(`Este capítulo desenvolve ${titulo} dentro do tema ${tema.nome}, com base bíblica, explicação pastoral, exemplos práticos e direção para aplicação pessoal.`)}
         </div>
       `).join("");
 
