@@ -5102,7 +5102,7 @@
         tipo:currentType,
         formato:"html",
         sistema:"VERBO IA",
-        preferencia:"tentar Gemini primeiro, depois ChatGPT, depois outras chaves disponíveis",
+        preferencia:"usar somente o endpoint de texto /api/gerar para materiais; não usar /api/prompt protegido por código de acesso",
         minQuality:opcoes.minQuality || "conteúdo robusto, específico e fiel ao pedido do usuário"
       };
 
@@ -5139,9 +5139,7 @@
 
       const endpoints = [
         "/api/gerar",
-        "/api/prompt",
-        "/api/gerar.js",
-        "/api/prompt.js"
+        "/api/gerar.js"
       ];
 
       for(const endpoint of endpoints){
