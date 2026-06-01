@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
+  <!-- v13.29 — correção forte da Revista EBD: texto áureo, leitura diária e subtópicos reais -->
 
   <style>
     :root{
@@ -5967,6 +5968,30 @@ Não inventar bibliografia.
         { teste:["efésios 2.19","ef 2.19"], texto:"Assim que já não sois estrangeiros, nem forasteiros, mas concidadãos dos Santos e da família de Deus." },
         { teste:["1 pedro 2.9","1pe 2.9","1 pe 2.9"], texto:"Mas vós sois a geração eleita, o sacerdócio real, a nação santa, o povo adquirido." },
 
+        { teste:["salmos 128.1","salmo 128.1","sl 128.1"], texto:"Bem-aventurado aquele que teme ao SENHOR e anda nos seus caminhos." },
+        { teste:["salmos 128.2","salmo 128.2","sl 128.2"], texto:"Pois comerás do trabalho das tuas mãos; feliz serás, e te irá bem." },
+        { teste:["salmos 127.3","salmo 127.3","sl 127.3"], texto:"Eis que os filhos são herança do SENHOR, e o fruto do ventre o seu galardão." },
+        { teste:["salmos 127.4","salmo 127.4","sl 127.4"], texto:"Como flechas na mão de um homem poderoso, assim são os filhos da mocidade." },
+        { teste:["salmos 127.5","salmo 127.5","sl 127.5"], texto:"Bem-aventurado o homem que enche deles a sua aljava; não serão confundidos, mas falarão com os seus inimigos à porta." },
+        { teste:["eclesiastes 4.9","ec 4.9","ecl 4.9"], texto:"Melhor é serem dois do que um, porque têm melhor paga do seu trabalho." },
+        { teste:["eclesiastes 4.10","ec 4.10","ecl 4.10"], texto:"Porque se um cair, o outro levanta o seu companheiro." },
+        { teste:["eclesiastes 4.12","ec 4.12","ecl 4.12"], texto:"O cordão de três dobras não se quebra tão depressa." },
+        { teste:["efésios 5.33","efesios 5.33","ef 5.33"], texto:"Cada um em particular ame a sua própria mulher como a si mesmo, e a mulher reverencie o marido." },
+        { teste:["provérbios 23.24","proverbios 23.24","pv 23.24"], texto:"O pai do justo exultará de júbilo; quem gerar um filho sábio nele se alegrará." },
+        { teste:["provérbios 23.25","proverbios 23.25","pv 23.25"], texto:"Alegrem-se teu pai e tua mãe, e exulte aquela que te deu à luz." },
+        { teste:["deuteronômio 6.6","deuteronomio 6.6","dt 6.6"], texto:"E estas palavras, que hoje te ordeno, estarão no teu coração." },
+        { teste:["deuteronômio 6.7","deuteronomio 6.7","dt 6.7"], texto:"E as intimarás a teus filhos, e delas falarás assentado em tua casa, andando pelo caminho, deitando-te e levantando-te." },
+        { teste:["efésios 6.4","efesios 6.4","ef 6.4"], texto:"E vós, pais, não provoqueis à ira a vossos filhos, mas criai-os na doutrina e admoestação do Senhor." },
+        { teste:["tiago 1.19","tg 1.19"], texto:"Todo homem seja pronto para ouvir, tardio para falar, tardio para se irar." },
+        { teste:["colossenses 3.13","cl 3.13"], texto:"Suportando-vos uns aos outros e perdoando-vos uns aos outros, se alguém tiver queixa contra outro." },
+        { teste:["colossenses 3.21","cl 3.21"], texto:"Pais, não irriteis a vossos filhos, para que não percam o ânimo." },
+        { teste:["provérbios 22.6","proverbios 22.6","pv 22.6"], texto:"Instrui o menino no caminho em que deve andar, e, até quando envelhecer, não se desviará dele." },
+        { teste:["lucas 16.10","lc 16.10"], texto:"Quem é fiel no mínimo também é fiel no muito." },
+        { teste:["efésios 4.25","efesios 4.25","ef 4.25"], texto:"Deixai a mentira, e falai a verdade cada um com o seu próximo." },
+        { teste:["provérbios 22.29","proverbios 22.29","pv 22.29"], texto:"Viste um homem diligente na sua obra? perante reis será posto; não permanecerá entre os de posição inferior." },
+        { teste:["eclesiastes 3.13","ec 3.13","ecl 3.13"], texto:"E também que todo homem coma e beba, e goze do bem de todo o seu trabalho; isto é um dom de Deus." },
+        { teste:["eclesiastes 4.6","ec 4.6","ecl 4.6"], texto:"Melhor é a mão cheia com descanso do que ambas as mãos cheias com trabalho e aflição de espírito." },
+
         { teste:["atos 1.8","at 1.8"], texto:"Recebereis a virtude do Espírito Santo, que há de vir sobre vós; e ser-me-eis testemunhas." }
       ];
 
@@ -6067,19 +6092,19 @@ Não inventar bibliografia.
 
       const topicosPadrao = [
         {
-          titulo:"O fundamento bíblico do tema",
-          funcao:"Apresentar a base bíblica da lição.",
-          subtitulos:["A revelação de Deus","A fé fundamentada","A obediência à Palavra"]
+          titulo:`O ensino central de ${tituloLimpo}`,
+          funcao:"Desenvolver o primeiro eixo da lição conforme o tema informado pelo usuário.",
+          subtitulos:["O contexto do ensino","A orientação das Escrituras","A resposta do cristão"]
         },
         {
-          titulo:"A explicação doutrinária da lição",
-          funcao:"Desenvolver o significado espiritual e teológico do assunto.",
-          subtitulos:["A verdade revelada","A fé preservada","A doutrina aplicada"]
+          titulo:`A compreensão bíblica de ${tituloLimpo}`,
+          funcao:"Explicar o assunto de modo bíblico, claro e aplicado à classe escolhida.",
+          subtitulos:["O princípio bíblico","O desafio da vida real","A maturidade espiritual"]
         },
         {
-          titulo:"A aplicação para a vida cristã",
-          funcao:"Conduzir o cristão à prática da Palavra.",
-          subtitulos:["Amar a Palavra","Obedecer à Palavra","Viver pela Palavra"]
+          titulo:`A prática cristã diante de ${tituloLimpo}`,
+          funcao:"Conduzir o aluno à vivência prática da Palavra no tema da lição.",
+          subtitulos:["A decisão necessária","O caminho de obediência","O fruto esperado"]
         }
       ];
 
@@ -6117,6 +6142,37 @@ Não inventar bibliografia.
       return dados;
     }
 
+    function gerarSubtitulosUniversaisDoTopico(titulo){
+      const t = String(titulo || "tópico").replace(/^\d+\.\s*/,"").trim();
+      return [
+        `O sentido bíblico de ${t}`,
+        `Os desafios práticos de ${t}`,
+        `A resposta cristã diante de ${t}`
+      ];
+    }
+
+    function limparLinhaCampoRevistaV1330(valor){
+      return String(valor || "")
+        .replace(/,?\s*com\s+todos\s+os\s+vers[ií]culos\s+completos/gi,"")
+        .replace(/leitura\s+b[ií]blica\s+em\s+classe\s+com\s+os\s+vers[ií]culos\s+completos/gi,"")
+        .replace(/texto\s+b[ií]blico\s+relacionado\s+ao\s+tema\s+central\s+da\s+li[cç][aã]o\.?/gi,"")
+        .replace(/[“”"]/g,"")
+        .replace(/\s{2,}/g," ")
+        .trim();
+    }
+
+    function textoAureoDetalhadoV1330(valor,base){
+      const bruto = limparLinhaCampoRevistaV1330(valor);
+      const ref = reduzirParaUmVersiculo(bruto || base.biblicalBase || "");
+      let texto = "";
+      const m = bruto.match(/^[^—–-]+[—–-]\s*(.+)$/);
+      if(m && m[1]) texto = limparLinhaCampoRevistaV1330(m[1]);
+      if(!texto || textoGenericoRevistaV1329(texto) || dividirReferenciasBiblicas(texto).length){
+        texto = textoBiblicoCurtoPorReferencia(ref) || "";
+      }
+      return { ref, texto };
+    }
+
     function extrairTopicosDoBloco(bloco){
       const linhas = String(bloco || "")
         .split(/\n+/)
@@ -6127,41 +6183,51 @@ Não inventar bibliografia.
 
       for(let i = 0; i < linhas.length; i++){
         const linha = linhas[i];
-
         const topicoMatch = linha.match(/^T[oó]pico\s*([1-3])\s*[:\-–—]\s*(.+)$/i);
 
         if(topicoMatch){
           const numero = Number(topicoMatch[1]);
           const titulo = topicoMatch[2].trim();
-
           let subtitulos = [];
 
           for(let j = i + 1; j < linhas.length; j++){
-            const prox = linhas[j];
-
+            const prox = linhas[j].trim();
             if(/^T[oó]pico\s*[1-3]\s*[:\-–—]/i.test(prox)) break;
             if(/^Li[cç][aã]o\s*[1-4]\s*[:\-–—]/i.test(prox)) break;
 
-            const subMatch = prox.match(/^Subt[oó]picos\s*[:\-–—]\s*(.+)$/i);
-
-            if(subMatch){
-              subtitulos = subMatch[1]
-                .split(/;|\|/)
-                .map(s => s.trim())
+            const subMesmaLinha = prox.match(/^Subt[oó]picos\s*[:\-–—]\s*(.+)$/i);
+            if(subMesmaLinha && subMesmaLinha[1].trim()){
+              subtitulos = subMesmaLinha[1]
+                .split(/;|\||,(?=\s*[A-ZÁÉÍÓÚÂÊÔÃÕ])/)
+                .map(s => limparLinhaCampoRevistaV1330(s))
                 .filter(Boolean)
                 .slice(0,3);
               break;
+            }
+
+            if(/^Subt[oó]picos\s*[:\-–—]?\s*$/i.test(prox)){
+              for(let k = j + 1; k < linhas.length; k++){
+                const item = linhas[k].trim();
+                if(/^T[oó]pico\s*[1-3]\s*[:\-–—]/i.test(item)) break;
+                if(/^Li[cç][aã]o\s*[1-4]\s*[:\-–—]/i.test(item)) break;
+                const itemMatch = item.match(/^(?:[-•*]|\d+[.)])\s*(.+)$/);
+                if(itemMatch && itemMatch[1]) subtitulos.push(limparLinhaCampoRevistaV1330(itemMatch[1]));
+                if(subtitulos.length >= 3) break;
+              }
+              break;
+            }
+
+            const itemMatch = prox.match(/^(?:[-•*]|\d+[.)])\s*(.+)$/);
+            if(itemMatch && itemMatch[1] && subtitulos.length < 3){
+              const possivel = limparLinhaCampoRevistaV1330(itemMatch[1]);
+              if(possivel && !/^refer[eê]ncias|^texto\s|^verdade\s|^leitura\s/i.test(possivel)) subtitulos.push(possivel);
             }
           }
 
           topicos[numero - 1] = {
             titulo,
             funcao:`Desenvolver o tópico "${titulo}" de forma bíblica, clara e aplicável.`,
-            subtitulos:subtitulos.length === 3 ? subtitulos : [
-              "Fundamento bíblico",
-              "Explicação do ensino",
-              "Aplicação para a vida cristã"
-            ]
+            subtitulos:subtitulos.length === 3 ? subtitulos : gerarSubtitulosUniversaisDoTopico(titulo)
           };
         }
       }
@@ -6205,9 +6271,10 @@ Não inventar bibliografia.
         const licao = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase,topicos);
 
         if(textoAureo){
-          licao.textoAureoRef = reduzirParaUmVersiculo(textoAureo);
+          const aureo = textoAureoDetalhadoV1330(textoAureo,base);
+          licao.textoAureoRef = aureo.ref || licao.textoAureoRef;
           licao.textoAureo = licao.textoAureoRef;
-          licao.textoAureoTexto = textoBiblicoCurtoPorReferencia(licao.textoAureoRef) || licao.textoAureoTexto;
+          licao.textoAureoTexto = aureo.texto || textoBiblicoCurtoPorReferencia(licao.textoAureoRef) || licao.textoAureoTexto;
         }
 
         if(leituraClasse){
@@ -6259,11 +6326,17 @@ Não inventar bibliografia.
       for(const nome of lista){
         const regexMesmaLinha = new RegExp(nome + "\\s*[:\\-–—]\\s*([^\\n]+)","i");
         const m1 = texto.match(regexMesmaLinha);
-        if(m1 && m1[1] && m1[1].trim()) return m1[1].trim();
+        if(m1 && m1[1] && m1[1].trim()){
+          const v = limparLinhaCampoRevistaV1330(m1[1]);
+          if(v && !textoGenericoRevistaV1329(v)) return v;
+        }
 
         const regexLinhaSeguinte = new RegExp(nome + "\\s*[:\\-–—]?\\s*\\n\\s*([^\\n]+)","i");
         const m2 = texto.match(regexLinhaSeguinte);
-        if(m2 && m2[1] && m2[1].trim()) return m2[1].trim();
+        if(m2 && m2[1] && m2[1].trim()){
+          const v = limparLinhaCampoRevistaV1330(m2[1]);
+          if(v && !textoGenericoRevistaV1329(v)) return v;
+        }
       }
 
       return "";
@@ -6330,6 +6403,11 @@ Não inventar bibliografia.
       return listas[(numero || 1) - 1] || listas[0];
     }
 
+    function resumoUniversalRevistaV1330(titulo,base,numero){
+      const tema = base.visibleTheme || base.title || base.theme || "tema bíblico";
+      return `A lição ${numero} desenvolve "${titulo}" dentro do tema "${tema}", unindo exposição bíblica, aplicação prática e orientação espiritual para a classe estudada.`;
+    }
+
     function limparQuebrasLiteraisV1312(html){
       return String(html || "")
         .replace(/\\\\n/g," ")
@@ -6393,7 +6471,7 @@ Não inventar bibliografia.
         d.textoAureo = d.textoAureo || d.textoAureoRef;
         d.textoAureoTexto = textoBiblicoCurtoPorReferencia(d.textoAureoRef || d.textoAureo) || d.textoAureoTexto || "";
         d.leituraClasse = leituraLimitada || d.leituraClasse || base.biblicalBase;
-        d.sintese = /verdade bíblica estudada orienta a fé|fortalece a esperança|conduz o cristão/i.test(d.sintese || "") ? resumoEclesiologiaV138(titulo,numero) : (d.sintese || resumoEclesiologiaV138(titulo,numero));
+        d.sintese = textoGenericoRevistaV1329(d.sintese || "") || /verdade bíblica estudada orienta a fé|fortalece a esperança|conduz o cristão/i.test(d.sintese || "") ? resumoUniversalRevistaV1330(titulo,base,numero) : (d.sintese || resumoUniversalRevistaV1330(titulo,base,numero));
       }
 
       d.textoAureoRef = reduzirParaUmVersiculo(d.textoAureoRef || d.textoAureo);
@@ -6407,6 +6485,121 @@ Não inventar bibliografia.
       }
 
       return d;
+    }
+
+
+    function temaRevistaFamiliaV1328(base){
+      const texto = `${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.visibleTheme || ""} ${base.extraNotes || ""} ${base.targetAudience || ""}`.toLowerCase();
+      return /fam[ií]lia feliz|fam[ií]lia|casamento|casal|div[oó]rcio|pais felizes|filhos felizes|marido|esposa/.test(texto);
+    }
+
+    function leituraDiariaFamiliaV1328(numero){
+      const listas = [
+        [
+          ["Segunda","Salmos 128.1","O temor do Senhor é o começo de uma família bem-aventurada."],
+          ["Terça","Salmos 128.3","A casa floresce quando Deus ocupa o centro do lar."],
+          ["Quarta","Mateus 19.6","O casamento deve ser tratado como aliança diante de Deus."],
+          ["Quinta","Marcos 10.9","O que Deus ajuntou não deve ser separado pelo homem."],
+          ["Sexta","2 Coríntios 5.17","Em Cristo, lares feridos podem experimentar novo começo."],
+          ["Sábado","1 Coríntios 7.3","O cuidado conjugal envolve amor, honra, afeto e responsabilidade mútua."]
+        ],
+        [
+          ["Segunda","Eclesiastes 4.9","Dois caminham melhor quando trabalham juntos diante de Deus."],
+          ["Terça","Eclesiastes 4.10","O casal precisa aprender a levantar um ao outro nas quedas."],
+          ["Quarta","Eclesiastes 4.12","A presença de Deus fortalece a aliança do casal."],
+          ["Quinta","Efésios 5.33","Amor e respeito sustentam a convivência conjugal."],
+          ["Sexta","Colossenses 3.13","O perdão impede que ressentimentos destruam a união."],
+          ["Sábado","Filipenses 2.4","No casamento, cada um deve cuidar também dos interesses do outro."]
+        ],
+        [
+          ["Segunda","Salmos 127.3","Filhos são herança do Senhor e devem ser cuidados com responsabilidade."],
+          ["Terça","Deuteronômio 6.6","A Palavra precisa estar primeiro no coração dos pais."],
+          ["Quarta","Deuteronômio 6.7","A fé deve ser ensinada no cotidiano da casa."],
+          ["Quinta","Tiago 1.19","Pais sábios aprendem a ouvir antes de falar."],
+          ["Sexta","Efésios 6.4","A disciplina precisa formar sem provocar ira."],
+          ["Sábado","Provérbios 22.6","O caminho ensinado hoje acompanha o filho amanhã."]
+        ],
+        [
+          ["Segunda","Salmos 127.4","Filhos são como flechas preparadas para cumprir propósito."],
+          ["Terça","2 Coríntios 5.17","A identidade do cristão nasce de sua nova vida em Cristo."],
+          ["Quarta","Romanos 12.2","O filho de Deus não deve ser moldado pelos padrões do mundo."],
+          ["Quinta","Lucas 16.10","A fidelidade nas pequenas coisas revela caráter confiável."],
+          ["Sexta","Efésios 4.25","A verdade é fundamento para uma vida digna de confiança."],
+          ["Sábado","Salmos 128.2","O trabalho honesto é bênção e motivo de alegria."]
+        ]
+      ];
+      return listas[(numero || 1) - 1] || listas[0];
+    }
+
+    function licoesFamiliaFelizV1328(base){
+      if(!temaRevistaFamiliaV1328(base)) return null;
+
+      return [
+        {
+          titulo:"O Perigo do Divórcio e a Restauração da Família",
+          textoAureoRef:"Salmos 128.1",
+          textoAureo:"Salmos 128.1",
+          textoAureoTexto:"Bem-aventurado aquele que teme ao SENHOR e anda nos seus caminhos.",
+          leituraClasse:"Salmos 128.1-6",
+          sintese:"O divórcio tem ferido muitos lares, mas a Palavra de Deus apresenta princípios de temor, amor, perdão e restauração para a família.",
+          tese:"A família pode ser restaurada quando volta ao projeto de Deus e caminha no temor do Senhor.",
+          palavraChave:"Restauração",
+          leituraDiaria:leituraDiariaFamiliaV1328(1),
+          topicos:[
+            { titulo:"A crise da família na sociedade atual", subtitulos:["O divórcio e suas consequências","Conflitos que adoecem o lar","A necessidade de uma nova vida em Cristo"] },
+            { titulo:"O plano de Deus para o casamento", subtitulos:["O casamento como aliança","O que Deus ajuntou","A dureza do coração e a ruptura familiar"] },
+            { titulo:"Caminhos de restauração para o lar", subtitulos:["O temor do Senhor como fundamento","Amor, perdão e responsabilidade conjugal","Cristo como esperança para famílias feridas"] }
+          ]
+        },
+        {
+          titulo:"Segredos para um Casal Feliz",
+          textoAureoRef:"Eclesiastes 4.9",
+          textoAureo:"Eclesiastes 4.9",
+          textoAureoTexto:"Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.",
+          leituraClasse:"Salmos 128.1-2; Efésios 5.33",
+          sintese:"Quando marido e esposa estão comprometidos com Deus e com a aliança matrimonial, constroem uma união marcada por amor, respeito, perdão e cooperação.",
+          tese:"Casamento feliz é construído com compromisso, trabalho em equipe, respeito e perdão.",
+          palavraChave:"Compromisso",
+          leituraDiaria:leituraDiariaFamiliaV1328(2),
+          topicos:[
+            { titulo:"Compromisso: a âncora do casamento", subtitulos:["Casamento como pacto diante de Deus","Permanência em tempos difíceis","Aliança firmada em amor e respeito"] },
+            { titulo:"Trabalho em equipe no lar", subtitulos:["Marido e esposa no mesmo propósito","No casamento não existe apenas eu, existe nós","Cuidado mútuo e busca pela paz"] },
+            { titulo:"Respeito e perdão na vida conjugal", subtitulos:["O amor que não busca seus próprios interesses","Palavras respeitosas fortalecem a união","O perdão vence o ressentimento"] }
+          ]
+        },
+        {
+          titulo:"Segredos para Pais Felizes",
+          textoAureoRef:"Provérbios 23.24",
+          textoAureo:"Provérbios 23.24",
+          textoAureoTexto:"O pai do justo exultará de júbilo; quem gerar um filho sábio nele se alegrará.",
+          leituraClasse:"Salmos 127.3; Deuteronômio 6.6-7",
+          sintese:"Pais felizes educam os filhos como herança do Senhor, unindo comunicação, disciplina equilibrada, amor, exemplo e valores bíblicos.",
+          tese:"Pais felizes formam filhos com amor, disciplina, diálogo e exemplo diante de Deus.",
+          palavraChave:"Educação",
+          leituraDiaria:leituraDiariaFamiliaV1328(3),
+          topicos:[
+            { titulo:"Comunicação saudável entre pais e filhos", subtitulos:["Diálogo aberto dentro de casa","Ouvir antes de falar","Palavras que edificam e encorajam"] },
+            { titulo:"Disciplina com equilíbrio e amor", subtitulos:["Disciplina como direção e ensino","Limites que formam adultos equilibrados","Corrigir sem provocar ira ou desânimo"] },
+            { titulo:"Exemplo e bons valores dentro de casa", subtitulos:["Valores que moldam o caráter","O exemplo dos pais na formação dos filhos","Tecnologia, supervisão e sabedoria bíblica"] }
+          ]
+        },
+        {
+          titulo:"Segredos para Filhos Felizes",
+          textoAureoRef:"Salmos 127.4",
+          textoAureo:"Salmos 127.4",
+          textoAureoTexto:"Como flechas na mão de um homem poderoso, assim são os filhos da mocidade.",
+          leituraClasse:"Salmos 127.3-5",
+          sintese:"Filhos formados à luz da Palavra desenvolvem identidade em Cristo, confiança, honestidade, responsabilidade e disposição para o trabalho.",
+          tese:"Filhos felizes são preparados com identidade, confiança, responsabilidade e valores bíblicos.",
+          palavraChave:"Identidade",
+          leituraDiaria:leituraDiariaFamiliaV1328(4),
+          topicos:[
+            { titulo:"Ter identidade diante de Deus", subtitulos:["Saber quem é em Cristo","Não ser moldado pelo mundo","Reconhecer pontos fortes e pontos fracos"] },
+            { titulo:"Ser de confiança", subtitulos:["Integridade, lealdade e verdade","Fidelidade nas pequenas coisas","Responsabilidade e maturidade"] },
+            { titulo:"Aprender o valor do trabalho", subtitulos:["Dedicação e excelência","Equilíbrio entre trabalho e descanso","Metas para uma vida responsável"] }
+          ]
+        }
+      ];
     }
 
     function dadosLicoesMensais(base,info){
@@ -6832,8 +7025,8 @@ Use HTML com:
         return "visual cristão editorial profundo e sensível, pessoa em oração ou em silêncio, lágrimas discretas, Bíblia ou altar em segundo plano, atmosfera de renúncia, consolo, esperança e presença do Espírito Santo, sem dramatização exagerada";
       }
 
-      if(/família|lar|casamento|filhos|casa/.test(texto)){
-        return "visual familiar cristão, família em oração, lar acolhedor, luz suave entrando pela janela, Bíblia sobre a mesa, ambiente de paz";
+      if(/família|familia|lar|casamento|filhos|casa|casal/.test(texto)){
+        return "visual familiar cristão ADULTO, casal cristão adulto e família reunida em oração no lar, Bíblia aberta sobre a mesa, ambiente acolhedor e reverente, luz suave, tons familiares elegantes, visual de revista EBD adulta; NÃO mostrar criança dentro da Bíblia; NÃO mostrar criança como personagem principal; NÃO mostrar desenho/cartoon; NÃO mostrar capa infantil; NÃO usar imagem de menino ou menina lendo Bíblia sozinho; não colocar pessoas ou crianças saindo de dentro das páginas da Bíblia";
       }
 
       if(/missões|missionário|ide|evangelização|grande comissão/.test(texto)){
@@ -6926,7 +7119,10 @@ Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa 
         ? `
 REGRAS ESPECÍFICAS PARA CAPA DE REVISTA EBD:
 - A imagem precisa representar diretamente o tema da revista, não apenas alguém lendo a Bíblia.
+- Para classe adulta, a capa deve ter aparência adulta, editorial e séria.
 - Não usar imagem infantil genérica, criança lendo Bíblia ou capa de material infantil${isInfantil ? ", exceto porque o público selecionado é infantil" : "."}
+- Não mostrar criança dentro de Bíblia, saindo das páginas da Bíblia ou como símbolo principal da capa.
+- Não usar desenho/cartoon quando a classe for adulta.
 - Não usar visual aleatório que não explique o argumento central da revista.`
         : "";
 
@@ -7536,7 +7732,7 @@ Gere somente esta etapa.`;
           <h3>Leitura Diária</h3>
           <div class="daily-grid">
             ${items.map(item => {
-              const ref = item[1] || "";
+              const ref = limparReferenciaLeituraDiariaV1329(item[1] || "");
               const resumoOriginal = item[2] || "";
               const resumo = /verdade bíblica para meditação|meditação e aplicação espiritual|palavra de deus orienta/i.test(resumoOriginal)
                 ? resumoDaReferencia(ref,buildBase().visibleTheme)
@@ -7556,7 +7752,10 @@ Gere somente esta etapa.`;
 
     function renderLessonOpeningPage(base,info,numero,dados){
       const ref = reduzirParaUmVersiculo(dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base));
-      const texto = dados.textoAureoTexto || textoBiblicoCurtoPorReferencia(ref) || "Permanece naquilo que aprendeste e de que foste inteirado, sabendo de quem o tens aprendido.";
+      let texto = dados.textoAureoTexto || textoBiblicoCurtoPorReferencia(ref) || ref;
+      if(textoGenericoRevistaV1329(texto)){
+        texto = textoBiblicoCurtoPorReferencia(ref) || ref;
+      }
 
       return `
         <section class="page lesson-cover-page">
@@ -7628,6 +7827,58 @@ Gere somente esta etapa.`;
       out = limparQuebrasLiteraisV1312(out);
 
       return out;
+    }
+
+    /* v13.29 — trava forte para Revista EBD: remove linguagem genérica de bastidor
+       e força subtítulos reais quando a IA tenta devolver estrutura padrão. */
+    function textoGenericoRevistaV1329(texto){
+      return /texto b[ií]blico relacionado ao tema central da li[cç][aã]o|leitura b[ií]blica em classe com os vers[ií]culos completos|o fundamento b[ií]blico do tema|a explica[cç][aã]o doutrin[aá]ria da li[cç][aã]o|a verdade revelada|a f[eé] preservada|a doutrina aplicada|explica[cç][aã]o do ensino|aplica[cç][aã]o para a vida crist[aã]|fundamento b[ií]blico/i.test(String(texto || ""));
+    }
+
+    function limparReferenciaLeituraDiariaV1329(ref){
+      return String(ref || "")
+        .replace(/,?\s*com\s+todos\s+os\s+vers[ií]culos\s+completos/gi,"")
+        .replace(/leitura\s+b[ií]blica\s+em\s+classe/gi,"")
+        .replace(/texto\s+b[ií]blico\s+base/gi,"")
+        .replace(/\s{2,}/g," ")
+        .replace(/\s+;/g,";")
+        .trim();
+    }
+
+    function forcarSubtopicoRevistaV1329(html,tituloEsperado){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      let sub = temp.querySelector(".subtopic");
+      if(!sub){
+        sub = document.createElement("div");
+        sub.className = "subtopic";
+        sub.innerHTML = temp.innerHTML;
+        temp.innerHTML = "";
+        temp.appendChild(sub);
+      }
+
+      Array.from(sub.querySelectorAll("h1,h2,h3")).forEach(el => {
+        if(textoGenericoRevistaV1329(el.innerText || el.textContent || "")){
+          el.remove();
+        }
+      });
+
+      let h4 = sub.querySelector("h4");
+      if(!h4){
+        h4 = document.createElement("h4");
+        sub.insertBefore(h4,sub.firstChild);
+      }
+      h4.textContent = tituloEsperado;
+
+      Array.from(sub.querySelectorAll("p,span,li,strong,em")).forEach(el => {
+        const txt = (el.innerText || el.textContent || "").trim();
+        if(textoGenericoRevistaV1329(txt) && txt.length < 120){
+          el.remove();
+        }
+      });
+
+      return temp.innerHTML;
     }
 
     function limparBibliografiaInventada(html){
@@ -8047,11 +8298,14 @@ Regras:
 - Não escreva sinopse aqui.
 - Não escreva orientação ao professor.
 - Não escreva linguagem técnica interna.
+- Não troque o título do subtópico por expressões genéricas.
+- Não use: “Fundamento bíblico”, “Explicação do ensino”, “Aplicação para a vida cristã”, “A verdade revelada”, “A fé preservada” ou “A doutrina aplicada”.
+- O subtópico precisa tratar exatamente do assunto informado acima.
           `,
           115
         );
 
-        partes.push(subHtml || blocoManualVazio("subtopic",`${s + 1}. ${subtitulo}`));
+        partes.push(subHtml ? forcarSubtopicoRevistaV1329(subHtml,`${s + 1}. ${subtitulo}`) : blocoManualVazio("subtopic",`${s + 1}. ${subtitulo}`));
       }
 
       const sinopse = await gerarParteAluno(
@@ -8682,6 +8936,28 @@ Estruture assim:
       }
     }
 
+
+    function corrigirVazamentosRevistaV1328(html,base){
+      let out = String(html || "");
+      // v13.30 — correção universal: remove apenas placeholders e linguagem de bastidor.
+      // Não substitui por tema específico, para não contaminar revistas futuras.
+      out = out
+        .replace(/[“"]Texto bíblico relacionado ao tema central da lição\.?[”"]?/gi,"")
+        .replace(/Texto bíblico relacionado ao tema central da lição\.?/gi,"")
+        .replace(/Leitura Bíblica em Classe com os versículos completos/gi,"")
+        .replace(/,?\s*com todos os versículos completos/gi,"")
+        .replace(/O fundamento bíblico do tema/gi,"")
+        .replace(/A explicação doutrinária da lição/gi,"")
+        .replace(/A aplicação para a vida cristã/gi,"")
+        .replace(/A verdade revelada/gi,"")
+        .replace(/A fé preservada/gi,"")
+        .replace(/A doutrina aplicada/gi,"")
+        .replace(/Explicação do ensino/gi,"")
+        .replace(/Aplicação para a vida cristã/gi,"")
+        .replace(/\n{3,}/g,"\n\n");
+      return out;
+    }
+
     function aplicarLayoutRevistaDuasColunasV137(html){
       const temp = document.createElement("div");
       temp.innerHTML = String(html || "");
@@ -8748,8 +9024,14 @@ Estruture assim:
         const ref = reduzirParaUmVersiculo(ajustada.textoAureoRef || ajustada.textoAureo || escolherTextoAureoPrincipal(ajustada.leituraClasse,base));
         ajustada.textoAureoRef = ref;
         ajustada.textoAureo = ref;
-        ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || ajustada.textoAureoTexto || "Texto bíblico relacionado ao tema central da lição.";
+        ajustada.textoAureoTexto = ajustada.textoAureoTexto || textoBiblicoCurtoPorReferencia(ref) || textoBiblicoCurtoPorReferencia(ajustada.textoAureoRef || ajustada.textoAureo) || "";
+        if(textoGenericoRevistaV1329(ajustada.textoAureoTexto)){
+          ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || ref;
+        }
         ajustada.leituraClasse = referenciasPrincipaisRevistaV138(ajustada.leituraClasse) || referenciasPrincipaisRevistaV138(base.biblicalBase);
+        if(temaRevistaFamiliaV1328(base)){
+          ajustada.leituraDiaria = Array.isArray(ajustada.leituraDiaria) && ajustada.leituraDiaria.length === 6 ? ajustada.leituraDiaria : leituraDiariaFamiliaV1328(numero);
+        }
         licoes[i] = ajustada;
       }
 
