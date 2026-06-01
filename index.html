@@ -8269,6 +8269,72 @@ Gere somente esta etapa.`;
       return out.trim();
     }
 
+    function textoLimpoV1336(v){
+      return String(v || "")
+        .replace(/<[^>]*>/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+    }
+
+    function refsDaLicaoV1336(dados){
+      const refs = [dados?.textoBase, dados?.leituraClasse, dados?.textoAureoRef]
+        .filter(Boolean)
+        .join("; ")
+        .split(/;|,\s*(?=\d?\s?[A-ZÁÉÍÓÚÂÊÔÃÕa-záéíóúâêôãõ])/)
+        .map(r => r.trim())
+        .filter(Boolean);
+      return refs.slice(0,3).join("; ") || "a Palavra de Deus";
+    }
+
+    function paragrafoFallbackRevistaV1336(dados,titulo,extra = ""){
+      const tema = textoLimpoV1336(dados?.titulo || buildBase()?.visibleTheme || "a lição");
+      const ref = refsDaLicaoV1336(dados);
+      const assunto = textoLimpoV1336(titulo || tema);
+      const detalhe = textoLimpoV1336(extra);
+
+      if(/div[oó]rcio|restaura[cç][aã]o|fam[ií]lia/i.test(`${tema} ${assunto}`)){
+        return `Ao estudar ${assunto}, percebemos que a família precisa ser conduzida pelo temor do Senhor e pela obediência à Palavra. ${ref} aponta para um lar firmado em Deus, onde compromisso, perdão e responsabilidade vencem a frieza, a confusão e as crises. ${detalhe ? detalhe + " " : ""}A aplicação prática é clara: a restauração familiar começa quando cada pessoa decide submeter suas atitudes, palavras e decisões ao governo de Cristo.`;
+      }
+
+      if(/casal|casamento|compromisso|respeito|perd[aã]o/i.test(`${tema} ${assunto}`)){
+        return `Este ensino mostra que ${assunto} é indispensável para a saúde do casamento. À luz de ${ref}, marido e esposa são chamados a viver como aliados, e não como adversários. ${detalhe ? detalhe + " " : ""}Quando há compromisso, diálogo, respeito e perdão, o lar se torna um ambiente de segurança, crescimento e testemunho cristão.`;
+      }
+
+      if(/pais|educa[cç][aã]o|disciplina|comunica[cç][aã]o|exemplo/i.test(`${tema} ${assunto}`)){
+        return `O ponto destaca que ${assunto} faz parte da missão espiritual dos pais. Com base em ${ref}, educar filhos não é apenas corrigir comportamentos, mas formar caráter, fé e valores. ${detalhe ? detalhe + " " : ""}Pais que ensinam com amor, coerência e exemplo ajudam seus filhos a reconhecer o caminho do Senhor na vida diária.`;
+      }
+
+      if(/filhos|identidade|confian[cç]a|honestidade|trabalhador|metas|responsabilidade/i.test(`${tema} ${assunto}`)){
+        return `Este assunto ensina que ${assunto} deve ser desenvolvido debaixo dos princípios bíblicos. ${ref} lembra que a vida do filho precisa ser marcada por identidade, responsabilidade e temor a Deus. ${detalhe ? detalhe + " " : ""}A verdadeira felicidade não nasce da ausência de limites, mas de uma vida orientada pela verdade, pela honestidade e pelo propósito.`;
+      }
+
+      return `Esta parte da lição desenvolve ${assunto} com base em ${ref}. O ensino central é que a Palavra de Deus ilumina a prática cristã, corrige caminhos e conduz a igreja a uma vida mais fiel. ${detalhe ? detalhe + " " : ""}Por isso, o aluno deve aplicar este princípio com humildade, obediência e compromisso espiritual.`;
+    }
+
+    function blocoFallbackRevistaV1336(tipo,titulo,dados,extra = ""){
+      const p = paragrafoFallbackRevistaV1336(dados,titulo,extra);
+      if(tipo === "subtopic"){
+        return `<div class="subtopic"><h4>${escapeHtml(titulo)}</h4><p class="text">${escapeHtml(p)}</p></div>`;
+      }
+      if(tipo === "synopsis"){
+        return `<div class="synopsis"><h4>${escapeHtml(titulo)}</h4><p class="text">${escapeHtml(p)}</p></div>`;
+      }
+      if(tipo === "knowledge"){
+        return `<div class="knowledge-box"><h4>${escapeHtml(titulo)}</h4><p class="text">${escapeHtml(p)}</p></div>`;
+      }
+      return `<div class="block"><h3>${escapeHtml(titulo)}</h3><p class="text">${escapeHtml(p)}</p></div>`;
+    }
+
+    function leituraClasseFallbackRevistaV1336(dados){
+      const ref = String(dados?.leituraClasse || dados?.textoBase || dados?.textoAureoRef || "Referência bíblica da lição").trim();
+      const partes = ref.split(/;|\n/).map(r => r.trim()).filter(Boolean).slice(0,3);
+      const versos = partes.map(r => {
+        const texto = textoBiblicoCurtoPorReferencia(r) || paragrafoFallbackRevistaV1336(dados,"Leitura Bíblica em Classe",`Leia ${r} com atenção e observe o ensino central para a família.`);
+        return `<p class="text"><strong>${escapeHtml(r)}:</strong> ${escapeHtml(texto)}</p>`;
+      }).join("\n");
+      return `<div class="scripture-full"><h3>Leitura Bíblica em Classe</h3><span class="ref">${escapeHtml(ref)}</span>${versos}</div>`;
+    }
+
     function blocoManualVazio(tipo,titulo,subtitulo = ""){
       manualPlaceholdersCount++;
 
@@ -8531,13 +8597,7 @@ Gere somente esta etapa.`;
         return info.isStudent ? limparLinguagemAluno(html) : html;
       }
 
-      return `
-        <div class="scripture-full manual-placeholder" data-manual-placeholder="true">
-          <h3>Leitura Bíblica em Classe</h3>
-          <span class="ref">${escapeHtml(dados.leituraClasse)}</span>
-          <p class="text manual-empty"></p>
-        </div>
-      `;
+      return leituraClasseFallbackRevistaV1336(dados);
     }
 
     async function gerarTopicoAlunoEmBlocos(base,info,licoes,numero,dados,topico,indice){
@@ -8587,7 +8647,7 @@ Regras:
           115
         );
 
-        partes.push(subHtml ? forcarSubtopicoRevistaV1329(subHtml,`${s + 1}. ${subtitulo}`) : blocoManualVazio("subtopic",`${s + 1}. ${subtitulo}`));
+        partes.push(subHtml ? forcarSubtopicoRevistaV1329(subHtml,`${s + 1}. ${subtitulo}`) : blocoFallbackRevistaV1336("subtopic",`${s + 1}. ${subtitulo}`,dados,`Tópico principal: ${topico.titulo}.`));
       }
 
       const sinopse = await gerarParteAluno(
@@ -8612,7 +8672,7 @@ Regras:
         90
       );
 
-      partes.push(sinopse || blocoManualVazio("synopsis",`Sinopse do Tópico ${roman(indice + 1)}`));
+      partes.push(sinopse || blocoFallbackRevistaV1336("synopsis",`Sinopse do Tópico ${roman(indice + 1)}`,dados,`Tópico: ${topico.titulo}. Subtópicos: ${subtitulos.join("; ")}.`));
       partes.push(`</div>`);
 
       return partes.join("\n");
@@ -8648,7 +8708,7 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         160
       );
 
-      corpo.push(intro || blocoManualVazio("block","Introdução"));
+      corpo.push(intro || blocoFallbackRevistaV1336("block","Introdução",dados,"Apresente o problema central da lição e prepare o aluno para os tópicos."));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -8682,7 +8742,7 @@ Regras:
         110
       );
 
-      corpo.push(ampliando || blocoManualVazio("knowledge","Ampliando o Conhecimento"));
+      corpo.push(ampliando || blocoFallbackRevistaV1336("knowledge","Ampliando o Conhecimento",dados,"Aprofunde um princípio bíblico, histórico ou pastoral ligado ao tema."));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -8701,7 +8761,7 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         140
       );
 
-      corpo.push(conclusao || blocoManualVazio("block","Conclusão"));
+      corpo.push(conclusao || blocoFallbackRevistaV1336("block","Conclusão",dados,"Retome o ensino principal e chame o aluno à prática da Palavra."));
 
       const revisao = await gerarParteAluno(
         base,
@@ -9540,7 +9600,7 @@ Estruture assim:
         html += renderPage(`
           <h1 class="page-title">${escapeHtml(base.title)}</h1>
           <p class="subtitle">${escapeHtml(base.subtitle)}</p>
-          ${blocoManualVazio("block","Texto da contracapa")}
+          ${blocoFallbackRevistaV1336("block","Texto da contracapa",{titulo:base.title,textoBase:base.scripture},"Apresente a proposta espiritual da revista e convide o leitor a viver os princípios estudados.")}
         `,"back-text-page");
       }
 
@@ -9555,7 +9615,7 @@ Estruture assim:
       renderGenerated(aplicarLayoutRevistaDuasColunasV137(htmlFinalComCapaNoInicio));
 
       if(manualPlaceholdersCount > 0){
-        finishSteps(`Geração finalizada com ${manualPlaceholdersCount} espaço(s) em branco para completar manualmente antes do PDF.`);
+        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos foram preenchidos automaticamente por segurança.`);
       }else if(todasLicoesOk && info.isStudent){
         finishSteps("Revista do Aluno gerada com sucesso, em layout de revista EBD, com base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
