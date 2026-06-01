@@ -6000,6 +6000,105 @@ Não inventar bibliografia.
       return encontrado ? encontrado.texto : "";
     }
 
+
+    function normalizarLivroBiblicoV1337(livro){
+      return String(livro || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+        .replace(/\s+/g," ")
+        .trim()
+        .replace(/^sl\b/,"salmo")
+        .replace(/^salmos\b/,"salmo")
+        .replace(/^pv\b/,"proverbios")
+        .replace(/^prov\b/,"proverbios")
+        .replace(/^ecl\b/,"eclesiastes")
+        .replace(/^ec\b/,"eclesiastes")
+        .replace(/^dt\b/,"deuteronomio")
+        .replace(/^ef\b/,"efesios");
+    }
+
+    function bibliotecaBiblicaRevistaV1337(){
+      return {
+        "salmo 128": {
+          1:"Bem-aventurado aquele que teme ao SENHOR e anda nos seus caminhos.",
+          2:"Pois comerás do trabalho das tuas mãos; feliz serás, e te irá bem.",
+          3:"A tua mulher será como a videira frutífera aos lados da tua casa; os teus filhos como plantas de oliveira à roda da tua mesa.",
+          4:"Eis que assim será abençoado o homem que teme ao SENHOR.",
+          5:"O SENHOR te abençoará desde Sião, e tu verás o bem de Jerusalém em todos os dias da tua vida.",
+          6:"E verás os filhos de teus filhos, e a paz sobre Israel."
+        },
+        "eclesiastes 4": {
+          9:"Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.",
+          10:"Porque, se um cair, o outro levanta o seu companheiro; mas ai do que estiver só, pois, caindo, não haverá outro que o levante.",
+          11:"Também, se dois dormirem juntos, eles se aquentarão; mas um só como se aquentará?",
+          12:"E, se alguém quiser prevalecer contra um, os dois lhe resistirão; e o cordão de três dobras não se quebra tão depressa."
+        },
+        "efesios 5": {33:"Assim também vós, cada um em particular ame a sua própria mulher como a si mesmo, e a mulher reverencie o marido."},
+        "proverbios 23": {24:"Grandemente se regozijará o pai do justo, e o que gerar um sábio se alegrará nele.",25:"Alegrem-se teu pai e tua mãe, e regozije-se a que te gerou."},
+        "salmo 127": {3:"Eis que os filhos são herança do SENHOR, e o fruto do ventre, o seu galardão.",4:"Como flechas na mão do valente, assim são os filhos da mocidade.",5:"Bem-aventurado o homem que enche deles a sua aljava; não serão confundidos, mas falarão com os seus inimigos à porta."},
+        "deuteronomio 6": {6:"E estas palavras que hoje te ordeno estarão no teu coração;",7:"E as intimarás a teus filhos e delas falarás assentado em tua casa, e andando pelo caminho, e deitando-te, e levantando-te."}
+      };
+    }
+
+    function extrairVersiculosReferenciaV1337(ref){
+      const original = String(ref || "").replace(/:/g,".").replace(/–|—/g,"-").replace(/\s+/g," ").trim();
+      const m = original.match(/^(.+?)\s+(\d+)\s*[.]\s*([\d,\s-]+)$/i);
+      if(!m) return null;
+      const livro = normalizarLivroBiblicoV1337(m[1]);
+      const cap = Number(m[2]);
+      const spec = String(m[3] || "").replace(/\s+/g,"");
+      const verses = [];
+      spec.split(/,/).forEach(part => {
+        if(!part) return;
+        if(part.includes("-")){
+          const [a,b] = part.split("-").map(n => Number(n));
+          if(Number.isFinite(a) && Number.isFinite(b)){
+            for(let v = Math.min(a,b); v <= Math.max(a,b); v++) verses.push(v);
+          }
+        }else{
+          const v = Number(part);
+          if(Number.isFinite(v)) verses.push(v);
+        }
+      });
+      return { chave:`${livro} ${cap}`, verses:[...new Set(verses)], refOriginal:original };
+    }
+
+    function textoBiblicoCompletoPorReferenciaV1337(ref){
+      const parsed = extrairVersiculosReferenciaV1337(ref);
+      if(!parsed) return "";
+      const cap = bibliotecaBiblicaRevistaV1337()[parsed.chave];
+      if(!cap) return "";
+      return parsed.verses
+        .map(v => cap[v] ? `<p class="text"><strong>${v}</strong> ${escapeHtml(cap[v])}</p>` : "")
+        .filter(Boolean)
+        .join("\n");
+    }
+
+    function leituraClasseCompletaRevistaV1337(dados){
+      const ref = String(dados?.leituraClasse || dados?.textoBase || dados?.textoAureoRef || "").trim();
+      const refs = dividirReferenciasBiblicas(ref).length ? dividirReferenciasBiblicas(ref) : [ref].filter(Boolean);
+      let blocos = refs.slice(0,3).map(r => {
+        const textoCompleto = textoBiblicoCompletoPorReferenciaV1337(r);
+        if(textoCompleto) return `<div class="scripture-passage"><span class="ref">${escapeHtml(limparReferencia(r))}</span>${textoCompleto}</div>`;
+        const textoCurto = textoBiblicoCurtoPorReferencia(reduzirParaUmVersiculo(r));
+        return textoCurto ? `<div class="scripture-passage"><span class="ref">${escapeHtml(limparReferencia(r))}</span><p class="text">${escapeHtml(textoCurto)}</p></div>` : "";
+      }).filter(Boolean).join("\n");
+      if(!blocos) blocos = `<p class="text">${escapeHtml(paragrafoFallbackRevistaV1336(dados,"Leitura Bíblica em Classe","A leitura deve acompanhar fielmente a referência indicada para a lição."))}</p>`;
+      return `<div class="scripture-full"><h3>Leitura Bíblica em Classe</h3>${blocos}</div>`;
+    }
+
+    function leituraClasseIncompletaV1337(html,dados){
+      const texto = extrairTextoDeHtml(html || "");
+      const parsedRefs = dividirReferenciasBiblicas(dados?.leituraClasse || "").map(extrairVersiculosReferenciaV1337).filter(Boolean);
+      for(const parsed of parsedRefs){
+        if(parsed.verses.length >= 2){
+          const faltando = parsed.verses.some(v => !new RegExp(`(^|\\D)${v}(\\D|$)`).test(texto));
+          if(faltando) return true;
+        }
+      }
+      return false;
+    }
+
     function resumoDaReferencia(ref,tema){
       const r = String(ref || "").toLowerCase();
 
@@ -8594,10 +8693,13 @@ Gere somente esta etapa.`;
       );
 
       if(html){
-        return info.isStudent ? limparLinguagemAluno(html) : html;
+        const limpo = info.isStudent ? limparLinguagemAluno(html) : html;
+        if(!leituraClasseIncompletaV1337(limpo,dados)){
+          return limpo;
+        }
       }
 
-      return leituraClasseFallbackRevistaV1336(dados);
+      return leituraClasseCompletaRevistaV1337(dados);
     }
 
     async function gerarTopicoAlunoEmBlocos(base,info,licoes,numero,dados,topico,indice){
@@ -9266,6 +9368,7 @@ Estruture assim:
       }
 
       html += renderBackCover(base,info);
+      html = html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}${paginasInstitucionais}`);
       html += `</div>`;
 
       html = limparBibliografiaInventada(html);
@@ -9393,6 +9496,42 @@ Estruture assim:
       });
 
       return temp.innerHTML;
+    }
+
+
+    function renderFichaInstitucionalRevistaV1337(base,info){
+      const titulo = base.title || "Revista EBD";
+      const subtitulo = base.subtitle || "Lições Bíblicas";
+      const comentarista = getValue("author") || "Pr. Rogilson Ferreira — pastor, teólogo e pregador da Palavra";
+      return `
+        <section class="page revista-institutional-page">
+          <div class="revista-id-left">
+            <div class="revista-mini-logo">RCID</div>
+            <h2>Ficha Editorial</h2>
+            <p><strong>Revista EBD — Lições Bíblicas</strong></p>
+            <p><strong>Tema:</strong><br>${escapeHtml(titulo)}</p>
+            <p><strong>Subtítulo:</strong><br>${escapeHtml(subtitulo)}</p>
+            <p><strong>Classe:</strong> ${escapeHtml(info.revistaClasse || "Adultos")}</p>
+            <p><strong>Mês:</strong> ${escapeHtml(info.monthInfo || "")}</p>
+            <p><strong>Presidente do Ministério:</strong><br>Pr. Ezequiel Rodrigues</p>
+            <p><strong>Comentarista:</strong><br>${escapeHtml(comentarista)}</p>
+            <p><strong>Organização editorial:</strong><br>Ministério RCID</p>
+            <p><strong>Diagramação e capa:</strong><br>VERBO IA</p>
+          </div>
+          <div class="revista-id-right">
+            <div class="revista-wordmark">Lições<br>Bíblicas</div>
+            <h3>Apresentação</h3>
+            <p>Prezados alunos, esta revista foi preparada com o propósito de fortalecer a família cristã à luz da Palavra de Deus. Ao longo deste mês, estudaremos princípios bíblicos que tratam do casamento, dos pais, dos filhos e dos desafios enfrentados pelos lares na atualidade.</p>
+            <p>Cremos que a família continua sendo projeto de Deus, e que, mesmo diante das crises, o Senhor pode restaurar relacionamentos, curar feridas, fortalecer alianças e conduzir cada lar a uma vida de temor, amor e obediência à sua Palavra.</p>
+            <p>Que cada lição seja uma oportunidade de reflexão, crescimento espiritual e prática cristã dentro da nossa casa.</p>
+            <p class="assinatura-revista"><strong>Pr. Ezequiel Rodrigues</strong><br>Presidente do Ministério</p>
+            <div class="commentator-box">
+              <h3>Sobre o comentarista</h3>
+              <p>O Pr. Rogilson Ferreira é pastor, teólogo e pregador da Palavra, comprometido com o ensino bíblico, a edificação da Igreja e o fortalecimento das famílias cristãs. Nesta revista, ele conduz os alunos a refletirem sobre princípios essenciais para uma família feliz, unindo exposição bíblica, aplicação prática e orientação pastoral.</p>
+            </div>
+          </div>
+        </section>
+      `;
     }
 
     async function generateMagazineAsync(base){
@@ -9573,7 +9712,8 @@ Estruture assim:
 
       const capaFinal = renderCover(base,info,imageData);
 
-      renderGenerated(aplicarLayoutRevistaDuasColunasV137(html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`) + `</div>`));
+      const paginasInstitucionais = renderFichaInstitucionalRevistaV1337(base,info);
+      renderGenerated(aplicarLayoutRevistaDuasColunasV137(html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}${paginasInstitucionais}`) + `</div>`));
 
       await pause(600);
 
@@ -14776,7 +14916,27 @@ async function generateMaterial(){
       }
     }
 
-  </style>
+  
+
+    /* v13.37 — Revista EBD: ficha editorial, apresentação institucional e leitura em classe completa */
+    .doc.magazine-layout .revista-institutional-page{display:grid;grid-template-columns:38% 62%;gap:0;min-height:900px;padding:0;overflow:hidden;background:#fff;border:1px solid #d7dce4;}
+    .doc.magazine-layout .revista-id-left{padding:34px 26px;text-align:center;color:#334050;background:linear-gradient(180deg,#ffffff,#f4f7fa);border-right:1px solid #d6dde6;display:flex;flex-direction:column;justify-content:center;}
+    .doc.magazine-layout .revista-mini-logo{width:76px;height:76px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:#26384f;color:#fff;font-weight:900;letter-spacing:.08em;border:4px solid #d7e4f2;}
+    .doc.magazine-layout .revista-id-left h2{margin:0 0 18px;color:#26384f;text-transform:uppercase;letter-spacing:.08em;font-size:20px;}
+    .doc.magazine-layout .revista-id-left p{margin:0 0 10px;line-height:1.35;font-size:13.5px;}
+    .doc.magazine-layout .revista-id-right{padding:38px 34px;background:linear-gradient(90deg,#26384f 0%,#26384f 42%,#ffffff 42%,#ffffff 100%);color:#fff;display:flex;flex-direction:column;justify-content:center;position:relative;}
+    .doc.magazine-layout .revista-wordmark{font-family:Georgia,'Times New Roman',serif;color:#fff;font-size:48px;line-height:.92;margin-bottom:28px;letter-spacing:.02em;}
+    .doc.magazine-layout .revista-id-right h3,.doc.magazine-layout .revista-id-right p,.doc.magazine-layout .assinatura-revista{width:52%;margin-left:44%;color:#35404d;}
+    .doc.magazine-layout .revista-id-right h3{margin-top:0;margin-bottom:12px;font-size:22px;color:#26384f;}
+    .doc.magazine-layout .revista-id-right p{font-family:Georgia,'Times New Roman',serif;line-height:1.55;font-size:15px;margin-bottom:12px;text-align:left;}
+    .doc.magazine-layout .assinatura-revista{font-family:Arial,Helvetica,sans-serif !important;font-size:14px !important;margin-top:8px;}
+    .doc.magazine-layout .commentator-box{width:52%;margin-left:44%;margin-top:14px;padding:14px;border-radius:14px;background:#f4f8ff;border:1px solid #c5d6ee;}
+    .doc.magazine-layout .commentator-box h3,.doc.magazine-layout .commentator-box p{width:auto;margin-left:0;}
+    .doc.magazine-layout .scripture-full .scripture-passage{margin:10px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(130,90,70,.14);}
+    .doc.magazine-layout .scripture-full .scripture-passage:last-child{border-bottom:none;padding-bottom:0;}
+    @media(max-width:740px){.doc.magazine-layout .revista-institutional-page{grid-template-columns:1fr;}.doc.magazine-layout .revista-id-right{background:#fff;}.doc.magazine-layout .revista-wordmark{color:#26384f;}.doc.magazine-layout .revista-id-right h3,.doc.magazine-layout .revista-id-right p,.doc.magazine-layout .assinatura-revista,.doc.magazine-layout .commentator-box{width:auto;margin-left:0;}}
+    @media print{.doc.magazine-layout .revista-institutional-page{min-height:calc(100vh - 22mm);break-after:page;page-break-after:always;}.doc.magazine-layout .revista-id-left p{font-size:12px !important;}.doc.magazine-layout .revista-id-right p{font-size:12.8px !important;line-height:1.42 !important;}.doc.magazine-layout .revista-wordmark{font-size:40px !important;}}
+</style>
 </head>
 <body class="${classeFormato}">
   <div class="print-mobile-toolbar">
