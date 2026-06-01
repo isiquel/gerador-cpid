@@ -5059,6 +5059,42 @@
       return false;
     }
 
+    function erroCurtoIA(status,detalhe){
+      const txt = String(detalhe || "").replace(/\s+/g," ").trim();
+      return `${status}${txt ? " — " + txt.slice(0,220) : ""}`;
+    }
+
+    async function fetchComTimeoutV1346(endpoint,payload,timeoutMs = 120000){
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+      try{
+        const res = await fetch(endpoint,{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify(payload),
+          signal:controller.signal
+        });
+
+        const contentType = res.headers.get("content-type") || "";
+        let raw = "";
+
+        try{
+          if(contentType.includes("application/json")){
+            raw = await res.json();
+          }else{
+            raw = await res.text();
+          }
+        }catch(parseError){
+          raw = "";
+        }
+
+        return { res, contentType, raw };
+      }finally{
+        clearTimeout(timer);
+      }
+    }
+
     async function chamarTextoIA(prompt,etapa = "Geração",opcoes = {}){
       const payload = {
         prompt,
@@ -5069,6 +5105,8 @@
         preferencia:"tentar Gemini primeiro, depois ChatGPT, depois outras chaves disponíveis",
         minQuality:opcoes.minQuality || "conteúdo robusto, específico e fiel ao pedido do usuário"
       };
+
+      let ultimoErro = "";
 
       const globalFns = [
         "gerarComGemini",
@@ -5081,13 +5119,20 @@
       for(const fnName of globalFns){
         try{
           if(typeof window[fnName] === "function"){
+            if(typeof setStatus === "function") setStatus(`${etapa}: aguardando resposta da IA...`);
             const res = await window[fnName](prompt,payload);
             const normalized = normalizeAIResponse(res);
+
             if(validarRespostaIA(normalized,opcoes.minimo || 220,opcoes)){
               return limparMarkdownHtml(normalized);
             }
+
+            if(normalized){
+              ultimoErro = `Resposta curta/fraca em ${fnName}`;
+            }
           }
         }catch(error){
+          ultimoErro = `${fnName}: ${error?.message || error}`;
           console.warn("Falha em",fnName,error);
         }
       }
@@ -5101,31 +5146,41 @@
 
       for(const endpoint of endpoints){
         try{
-          const res = await fetch(endpoint,{
-            method:"POST",
-            headers:{ "Content-Type":"application/json" },
-            body:JSON.stringify(payload)
-          });
+          if(typeof setStatus === "function") setStatus(`${etapa}: chamando ${endpoint} e aguardando IA...`);
 
-          if(!res.ok) continue;
+          const { res, raw } = await fetchComTimeoutV1346(endpoint,payload,120000);
 
-          const contentType = res.headers.get("content-type") || "";
-          let normalized = "";
-
-          if(contentType.includes("application/json")){
-            const data = await res.json();
-            normalized = normalizeAIResponse(data);
-          }else{
-            const text = await res.text();
-            normalized = normalizeAIResponse(text);
+          if(!res.ok){
+            const detalhe = typeof raw === "string" ? raw : JSON.stringify(raw || {});
+            ultimoErro = erroCurtoIA(`${endpoint} HTTP ${res.status}`,detalhe);
+            console.warn("Endpoint retornou erro:",ultimoErro);
+            await pause(900);
+            continue;
           }
+
+          const normalized = normalizeAIResponse(raw);
 
           if(validarRespostaIA(normalized,opcoes.minimo || 220,opcoes)){
             return limparMarkdownHtml(normalized);
           }
+
+          ultimoErro = normalized
+            ? `${endpoint}: resposta chegou, mas veio curta/fraca (${extrairTextoDeHtml(normalized).trim().length} caracteres)`
+            : `${endpoint}: resposta vazia`;
+          console.warn(ultimoErro);
+
+          await pause(900);
         }catch(error){
+          ultimoErro = error?.name === "AbortError"
+            ? `${endpoint}: tempo esgotado aguardando a IA`
+            : `${endpoint}: ${error?.message || error}`;
           console.warn("Endpoint indisponível:",endpoint,error);
+          await pause(900);
         }
+      }
+
+      if(typeof setStatus === "function" && ultimoErro){
+        setStatus(`${etapa}: falhou na IA. ${ultimoErro}`,"error");
       }
 
       return "";
