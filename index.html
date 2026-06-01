@@ -7750,12 +7750,13 @@ Gere somente esta etapa.`;
     }
 
     function renderLessonOpeningPage(base,info,numero,dados){
-      const ref = reduzirParaUmVersiculo(dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base));
-      let texto = dados.textoAureoTexto || textoBiblicoCurtoPorReferencia(ref) || ref;
-      if(textoGenericoRevistaV1329(texto)){
-        texto = textoBiblicoCurtoPorReferencia(ref) || ref;
+      const brutoAureo = dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base);
+      const ref = referenciaPuraTextoAureoV1332(brutoAureo);
+      let texto = textoPuroTextoAureoV1332(dados.textoAureoTexto || dados.textoAureo || brutoAureo,ref) || textoBiblicoCurtoPorReferencia(ref) || ref;
+      if(textoGenericoRevistaV1329(texto) || texto.toLowerCase().startsWith(String(ref).toLowerCase())){
+        texto = textoBiblicoCurtoPorReferencia(ref) || textoPuroTextoAureoV1332(texto,ref) || ref;
       }
-      texto = String(texto || "").replace(new RegExp('^' + ref.replace(/[.*+?^${}()|[\]\]/g,'\$&') + '\s*[—:-]?\s*','i'), '').trim() || (textoBiblicoCurtoPorReferencia(ref) || ref);
+      texto = String(texto || "").replace(/^['"“”]+|['"“”]+$/g,"").trim();
 
       return `
         <section class="page lesson-cover-page">
@@ -7846,6 +7847,38 @@ Gere somente esta etapa.`;
     }
 
 
+    function separarTextoAureoV1332(valor){
+      const s = String(valor || "").trim();
+      if(!s) return {ref:"", texto:""};
+
+      let m = s.match(/^((?:[1-3]\s*)?[A-ZÁÉÍÓÚÂÊÔÃÕÇa-záéíóúâêôãõç]+\.?\s+\d+\.\d+(?:[-–]\d+)?)(?:\s*[—–-]\s*)(.+)$/i);
+      if(m) return {ref:m[1].trim(), texto:m[2].trim().replace(/^['"“”]+|['"“”]+$/g,"")};
+
+      m = s.match(/^((?:[1-3]\s*)?[A-ZÁÉÍÓÚÂÊÔÃÕÇa-záéíóúâêôãõç]+\.?\s+\d+\.\d+(?:[-–]\d+)?)(?:\s*[:)]\s*)(.+)$/i);
+      if(m) return {ref:m[1].trim(), texto:m[2].trim().replace(/^['"“”]+|['"“”]+$/g,"")};
+
+      return {ref:s, texto:""};
+    }
+
+    function referenciaPuraTextoAureoV1332(valor){
+      const s = String(valor || "").trim();
+      const separado = separarTextoAureoV1332(s);
+      let ref = separado.ref || s;
+      ref = ref.replace(/\s*[—–-]\s*.+$/g,"").trim();
+      return reduzirParaUmVersiculo(ref);
+    }
+
+    function textoPuroTextoAureoV1332(valor,ref){
+      const separado = separarTextoAureoV1332(valor);
+      let texto = separado.texto || String(valor || "").trim();
+      const r = String(ref || separado.ref || "").trim();
+      if(r && texto.toLowerCase().startsWith(r.toLowerCase())){
+        texto = texto.slice(r.length).replace(/^[—–:)-]+\s*/,"").trim();
+      }
+      texto = texto.replace(/^['"“”]+|['"“”]+$/g,"").trim();
+      return texto;
+    }
+
     function normalizarRefLeituraDiariaV1331(ref){
       return limparReferenciaLeituraDiariaV1329(ref)
         .toLowerCase()
@@ -7872,8 +7905,8 @@ Gere somente esta etapa.`;
 
     function curarLeituraDiariaV1331(base,dados,numero){
       const atual = Array.isArray(dados?.leituraDiaria) ? dados.leituraDiaria : [];
-      if(!leituraDiariaRuimV1331(atual)) return atual;
       if(temaRevistaFamiliaV1328(base)) return leituraDiariaFamiliaV1328(numero);
+      if(!leituraDiariaRuimV1331(atual)) return atual;
       return criarLeituraDiariaUniversal(base,dados,dados?.leituraClasse || dados?.textoAureoRef || base.biblicalBase || "");
     }
 
@@ -9093,12 +9126,13 @@ Estruture assim:
       for(let i = 0; i < licoes.length; i++){
         const numero = i + 1;
         const ajustada = ajustarLicaoRevistaV138(licoes[i],numero,base);
-        const ref = reduzirParaUmVersiculo(ajustada.textoAureoRef || ajustada.textoAureo || escolherTextoAureoPrincipal(ajustada.leituraClasse,base));
+        const brutoAureo = ajustada.textoAureoRef || ajustada.textoAureo || escolherTextoAureoPrincipal(ajustada.leituraClasse,base);
+        const ref = referenciaPuraTextoAureoV1332(brutoAureo);
         ajustada.textoAureoRef = ref;
         ajustada.textoAureo = ref;
-        ajustada.textoAureoTexto = ajustada.textoAureoTexto || textoBiblicoCurtoPorReferencia(ref) || textoBiblicoCurtoPorReferencia(ajustada.textoAureoRef || ajustada.textoAureo) || "";
-        if(textoGenericoRevistaV1329(ajustada.textoAureoTexto)){
-          ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || ref;
+        ajustada.textoAureoTexto = textoPuroTextoAureoV1332(ajustada.textoAureoTexto || brutoAureo,ref) || textoBiblicoCurtoPorReferencia(ref) || "";
+        if(textoGenericoRevistaV1329(ajustada.textoAureoTexto) || String(ajustada.textoAureoTexto).toLowerCase().startsWith(String(ref).toLowerCase())){
+          ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || textoPuroTextoAureoV1332(ajustada.textoAureoTexto,ref) || ref;
         }
         ajustada.leituraClasse = referenciasPrincipaisRevistaV138(ajustada.leituraClasse) || referenciasPrincipaisRevistaV138(base.biblicalBase);
         ajustada.leituraDiaria = curarLeituraDiariaV1331(base,ajustada,numero);
