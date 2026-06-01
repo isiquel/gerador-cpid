@@ -2622,6 +2622,7 @@
       column-count:2;
       column-gap:28px;
       column-rule:1px solid rgba(60,80,120,.16);
+      column-fill:balance;
       text-align:justify;
       hyphens:auto;
     }
@@ -7723,9 +7724,7 @@ Gere somente esta etapa.`;
     }
 
     function renderDailyReading(numero,dados){
-      const items = Array.isArray(dados.leituraDiaria) && dados.leituraDiaria.length === 6
-        ? dados.leituraDiaria
-        : criarLeituraDiariaUniversal(buildBase(),dados,dados.leituraClasse || "");
+      const items = curarLeituraDiariaV1331(buildBase(),dados,numero);
 
       return `
         <div class="daily-reading">
@@ -7756,6 +7755,7 @@ Gere somente esta etapa.`;
       if(textoGenericoRevistaV1329(texto)){
         texto = textoBiblicoCurtoPorReferencia(ref) || ref;
       }
+      texto = String(texto || "").replace(new RegExp('^' + ref.replace(/[.*+?^${}()|[\]\]/g,'\$&') + '\s*[—:-]?\s*','i'), '').trim() || (textoBiblicoCurtoPorReferencia(ref) || ref);
 
       return `
         <section class="page lesson-cover-page">
@@ -7843,6 +7843,38 @@ Gere somente esta etapa.`;
         .replace(/\s{2,}/g," ")
         .replace(/\s+;/g,";")
         .trim();
+    }
+
+
+    function normalizarRefLeituraDiariaV1331(ref){
+      return limparReferenciaLeituraDiariaV1329(ref)
+        .toLowerCase()
+        .split(/\s*;\s*|\s+e\s+/)[0]
+        .replace(/(\d+[a-z]?\.?\d*)\s*[-–].*$/, '$1')
+        .replace(/\s+/g,' ')
+        .trim();
+    }
+
+    function leituraDiariaRuimV1331(items){
+      if(!Array.isArray(items) || items.length !== 6) return true;
+
+      const refs = items.map(item => normalizarRefLeituraDiariaV1331(item && item[1] ? item[1] : ""));
+      const refsValidas = refs.filter(Boolean);
+      const refsUnicas = new Set(refsValidas);
+
+      const resumos = items.map(item => String(item && item[2] ? item[2] : "").trim().toLowerCase()).filter(Boolean);
+      const mapaResumos = {};
+      resumos.forEach(r => mapaResumos[r] = (mapaResumos[r] || 0) + 1);
+      const repeticaoResumoGenerico = Object.entries(mapaResumos).some(([txt,qtd]) => qtd > 1 && /a palavra de deus chama o crist[aã]o [àa] f[eé], [àa] obedi[eê]ncia e [àa] perseveran[cç]a/.test(txt));
+
+      return refsValidas.length < 6 || refsUnicas.size < 6 || repeticaoResumoGenerico;
+    }
+
+    function curarLeituraDiariaV1331(base,dados,numero){
+      const atual = Array.isArray(dados?.leituraDiaria) ? dados.leituraDiaria : [];
+      if(!leituraDiariaRuimV1331(atual)) return atual;
+      if(temaRevistaFamiliaV1328(base)) return leituraDiariaFamiliaV1328(numero);
+      return criarLeituraDiariaUniversal(base,dados,dados?.leituraClasse || dados?.textoAureoRef || base.biblicalBase || "");
     }
 
     function forcarSubtopicoRevistaV1329(html,tituloEsperado){
@@ -8958,9 +8990,40 @@ Estruture assim:
       return out;
     }
 
-    function aplicarLayoutRevistaDuasColunasV137(html){
+    function normalizarRevisaoRevistaV1331(html){
       const temp = document.createElement("div");
       temp.innerHTML = String(html || "");
+
+      temp.querySelectorAll(".lesson-review-full").forEach(area => {
+        let box = area.querySelector(":scope > .summary-box") || area.querySelector(".summary-box");
+        if(!box){
+          box = document.createElement("div");
+          box.className = "summary-box";
+          box.innerHTML = `<h4>Revisando o Conteúdo</h4>`;
+          area.insertBefore(box, area.firstChild);
+        }
+
+        if(!box.querySelector("h4")){
+          const h4 = document.createElement("h4");
+          h4.textContent = "Revisando o Conteúdo";
+          box.insertBefore(h4, box.firstChild);
+        }
+
+        Array.from(area.children).forEach(child => {
+          if(child !== box){
+            box.appendChild(child);
+          }
+        });
+
+        Array.from(area.querySelectorAll(":scope > .question-answer")).forEach(el => box.appendChild(el));
+      });
+
+      return temp.innerHTML;
+    }
+
+    function aplicarLayoutRevistaDuasColunasV137(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = normalizarRevisaoRevistaV1331(String(html || ""));
 
       const doc = temp.querySelector(".doc");
       if(doc){
@@ -8968,43 +9031,52 @@ Estruture assim:
       }
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
-        const existingCols = page.querySelector(":scope > .magazine-columns");
+        const review = page.querySelector(":scope > .lesson-review-full");
+        const preserved = [];
+        const moving = [];
 
-        if(!existingCols){
-          const nodes = Array.from(page.childNodes);
-          const wrap = document.createElement("div");
-          wrap.className = "magazine-columns";
+        Array.from(page.children).forEach(child => {
+          if(child.classList.contains("compact-comment-header") || child.classList.contains("scripture-full") || child.classList.contains("lesson-review-full")){
+            preserved.push(child);
+          }else if(child.classList.contains("magazine-columns")){
+            Array.from(child.childNodes).forEach(node => moving.push(node));
+            child.remove();
+          }else{
+            moving.push(child);
+          }
+        });
 
-          let foundScripture = false;
+        const wrap = document.createElement("div");
+        wrap.className = "magazine-columns";
+        moving.forEach(node => {
+          if(node && !(node.nodeType === 3 && !String(node.textContent || "").trim())){
+            wrap.appendChild(node);
+          }
+        });
 
-          nodes.forEach(node => {
-            if(node.nodeType === 1 && node.matches(".scripture-full")){
-              foundScripture = true;
-              return;
-            }
+        // If review accidentally stayed inside columns, pull it out.
+        const summaries = Array.from(wrap.querySelectorAll(".summary-box"));
+        const revisao = summaries.reverse().find(el => /revisando\s+o\s+conte[uú]do|perguntas/i.test(el.innerText || ""));
+        if(revisao && !page.querySelector(":scope > .lesson-review-full")){
+          const full = document.createElement("div");
+          full.className = "lesson-review-full magazine-full";
+          revisao.parentNode.removeChild(revisao);
+          full.appendChild(revisao);
+          page.appendChild(full);
+        }
 
-            if(foundScripture){
-              wrap.appendChild(node);
-            }
-          });
-
-          if(wrap.childNodes.length){
+        Array.from(page.children).forEach(child => child.remove());
+        preserved.forEach(child => page.appendChild(child));
+        if(wrap.childNodes.length){
+          if(review){
+            page.insertBefore(wrap, review);
+          }else{
             page.appendChild(wrap);
           }
         }
-
-        const cols = page.querySelector(":scope > .magazine-columns");
-        if(cols){
-          const summaries = Array.from(cols.querySelectorAll(".summary-box"));
-          const revisao = summaries.reverse().find(el => /revisando\s+o\s+conte[uú]do|perguntas/i.test(el.innerText || ""));
-
-          if(revisao && !page.querySelector(":scope > .lesson-review-full")){
-            const full = document.createElement("div");
-            full.className = "lesson-review-full magazine-full";
-            revisao.parentNode.removeChild(revisao);
-            full.appendChild(revisao);
-            page.appendChild(full);
-          }
+        const reviewFinal = page.querySelector(":scope > .lesson-review-full");
+        if(reviewFinal){
+          page.appendChild(reviewFinal);
         }
       });
 
@@ -9029,9 +9101,7 @@ Estruture assim:
           ajustada.textoAureoTexto = textoBiblicoCurtoPorReferencia(ref) || ref;
         }
         ajustada.leituraClasse = referenciasPrincipaisRevistaV138(ajustada.leituraClasse) || referenciasPrincipaisRevistaV138(base.biblicalBase);
-        if(temaRevistaFamiliaV1328(base)){
-          ajustada.leituraDiaria = Array.isArray(ajustada.leituraDiaria) && ajustada.leituraDiaria.length === 6 ? ajustada.leituraDiaria : leituraDiariaFamiliaV1328(numero);
-        }
+        ajustada.leituraDiaria = curarLeituraDiariaV1331(base,ajustada,numero);
         licoes[i] = ajustada;
       }
 
@@ -13962,6 +14032,7 @@ async function generateMaterial(){
       column-count:2;
       column-gap:28px;
       column-rule:1px solid rgba(60,80,120,.16);
+      column-fill:balance;
       text-align:justify;
       hyphens:auto;
     }
