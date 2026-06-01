@@ -5202,7 +5202,12 @@ Etapa: ${etapa}
           }
         ];
 
-        for(const tentativa of tentativas){
+        for(let tentativaIndex = 0; tentativaIndex < tentativas.length; tentativaIndex++){
+          const tentativa = tentativas[tentativaIndex];
+          if(typeof setStatus === "function"){
+            setStatus(`${tentativa.nome.replace(" — tentativa", " — tentativa")} de 3...`);
+          }
+
           const html = await chamarTextoIA(tentativa.prompt,tentativa.nome,{
             ...opcoes,
             minimo:tentativa.minimo,
@@ -6816,11 +6821,10 @@ ${base.extraNotes}
         return licoesDoPrompt;
       }
 
-      const licoesFamilia = licoesFamiliaFelizV1328(base);
-      if(licoesFamilia && licoesFamilia.length === 4){
-        return licoesFamilia;
-      }
-
+      // v13.44 — regra universal:
+      // Não usar lições prontas/hardcoded no código. A IA deve trabalhar a partir do esboço que o usuário colocou nos campos.
+      // Se o usuário informou as 4 lições, elas já foram extraídas acima.
+      // Se não informou, usa uma estrutura universal derivada do tema, sem conteúdo específico fixo.
       return gerarLicoesUniversaisDoTema(base);
     }
 
@@ -8813,23 +8817,45 @@ Gere somente esta etapa.`;
       }
     }
 
-    async function gerarParteAluno(base,info,licoes,numero,dados,nomeParte,extra,minimo = 140){
-      const prompt = promptParteAluno(base,info,licoes,numero,dados,nomeParte,extra);
+    async function gerarParteAluno(base,info,licoes,numero,dados,nomeParte,extra,minimo = 180){
+      const prompt = promptParteAluno(base,info,licoes,numero,dados,nomeParte,`
+${extra}
+
+REGRA UNIVERSAL v13.44:
+- Gere conteúdo real a partir do esboço do usuário e dos dados da lição.
+- Não use texto genérico.
+- Não repita o mesmo parágrafo da introdução nos tópicos.
+- Cada subtópico precisa acrescentar uma ideia nova.
+- Se esta parte for subtópico, fale exatamente do subtópico pedido.
+- Não escreva orientação ao professor na Revista do Aluno.
+- Não escreva frases de bastidor como "apresente", "prepare", "explique", "conduza", "ao estudar".
+- Não invente tema pronto; obedeça ao esboço informado pelo usuário.
+`);
 
       const html = await chamarTextoIAComTentativas(
         [prompt],
         `Lição ${numero} do aluno — ${nomeParte}`,
         {
-          minimo,
-          aceitarCurto:true,
-          aceitarMuitoCurto:true,
+          minimo:Math.max(minimo,160),
+          aceitarCurto:false,
+          aceitarMuitoCurto:false,
           isStudent:true,
-          minQuality:"parte editorial da Revista do Aluno, com linguagem natural, bíblica, visual de revista EBD e sem bastidor editorial"
+          minQuality:"conteúdo específico da Revista do Aluno, baseado no esboço do usuário, sem repetição e sem linguagem de professor"
         }
       );
 
       if(!html) return "";
-      return limparLinguagemAluno(limparBastidoresRevistaV1339(html));
+      const limpo = limparLinguagemAluno(limparBastidoresRevistaV1339(html));
+      const texto = extrairTextoDeHtml(limpo).toLowerCase();
+
+      const ruim =
+        !texto ||
+        texto.length < Math.max(minimo,140) ||
+        /apresente o problema|prepare o aluno|ao estudar|o professor deve|conduza a classe|aprofunde um princípio|tópico principal:/i.test(texto);
+
+      if(ruim) return "";
+
+      return limpo;
     }
 
     async function gerarParteProfessor(base,info,licoes,numero,dados,revistaAlunoTexto,nomeParte,extra,minimo = 200){
@@ -8908,6 +8934,8 @@ Regras:
 - Integre pelo menos uma referência bíblica no argumento quando couber.
 - Toda referência deve estar relacionada corretamente ao assunto.
 - Não repita ideias que já pertencem à introdução ou ao tópico anterior.
+- Não copie o mesmo parágrafo usado em outra parte da lição.
+- Use o esboço informado pelo usuário como fonte de direção do conteúdo.
 - Não escreva sinopse aqui.
 - Não escreva orientação ao professor.
 - Não escreva linguagem técnica interna.
@@ -8918,7 +8946,7 @@ Regras:
           115
         );
 
-        partes.push(subHtml ? forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados) : blocoFallbackRevistaV1336("subtopic",`${s + 1}. ${subtitulo}`,dados,`Tópico principal: ${topico.titulo}.`));
+        partes.push(subHtml ? forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados) : blocoManualVazio("subtopic",`${s + 1}. ${subtitulo}`));
       }
 
       // Revista do Aluno: não inserir sinopse entre todos os tópicos.
@@ -8952,13 +8980,13 @@ Regras:
 Crie apenas a introdução da lição.
 A introdução deve ter 2 parágrafos.
 Não repita frases genéricas.
-Mostre o problema central da lição, o valor bíblico do assunto e prepare o cristão para os tópicos.
+Apresente o assunto da lição diretamente ao aluno, com linguagem final de revista, sem orientação de bastidor.
 Use <div class="block"><h3>Introdução</h3>...</div>.
         `,
-        160
+        190
       );
 
-      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"A vida familiar precisa ser examinada à luz da Palavra de Deus, pois somente Cristo sustenta o lar com graça, verdade e responsabilidade."));
+      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoManualVazio("block","Introdução"));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -8992,7 +9020,7 @@ Regras:
         110
       );
 
-      corpo.push(ampliando ? forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados) : blocoFallbackRevistaV1336("knowledge","Ampliando o Conhecimento",dados,"Aprofunde um princípio bíblico, histórico ou pastoral ligado ao tema."));
+      corpo.push(ampliando ? forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados) : blocoManualVazio("knowledge","Ampliando o Conhecimento"));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -9011,7 +9039,7 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         140
       );
 
-      corpo.push(conclusao ? forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados) : blocoFallbackRevistaV1336("block","Conclusão",dados,"Retome o ensino principal e chame o aluno à prática da Palavra."));
+      corpo.push(conclusao ? forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados) : blocoManualVazio("block","Conclusão"));
 
       const revisaoFinal = renderRevisaoAlunoDeterministicaV1339(dados);
 
@@ -10012,7 +10040,7 @@ Estruture assim:
       renderGenerated(aplicarLayoutRevistaDuasColunasV137(htmlFinalComCapaNoInicio));
 
       if(manualPlaceholdersCount > 0){
-        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos foram preenchidos automaticamente por segurança, sem deixar espaços em branco.`);
+        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos não passaram na conferência e ficaram marcados para nova geração/edição; o código não inseriu conteúdo pronto no lugar da IA.`);
       }else if(todasLicoesOk && info.isStudent){
         finishSteps("Revista do Aluno gerada com sucesso, em layout de revista EBD, com base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
