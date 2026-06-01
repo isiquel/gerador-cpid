@@ -5174,6 +5174,41 @@ Etapa: ${etapa}
       `.trim();
     }
 
+    function criarPromptDiretoObrigatorioV1345(promptOriginal,etapa){
+      return `
+${promptOriginal}
+
+TENTATIVA REFORÇADA:
+A parte anterior não gerou conteúdo aproveitável.
+
+Agora gere conteúdo final, pronto para entrar na revista.
+- Não deixe vazio.
+- Não escreva instruções.
+- Não escreva "ao estudar", "apresente", "prepare", "explique", "o professor deve" ou "conduza a classe".
+- Não repita o mesmo parágrafo de outra parte.
+- Fale diretamente do tema desta etapa.
+- Se for subtópico, escreva somente o subtópico pedido, com conteúdo específico.
+- Entregue HTML interno válido.
+
+Etapa: ${etapa}
+      `.trim();
+    }
+
+    function criarPromptUltraDiretoV1345(promptOriginal,etapa){
+      return `
+${promptOriginal}
+
+TENTATIVA FINAL OBRIGATÓRIA:
+Escreva agora somente 1 ou 2 parágrafos bons, específicos e prontos para publicação.
+Não coloque título diferente.
+Não deixe em branco.
+Não use linguagem de bastidor.
+Não explique o que deveria ser feito; apenas escreva o conteúdo final.
+
+Etapa: ${etapa}
+      `.trim();
+    }
+
     async function chamarTextoIAComTentativas(prompts,etapa,opcoes = {}){
       const lista = Array.isArray(prompts) ? prompts : [prompts];
 
@@ -5190,22 +5225,34 @@ Etapa: ${etapa}
           {
             prompt:criarPromptMaisSimples(promptOriginal,etapa),
             nome:`${etapa} — tentativa 2 simplificada`,
-            minimo:Math.max(80,Math.floor((opcoes.minimo || 220) * 0.55)),
-            aceitarCurto:true
+            minimo:Math.max(120,Math.floor((opcoes.minimo || 220) * 0.70)),
+            aceitarCurto:false
+          },
+          {
+            prompt:criarPromptDiretoObrigatorioV1345(promptOriginal,etapa),
+            nome:`${etapa} — tentativa 3 reforçada`,
+            minimo:Math.max(110,Math.floor((opcoes.minimo || 220) * 0.65)),
+            aceitarCurto:false
           },
           {
             prompt:criarPromptMinimo(promptOriginal,etapa),
-            nome:`${etapa} — tentativa 3 mínima`,
-            minimo:55,
+            nome:`${etapa} — tentativa 4 mínima`,
+            minimo:Math.max(95,Math.floor((opcoes.minimo || 220) * 0.50)),
+            aceitarCurto:true
+          },
+          {
+            prompt:criarPromptUltraDiretoV1345(promptOriginal,etapa),
+            nome:`${etapa} — tentativa 5 final`,
+            minimo:80,
             aceitarCurto:true,
-            aceitarMuitoCurto:true
+            aceitarMuitoCurto:false
           }
         ];
 
         for(let tentativaIndex = 0; tentativaIndex < tentativas.length; tentativaIndex++){
           const tentativa = tentativas[tentativaIndex];
           if(typeof setStatus === "function"){
-            setStatus(`${tentativa.nome.replace(" — tentativa", " — tentativa")} de 3...`);
+            setStatus(`${tentativa.nome} de 5...`);
           }
 
           const html = await chamarTextoIA(tentativa.prompt,tentativa.nome,{
@@ -5225,7 +5272,7 @@ Etapa: ${etapa}
             return limpo;
           }
 
-          await pause(350);
+          await pause(450);
         }
       }
 
@@ -8946,7 +8993,11 @@ Regras:
           115
         );
 
-        partes.push(subHtml ? forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados) : blocoManualVazio("subtopic",`${s + 1}. ${subtitulo}`));
+        if(!subHtml){
+          throw new Error(`Falha ao gerar Lição ${numero} do aluno — Tópico ${indice + 1} — subtópico ${s + 1}: ${subtitulo}`);
+        }
+
+        partes.push(forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados));
       }
 
       // Revista do Aluno: não inserir sinopse entre todos os tópicos.
@@ -8986,7 +9037,10 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         190
       );
 
-      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoManualVazio("block","Introdução"));
+      if(!intro){
+        throw new Error(`Falha ao gerar Introdução da Lição ${numero} do aluno`);
+      }
+      corpo.push(forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -9020,7 +9074,10 @@ Regras:
         110
       );
 
-      corpo.push(ampliando ? forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados) : blocoManualVazio("knowledge","Ampliando o Conhecimento"));
+      if(!ampliando){
+        throw new Error(`Falha ao gerar Ampliando o Conhecimento da Lição ${numero} do aluno`);
+      }
+      corpo.push(forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -9039,7 +9096,10 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         140
       );
 
-      corpo.push(conclusao ? forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados) : blocoManualVazio("block","Conclusão"));
+      if(!conclusao){
+        throw new Error(`Falha ao gerar Conclusão da Lição ${numero} do aluno`);
+      }
+      corpo.push(forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados));
 
       const revisaoFinal = renderRevisaoAlunoDeterministicaV1339(dados);
 
@@ -9951,20 +10011,24 @@ Estruture assim:
           html += renderPage(licao,"lesson-page");
         }else{
           html += renderLessonOpeningPage(base,info,numero,dados);
-          licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
+
+          try{
+            licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
+          }catch(error){
+            console.error(error);
+            renderGenerated(html + `</div>`);
+            finishSteps(`Geração interrompida: ${error.message}. O app não vai mais avançar deixando caixas vazias. Clique em Gerar material novamente para repetir a etapa com as 5 tentativas.`);
+            return;
+          }
 
           if(!licao || extrairTextoDeHtml(licao).trim().length < 500){
-            todasLicoesOk = false;
-            html += paginaErroLicao(base,info,numero,dados,"Lição");
-            setStatus(`A Lição ${numero} ficou com espaço em branco para edição manual. O app continuará gerando as próximas partes.`,"error");
-          }else{
-            licao = limparLinguagemAluno(licao);
-            html += renderPage(licao,"lesson-page");
-
-            if(licao.includes("manual-placeholder")){
-              todasLicoesOk = false;
-            }
+            renderGenerated(html + `</div>`);
+            finishSteps(`Geração interrompida: a Lição ${numero} não recebeu conteúdo suficiente. O app não vai mais criar espaços em branco. Clique em Gerar material novamente para tentar de novo.`);
+            return;
           }
+
+          licao = limparLinguagemAluno(licao);
+          html += renderPage(licao,"lesson-page");
         }
 
         renderGenerated(html + `</div>`);
