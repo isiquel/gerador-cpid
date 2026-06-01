@@ -6947,6 +6947,8 @@ REGRAS:
 - Não gere título da lição, Texto Áureo, Verdade Prática, Leitura Diária, Leitura Bíblica em Classe, imagem, ilustração, sumário, sinopse ou revisão nesta parte.
 - Nunca escreva frases como “Ao estudar... percebemos que”, “A lição desenvolve...”, “dentro do tema...”, “Tópico principal...” ou “Subtópicos...”.
 - Não use linguagem de professor.
+- Não dê comandos editoriais como “apresente”, “prepare”, “explique”, “mostre” ou “conduza”.
+- Escreva como conteúdo final da revista do aluno, não como orientação para quem está ensinando.
 - Use “o cristão”, “o servo de Deus”, “a igreja”, “nós aprendemos”, “somos chamados”.
 - Linguagem natural, bíblica, pastoral e ensinável.
 - Toda referência bíblica deve estar relacionada corretamente ao assunto.
@@ -8289,6 +8291,16 @@ Gere somente esta etapa.`;
     function limparLinguagemAluno(html){
       let out = String(html || "");
 
+      out = out
+        .replace(/Apresente\s+o\s+problema\s+central\s+da\s+li[cç][aã]o\s+e\s+prepare\s+o\s+aluno\s+para\s+os\s+t[oó]picos\.?/gi, "")
+        .replace(/Prepare\s+o\s+aluno\s+para\s+os\s+t[oó]picos\.?/gi, "")
+        .replace(/Apresente\s+o\s+problema\s+central\s+da\s+li[cç][aã]o\.?/gi, "")
+        .replace(/O\s+professor\s+deve\s+[^.]{0,180}\./gi, "")
+        .replace(/O\s+professor\s+precisa\s+[^.]{0,180}\./gi, "")
+        .replace(/Conduza\s+a\s+classe\s+[^.]{0,180}\./gi, "")
+        .replace(/Explique\s+aos\s+alunos\s+[^.]{0,180}\./gi, "")
+        .replace(/Mostre\s+aos\s+alunos\s+[^.]{0,180}\./gi, "");
+
       const trocas = [
         [/O professor deve/gi,"O cristão deve"],
         [/O professor precisa/gi,"O cristão precisa"],
@@ -8543,7 +8555,10 @@ Gere somente esta etapa.`;
       const tema = textoLimpoV1336(dados?.titulo || buildBase()?.visibleTheme || "a lição");
       const ref = refsDaLicaoV1336(dados);
       const assunto = textoLimpoV1336(titulo || tema);
-      const detalhe = textoLimpoV1336(extra);
+      let detalhe = textoLimpoV1336(extra);
+      if(/\b(apresente|prepare|explique|mostre|conduza|oriente|professor|aluno|classe)\b/i.test(detalhe)){
+        detalhe = "";
+      }
 
       if(/div[oó]rcio|restaura[cç][aã]o|fam[ií]lia/i.test(`${tema} ${assunto}`)){
         return `A família precisa ser conduzida pelo temor do Senhor e pela obediência à Palavra. ${ref} aponta para um lar firmado em Deus, onde compromisso, perdão e responsabilidade vencem a frieza, a confusão e as crises. ${detalhe ? detalhe + " " : ""}Na prática, a restauração familiar começa quando cada pessoa submete suas atitudes, palavras e decisões ao governo de Cristo.`;
@@ -8943,7 +8958,7 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         160
       );
 
-      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"Apresente o problema central da lição e prepare o aluno para os tópicos."));
+      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"A vida familiar precisa ser examinada à luz da Palavra de Deus, pois somente Cristo sustenta o lar com graça, verdade e responsabilidade."));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
