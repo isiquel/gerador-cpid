@@ -8101,6 +8101,20 @@ Gere somente esta etapa.`;
       `;
     }
 
+    function limparBastidoresRevistaV1338(html){
+      let out = String(html || "");
+
+      out = out
+        .replace(/Ao estudar\s+(?:Introdu[cç][aã]o|Conclus[aã]o|Ampliando o Conhecimento|Sinopse do T[oó]pico\s+[IVXLC]+|\d+\.?\s*[^,.;<]{0,70})\s*,?\s*percebemos\s+que\s*/gi, "")
+        .replace(/Ao estudar\s+(?:Introdu[cç][aã]o|Conclus[aã]o|Ampliando o Conhecimento|Sinopse do T[oó]pico\s+[IVXLC]+|\d+\.?\s*[^,.;<]{0,70})\s*/gi, "")
+        .replace(/T[oó]pico\s*principal:\s*[^.<]+\.\s*/gi, "")
+        .replace(/Subt[oó]picos:\s*[^.<]+\.\s*/gi, "")
+        .replace(/A aplica[cç][aã]o pr[aá]tica [ée] clara:\s*/gi, "Na prática, ")
+        .replace(/\s{2,}/g, " ");
+
+      return out;
+    }
+
     function limparLinguagemAluno(html){
       let out = String(html || "");
 
@@ -8142,6 +8156,7 @@ Gere somente esta etapa.`;
       });
 
       out = limparQuebrasLiteraisV1312(out);
+      out = limparBastidoresRevistaV1338(out);
 
       return out;
     }
@@ -8392,22 +8407,22 @@ Gere somente esta etapa.`;
       const detalhe = textoLimpoV1336(extra);
 
       if(/div[oó]rcio|restaura[cç][aã]o|fam[ií]lia/i.test(`${tema} ${assunto}`)){
-        return `Ao estudar ${assunto}, percebemos que a família precisa ser conduzida pelo temor do Senhor e pela obediência à Palavra. ${ref} aponta para um lar firmado em Deus, onde compromisso, perdão e responsabilidade vencem a frieza, a confusão e as crises. ${detalhe ? detalhe + " " : ""}A aplicação prática é clara: a restauração familiar começa quando cada pessoa decide submeter suas atitudes, palavras e decisões ao governo de Cristo.`;
+        return `A família precisa ser conduzida pelo temor do Senhor e pela obediência à Palavra. ${ref} aponta para um lar firmado em Deus, onde compromisso, perdão e responsabilidade vencem a frieza, a confusão e as crises. ${detalhe ? detalhe + " " : ""}Na prática, a restauração familiar começa quando cada pessoa submete suas atitudes, palavras e decisões ao governo de Cristo.`;
       }
 
       if(/casal|casamento|compromisso|respeito|perd[aã]o/i.test(`${tema} ${assunto}`)){
-        return `Este ensino mostra que ${assunto} é indispensável para a saúde do casamento. À luz de ${ref}, marido e esposa são chamados a viver como aliados, e não como adversários. ${detalhe ? detalhe + " " : ""}Quando há compromisso, diálogo, respeito e perdão, o lar se torna um ambiente de segurança, crescimento e testemunho cristão.`;
+        return `O casamento saudável é fortalecido quando marido e esposa vivem como aliados, e não como adversários. À luz de ${ref}, compromisso, diálogo, respeito e perdão protegem a aliança e tornam o lar um ambiente de segurança, crescimento e testemunho cristão. ${detalhe ? detalhe : ""}`;
       }
 
       if(/pais|educa[cç][aã]o|disciplina|comunica[cç][aã]o|exemplo/i.test(`${tema} ${assunto}`)){
-        return `O ponto destaca que ${assunto} faz parte da missão espiritual dos pais. Com base em ${ref}, educar filhos não é apenas corrigir comportamentos, mas formar caráter, fé e valores. ${detalhe ? detalhe + " " : ""}Pais que ensinam com amor, coerência e exemplo ajudam seus filhos a reconhecer o caminho do Senhor na vida diária.`;
+        return `A missão espiritual dos pais envolve formar caráter, fé e valores, e não apenas corrigir comportamentos. Com base em ${ref}, a educação cristã exige amor, coerência, limites e exemplo. ${detalhe ? detalhe + " " : ""}Quando os pais ensinam com a vida, os filhos reconhecem com mais clareza o caminho do Senhor.`;
       }
 
       if(/filhos|identidade|confian[cç]a|honestidade|trabalhador|metas|responsabilidade/i.test(`${tema} ${assunto}`)){
-        return `Este assunto ensina que ${assunto} deve ser desenvolvido debaixo dos princípios bíblicos. ${ref} lembra que a vida do filho precisa ser marcada por identidade, responsabilidade e temor a Deus. ${detalhe ? detalhe + " " : ""}A verdadeira felicidade não nasce da ausência de limites, mas de uma vida orientada pela verdade, pela honestidade e pelo propósito.`;
+        return `Filhos formados à luz da Palavra desenvolvem identidade, responsabilidade e temor a Deus. ${ref} ensina que a verdadeira felicidade não nasce da ausência de limites, mas de uma vida orientada pela verdade, pela honestidade e pelo propósito. ${detalhe ? detalhe : ""}`;
       }
 
-      return `Esta parte da lição desenvolve ${assunto} com base em ${ref}. O ensino central é que a Palavra de Deus ilumina a prática cristã, corrige caminhos e conduz a igreja a uma vida mais fiel. ${detalhe ? detalhe + " " : ""}Por isso, o aluno deve aplicar este princípio com humildade, obediência e compromisso espiritual.`;
+      return `A Palavra de Deus ilumina a prática cristã, corrige caminhos e conduz a igreja a uma vida mais fiel. Com base em ${ref}, este ensino chama o aluno à humildade, à obediência e ao compromisso espiritual. ${detalhe ? detalhe : ""}`;
     }
 
     function blocoFallbackRevistaV1336(tipo,titulo,dados,extra = ""){
@@ -8752,29 +8767,8 @@ Regras:
         partes.push(subHtml ? forcarSubtopicoRevistaV1329(subHtml,`${s + 1}. ${subtitulo}`) : blocoFallbackRevistaV1336("subtopic",`${s + 1}. ${subtitulo}`,dados,`Tópico principal: ${topico.titulo}.`));
       }
 
-      const sinopse = await gerarParteAluno(
-        base,
-        info,
-        licoes,
-        numero,
-        dados,
-        `Sinopse do Tópico ${roman(indice + 1)}`,
-        `
-Crie SOMENTE a sinopse do tópico ${roman(indice + 1)}.
-
-Tópico: ${topico.titulo}
-Subtópicos: ${subtitulos.join("; ")}
-
-Regras:
-- Use <div class="synopsis"><h4>Sinopse do Tópico ${roman(indice + 1)}</h4>...</div>
-- Faça 1 parágrafo curto, com 3 a 5 linhas.
-- Não repita a introdução.
-- Não escreva orientação ao professor.
-          `,
-        90
-      );
-
-      partes.push(sinopse || blocoFallbackRevistaV1336("synopsis",`Sinopse do Tópico ${roman(indice + 1)}`,dados,`Tópico: ${topico.titulo}. Subtópicos: ${subtitulos.join("; ")}.`));
+      // Revista do Aluno: não inserir sinopse entre todos os tópicos.
+      // O miolo deve ficar limpo, em duas colunas, parecido com revista impressa.
       partes.push(`</div>`);
 
       return partes.join("\n");
@@ -9438,12 +9432,14 @@ Estruture assim:
 
     function aplicarLayoutRevistaDuasColunasV137(html){
       const temp = document.createElement("div");
-      temp.innerHTML = normalizarRevisaoRevistaV1331(String(html || ""));
+      temp.innerHTML = limparBastidoresRevistaV1338(normalizarRevisaoRevistaV1331(String(html || "")));
 
       const doc = temp.querySelector(".doc");
       if(doc){
         doc.classList.add("magazine-layout");
       }
+
+      temp.querySelectorAll(".lesson-page .synopsis").forEach(el => el.remove());
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
         const review = page.querySelector(":scope > .lesson-review-full");
@@ -9513,7 +9509,7 @@ Estruture assim:
             <p><strong>Subtítulo:</strong><br>${escapeHtml(subtitulo)}</p>
             <p><strong>Classe:</strong> ${escapeHtml(info.revistaClasse || "Adultos")}</p>
             <p><strong>Mês:</strong> ${escapeHtml(info.monthInfo || "")}</p>
-            <p><strong>Presidente do Ministério:</strong><br>Pr. Ezequiel Rodrigues</p>
+            <p><strong>Presidente do Ministério:</strong><br>Pr. Isiquel Rodrigues</p>
             <p><strong>Comentarista:</strong><br>${escapeHtml(comentarista)}</p>
             <p><strong>Organização editorial:</strong><br>Ministério RCID</p>
             <p><strong>Diagramação e capa:</strong><br>VERBO IA</p>
@@ -9524,7 +9520,7 @@ Estruture assim:
             <p>Prezados alunos, esta revista foi preparada com o propósito de fortalecer a família cristã à luz da Palavra de Deus. Ao longo deste mês, estudaremos princípios bíblicos que tratam do casamento, dos pais, dos filhos e dos desafios enfrentados pelos lares na atualidade.</p>
             <p>Cremos que a família continua sendo projeto de Deus, e que, mesmo diante das crises, o Senhor pode restaurar relacionamentos, curar feridas, fortalecer alianças e conduzir cada lar a uma vida de temor, amor e obediência à sua Palavra.</p>
             <p>Que cada lição seja uma oportunidade de reflexão, crescimento espiritual e prática cristã dentro da nossa casa.</p>
-            <p class="assinatura-revista"><strong>Pr. Ezequiel Rodrigues</strong><br>Presidente do Ministério</p>
+            <p class="assinatura-revista"><strong>Pr. Isiquel Rodrigues</strong><br>Presidente do Ministério</p>
             <div class="commentator-box">
               <h3>Sobre o comentarista</h3>
               <p>O Pr. Rogilson Ferreira é pastor, teólogo e pregador da Palavra, comprometido com o ensino bíblico, a edificação da Igreja e o fortalecimento das famílias cristãs. Nesta revista, ele conduz os alunos a refletirem sobre princípios essenciais para uma família feliz, unindo exposição bíblica, aplicação prática e orientação pastoral.</p>
@@ -9755,7 +9751,7 @@ Estruture assim:
       renderGenerated(aplicarLayoutRevistaDuasColunasV137(htmlFinalComCapaNoInicio));
 
       if(manualPlaceholdersCount > 0){
-        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos foram preenchidos automaticamente por segurança.`);
+        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos foram preenchidos automaticamente por segurança, sem deixar espaços em branco.`);
       }else if(todasLicoesOk && info.isStudent){
         finishSteps("Revista do Aluno gerada com sucesso, em layout de revista EBD, com base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
