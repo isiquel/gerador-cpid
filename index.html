@@ -2736,7 +2736,101 @@
       border-radius:14px;
       background:#fff;
     }
-</style>
+
+
+    /* v13.39 — Revista EBD: miolo editorial limpo e antirruído da IA */
+    .doc.magazine-layout .lesson-page > .scripture-full{
+      column-span:all !important;
+      break-inside:avoid !important;
+      page-break-inside:avoid !important;
+      margin:0 0 14px !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .compact-comment-header{
+      column-span:all !important;
+      margin:14px 0 14px !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .magazine-columns,
+    .result .doc.magazine-layout .lesson-page > .magazine-columns{
+      column-count:2 !important;
+      column-gap:28px !important;
+      column-rule:1px solid rgba(45,65,90,.16) !important;
+      column-fill:balance !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .magazine-columns .block,
+    .doc.magazine-layout .lesson-page > .magazine-columns .lesson-topic,
+    .doc.magazine-layout .lesson-page > .magazine-columns .subtopic{
+      background:transparent !important;
+      border:0 !important;
+      box-shadow:none !important;
+      border-radius:0 !important;
+      padding:0 !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .magazine-columns .block h3,
+    .doc.magazine-layout .lesson-page > .magazine-columns .lesson-topic h3{
+      color:#173f76 !important;
+      font-family:Arial, Helvetica, sans-serif !important;
+      font-weight:900 !important;
+      font-size:20px !important;
+      line-height:1.22 !important;
+      margin:0 0 8px !important;
+      text-transform:none !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .magazine-columns .subtopic h4{
+      color:#3a2f28 !important;
+      font-family:Arial, Helvetica, sans-serif !important;
+      font-weight:900 !important;
+      font-size:16.2px !important;
+      line-height:1.28 !important;
+      margin:0 0 5px !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .magazine-columns .text,
+    .doc.magazine-layout .lesson-page > .magazine-columns p,
+    .doc.magazine-layout .lesson-page > .magazine-columns li{
+      font-family:Georgia, 'Times New Roman', serif !important;
+      font-size:15.2px !important;
+      line-height:1.6 !important;
+      text-align:justify !important;
+      color:#2f2a26 !important;
+      margin:0 0 10px !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .magazine-columns .knowledge-box{
+      column-span:all;
+      background:linear-gradient(180deg,#eef6ff,#dcecff) !important;
+      border:1px solid #6ea5dc !important;
+      border-top:10px solid #2e6ea7 !important;
+      border-radius:0 0 14px 14px !important;
+      padding:14px 16px !important;
+      margin:14px 0 !important;
+      break-inside:avoid !important;
+      page-break-inside:avoid !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .lesson-review-full{
+      column-span:all !important;
+      margin-top:18px !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .lesson-review-full .summary-box{
+      background:linear-gradient(180deg,#fff6f6,#ffe7e7) !important;
+      border:1px solid #c46b78 !important;
+      border-top:12px solid #8c1f3c !important;
+      border-radius:0 0 16px 16px !important;
+      padding:16px !important;
+    }
+
+    @media(max-width:740px){
+      .doc.magazine-layout .lesson-page > .magazine-columns,
+      .result .doc.magazine-layout .lesson-page > .magazine-columns{column-count:1 !important;}
+    }
+
+  </style>
 </head>
 
 <body>
@@ -6850,6 +6944,8 @@ ${parte}
 REGRAS:
 - Gere SOMENTE esta parte.
 - Não gere a lição inteira.
+- Não gere título da lição, Texto Áureo, Verdade Prática, Leitura Diária, Leitura Bíblica em Classe, imagem, ilustração, sumário, sinopse ou revisão nesta parte.
+- Nunca escreva frases como “Ao estudar... percebemos que”, “A lição desenvolve...”, “dentro do tema...”, “Tópico principal...” ou “Subtópicos...”.
 - Não use linguagem de professor.
 - Use “o cristão”, “o servo de Deus”, “a igreja”, “nós aprendemos”, “somos chamados”.
 - Linguagem natural, bíblica, pastoral e ensinável.
@@ -6909,6 +7005,7 @@ REGRAS DA REVISTA DO PROFESSOR:
 - Acrescente Auxílio Didático.
 - Acrescente Plano de Aula.
 - Seja mais completa que a Revista do Aluno, mas evite repetição desnecessária.
+- A Revista do Professor NÃO é Livro de Apoio: mantenha formato de revista/aula, com subsídios, sem transformar em capítulo de livro.
 - Toda referência bíblica precisa ser usada de acordo com seu sentido.
 - Entregar somente HTML interno, sem markdown.`;
     }
@@ -6934,6 +7031,8 @@ REGRAS:
 - Acrescente orientação de professor quando couber.
 - Seja completo, mas sem repetir blocos já gerados.
 - Não use referência bíblica fora de contexto.
+- Não gere espaços vazios.
+- Não escreva "ao estudar", "a lição desenvolve" ou texto de bastidor.
 - Entregue somente HTML interno.
 
 ${extra}`;
@@ -8115,6 +8214,78 @@ Gere somente esta etapa.`;
       return out;
     }
 
+    function limparBastidoresRevistaV1339(html){
+      let out = limparBastidoresRevistaV1338(String(html || ""));
+      out = out
+        .replace(/<\s*img\b[^>]*>/gi, "")
+        .replace(/Ilustra[cç][aã]o\s+tem[aá]tica\s+da\s+Li[cç][aã]o\s*\d+/gi, "")
+        .replace(/(?:Ao\s+estudar|Ao\s+analisar|Nesta\s+parte|Ao\s+considerar)\s+[^,.<]{0,130},?\s*(?:percebemos|vemos|aprendemos|entendemos)\s+que\s*/gi, "")
+        .replace(/(?:Ao\s+estudar|Ao\s+analisar|Nesta\s+parte|Ao\s+considerar)\s+[^,.<]{0,130}/gi, "")
+        .replace(/A\s+li[cç][aã]o\s+desenvolve\s+[^.]{0,180}\./gi, "")
+        .replace(/dentro\s+do\s+tema\s+['\"“”][^'\"“”]+['\"“”]/gi, "")
+        .replace(/unindo\s+exposi[cç][aã]o\s+b[ií]blica[^.]{0,140}\./gi, "")
+        .replace(/T[oó]pico\s*:\s*[^.<]{0,160}\.?/gi, "")
+        .replace(/Subt[oó]picos?\s*:\s*[^.<]{0,160}\.?/gi, "")
+        .replace(/Palavra-chave\s*:\s*[^.<]{0,80}\.?/gi, "")
+        .replace(/\s{2,}/g, " ");
+      return out;
+    }
+
+    function extrairParagrafosLimposRevistaV1339(html, max = 2){
+      const temp = document.createElement("div");
+      temp.innerHTML = limparBastidoresRevistaV1339(String(html || ""));
+      temp.querySelectorAll("script,style,img,svg,iframe,.summary-box,.knowledge-box,.daily-reading,.scripture-full,.opening-card,.lesson-cover-illustration,.compact-comment-header").forEach(el => el.remove());
+      const candidatos = [];
+      temp.querySelectorAll("p,li").forEach(el => {
+        const t = limparBastidoresRevistaV1339(el.textContent || "").trim();
+        if(t.length > 45 && !/^\d+\.?\s*$/.test(t)) candidatos.push(t);
+      });
+      if(!candidatos.length){
+        const t = limparBastidoresRevistaV1339(temp.textContent || "").trim();
+        if(t) candidatos.push(t);
+      }
+      const unicos = [];
+      candidatos.forEach(t => {
+        const c = t.replace(/\s+/g," ").trim();
+        if(c.length > 35 && !unicos.some(u => u.slice(0,70) === c.slice(0,70))) unicos.push(c);
+      });
+      return unicos.slice(0,max);
+    }
+
+    function paragrafoFallbackRevistaV1339(dados, contexto = ""){
+      const titulo = dados?.titulo || "a lição";
+      const base = dados?.leituraClasse || dados?.textoAureoRef || dados?.textoBase || "a Palavra de Deus";
+      return `Esta parte da lição mostra que ${titulo.toLowerCase()} precisa ser compreendido à luz de ${base}. A Palavra de Deus conduz a família cristã a viver com temor, responsabilidade, amor e obediência, transformando princípios bíblicos em atitudes práticas no lar.`;
+    }
+
+    function forcarBlocoEditorialRevistaV1339(html, titulo, classe = "block", dados = {}){
+      const ps = extrairParagrafosLimposRevistaV1339(html, classe === "subtopic" ? 1 : 2);
+      const conteudo = (ps.length ? ps : [paragrafoFallbackRevistaV1339(dados,titulo)])
+        .map(p => `<p class="text">${escapeHtml(p)}</p>`).join("\n");
+      if(classe === "subtopic"){
+        return `<div class="subtopic"><h4>${escapeHtml(titulo)}</h4>${conteudo}</div>`;
+      }
+      if(classe === "knowledge"){
+        return `<div class="knowledge-box magazine-full"><h4>${escapeHtml(titulo)}</h4>${conteudo}</div>`;
+      }
+      return `<div class="block"><h3>${escapeHtml(titulo)}</h3>${conteudo}</div>`;
+    }
+
+    function renderRevisaoAlunoDeterministicaV1339(dados){
+      const perguntasBase = Array.isArray(dados?.perguntas) && dados.perguntas.length
+        ? dados.perguntas.map(q => Array.isArray(q) ? q[0] : q).filter(Boolean)
+        : [];
+      const topicos = Array.isArray(dados?.topicos) ? dados.topicos : [];
+      const perguntas = perguntasBase.length >= 5 ? perguntasBase.slice(0,5) : [
+        `Qual é o ensino central da lição sobre ${dados?.titulo || "o tema estudado"}?`,
+        topicos[0]?.titulo ? `O que aprendemos no tópico sobre ${topicos[0].titulo.toLowerCase()}?` : "Que princípio bíblico deve orientar a família cristã?",
+        topicos[1]?.titulo ? `Como o tópico ${topicos[1].titulo.toLowerCase()} se aplica à vida familiar?` : "Como aplicar esta lição no lar?",
+        topicos[2]?.titulo ? `Por que ${topicos[2].titulo.toLowerCase()} é importante para a família?` : "Que atitude prática devemos assumir nesta semana?",
+        "Qual compromisso você pode assumir diante de Deus depois desta lição?"
+      ];
+      return `<div class="summary-box"><h4>Revisando o Conteúdo</h4>${perguntas.slice(0,5).map((q,i)=>`<div class="question-answer"><strong>${i+1}. ${escapeHtml(String(q).replace(/\?*$/, "?"))}</strong><div class="student-space">Resposta:</div></div>`).join("")}</div>`;
+    }
+
     function limparLinguagemAluno(html){
       let out = String(html || "");
 
@@ -8242,39 +8413,7 @@ Gere somente esta etapa.`;
     }
 
     function forcarSubtopicoRevistaV1329(html,tituloEsperado){
-      const temp = document.createElement("div");
-      temp.innerHTML = String(html || "");
-
-      let sub = temp.querySelector(".subtopic");
-      if(!sub){
-        sub = document.createElement("div");
-        sub.className = "subtopic";
-        sub.innerHTML = temp.innerHTML;
-        temp.innerHTML = "";
-        temp.appendChild(sub);
-      }
-
-      Array.from(sub.querySelectorAll("h1,h2,h3")).forEach(el => {
-        if(textoGenericoRevistaV1329(el.innerText || el.textContent || "")){
-          el.remove();
-        }
-      });
-
-      let h4 = sub.querySelector("h4");
-      if(!h4){
-        h4 = document.createElement("h4");
-        sub.insertBefore(h4,sub.firstChild);
-      }
-      h4.textContent = tituloEsperado;
-
-      Array.from(sub.querySelectorAll("p,span,li,strong,em")).forEach(el => {
-        const txt = (el.innerText || el.textContent || "").trim();
-        if(textoGenericoRevistaV1329(txt) && txt.length < 120){
-          el.remove();
-        }
-      });
-
-      return temp.innerHTML;
+      return forcarBlocoEditorialRevistaV1339(html,tituloEsperado,"subtopic",{});
     }
 
     function limparBibliografiaInventada(html){
@@ -8675,7 +8814,7 @@ Gere somente esta etapa.`;
       );
 
       if(!html) return "";
-      return limparLinguagemAluno(html);
+      return limparLinguagemAluno(limparBastidoresRevistaV1339(html));
     }
 
     async function gerarParteProfessor(base,info,licoes,numero,dados,revistaAlunoTexto,nomeParte,extra,minimo = 200){
@@ -8764,7 +8903,7 @@ Regras:
           115
         );
 
-        partes.push(subHtml ? forcarSubtopicoRevistaV1329(subHtml,`${s + 1}. ${subtitulo}`) : blocoFallbackRevistaV1336("subtopic",`${s + 1}. ${subtitulo}`,dados,`Tópico principal: ${topico.titulo}.`));
+        partes.push(subHtml ? forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados) : blocoFallbackRevistaV1336("subtopic",`${s + 1}. ${subtitulo}`,dados,`Tópico principal: ${topico.titulo}.`));
       }
 
       // Revista do Aluno: não inserir sinopse entre todos os tópicos.
@@ -8778,14 +8917,14 @@ Regras:
       const topo = [];
       const corpo = [];
 
+      topo.push(await gerarLeituraClasse(base,info,licoes,numero,dados));
+
       topo.push(`
         <div class="compact-comment-header">
           <h2>Comentário</h2>
           <p>Lição ${numero} • ${escapeHtml(dados.titulo)} • Palavra-chave: ${escapeHtml(dados.palavraChave || "Lição")}</p>
         </div>
       `);
-
-      topo.push(await gerarLeituraClasse(base,info,licoes,numero,dados));
 
       const intro = await gerarParteAluno(
         base,
@@ -8804,7 +8943,7 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         160
       );
 
-      corpo.push(intro || blocoFallbackRevistaV1336("block","Introdução",dados,"Apresente o problema central da lição e prepare o aluno para os tópicos."));
+      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"Apresente o problema central da lição e prepare o aluno para os tópicos."));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -8838,7 +8977,7 @@ Regras:
         110
       );
 
-      corpo.push(ampliando || blocoFallbackRevistaV1336("knowledge","Ampliando o Conhecimento",dados,"Aprofunde um princípio bíblico, histórico ou pastoral ligado ao tema."));
+      corpo.push(ampliando ? forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados) : blocoFallbackRevistaV1336("knowledge","Ampliando o Conhecimento",dados,"Aprofunde um princípio bíblico, histórico ou pastoral ligado ao tema."));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -8857,39 +8996,11 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         140
       );
 
-      corpo.push(conclusao || blocoFallbackRevistaV1336("block","Conclusão",dados,"Retome o ensino principal e chame o aluno à prática da Palavra."));
+      corpo.push(conclusao ? forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados) : blocoFallbackRevistaV1336("block","Conclusão",dados,"Retome o ensino principal e chame o aluno à prática da Palavra."));
 
-      const revisao = await gerarParteAluno(
-        base,
-        info,
-        licoes,
-        numero,
-        dados,
-        "Revisando o conteúdo",
-        `
-Crie somente a seção Revisando o Conteúdo.
-Faça 4 perguntas.
-Não coloque respostas, pois esta é Revista do Aluno.
-Use <div class="summary-box"><h4>Revisando o Conteúdo</h4>.
-Para cada pergunta, use <div class="question-answer"><strong>1. pergunta</strong><div class="student-space">Resposta:</div></div>.
-A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve ficar em bloco único, fora das duas colunas.
-        `,
-        110
-      );
+      const revisaoFinal = renderRevisaoAlunoDeterministicaV1339(dados);
 
-      const revisaoFinal = revisao || `
-        <div class="summary-box">
-          <h4>Revisando o Conteúdo</h4>
-          ${(dados.perguntas || []).slice(0,4).map((q,i) => `
-            <div class="question-answer">
-              <strong>${i + 1}. ${escapeHtml(q[0] || "Pergunta da lição")}</strong>
-              <div class="student-space">Resposta:</div>
-            </div>
-          `).join("")}
-        </div>
-      `;
-
-      return limparLinguagemAluno(`
+      return limparLinguagemAluno(limparBastidoresRevistaV1339(`
         ${topo.join("\n")}
         <div class="magazine-columns">
           ${corpo.join("\n")}
@@ -8897,7 +9008,96 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
         <div class="lesson-review-full magazine-full">
           ${revisaoFinal}
         </div>
-      `);
+      `));
+    }
+
+    function renderRevisaoProfessorDeterministicaV1340(dados){
+      const perguntasBase = Array.isArray(dados?.perguntas) && dados.perguntas.length
+        ? dados.perguntas.map(q => Array.isArray(q) ? q : [q,""]).filter(q => q[0])
+        : [];
+      const topicos = Array.isArray(dados?.topicos) ? dados.topicos : [];
+      const perguntas = perguntasBase.length >= 5 ? perguntasBase.slice(0,5) : [
+        [`Qual é o ensino central da lição sobre ${dados?.titulo || "o tema estudado"}?`, `O ensino central é que ${String(dados?.titulo || "o tema estudado").toLowerCase()} precisa ser compreendido à luz da Palavra de Deus, conduzindo a família cristã ao temor do Senhor, à responsabilidade e à prática da fé no lar.`],
+        [topicos[0]?.titulo ? `O que aprendemos no tópico sobre ${topicos[0].titulo.toLowerCase()}?` : "Que princípio bíblico deve orientar a família cristã?", topicos[0]?.titulo ? `Aprendemos que ${topicos[0].titulo.toLowerCase()} deve ser tratado com equilíbrio bíblico, discernimento espiritual e aplicação prática na vida familiar.` : "A família cristã deve ser orientada pela Palavra de Deus, pelo amor, pela obediência e pelo compromisso com Cristo."],
+        [topicos[1]?.titulo ? `Como o tópico ${topicos[1].titulo.toLowerCase()} se aplica à vida familiar?` : "Como aplicar esta lição no lar?", topicos[1]?.titulo ? `Ele se aplica quando a família reconhece suas responsabilidades, corrige atitudes e busca viver os princípios bíblicos no relacionamento diário.` : "A lição se aplica quando cada pessoa decide praticar o ensino bíblico dentro de casa, com humildade e constância."],
+        [topicos[2]?.titulo ? `Por que ${topicos[2].titulo.toLowerCase()} é importante para a família?` : "Que atitude prática devemos assumir nesta semana?", topicos[2]?.titulo ? `Porque esse ensino fortalece o lar, corrige caminhos perigosos e ajuda a família a viver com maturidade, amor e temor a Deus.` : "Devemos assumir o compromisso de obedecer à Palavra e transformar a lição em atitudes concretas."],
+        ["Qual compromisso o professor deve conduzir a classe a assumir?", "O professor deve conduzir a classe a assumir o compromisso de aplicar a Palavra de Deus no lar, buscando restauração, maturidade e fidelidade cristã."]
+      ];
+
+      return `<div class="summary-box"><h4>Revisando o Conteúdo — Respostas Comentadas</h4>${perguntas.slice(0,5).map((q,i)=>{
+        const pergunta = Array.isArray(q) ? q[0] : q;
+        const resposta = Array.isArray(q) && q[1] ? q[1] : `Resposta: o professor deve conduzir a classe a responder com base no conteúdo da lição, relacionando o ensino bíblico à vida prática da família cristã.`;
+        return `<div class="question-answer"><strong>${i+1}. ${escapeHtml(String(pergunta).replace(/\?*$/, "?"))}</strong><p class="text"><strong>Resposta comentada:</strong> ${escapeHtml(String(resposta))}</p></div>`;
+      }).join("")}</div>`;
+    }
+
+    function renderIntroducaoProfessorDeterministicaV1340(dados){
+      const titulo = dados?.titulo || "a lição";
+      const base = dados?.leituraClasse || dados?.textoAureoRef || "a Palavra de Deus";
+      return `
+        <div class="block">
+          <h3>Introdução</h3>
+          <p class="text">Esta lição trabalha ${escapeHtml(titulo.toLowerCase())} a partir de ${escapeHtml(base)}, conduzindo a classe a enxergar o tema com fidelidade bíblica, sensibilidade pastoral e aplicação prática para a família cristã.</p>
+          <p class="text">O professor deve apresentar o assunto com equilíbrio, evitando discussões vazias e conduzindo os alunos ao centro da mensagem: a Palavra de Deus continua sendo suficiente para orientar o casamento, os pais, os filhos e a vida espiritual do lar.</p>
+        </div>
+        <div class="teacher-help">
+          <h4>Orientação Inicial ao Professor</h4>
+          <p class="text">Inicie a aula lendo o Texto Áureo e explique que a lição não é apenas informativa, mas formativa. O objetivo é levar a classe a examinar atitudes, fortalecer convicções bíblicas e aplicar a verdade estudada dentro de casa.</p>
+        </div>
+      `;
+    }
+
+    function renderTopicoProfessorDeterministicoV1340(dados,topico,indice){
+      const tituloLicao = dados?.titulo || "a lição";
+      const subtitulos = Array.isArray(topico?.subtitulos) && topico.subtitulos.length
+        ? topico.subtitulos.slice(0,3)
+        : ["Ensino bíblico do tema","Aplicação para a família","Caminho de maturidade cristã"];
+
+      return `
+        <div class="lesson-topic">
+          <h3>${roman(indice + 1)}. ${escapeHtml(topico?.titulo || `Tópico ${indice + 1}`)}</h3>
+          ${subtitulos.map((sub,s)=>`
+            <div class="subtopic">
+              <h4>${s + 1}. ${escapeHtml(sub)}</h4>
+              <p class="text">Este ponto deve ser explicado mostrando sua ligação com ${escapeHtml(tituloLicao.toLowerCase())}. O professor deve destacar o princípio bíblico, mostrar o perigo de uma vida familiar sem direção espiritual e conduzir a classe a uma resposta prática diante de Deus.</p>
+              <p class="text"><strong>Como explicar este ponto:</strong> apresente o ensino de forma simples, use exemplos da vida familiar e mostre que a obediência à Palavra produz maturidade, restauração e responsabilidade.</p>
+              <p class="text"><strong>Pergunta para diálogo:</strong> como este princípio pode ser aplicado de maneira concreta dentro do lar nesta semana?</p>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderAuxiliosProfessorDeterministicosV1340(dados){
+      const titulo = dados?.titulo || "a lição";
+      return `
+        <div class="personal-application magazine-full">
+          <h4>Aplicação em Sala</h4>
+          <p class="text">Conduza a classe a identificar atitudes concretas que precisam ser corrigidas no ambiente familiar. A lição deve terminar com um chamado à prática: mais temor a Deus, mais diálogo, mais perdão, mais responsabilidade e mais presença da Palavra dentro do lar.</p>
+        </div>
+
+        <div class="knowledge-box magazine-full">
+          <h4>Ampliando o Conhecimento</h4>
+          <p class="text">A família, na perspectiva bíblica, não é apenas uma construção social, mas um espaço de formação espiritual. Por isso, temas como casamento, disciplina, perdão, responsabilidade e identidade devem ser tratados com seriedade, pois revelam como a fé é vivida no cotidiano.</p>
+        </div>
+
+        <div class="teacher-help magazine-full">
+          <h4>Auxílio Teológico</h4>
+          <p class="text">Explique que ${escapeHtml(titulo.toLowerCase())} deve ser interpretado à luz da aliança, da responsabilidade moral e da graça restauradora de Deus. A Bíblia não ignora as crises familiares, mas aponta caminhos de arrependimento, sabedoria, perdão e obediência.</p>
+        </div>
+
+        <div class="teacher-help magazine-full">
+          <h4>Auxílio Didático</h4>
+          <p class="text">Divida a aula em três movimentos: primeiro, apresente o problema central da lição; depois, explique os tópicos com exemplos simples; por fim, conduza os alunos à aplicação prática. Evite transformar a aula em debate sem direção. Mantenha o foco no texto bíblico e na edificação da família.</p>
+        </div>
+
+        <div class="block">
+          <h3>Conclusão</h3>
+          <p class="text">Ao encerrar a aula, mostre que o ensino estudado precisa sair da sala e entrar no lar. A verdadeira aprendizagem acontece quando a Palavra de Deus deixa de ser apenas ouvida e passa a governar atitudes, decisões, conversas e relacionamentos.</p>
+        </div>
+
+        ${renderRevisaoProfessorDeterministicaV1340(dados)}
+      `;
     }
 
     async function gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto){
@@ -8919,9 +9119,9 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
           <div class="mini-card">
             <h3>Objetivos da Aula</h3>
             ${unorderedList([
-              "Explicar o ensino central da lição.",
-              "Aprofundar a compreensão bíblica do tema.",
-              "Conduzir a classe à aplicação prática da Palavra."
+              "Explicar o ensino central da lição mantendo a mesma base da Revista do Aluno.",
+              "Aprofundar a compreensão bíblica, pastoral e familiar do tema.",
+              "Conduzir a classe à aplicação prática da Palavra no lar."
             ])}
           </div>
 
@@ -8929,15 +9129,16 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
             <h3>Plano de Aula</h3>
             ${orderedList([
               "Ore e leia a passagem bíblica em classe.",
-              "Apresente a lição e sua importância.",
+              "Apresente o tema e a Verdade Prática.",
               "Explique os três tópicos em progressão.",
-              "Conclua com revisão, aplicação e oração."
+              "Aplique o conteúdo à realidade familiar dos alunos.",
+              "Conclua com revisão, respostas comentadas e oração."
             ])}
           </div>
         </div>
       `);
 
-      const intro = await gerarParteProfessor(
+      const introIA = await gerarParteProfessor(
         base,
         info,
         licoes,
@@ -8949,11 +9150,13 @@ A seção Revisando o Conteúdo deve funcionar como fechamento da lição e deve
 Crie somente a introdução da Revista do Professor.
 Preserve a linha da Revista do Aluno, mas acrescente orientação ao professor.
 Use <div class="block"><h3>Introdução</h3>...</div> e <div class="teacher-help"><h4>Orientação Inicial ao Professor</h4>...</div>.
+Não deixe espaços vazios.
         `,
-        220
+        180
       );
 
-      partes.push(intro || blocoManualVazio("block","Introdução do Professor"));
+      const intro = limparBastidoresRevistaV1339(introIA || "");
+      partes.push(intro && !/manual-placeholder|data-manual-placeholder/i.test(intro) ? intro : renderIntroducaoProfessorDeterministicaV1340(dados));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -8963,7 +9166,7 @@ Use <div class="block"><h3>Introdução</h3>...</div> e <div class="teacher-help
           subtitulos:["Subtópico 1","Subtópico 2","Subtópico 3"]
         };
 
-        const topicoHtml = await gerarParteProfessor(
+        const topicoHtmlIA = await gerarParteProfessor(
           base,
           info,
           licoes,
@@ -8982,20 +9185,21 @@ Regras:
 - Use <h3>${roman(i + 1)}. ${topico.titulo}</h3>.
 - Cada subtópico deve ser mais completo que o da Revista do Aluno.
 - Preserve a mesma linha do aluno.
-- Acrescente “Como explicar este ponto”.
-- Acrescente “Pergunta para abrir diálogo”.
-- Inclua sinopse.
-- Pode usar linguagem de professor.
-- Evite repetição e alongamento desnecessário.
-- Toda referência bíblica deve estar correta em relação ao assunto.
+- Acrescente orientação para o professor explicar este ponto.
+- Acrescente uma pergunta para diálogo.
+- Não deixe espaços vazios.
+- Não use texto genérico de bastidor.
           `,
-          350
+          300
         );
 
-        partes.push(topicoHtml || blocoManualVazio("block",`${roman(i + 1)}. ${topico.titulo}`));
+        const topicoHtml = limparBastidoresRevistaV1339(topicoHtmlIA || "");
+        partes.push(topicoHtml && !/manual-placeholder|data-manual-placeholder|<div class="block">\s*<h3>[^<]+<\/h3>\s*<p class="text">\s*<\/p>/i.test(topicoHtml)
+          ? topicoHtml
+          : renderTopicoProfessorDeterministicoV1340(dados,topico,i));
       }
 
-      const auxilios = await gerarParteProfessor(
+      const auxiliosIA = await gerarParteProfessor(
         base,
         info,
         licoes,
@@ -9005,12 +9209,12 @@ Regras:
         "Aplicação, auxílios e revisão",
         `
 Crie somente:
-1. Aplicação pessoal.
+1. Aplicação em sala.
 2. Ampliando o conhecimento.
 3. Auxílio teológico.
 4. Auxílio didático.
 5. Conclusão.
-6. Revisando o conteúdo com perguntas e respostas.
+6. Revisando o conteúdo com perguntas e respostas comentadas.
 
 Use as classes:
 <div class="personal-application">
@@ -9019,12 +9223,14 @@ Use as classes:
 <div class="block">
 <div class="summary-box">
 
+Não deixe espaços vazios.
 Seja completo, mas sem desperdiçar páginas.
         `,
-        430
+        380
       );
 
-      partes.push(auxilios || blocoManualVazio("block","Aplicação, auxílios e revisão"));
+      const auxilios = limparBastidoresRevistaV1339(auxiliosIA || "");
+      partes.push(auxilios && !/manual-placeholder|data-manual-placeholder/i.test(auxilios) ? auxilios : renderAuxiliosProfessorDeterministicosV1340(dados));
 
       return partes.join("\n");
     }
@@ -9259,7 +9465,19 @@ Estruture assim:
       );
 
       if(!abertura){
-        abertura = blocoManualVazio("block","Abertura do Livro de Apoio");
+        abertura = `
+          <h1 class="page-title">${escapeHtml(base.title)}</h1>
+          <p class="subtitle">${escapeHtml(base.subtitle)}</p>
+          <div class="block">
+            <h3>Prefácio ao Professor</h3>
+            <p class="text">Este Livro de Apoio foi preparado para ampliar a compreensão do professor e oferecer subsídios bíblicos, teológicos, pastorais e práticos relacionados às lições da revista.</p>
+            <p class="text">O objetivo não é repetir a Revista do Professor, mas aprofundar os temas, esclarecer dúvidas, fortalecer a preparação da aula e oferecer caminhos seguros para conduzir a classe com fidelidade à Palavra de Deus.</p>
+          </div>
+          <div class="block">
+            <h3>Como Usar Este Livro</h3>
+            <p class="text">Use este material antes da aula, como apoio de estudo e preparação. Consulte os capítulos, observe as perguntas difíceis, selecione aplicações e adapte os subsídios à realidade da classe.</p>
+          </div>
+        `;
       }
 
       html += renderPage(abertura,"intro-page");
@@ -9303,8 +9521,29 @@ Estruture assim:
         );
 
         if(!capitulo){
-          html += paginaErroLicao(base,info,numero,dados,"Capítulo do Livro de Apoio");
-          setStatus(`Capítulo ${numero} ficou em branco para edição manual. O app continuará gerando as próximas partes.`,"error");
+          const capituloSeguro = `
+            <h1 class="page-title">Capítulo ${numero} — ${escapeHtml(dados.titulo)}</h1>
+            <p class="subtitle">Aprofundamento da Lição ${numero} para preparação do professor</p>
+            <div class="block">
+              <h3>Visão Geral do Tema</h3>
+              <p class="text">Este capítulo aprofunda a lição ${numero}, oferecendo ao professor uma visão mais ampla do tema, com ênfase bíblica, pastoral e prática. O conteúdo deve ser usado como apoio para preparar a aula, esclarecer dúvidas e conduzir a classe com segurança.</p>
+              <p class="text">A Revista do Professor apresenta a estrutura da aula; este Livro de Apoio amplia os fundamentos, desenvolve aplicações e ajuda o professor a dominar melhor o assunto antes de ensinar.</p>
+            </div>
+            <div class="block">
+              <h3>Fundamentos Bíblicos e Pastorais</h3>
+              <p class="text">O professor deve observar a leitura bíblica indicada, relacionando o texto ao tema central da lição e evitando aplicações forçadas. A fidelidade ao sentido bíblico deve orientar toda explicação, toda pergunta e toda aplicação.</p>
+            </div>
+            <div class="summary-box">
+              <h4>Perguntas difíceis para preparação</h4>
+              <ol>
+                <li>Que dúvida principal os alunos podem levantar sobre esta lição?</li>
+                <li>Qual texto bíblico responde melhor ao problema tratado?</li>
+                <li>Como aplicar este ensino sem perder a sensibilidade pastoral?</li>
+              </ol>
+            </div>
+          `;
+          html += renderPage(capituloSeguro,"lesson-page");
+          setStatus(`Capítulo ${numero} recebeu conteúdo de segurança para não ficar em branco.`,"ok");
         }else{
           html += renderPage(capitulo,"lesson-page");
         }
@@ -9362,12 +9601,12 @@ Estruture assim:
       }
 
       html += renderBackCover(base,info);
-      html = html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}${paginasInstitucionais}`);
       html += `</div>`;
 
-      html = limparBibliografiaInventada(html);
+      const htmlFinal = limparBibliografiaInventada(
+        html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`)
+      );
 
-      const htmlFinal = html.replace(`<div class="doc">`,`<div class="doc">${capaFinal}`);
       renderGenerated(htmlFinal);
 
       if(manualPlaceholdersCount > 0){
@@ -9432,7 +9671,7 @@ Estruture assim:
 
     function aplicarLayoutRevistaDuasColunasV137(html){
       const temp = document.createElement("div");
-      temp.innerHTML = limparBastidoresRevistaV1338(normalizarRevisaoRevistaV1331(String(html || "")));
+      temp.innerHTML = limparBastidoresRevistaV1339(normalizarRevisaoRevistaV1331(String(html || "")));
 
       const doc = temp.querySelector(".doc");
       if(doc){
@@ -9440,6 +9679,7 @@ Estruture assim:
       }
 
       temp.querySelectorAll(".lesson-page .synopsis").forEach(el => el.remove());
+      temp.querySelectorAll(".lesson-page img").forEach(el => el.remove());
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
         const review = page.querySelector(":scope > .lesson-review-full");
@@ -9690,11 +9930,17 @@ Estruture assim:
       const htmlAntesDasCapas = html + `</div>`;
 
       if(info.isStudent && todasLicoesOk){
-        salvarBaseAlunoAutomatico(base,info,htmlAntesDasCapas);
+        const baseSalva = salvarBaseAlunoAutomatico(base,info,htmlAntesDasCapas);
+        if(!baseSalva){
+          console.warn("A Revista do Aluno foi gerada, mas a base textual não pôde ser salva automaticamente.");
+        }
       }
 
       if(info.isTeacher && todasLicoesOk){
-        salvarBaseProfessorAutomatico(base,info,htmlAntesDasCapas);
+        const baseSalvaProfessor = salvarBaseProfessorAutomatico(base,info,htmlAntesDasCapas);
+        if(!baseSalvaProfessor){
+          console.warn("A Revista do Professor foi gerada, mas a base textual não pôde ser salva automaticamente.");
+        }
       }
 
       await pause(700);
@@ -9745,7 +9991,7 @@ Estruture assim:
 
       const htmlFinalComCapaNoInicio = html.replace(
         `<div class="doc">`,
-        `<div class="doc">${capaFinal}`
+        `<div class="doc">${capaFinal}${paginasInstitucionais}`
       );
 
       renderGenerated(aplicarLayoutRevistaDuasColunasV137(htmlFinalComCapaNoInicio));
