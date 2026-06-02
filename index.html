@@ -6284,11 +6284,55 @@ Não inventar bibliografia.
     }
 
     function gerarTeseUniversal(titulo,base,objetivo = ""){
-      if(objetivo){
-        return objetivo.replace(/\.$/,"") + ".";
+      const obj = String(objetivo || "").trim();
+      if(obj){
+        return obj.replace(/\.$/,"") + ".";
       }
 
-      return `A lição "${titulo}" apresenta uma verdade bíblica essencial para a compreensão do tema "${base.visibleTheme}".`;
+      const t = String(titulo || "esta lição").trim();
+      return `${t} deve ser estudado à luz da Palavra de Deus, com aplicação bíblica, pastoral e prática para a vida cristã.`;
+    }
+
+    function topicosPadraoRevistaSeguros(tituloLimpo){
+      const t = String(tituloLimpo || "a lição").toLowerCase();
+
+      if(/div[oó]rcio|separa[cç][aã]o|fam[ií]lia atual|realidade da fam/i.test(t)){
+        return [
+          { titulo:"Divórcio e a realidade da família atual", funcao:"Explicar a realidade da crise familiar à luz da Palavra.", subtitulos:["Crise familiar","Consequências emocionais","Ensino bíblico contra a separação irresponsável"] },
+          { titulo:"Pais confusos e famílias sem direção", funcao:"Mostrar a necessidade de direção espiritual no lar.", subtitulos:["Falta de clareza","Crise de valores","Necessidade de direção bíblica"] },
+          { titulo:"Falta de amor no casamento", funcao:"Aplicar os princípios do amor, dever conjugal e restauração.", subtitulos:["Amor e atenção","Dever conjugal","Reciprocidade e restauração"] }
+        ];
+      }
+
+      if(/casal|casamento|marido|esposa|alian[cç]a/i.test(t)){
+        return [
+          { titulo:"Compromisso", funcao:"Ensinar o valor da aliança conjugal.", subtitulos:["Aliança permanente","Segurança emocional","Fidelidade nas crises"] },
+          { titulo:"Trabalho em equipe", funcao:"Mostrar o casal caminhando em unidade.", subtitulos:["Casal caminhando na mesma direção","Diálogo e cooperação","O cordão de três dobras"] },
+          { titulo:"Respeito e perdão", funcao:"Aplicar amor, respeito e reconciliação no casamento.", subtitulos:["Palavras que edificam","Amor que não busca seus próprios interesses","Perdão como cura do relacionamento"] }
+        ];
+      }
+
+      if(/pais felizes|pais|educa[cç][aã]o dos filhos/i.test(t)){
+        return [
+          { titulo:"Comunicação", funcao:"Ensinar diálogo e escuta no lar.", subtitulos:["Diálogo dentro de casa","Escuta atenta","Palavras que edificam"] },
+          { titulo:"Disciplina com equilíbrio", funcao:"Mostrar correção bíblica com amor.", subtitulos:["Ensinar limites","Corrigir com amor","Não provocar os filhos à ira"] },
+          { titulo:"Exemplo e bons valores", funcao:"Aplicar valores cristãos no lar.", subtitulos:["Valores cristãos no lar","Ética e respeito","Pais como modelo para os filhos"] }
+        ];
+      }
+
+      if(/filhos|felicidade dos filhos|identidade/i.test(t)){
+        return [
+          { titulo:"Ter identidade", funcao:"Mostrar a identidade do filho diante de Deus.", subtitulos:["Saber quem é em Deus","Não se moldar ao mundo","Conhecer pontos fortes e fracos"] },
+          { titulo:"Ser de confiança", funcao:"Ensinar caráter e responsabilidade.", subtitulos:["Integridade","Honestidade","Responsabilidade"] },
+          { titulo:"Ser trabalhador", funcao:"Aplicar diligência e propósito.", subtitulos:["Valor do trabalho","Fazer tudo com excelência","Definição de metas"] }
+        ];
+      }
+
+      return [
+        { titulo:"Fundamento bíblico", funcao:"Apresentar o alicerce bíblico da lição.", subtitulos:["O ensino das Escrituras","A verdade central","A resposta do cristão"] },
+        { titulo:"Desenvolvimento da lição", funcao:"Explicar o assunto com clareza e progressão.", subtitulos:["O problema tratado","A orientação bíblica","O caminho da maturidade"] },
+        { titulo:"Aplicação para a vida cristã", funcao:"Conduzir o aluno à prática da Palavra.", subtitulos:["A decisão necessária","A obediência diária","O fruto esperado"] }
+      ];
     }
 
     function montarLicaoUniversal(titulo,index,base,extra = "",textoBase = "",topicosExtraidos = null){
@@ -6297,42 +6341,25 @@ Não inventar bibliografia.
       const textoDaLicao = textoBase || base.biblicalBase || "Texto bíblico definido conforme o tema da lição";
       const textoAureoPrincipal = escolherTextoAureoPrincipal(textoDaLicao,base);
 
-      const topicosPadrao = [
-        {
-          titulo:`O ensino central de ${tituloLimpo}`,
-          funcao:"Desenvolver o primeiro eixo da lição conforme o tema informado pelo usuário.",
-          subtitulos:["O contexto do ensino","A orientação das Escrituras","A resposta do cristão"]
-        },
-        {
-          titulo:`A compreensão bíblica de ${tituloLimpo}`,
-          funcao:"Explicar o assunto de modo bíblico, claro e aplicado à classe escolhida.",
-          subtitulos:["O princípio bíblico","O desafio da vida real","A maturidade espiritual"]
-        },
-        {
-          titulo:`A prática cristã diante de ${tituloLimpo}`,
-          funcao:"Conduzir o aluno à vivência prática da Palavra no tema da lição.",
-          subtitulos:["A decisão necessária","O caminho de obediência","O fruto esperado"]
-        }
-      ];
-
       const topicosFinal = Array.isArray(topicosExtraidos) && topicosExtraidos.length === 3
         ? topicosExtraidos
-        : topicosPadrao;
+        : topicosPadraoRevistaSeguros(tituloLimpo);
 
       const dados = {
         titulo:tituloLimpo,
         tese:gerarTeseUniversal(tituloLimpo,base,extra),
         progressao:[
           topicosFinal[0]?.titulo || "Fundamento bíblico.",
-          topicosFinal[1]?.titulo || "Explicação doutrinária.",
-          topicosFinal[2]?.titulo || "Aplicação prática."
+          topicosFinal[1]?.titulo || "Desenvolvimento da lição.",
+          topicosFinal[2]?.titulo || "Aplicação para a vida cristã."
         ],
         foco:extra || `compreender "${tituloLimpo}" dentro do tema mensal "${tema}"`,
         textoAureoRef:textoAureoPrincipal,
         textoAureoTexto:textoBiblicoCurtoPorReferencia(textoAureoPrincipal),
         textoAureo:textoAureoPrincipal,
         leituraClasse:textoDaLicao,
-        sintese:extra || `A lição mostra como a verdade bíblica estudada orienta a fé, fortalece a esperança e conduz o cristão à obediência.`,
+        verdadePratica:extra || "",
+        sintese:extra || `${tituloLimpo} deve conduzir o aluno à fidelidade bíblica, maturidade espiritual e prática cristã coerente.`,
         palavraChave:extrairPalavraChave(tituloLimpo,tema),
         termos:["fé","verdade","santidade","obediência"],
         topicos:topicosFinal,
@@ -6351,6 +6378,10 @@ Não inventar bibliografia.
 
     function gerarSubtitulosUniversaisDoTopico(titulo){
       const t = String(titulo || "tópico").replace(/^\d+\.\s*/,"").trim();
+      const genericos = /fundamento b[ií]blico|desenvolvimento da li[cç][aã]o|aplica[cç][aã]o para a vida crist[aã]/i.test(t);
+      if(genericos){
+        return ["O ensino das Escrituras","O desafio prático","A resposta cristã"];
+      }
       return [
         `O sentido bíblico de ${t}`,
         `Os desafios práticos de ${t}`,
@@ -6380,6 +6411,18 @@ Não inventar bibliografia.
       return { ref, texto };
     }
 
+    function limparTituloTopicoPromptV1351(valor){
+      return limparLinhaCampoRevistaV1330(String(valor || "")
+        .replace(/^T[oó]pico\s*[1-3]\s*[:\-–—]\s*/i,"")
+        .replace(/^(?:[IVX]+|[1-3])\s*[.)\-–—]\s*/i,"")
+        .replace(/^#+\s*/,"")
+        .trim());
+    }
+
+    function linhaEhCampoDaLicaoV1351(linha){
+      return /^(texto\s*(b[ií]blico\s*)?base|texto\s*[aá]ureo|verdade\s*pr[aá]tica|leitura\s*b[ií]blica|leitura\s*em\s*classe|leitura\s*di[aá]ria|objetivos?|palavra\s*chave|coment[aá]rio|introdu[cç][aã]o|conclus[aã]o|revisando|ampliando)\s*[:\-–—]/i.test(String(linha || ""));
+    }
+
     function extrairTopicosDoBloco(bloco){
       const linhas = String(bloco || "")
         .split(/\n+/)
@@ -6387,60 +6430,77 @@ Não inventar bibliografia.
         .filter(Boolean);
 
       const topicos = [];
+      let atual = null;
 
-      for(let i = 0; i < linhas.length; i++){
-        const linha = linhas[i];
-        const topicoMatch = linha.match(/^T[oó]pico\s*([1-3])\s*[:\-–—]\s*(.+)$/i);
-
-        if(topicoMatch){
-          const numero = Number(topicoMatch[1]);
-          const titulo = topicoMatch[2].trim();
-          let subtitulos = [];
-
-          for(let j = i + 1; j < linhas.length; j++){
-            const prox = linhas[j].trim();
-            if(/^T[oó]pico\s*[1-3]\s*[:\-–—]/i.test(prox)) break;
-            if(/^Li[cç][aã]o\s*[1-4]\s*[:\-–—]/i.test(prox)) break;
-
-            const subMesmaLinha = prox.match(/^Subt[oó]picos\s*[:\-–—]\s*(.+)$/i);
-            if(subMesmaLinha && subMesmaLinha[1].trim()){
-              subtitulos = subMesmaLinha[1]
-                .split(/;|\||,(?=\s*[A-ZÁÉÍÓÚÂÊÔÃÕ])/)
-                .map(s => limparLinhaCampoRevistaV1330(s))
-                .filter(Boolean)
-                .slice(0,3);
-              break;
-            }
-
-            if(/^Subt[oó]picos\s*[:\-–—]?\s*$/i.test(prox)){
-              for(let k = j + 1; k < linhas.length; k++){
-                const item = linhas[k].trim();
-                if(/^T[oó]pico\s*[1-3]\s*[:\-–—]/i.test(item)) break;
-                if(/^Li[cç][aã]o\s*[1-4]\s*[:\-–—]/i.test(item)) break;
-                const itemMatch = item.match(/^(?:[-•*]|\d+[.)])\s*(.+)$/);
-                if(itemMatch && itemMatch[1]) subtitulos.push(limparLinhaCampoRevistaV1330(itemMatch[1]));
-                if(subtitulos.length >= 3) break;
-              }
-              break;
-            }
-
-            const itemMatch = prox.match(/^(?:[-•*]|\d+[.)])\s*(.+)$/);
-            if(itemMatch && itemMatch[1] && subtitulos.length < 3){
-              const possivel = limparLinhaCampoRevistaV1330(itemMatch[1]);
-              if(possivel && !/^refer[eê]ncias|^texto\s|^verdade\s|^leitura\s/i.test(possivel)) subtitulos.push(possivel);
-            }
-          }
-
-          topicos[numero - 1] = {
+      function salvarAtual(){
+        if(!atual) return;
+        const titulo = limparTituloTopicoPromptV1351(atual.titulo);
+        const subtitulos = (atual.subtitulos || [])
+          .map(limparLinhaCampoRevistaV1330)
+          .filter(Boolean)
+          .filter(s => !linhaEhCampoDaLicaoV1351(s))
+          .slice(0,3);
+        if(titulo){
+          topicos.push({
             titulo,
             funcao:`Desenvolver o tópico "${titulo}" de forma bíblica, clara e aplicável.`,
             subtitulos:subtitulos.length === 3 ? subtitulos : gerarSubtitulosUniversaisDoTopico(titulo)
-          };
+          });
         }
       }
 
-      const filtrados = topicos.filter(Boolean);
-      return filtrados.length === 3 ? filtrados : null;
+      for(let i = 0; i < linhas.length; i++){
+        const linha = linhas[i];
+        if(/^Li[cç][aã]o\s*[1-4]\s*[:\-–—]/i.test(linha)) continue;
+
+        const topicoMatch =
+          linha.match(/^T[oó]pico\s*([1-3])\s*[:\-–—]\s*(.+)$/i) ||
+          linha.match(/^([IVX]{1,4})\s*[.)\-–—]\s*(.+)$/i);
+
+        if(topicoMatch){
+          salvarAtual();
+          atual = { titulo:topicoMatch[2].trim(), subtitulos:[] };
+          const mesmaLinhaSub = topicoMatch[2].match(/^(.+?)\s+[-–—]\s+(.+)$/);
+          if(mesmaLinhaSub && /;|\|/.test(mesmaLinhaSub[2])){
+            atual.titulo = mesmaLinhaSub[1].trim();
+            atual.subtitulos = mesmaLinhaSub[2].split(/;|\|/).map(x => x.trim()).filter(Boolean);
+          }
+          continue;
+        }
+
+        if(!atual) continue;
+        if(linhaEhCampoDaLicaoV1351(linha)) continue;
+
+        const subMesmaLinha = linha.match(/^Subt[oó]picos\s*[:\-–—]\s*(.+)$/i);
+        if(subMesmaLinha && subMesmaLinha[1].trim()){
+          atual.subtitulos.push(...subMesmaLinha[1]
+            .split(/;|\||,(?=\s*[A-ZÁÉÍÓÚÂÊÔÃÕ])/)
+            .map(s => limparLinhaCampoRevistaV1330(s))
+            .filter(Boolean));
+          continue;
+        }
+
+        const itemMatch = linha.match(/^(?:[-•*]|[1-9][0-9]*[.)])\s*(.+)$/);
+        if(itemMatch && itemMatch[1]){
+          const possivel = limparLinhaCampoRevistaV1330(itemMatch[1]);
+          if(possivel && atual.subtitulos.length < 3){
+            atual.subtitulos.push(possivel);
+          }
+        }
+      }
+
+      salvarAtual();
+
+      const limpos = topicos
+        .filter(t => t && t.titulo)
+        .slice(0,3)
+        .map(t => ({
+          ...t,
+          titulo:limparTituloTopicoPromptV1351(t.titulo),
+          subtitulos:(t.subtitulos || []).slice(0,3)
+        }));
+
+      return limpos.length === 3 ? limpos : null;
     }
 
     function extrairLicoesDoTexto(texto,base){
@@ -6895,6 +6955,8 @@ REGRAS DE QUALIDADE:
 - Leitura Bíblica em Classe deve usar no máximo 2 referências principais, nunca uma lista grande.
 - Texto Áureo, Leitura Bíblica em Classe e Verdade Prática precisam combinar exatamente com o tema da lição.
 - Evite verdades práticas genéricas como “a verdade bíblica estudada orienta a fé”.
+- Nunca escreva na Verdade Prática: “A lição apresenta...”, “A lição desenvolve...”, “dentro do tema...” ou “para compreensão do tema...”.
+- Não gere uma versão simples da lição antes da versão diagramada. Gere somente o bloco pedido em cada etapa.
 - Na diagramação da lição: Leitura Bíblica em Classe fica em uma coluna; comentário, introdução, tópicos e subtópicos ficam em duas colunas; Revisando o Conteúdo/perguntas finais fica novamente em uma coluna, fora das colunas.
 - Entregar somente HTML interno, sem <html>, sem <head>, sem <body>, sem markdown.
       `.trim();
@@ -8019,7 +8081,7 @@ Gere somente esta etapa.`;
       const familia = temaRevistaFamiliaV1328(base || buildBase());
       let valor = String(dados?.verdadePratica || dados?.tese || dados?.sintese || "").trim();
 
-      const generica = /a li[cç][aã]o\s+(desenvolve|apresenta|mostra)|dentro do tema|unindo exposi[cç][aã]o|orienta a f[eé]|fortalece a esperan[cç]a|conduz o crist[aã]o|tema mensal/i.test(valor);
+      const generica = /a li[cç][aã]o\s+(desenvolve|apresenta|mostra|trabalha)|dentro do tema|compreens[aã]o do tema|unindo exposi[cç][aã]o|orienta a f[eé]|fortalece a esperan[cç]a|conduz o crist[aã]o|tema mensal|verdade b[ií]blica essencial/i.test(valor);
       if(!valor || generica || valor.length > 165){
         valor = familia
           ? verdadePraticaFamiliaV1334(dados?.titulo,numero)
@@ -9745,12 +9807,34 @@ Estruture assim:
       return temp.innerHTML;
     }
 
+    function removerRascunhosDuplicadosRevistaV1351(root){
+      if(!root) return;
+      const paginas = Array.from(root.querySelectorAll(".page"));
+      paginas.forEach(page => {
+        if(page.classList.contains("lesson-cover-page")) return;
+        if(page.classList.contains("cover-page")) return;
+        if(page.classList.contains("back-cover-page")) return;
+        if(page.classList.contains("revista-institutional-page")) return;
+        const texto = (page.innerText || "").replace(/\s+/g," ").trim();
+        const pareceRascunho =
+          /Li[cç][aã]o\s*1\s*[-–—:]/i.test(texto) &&
+          /Texto\s*[ÁA]ureo/i.test(texto) &&
+          /Verdade\s*Pr[áa]tica/i.test(texto) &&
+          /Leitura\s*B[ií]blica\s*em\s*Classe/i.test(texto);
+        const semLayout = !page.querySelector(".lesson-cover-header,.opening-cards,.scripture-full,.daily-reading,.compact-comment-header");
+        if(pareceRascunho && semLayout){
+          page.remove();
+        }
+      });
+    }
+
     function aplicarLayoutRevistaDuasColunasV137(html){
       const temp = document.createElement("div");
       temp.innerHTML = limparBastidoresRevistaV1339(normalizarRevisaoRevistaV1331(String(html || "")));
 
       const doc = temp.querySelector(".doc");
       if(doc){
+        removerRascunhosDuplicadosRevistaV1351(doc);
         doc.classList.add("magazine-layout");
       }
 
