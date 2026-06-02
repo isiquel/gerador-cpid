@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.52 — Revista EBD preservada + correção de impressão/PDF sem páginas quebradas -->
+  <!-- v13.53 — Revista EBD preservada + correção de impressão/PDF sem páginas quebradas -->
 
   <style>
     :root{
@@ -1360,6 +1360,42 @@
       background:#fff;
       margin-bottom:9px;
       line-height:1.58;
+    }
+
+    .teacher-planning-panel{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      margin:0 0 16px;
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .teacher-planning-card{
+      border:1px solid #b8d4f2;
+      border-left:7px solid #0c5fc4;
+      border-radius:18px;
+      padding:16px;
+      background:linear-gradient(180deg,#ffffff,#f7fbff);
+      break-inside:avoid;
+      page-break-inside:avoid;
+    }
+
+    .teacher-planning-card h3{
+      margin:0 0 10px;
+      color:#073d8c;
+      font-size:20px;
+      line-height:1.2;
+    }
+
+    .teacher-review-clean{
+      break-inside:auto;
+      page-break-inside:auto;
+    }
+
+    .teacher-review-clean .question-answer{
+      break-inside:avoid;
+      page-break-inside:avoid;
     }
 
     .student-space{
@@ -2832,7 +2868,7 @@
 
 
     /* =========================================================
-       v13.52 — CORREÇÃO DE IMPRESSÃO/PDF DA REVISTA EBD
+       v13.53 — CORREÇÃO DE IMPRESSÃO/PDF DA REVISTA EBD
        Mantém a revista igual na tela, mas deixa o PDF fluir
        sem páginas enormes em branco e sem quebras forçadas.
     ========================================================= */
@@ -7293,11 +7329,11 @@ REGRAS DA REVISTA DO PROFESSOR:
 - Preserve o conteúdo-base da Revista do Aluno.
 - Preserve a ordem das lições.
 - Preserve a essência dos tópicos e subtópicos.
-- Acrescente respostas no Revisando o Conteúdo.
-- Acrescente Orientação ao Professor.
-- Acrescente Auxílio Teológico.
-- Acrescente Auxílio Didático.
-- Acrescente Plano de Aula.
+- Acrescente Orientação ao Professor, Auxílio Teológico, Auxílio Didático, Aplicação em Sala e Plano de Aula em blocos próprios.
+- O Revisando o Conteúdo será organizado pelo aplicativo; não misture perguntas e respostas dentro de parágrafo corrido.
+- Não crie caixas estreitas com texto quebrado.
+- Não coloque Objetivos da Aula ou Plano de Aula dentro de tópico.
+- Não escreva “base da Revista do Aluno” dentro do texto final.
 - Seja mais completa que a Revista do Aluno, mas evite repetição desnecessária.
 - A Revista do Professor NÃO é Livro de Apoio: mantenha formato de revista/aula, com subsídios, sem transformar em capítulo de livro.
 - Toda referência bíblica precisa ser usada de acordo com seu sentido.
@@ -7322,7 +7358,9 @@ ${parte}
 REGRAS:
 - Gere SOMENTE esta parte.
 - Preserve a mesma linha do aluno.
-- Acrescente orientação de professor quando couber.
+- Acrescente orientação de professor quando couber, mas sempre em bloco organizado.
+- Não misture perguntas, respostas, objetivos, plano de aula e subtópicos no mesmo parágrafo.
+- Não use markdown com **asteriscos**. Use HTML limpo.
 - Seja completo, mas sem repetir blocos já gerados.
 - Não use referência bíblica fora de contexto.
 - Não gere espaços vazios.
@@ -9369,6 +9407,13 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
       `));
     }
 
+    function limparTextoProfessorV1353(valor){
+      return String(valor || "")
+        .replace(/\*\*/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
     function renderRevisaoProfessorDeterministicaV1340(dados){
       const perguntasBase = Array.isArray(dados?.perguntas) && dados.perguntas.length
         ? dados.perguntas.map(q => Array.isArray(q) ? q : [q,""]).filter(q => q[0])
@@ -9382,11 +9427,21 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         ["Qual compromisso o professor deve conduzir a classe a assumir?", "O professor deve conduzir a classe a assumir o compromisso de aplicar a Palavra de Deus no lar, buscando restauração, maturidade e fidelidade cristã."]
       ];
 
-      return `<div class="summary-box"><h4>Revisando o Conteúdo — Respostas Comentadas</h4>${perguntas.slice(0,5).map((q,i)=>{
-        const pergunta = Array.isArray(q) ? q[0] : q;
-        const resposta = Array.isArray(q) && q[1] ? q[1] : `Resposta: o professor deve conduzir a classe a responder com base no conteúdo da lição, relacionando o ensino bíblico à vida prática da família cristã.`;
-        return `<div class="question-answer"><strong>${i+1}. ${escapeHtml(String(pergunta).replace(/\?*$/, "?"))}</strong><p class="text"><strong>Resposta comentada:</strong> ${escapeHtml(String(resposta))}</p></div>`;
-      }).join("")}</div>`;
+      return `
+        <div class="summary-box teacher-review-clean magazine-full">
+          <h4>Revisando o Conteúdo — Respostas Comentadas</h4>
+          ${perguntas.slice(0,5).map((q,i)=>{
+            const pergunta = limparTextoProfessorV1353(Array.isArray(q) ? q[0] : q).replace(/\?*$/, "?");
+            const resposta = limparTextoProfessorV1353(Array.isArray(q) && q[1] ? q[1] : `O professor deve conduzir a classe a responder com base no conteúdo da lição, relacionando o ensino bíblico à vida prática da família cristã.`);
+            return `
+              <div class="question-answer">
+                <p class="text"><strong>${i + 1}. ${escapeHtml(pergunta)}</strong></p>
+                <p class="text"><strong>Resposta comentada:</strong> ${escapeHtml(resposta)}</p>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
     }
 
     function renderIntroducaoProfessorDeterministicaV1340(dados){
@@ -9458,6 +9513,20 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
       `;
     }
 
+    function removerRevisaoProfessorSoltaV1353(html){
+      let saida = String(html || "");
+      const idx = saida.search(/<h[1-6][^>]*>\s*Revisando\s+o\s+Conte[uú]do|Revisando\s+o\s+Conte[uú]do/i);
+      if(idx >= 0){
+        saida = saida.slice(0,idx);
+      }
+      return saida.replace(/\*\*/g, "").trim();
+    }
+
+    function renderAuxiliosProfessorDeterministicosSemRevisaoV1353(dados){
+      const html = renderAuxiliosProfessorDeterministicosV1340(dados);
+      return removerRevisaoProfessorSoltaV1353(html);
+    }
+
     async function gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto){
       const partes = [];
 
@@ -9473,22 +9542,22 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
       partes.push(await gerarLeituraClasse(base,info,licoes,numero,dados));
 
       partes.push(`
-        <div class="mini-grid">
-          <div class="mini-card">
+        <div class="teacher-planning-panel magazine-full">
+          <div class="teacher-planning-card">
             <h3>Objetivos da Aula</h3>
             ${unorderedList([
-              "Explicar o ensino central da lição mantendo a mesma base da Revista do Aluno.",
-              "Aprofundar a compreensão bíblica, pastoral e familiar do tema.",
+              "Apresentar o ensino central da lição com fidelidade bíblica.",
+              "Aprofundar a compreensão pastoral e familiar do tema estudado.",
               "Conduzir a classe à aplicação prática da Palavra no lar."
             ])}
           </div>
 
-          <div class="mini-card">
+          <div class="teacher-planning-card">
             <h3>Plano de Aula</h3>
             ${orderedList([
               "Ore e leia a passagem bíblica em classe.",
-              "Apresente o tema e a Verdade Prática.",
-              "Explique os três tópicos em progressão.",
+              "Apresente o tema, o Texto Áureo e a Verdade Prática.",
+              "Explique os três tópicos respeitando a ordem da lição.",
               "Aplique o conteúdo à realidade familiar dos alunos.",
               "Conclua com revisão, respostas comentadas e oração."
             ])}
@@ -9507,7 +9576,10 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         `
 Crie somente a introdução da Revista do Professor.
 Preserve a linha da Revista do Aluno, mas acrescente orientação ao professor.
-Use <div class="block"><h3>Introdução</h3>...</div> e <div class="teacher-help"><h4>Orientação Inicial ao Professor</h4>...</div>.
+Use somente estes dois blocos:
+<div class="block"><h3>Introdução</h3>...</div>
+<div class="teacher-help"><h4>Orientação Inicial ao Professor</h4>...</div>
+Não gere Objetivos da Aula, Plano de Aula, Revisando o Conteúdo ou perguntas aqui.
 Não deixe espaços vazios.
         `,
         180
@@ -9541,12 +9613,15 @@ ${(topico.subtitulos || []).map((s,idx) => `${idx + 1}. ${s}`).join("\n")}
 Regras:
 - Use <div class="lesson-topic">.
 - Use <h3>${roman(i + 1)}. ${topico.titulo}</h3>.
+- Dentro do tópico, use exatamente 3 blocos <div class="subtopic">, um para cada subtópico obrigatório.
+- Cada subtópico deve ter: <h4>número e título</h4>, um parágrafo de explicação, um parágrafo curto com <strong>Orientação ao Professor:</strong> e uma pergunta curta para diálogo.
+- Não coloque Orientação ao Professor antes dos subtópicos.
+- Não gere Objetivos da Aula, Plano de Aula, Revisando o Conteúdo, Aplicação em Sala, Conclusão ou Auxílios neste tópico.
 - Cada subtópico deve ser mais completo que o da Revista do Aluno.
 - Preserve a mesma linha do aluno.
-- Acrescente orientação para o professor explicar este ponto.
-- Acrescente uma pergunta para diálogo.
 - Não deixe espaços vazios.
 - Não use texto genérico de bastidor.
+- Não use markdown com **asteriscos**.
           `,
           300
         );
@@ -9572,23 +9647,27 @@ Crie somente:
 3. Auxílio teológico.
 4. Auxílio didático.
 5. Conclusão.
-6. Revisando o conteúdo com perguntas e respostas comentadas.
+
+NÃO gere Revisando o Conteúdo aqui. O aplicativo colocará a revisão automaticamente.
 
 Use as classes:
 <div class="personal-application">
 <div class="knowledge-box">
 <div class="teacher-help">
 <div class="block">
-<div class="summary-box">
+Não use <div class="summary-box"> nesta etapa.
 
 Não deixe espaços vazios.
 Seja completo, mas sem desperdiçar páginas.
+Não use markdown com **asteriscos**.
         `,
         380
       );
 
       const auxilios = limparBastidoresRevistaV1339(auxiliosIA || "");
-      partes.push(auxilios && !/manual-placeholder|data-manual-placeholder/i.test(auxilios) ? auxilios : renderAuxiliosProfessorDeterministicosV1340(dados));
+      const auxiliosSemRevisao = removerRevisaoProfessorSoltaV1353(auxilios);
+      partes.push(auxiliosSemRevisao && !/manual-placeholder|data-manual-placeholder/i.test(auxiliosSemRevisao) ? auxiliosSemRevisao : renderAuxiliosProfessorDeterministicosSemRevisaoV1353(dados));
+      partes.push(renderRevisaoProfessorDeterministicaV1340(dados));
 
       return partes.join("\n");
     }
