@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.34 — Revista EBD: novo modo para organizar conteúdo pronto sem alterar a lógica atual -->
+  <!-- v13.35 — Revista EBD: modo conteúdo pronto corrigido para não estourar o limite da IA -->
 
   <style>
     :root{
@@ -4259,6 +4259,17 @@
       return clean.slice(0,limite) + "\n\n[BASE RECORTADA PELO APP PARA CABER NA JANELA DA IA]";
     }
 
+    function limitarConteudoProntoRevista(texto,limite = 14000){
+      const clean = normalizarTextoBase(texto);
+      if(clean.length <= limite) return clean;
+
+      const metade = Math.floor((limite - 260) / 2);
+      const inicio = clean.slice(0,metade);
+      const fim = clean.slice(-metade);
+
+      return `${inicio}\n\n[O CONTEÚDO COLADO ERA MUITO GRANDE. O APP ENVIOU UM RECORTE DO INÍCIO E DO FINAL PARA EVITAR ERRO DE LIMITE/TOKEN NA IA. Preserve o tema e a doutrina do material do usuário, sem inventar outro tema.]\n\n${fim}`;
+    }
+
     function removerCapasEImagensPesadas(html){
       const temp = document.createElement("div");
       temp.innerHTML = String(html || "");
@@ -6940,7 +6951,7 @@ ${base.title}
 ${base.subtitle}
 ${base.theme}
 ${info.revistaObservacao}
-${info.revistaConteudoPronto}
+${limitarConteudoProntoRevista(info.revistaConteudoPronto,16000)}
 ${base.extraNotes}
       `.trim();
 
@@ -6973,7 +6984,7 @@ Tópicos: ${(l.topicos || []).map(t => `${t.titulo}: ${(t.subtitulos || []).join
 
       const modoConteudoProntoAtivo = info.isConteudoPronto;
       const fonteConteudoPronto = modoConteudoProntoAtivo
-        ? limitarTexto(info.revistaConteudoPronto,42000)
+        ? limitarConteudoProntoRevista(info.revistaConteudoPronto,14000)
         : "";
 
       return `
@@ -7009,6 +7020,9 @@ Modo de criação da revista: ${modoConteudoProntoAtivo ? "ORGANIZAR CONTEÚDO P
 
 CONTEÚDO PRONTO COLADO PELO USUÁRIO — USAR COMO FONTE PRINCIPAL QUANDO EXISTIR
 ${modoConteudoProntoAtivo ? fonteConteudoPronto : "[Nenhum conteúdo pronto foi informado. Usar o prompt e a direção das lições normalmente.]"}
+
+NOTA TÉCNICA PARA EVITAR FALHA DA IA:
+Se o conteúdo pronto foi recortado pelo app, trabalhe com o recorte enviado e com o tema informado. Não responda dizendo que faltou texto; organize o material no padrão EBD usando o que foi enviado.
 
 4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
