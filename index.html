@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.35 — Revista EBD: modo conteúdo pronto corrigido para não estourar o limite da IA -->
+  <!-- v13.33 — restauração visual Revista EBD: layout editorial, duas colunas, cards coloridos e capa familiar coerente -->
 
   <style>
     :root{
@@ -279,10 +279,6 @@
 
     #revistaObservacao{
       min-height:145px;
-    }
-
-    #revistaConteudoPronto{
-      min-height:220px;
     }
 
     #sermonSupportRefs{
@@ -3168,25 +3164,6 @@
               <strong>Preservado:</strong> esta lógica da Revista EBD permanece intocada.
             </div>
 
-            <div class="field">
-              <label for="revistaModoCriacao">Modo de criação da Revista EBD</label>
-              <select id="revistaModoCriacao">
-                <option value="prompt-completo" selected>Jeito atual — criar pelo prompt completo</option>
-                <option value="conteudo-pronto">Novo — organizar conteúdo pronto em Revista EBD</option>
-              </select>
-              <div class="chip-note">
-                O jeito atual continua igual. O novo modo usa o conteúdo colado como fonte principal e apenas organiza, corrige e completa lacunas bíblicas.
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="revistaConteudoPronto">Conteúdo pronto da revista / apostila / lições</label>
-              <textarea id="revistaConteudoPronto" placeholder="Cole aqui o conteúdo real da revista, apostila, estudos ou lições. Exemplo: texto escrito por você, por um professor ou por um comentarista. O app vai preservar este conteúdo como base, corrigir ortografia e pontuação, organizar em 4 lições e completar lacunas bíblicas quando necessário."></textarea>
-              <div class="chip-note">
-                Use este campo somente no modo “Organizar conteúdo pronto”. Se ficar vazio, o app continua usando o prompt e a direção das 4 lições como já fazia.
-              </div>
-            </div>
-
             <div class="status-mini-grid">
               <div id="baseAlunoStatus" class="status-mini warn">Aluno: base não salva.</div>
               <div id="baseProfessorStatus" class="status-mini warn">Professor: base não salva.</div>
@@ -4259,17 +4236,6 @@
       return clean.slice(0,limite) + "\n\n[BASE RECORTADA PELO APP PARA CABER NA JANELA DA IA]";
     }
 
-    function limitarConteudoProntoRevista(texto,limite = 14000){
-      const clean = normalizarTextoBase(texto);
-      if(clean.length <= limite) return clean;
-
-      const metade = Math.floor((limite - 260) / 2);
-      const inicio = clean.slice(0,metade);
-      const fim = clean.slice(-metade);
-
-      return `${inicio}\n\n[O CONTEÚDO COLADO ERA MUITO GRANDE. O APP ENVIOU UM RECORTE DO INÍCIO E DO FINAL PARA EVITAR ERRO DE LIMITE/TOKEN NA IA. Preserve o tema e a doutrina do material do usuário, sem inventar outro tema.]\n\n${fim}`;
-    }
-
     function removerCapasEImagensPesadas(html){
       const temp = document.createElement("div");
       temp.innerHTML = String(html || "");
@@ -5093,42 +5059,6 @@
       return false;
     }
 
-    function erroCurtoIA(status,detalhe){
-      const txt = String(detalhe || "").replace(/\s+/g," ").trim();
-      return `${status}${txt ? " — " + txt.slice(0,220) : ""}`;
-    }
-
-    async function fetchComTimeoutV1346(endpoint,payload,timeoutMs = 120000){
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-      try{
-        const res = await fetch(endpoint,{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body:JSON.stringify(payload),
-          signal:controller.signal
-        });
-
-        const contentType = res.headers.get("content-type") || "";
-        let raw = "";
-
-        try{
-          if(contentType.includes("application/json")){
-            raw = await res.json();
-          }else{
-            raw = await res.text();
-          }
-        }catch(parseError){
-          raw = "";
-        }
-
-        return { res, contentType, raw };
-      }finally{
-        clearTimeout(timer);
-      }
-    }
-
     async function chamarTextoIA(prompt,etapa = "Geração",opcoes = {}){
       const payload = {
         prompt,
@@ -5136,11 +5066,9 @@
         tipo:currentType,
         formato:"html",
         sistema:"VERBO IA",
-        preferencia:"usar somente o endpoint de texto /api/gerar para materiais; não usar /api/prompt protegido por código de acesso",
+        preferencia:"usar somente o endpoint de texto /api/gerar para materiais; tentar Gemini e depois ChatGPT dentro da API",
         minQuality:opcoes.minQuality || "conteúdo robusto, específico e fiel ao pedido do usuário"
       };
-
-      let ultimoErro = "";
 
       const globalFns = [
         "gerarComGemini",
@@ -5153,20 +5081,13 @@
       for(const fnName of globalFns){
         try{
           if(typeof window[fnName] === "function"){
-            if(typeof setStatus === "function") setStatus(`${etapa}: aguardando resposta da IA...`);
             const res = await window[fnName](prompt,payload);
             const normalized = normalizeAIResponse(res);
-
             if(validarRespostaIA(normalized,opcoes.minimo || 220,opcoes)){
               return limparMarkdownHtml(normalized);
             }
-
-            if(normalized){
-              ultimoErro = `Resposta curta/fraca em ${fnName}`;
-            }
           }
         }catch(error){
-          ultimoErro = `${fnName}: ${error?.message || error}`;
           console.warn("Falha em",fnName,error);
         }
       }
@@ -5178,41 +5099,42 @@
 
       for(const endpoint of endpoints){
         try{
-          if(typeof setStatus === "function") setStatus(`${etapa}: chamando ${endpoint} e aguardando IA...`);
-
-          const { res, raw } = await fetchComTimeoutV1346(endpoint,payload,120000);
+          const res = await fetch(endpoint,{
+            method:"POST",
+            headers:{ "Content-Type":"application/json" },
+            body:JSON.stringify(payload)
+          });
 
           if(!res.ok){
-            const detalhe = typeof raw === "string" ? raw : JSON.stringify(raw || {});
-            ultimoErro = erroCurtoIA(`${endpoint} HTTP ${res.status}`,detalhe);
-            console.warn("Endpoint retornou erro:",ultimoErro);
-            await pause(900);
+            try{
+              const erroTxt = await res.text();
+              console.warn(`Falha em ${endpoint}: HTTP ${res.status}`, erroTxt);
+              if(typeof setStatus === "function"){
+                setStatus(`${etapa}: ${endpoint} HTTP ${res.status}. Tentando próxima opção...`, "error");
+              }
+            }catch(e){
+              console.warn(`Falha em ${endpoint}: HTTP ${res.status}`);
+            }
             continue;
           }
 
-          const normalized = normalizeAIResponse(raw);
+          const contentType = res.headers.get("content-type") || "";
+          let normalized = "";
+
+          if(contentType.includes("application/json")){
+            const data = await res.json();
+            normalized = normalizeAIResponse(data);
+          }else{
+            const text = await res.text();
+            normalized = normalizeAIResponse(text);
+          }
 
           if(validarRespostaIA(normalized,opcoes.minimo || 220,opcoes)){
             return limparMarkdownHtml(normalized);
           }
-
-          ultimoErro = normalized
-            ? `${endpoint}: resposta chegou, mas veio curta/fraca (${extrairTextoDeHtml(normalized).trim().length} caracteres)`
-            : `${endpoint}: resposta vazia`;
-          console.warn(ultimoErro);
-
-          await pause(900);
         }catch(error){
-          ultimoErro = error?.name === "AbortError"
-            ? `${endpoint}: tempo esgotado aguardando a IA`
-            : `${endpoint}: ${error?.message || error}`;
           console.warn("Endpoint indisponível:",endpoint,error);
-          await pause(900);
         }
-      }
-
-      if(typeof setStatus === "function" && ultimoErro){
-        setStatus(`${etapa}: falhou na IA. ${ultimoErro}`,"error");
       }
 
       return "";
@@ -5261,41 +5183,6 @@ Etapa: ${etapa}
       `.trim();
     }
 
-    function criarPromptDiretoObrigatorioV1345(promptOriginal,etapa){
-      return `
-${promptOriginal}
-
-TENTATIVA REFORÇADA:
-A parte anterior não gerou conteúdo aproveitável.
-
-Agora gere conteúdo final, pronto para entrar na revista.
-- Não deixe vazio.
-- Não escreva instruções.
-- Não escreva "ao estudar", "apresente", "prepare", "explique", "o professor deve" ou "conduza a classe".
-- Não repita o mesmo parágrafo de outra parte.
-- Fale diretamente do tema desta etapa.
-- Se for subtópico, escreva somente o subtópico pedido, com conteúdo específico.
-- Entregue HTML interno válido.
-
-Etapa: ${etapa}
-      `.trim();
-    }
-
-    function criarPromptUltraDiretoV1345(promptOriginal,etapa){
-      return `
-${promptOriginal}
-
-TENTATIVA FINAL OBRIGATÓRIA:
-Escreva agora somente 1 ou 2 parágrafos bons, específicos e prontos para publicação.
-Não coloque título diferente.
-Não deixe em branco.
-Não use linguagem de bastidor.
-Não explique o que deveria ser feito; apenas escreva o conteúdo final.
-
-Etapa: ${etapa}
-      `.trim();
-    }
-
     async function chamarTextoIAComTentativas(prompts,etapa,opcoes = {}){
       const lista = Array.isArray(prompts) ? prompts : [prompts];
 
@@ -5312,36 +5199,23 @@ Etapa: ${etapa}
           {
             prompt:criarPromptMaisSimples(promptOriginal,etapa),
             nome:`${etapa} — tentativa 2 simplificada`,
-            minimo:Math.max(120,Math.floor((opcoes.minimo || 220) * 0.70)),
-            aceitarCurto:false
-          },
-          {
-            prompt:criarPromptDiretoObrigatorioV1345(promptOriginal,etapa),
-            nome:`${etapa} — tentativa 3 reforçada`,
-            minimo:Math.max(110,Math.floor((opcoes.minimo || 220) * 0.65)),
-            aceitarCurto:false
-          },
-          {
-            prompt:criarPromptMinimo(promptOriginal,etapa),
-            nome:`${etapa} — tentativa 4 mínima`,
-            minimo:Math.max(95,Math.floor((opcoes.minimo || 220) * 0.50)),
+            minimo:Math.max(80,Math.floor((opcoes.minimo || 220) * 0.55)),
             aceitarCurto:true
           },
           {
-            prompt:criarPromptUltraDiretoV1345(promptOriginal,etapa),
-            nome:`${etapa} — tentativa 5 final`,
-            minimo:80,
+            prompt:criarPromptMinimo(promptOriginal,etapa),
+            nome:`${etapa} — tentativa 3 mínima`,
+            minimo:55,
             aceitarCurto:true,
-            aceitarMuitoCurto:false
+            aceitarMuitoCurto:true
           }
         ];
 
         for(let tentativaIndex = 0; tentativaIndex < tentativas.length; tentativaIndex++){
           const tentativa = tentativas[tentativaIndex];
           if(typeof setStatus === "function"){
-            setStatus(`${tentativa.nome} de 5...`);
+            setStatus(`${tentativa.nome} de 3...`);
           }
-
           const html = await chamarTextoIA(tentativa.prompt,tentativa.nome,{
             ...opcoes,
             minimo:tentativa.minimo,
@@ -5359,7 +5233,7 @@ Etapa: ${etapa}
             return limpo;
           }
 
-          await pause(450);
+          await pause(350);
         }
       }
 
@@ -5982,8 +5856,6 @@ REGRAS:
       const revistaMes = getValue("revistaMes") || "Agosto";
       const revistaAno = getValue("revistaAno") || String(new Date().getFullYear());
       const revistaObservacao = getValue("revistaObservacao") || "";
-      const revistaModoCriacao = getValue("revistaModoCriacao") || "prompt-completo";
-      const revistaConteudoPronto = getValue("revistaConteudoPronto") || "";
       const printFormat = getValue("printFormat") || "a4";
       const supportBookDepth = getValue("supportBookDepth") || "expandido";
       const bibliographyMode = getValue("bibliographyMode") || "segura";
@@ -5998,9 +5870,6 @@ REGRAS:
         revistaMes,
         revistaAno,
         revistaObservacao,
-        revistaModoCriacao,
-        revistaConteudoPronto,
-        isConteudoPronto:revistaModoCriacao === "conteudo-pronto" && revistaConteudoPronto.trim().length > 0,
         printFormat,
         supportBookDepth,
         bibliographyMode,
@@ -6951,7 +6820,6 @@ ${base.title}
 ${base.subtitle}
 ${base.theme}
 ${info.revistaObservacao}
-${limitarConteudoProntoRevista(info.revistaConteudoPronto,16000)}
 ${base.extraNotes}
       `.trim();
 
@@ -6961,10 +6829,8 @@ ${base.extraNotes}
         return licoesDoPrompt;
       }
 
-      // v13.44 — regra universal:
-      // Não usar lições prontas/hardcoded no código. A IA deve trabalhar a partir do esboço que o usuário colocou nos campos.
-      // Se o usuário informou as 4 lições, elas já foram extraídas acima.
-      // Se não informou, usa uma estrutura universal derivada do tema, sem conteúdo específico fixo.
+      // v13.48: motor universal restaurado.
+      // Não usar conteúdo pronto/hardcoded no código; a IA deve usar o esboço informado nos campos.
       return gerarLicoesUniversaisDoTema(base);
     }
 
@@ -6982,11 +6848,6 @@ Tópicos: ${(l.topicos || []).map(t => `${t.titulo}: ${(t.subtitulos || []).join
         `.trim())
         .join("\n\n");
 
-      const modoConteudoProntoAtivo = info.isConteudoPronto;
-      const fonteConteudoPronto = modoConteudoProntoAtivo
-        ? limitarConteudoProntoRevista(info.revistaConteudoPronto,14000)
-        : "";
-
       return `
 Você é comentarista de Escola Bíblica Dominical, teólogo pentecostal, escritor cristão, professor experiente e editor de materiais cristãos.
 
@@ -6995,10 +6856,9 @@ A revista sempre deve ser mensal e ter 4 lições completas, correspondendo aos 
 REGRA ABSOLUTA:
 O tema e o conteúdo devem obedecer ao que o usuário escreveu no aplicativo.
 Não use tema pré-definido.
-Não use conteúdo pronto externo ao usuário.
+Não use conteúdo pronto.
 Se o usuário escreveu 4 lições, use exatamente essas 4 lições.
 Se o usuário escreveu tópicos e subtópicos, preserve esses tópicos e subtópicos.
-Se o modo "Organizar conteúdo pronto" estiver ativo, a fonte principal obrigatória é o conteúdo colado pelo usuário. Nesse caso, não substitua o material por outro tema: apenas organize, revise, corrija ortografia/pontuação, distribua em formato de Revista EBD, complete lacunas bíblicas necessárias e melhore a clareza sem mudar a doutrina central.
 
 DADOS DO MATERIAL
 Título: ${base.title}
@@ -7016,13 +6876,6 @@ Tom: ${base.tone}
 Profundidade: ${base.depthLevel}
 Observações extras: ${base.extraNotes}
 Direção original das 4 lições: ${info.revistaObservacao}
-Modo de criação da revista: ${modoConteudoProntoAtivo ? "ORGANIZAR CONTEÚDO PRONTO" : "CRIAR PELO PROMPT COMPLETO"}
-
-CONTEÚDO PRONTO COLADO PELO USUÁRIO — USAR COMO FONTE PRINCIPAL QUANDO EXISTIR
-${modoConteudoProntoAtivo ? fonteConteudoPronto : "[Nenhum conteúdo pronto foi informado. Usar o prompt e a direção das lições normalmente.]"}
-
-NOTA TÉCNICA PARA EVITAR FALHA DA IA:
-Se o conteúdo pronto foi recortado pelo app, trabalhe com o recorte enviado e com o tema informado. Não responda dizendo que faltou texto; organize o material no padrão EBD usando o que foi enviado.
 
 4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
@@ -7034,9 +6887,6 @@ REGRAS DE QUALIDADE:
 - Toda referência bíblica deve combinar com o assunto explicado.
 - Não copiar conteúdo de nenhuma editora.
 - Nunca copiar o prompt do usuário dentro do conteúdo final.
-- Se houver conteúdo pronto colado, não jogar fora o conteúdo real: preservar o sentido, a sequência doutrinária e as ênfases do material original.
-- Corrigir ortografia, acentuação, pontuação, concordância, repetições excessivas e frases confusas do conteúdo colado.
-- Se faltar Texto Áureo, Verdade Prática, Leitura Bíblica em Classe, objetivos ou perguntas, completar de forma bíblica e coerente com o conteúdo colado.
 - Evitar repetição de ideias apenas para preencher espaço.
 - Cada tópico precisa acrescentar algo novo.
 - A Revista do Aluno deve ser profunda, econômica para impressão e com aparência completa de revista EBD, NÃO como apostila seca.
@@ -8973,45 +8823,23 @@ Gere somente esta etapa.`;
       }
     }
 
-    async function gerarParteAluno(base,info,licoes,numero,dados,nomeParte,extra,minimo = 180){
-      const prompt = promptParteAluno(base,info,licoes,numero,dados,nomeParte,`
-${extra}
-
-REGRA UNIVERSAL v13.44:
-- Gere conteúdo real a partir do esboço do usuário e dos dados da lição.
-- Não use texto genérico.
-- Não repita o mesmo parágrafo da introdução nos tópicos.
-- Cada subtópico precisa acrescentar uma ideia nova.
-- Se esta parte for subtópico, fale exatamente do subtópico pedido.
-- Não escreva orientação ao professor na Revista do Aluno.
-- Não escreva frases de bastidor como "apresente", "prepare", "explique", "conduza", "ao estudar".
-- Não invente tema pronto; obedeça ao esboço informado pelo usuário.
-`);
+    async function gerarParteAluno(base,info,licoes,numero,dados,nomeParte,extra,minimo = 140){
+      const prompt = promptParteAluno(base,info,licoes,numero,dados,nomeParte,extra);
 
       const html = await chamarTextoIAComTentativas(
         [prompt],
         `Lição ${numero} do aluno — ${nomeParte}`,
         {
-          minimo:Math.max(minimo,160),
-          aceitarCurto:false,
-          aceitarMuitoCurto:false,
+          minimo,
+          aceitarCurto:true,
+          aceitarMuitoCurto:true,
           isStudent:true,
-          minQuality:"conteúdo específico da Revista do Aluno, baseado no esboço do usuário, sem repetição e sem linguagem de professor"
+          minQuality:"parte editorial da Revista do Aluno, com linguagem natural, bíblica, visual de revista EBD e sem bastidor editorial"
         }
       );
 
       if(!html) return "";
-      const limpo = limparLinguagemAluno(limparBastidoresRevistaV1339(html));
-      const texto = extrairTextoDeHtml(limpo).toLowerCase();
-
-      const ruim =
-        !texto ||
-        texto.length < Math.max(minimo,140) ||
-        /apresente o problema|prepare o aluno|ao estudar|o professor deve|conduza a classe|aprofunde um princípio|tópico principal:/i.test(texto);
-
-      if(ruim) return "";
-
-      return limpo;
+      return limparLinguagemAluno(limparBastidoresRevistaV1339(html));
     }
 
     async function gerarParteProfessor(base,info,licoes,numero,dados,revistaAlunoTexto,nomeParte,extra,minimo = 200){
@@ -9090,8 +8918,6 @@ Regras:
 - Integre pelo menos uma referência bíblica no argumento quando couber.
 - Toda referência deve estar relacionada corretamente ao assunto.
 - Não repita ideias que já pertencem à introdução ou ao tópico anterior.
-- Não copie o mesmo parágrafo usado em outra parte da lição.
-- Use o esboço informado pelo usuário como fonte de direção do conteúdo.
 - Não escreva sinopse aqui.
 - Não escreva orientação ao professor.
 - Não escreva linguagem técnica interna.
@@ -9102,11 +8928,7 @@ Regras:
           115
         );
 
-        if(!subHtml){
-          throw new Error(`Falha ao gerar Lição ${numero} do aluno — Tópico ${indice + 1} — subtópico ${s + 1}: ${subtitulo}`);
-        }
-
-        partes.push(forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados));
+        partes.push(subHtml ? forcarBlocoEditorialRevistaV1339(subHtml,`${s + 1}. ${subtitulo}`,"subtopic",dados) : blocoFallbackRevistaV1336("subtopic",`${s + 1}. ${subtitulo}`,dados,`Tópico principal: ${topico.titulo}.`));
       }
 
       // Revista do Aluno: não inserir sinopse entre todos os tópicos.
@@ -9140,16 +8962,13 @@ Regras:
 Crie apenas a introdução da lição.
 A introdução deve ter 2 parágrafos.
 Não repita frases genéricas.
-Apresente o assunto da lição diretamente ao aluno, com linguagem final de revista, sem orientação de bastidor.
+Mostre o problema central da lição, o valor bíblico do assunto e prepare o cristão para os tópicos.
 Use <div class="block"><h3>Introdução</h3>...</div>.
         `,
-        190
+        160
       );
 
-      if(!intro){
-        throw new Error(`Falha ao gerar Introdução da Lição ${numero} do aluno`);
-      }
-      corpo.push(forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados));
+      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"A vida familiar precisa ser examinada à luz da Palavra de Deus, pois somente Cristo sustenta o lar com graça, verdade e responsabilidade."));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
@@ -9183,10 +9002,7 @@ Regras:
         110
       );
 
-      if(!ampliando){
-        throw new Error(`Falha ao gerar Ampliando o Conhecimento da Lição ${numero} do aluno`);
-      }
-      corpo.push(forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados));
+      corpo.push(ampliando ? forcarBlocoEditorialRevistaV1339(ampliando,"Ampliando o Conhecimento","knowledge",dados) : blocoFallbackRevistaV1336("knowledge","Ampliando o Conhecimento",dados,"Aprofunde um princípio bíblico, histórico ou pastoral ligado ao tema."));
 
       const conclusao = await gerarParteAluno(
         base,
@@ -9205,10 +9021,7 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         140
       );
 
-      if(!conclusao){
-        throw new Error(`Falha ao gerar Conclusão da Lição ${numero} do aluno`);
-      }
-      corpo.push(forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados));
+      corpo.push(conclusao ? forcarBlocoEditorialRevistaV1339(conclusao,"Conclusão","block",dados) : blocoFallbackRevistaV1336("block","Conclusão",dados,"Retome o ensino principal e chame o aluno à prática da Palavra."));
 
       const revisaoFinal = renderRevisaoAlunoDeterministicaV1339(dados);
 
@@ -10120,24 +9933,20 @@ Estruture assim:
           html += renderPage(licao,"lesson-page");
         }else{
           html += renderLessonOpeningPage(base,info,numero,dados);
-
-          try{
-            licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
-          }catch(error){
-            console.error(error);
-            renderGenerated(html + `</div>`);
-            finishSteps(`Geração interrompida: ${error.message}. O app não vai mais avançar deixando caixas vazias. Clique em Gerar material novamente para repetir a etapa com as 5 tentativas.`);
-            return;
-          }
+          licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
 
           if(!licao || extrairTextoDeHtml(licao).trim().length < 500){
-            renderGenerated(html + `</div>`);
-            finishSteps(`Geração interrompida: a Lição ${numero} não recebeu conteúdo suficiente. O app não vai mais criar espaços em branco. Clique em Gerar material novamente para tentar de novo.`);
-            return;
-          }
+            todasLicoesOk = false;
+            html += paginaErroLicao(base,info,numero,dados,"Lição");
+            setStatus(`A Lição ${numero} ficou com espaço em branco para edição manual. O app continuará gerando as próximas partes.`,"error");
+          }else{
+            licao = limparLinguagemAluno(licao);
+            html += renderPage(licao,"lesson-page");
 
-          licao = limparLinguagemAluno(licao);
-          html += renderPage(licao,"lesson-page");
+            if(licao.includes("manual-placeholder")){
+              todasLicoesOk = false;
+            }
+          }
         }
 
         renderGenerated(html + `</div>`);
@@ -10213,7 +10022,7 @@ Estruture assim:
       renderGenerated(aplicarLayoutRevistaDuasColunasV137(htmlFinalComCapaNoInicio));
 
       if(manualPlaceholdersCount > 0){
-        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos não passaram na conferência e ficaram marcados para nova geração/edição; o código não inseriu conteúdo pronto no lugar da IA.`);
+        finishSteps(`Geração finalizada. Revise o material antes de imprimir. Alguns blocos foram preenchidos automaticamente por segurança, sem deixar espaços em branco.`);
       }else if(todasLicoesOk && info.isStudent){
         finishSteps("Revista do Aluno gerada com sucesso, em layout de revista EBD, com base textual salva para a Revista do Professor.");
       }else if(todasLicoesOk && info.isTeacher){
@@ -15423,7 +15232,7 @@ async function generateMaterial(){
     function limparTudo(){
       [
         "title","subtitle","theme","biblicalBase","targetAudience","tone","author",
-        "ministry","extraNotes","quantity","revistaAno","revistaObservacao","revistaConteudoPronto","sermonSupportRefs"
+        "ministry","extraNotes","quantity","revistaAno","revistaObservacao","sermonSupportRefs"
       ].forEach(id => setValue(id,""));
 
       setValue("depthLevel","profundo");
@@ -15438,8 +15247,6 @@ async function generateMaterial(){
       setValue("studyQuestions","com perguntas e respostas");
       setValue("studyLessons","1");
       setValue("revistaTipo","aluno");
-      setValue("revistaModoCriacao","prompt-completo");
-      setValue("revistaConteudoPronto","");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
       setValue("revistaAno","2026");
@@ -15571,8 +15378,6 @@ async function generateMaterial(){
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
         setValue("revistaTipo","aluno");
-        setValue("revistaModoCriacao","prompt-completo");
-        setValue("revistaConteudoPronto","");
         setValue("revistaClasse","adultos");
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
@@ -15757,18 +15562,6 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
       cursoTipo.addEventListener("change",() => {
         const label = cursoTipo.options[cursoTipo.selectedIndex]?.textContent || "material do curso";
         setStatus("Tipo de curso selecionado: " + label + ".","ok");
-      });
-    }
-
-    const revistaModoCriacaoEl = document.getElementById("revistaModoCriacao");
-    if(revistaModoCriacaoEl){
-      revistaModoCriacaoEl.addEventListener("change",() => {
-        const modo = getValue("revistaModoCriacao");
-        if(modo === "conteudo-pronto"){
-          setStatus("Modo Revista EBD atualizado: o conteúdo colado será usado como fonte principal para organizar a revista.","ok");
-        }else{
-          setStatus("Modo Revista EBD atualizado: o app continuará criando pelo prompt completo, como já fazia.","ok");
-        }
       });
     }
 
