@@ -1,13 +1,17 @@
 // api/gerar.js
-// VERBO IA — geração de texto com múltiplas chaves Gemini e OpenAI
-// Ordem: Gemini 1 → Gemini 2 → OpenAI 1 → OpenAI 2
+// VERBO IA — motor de geração com múltiplas chaves Gemini e OpenAI
+// Ordem de tentativa:
+// 1. GEMINI_API_KEY
+// 2. GEMINI_API_KEY_2
+// 3. OPENAI_API_KEY
+// 4. OPENAI_API_KEY_2
 
-function json(res, status, data) {
+function responder(res, status, data) {
   return res.status(status).json(data);
 }
 
-function limparTexto(txt) {
-  return String(txt || "").trim();
+function limparTexto(valor) {
+  return String(valor || "").trim();
 }
 
 function pegarChaves(prefixo) {
@@ -21,24 +25,27 @@ function pegarChaves(prefixo) {
   ];
 
   const chaves = [];
+  const vistas = new Set();
 
   for (const nome of nomes) {
     const valor = process.env[nome];
-    if (valor && String(valor).trim()) {
-      chaves.push({
-        nome,
-        valor: String(valor).trim(),
-      });
-    }
+
+    if (!valor) continue;
+
+    const chave = String(valor).trim();
+
+    if (!chave) continue;
+    if (vistas.has(chave)) continue;
+
+    vistas.add(chave);
+
+    chaves.push({
+      nome,
+      valor: chave,
+    });
   }
 
-  const vistas = new Set();
-
-  return chaves.filter((item) => {
-    if (vistas.has(item.valor)) return false;
-    vistas.add(item.valor);
-    return true;
-  });
+  return chaves;
 }
 
 function extrairTextoGemini(data) {
@@ -75,12 +82,10 @@ function extrairTextoOpenAI(data) {
 }
 
 async function chamarGemini(apiKey, prompt) {
-  const model =
-    process.env.GEMINI_MODEL ||
-    "gemini-1.5-flash";
+  const modelo = process.env.GEMINI_MODEL || "gemini-1.5-flash";
 
   const url =
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+    `https://generativelanguage.googleapis.com/v1beta/models/${modelo}:generateContent?key=${apiKey}`;
 
   const resposta = await fetch(url, {
     method: "POST",
@@ -109,10 +114,11 @@ async function chamarGemini(apiKey, prompt) {
   const data = await resposta.json().catch(() => ({}));
 
   if (!resposta.ok) {
-    const msg =
+    const mensagem =
       data?.error?.message ||
       `Erro Gemini HTTP ${resposta.status}`;
-    throw new Error(msg);
+
+    throw new Error(mensagem);
   }
 
   const texto = extrairTextoGemini(data);
@@ -125,9 +131,7 @@ async function chamarGemini(apiKey, prompt) {
 }
 
 async function chamarOpenAI(apiKey, prompt) {
-  const model =
-    process.env.OPENAI_MODEL ||
-    "gpt-4o-mini";
+  const modelo = process.env.OPENAI_MODEL || "gpt-4o-mini";
 
   const resposta = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
@@ -136,14 +140,14 @@ async function chamarOpenAI(apiKey, prompt) {
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model,
+      model: modelo,
       temperature: 0.7,
       max_tokens: 8192,
       messages: [
         {
           role: "system",
           content:
-            "Você é o motor de geração do VERBO IA. Gere conteúdo cristão, bíblico, organizado, fiel ao pedido e em HTML limpo quando solicitado. Não mencione que foi gerado por IA.",
+            "Você é o motor de geração do VERBO IA. Gere conteúdo cristão, bíblico, organizado, fiel ao pedido do usuário e em HTML limpo quando solicitado. Não diga que foi gerado por IA.",
         },
         {
           role: "user",
@@ -156,10 +160,11 @@ async function chamarOpenAI(apiKey, prompt) {
   const data = await resposta.json().catch(() => ({}));
 
   if (!resposta.ok) {
-    const msg =
+    const mensagem =
       data?.error?.message ||
       `Erro OpenAI HTTP ${resposta.status}`;
-    throw new Error(msg);
+
+    throw new Error(mensagem);
   }
 
   const texto = extrairTextoOpenAI(data);
@@ -173,7 +178,7 @@ async function chamarOpenAI(apiKey, prompt) {
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return json(res, 405, {
+    return responder(res, 405, {
       ok: false,
       error: "Método não permitido. Use POST.",
     });
@@ -181,10 +186,17 @@ export default async function handler(req, res) {
 
   try {
     const body = req.body || {};
-    const prompt = limparTexto(body.prompt || body.texto || body.message);
+
+    const prompt = limparTexto(
+      body.prompt ||
+      body.texto ||
+      body.message ||
+      body.conteudo ||
+      body.input
+    );
 
     if (!prompt) {
-      return json(res, 400, {
+      return responder(res, 400, {
         ok: false,
         error: "Prompt vazio.",
       });
@@ -199,7 +211,7 @@ export default async function handler(req, res) {
       try {
         const texto = await chamarGemini(item.valor, prompt);
 
-        return json(res, 200, {
+        return responder(res, 200, {
           ok: true,
           provider: "gemini",
           keyUsed: item.nome,
@@ -207,6 +219,7 @@ export default async function handler(req, res) {
           html: texto,
           content: texto,
           resultado: texto,
+          resposta: texto,
         });
       } catch (erro) {
         erros.push(`${item.nome}: ${erro.message}`);
@@ -217,7 +230,7 @@ export default async function handler(req, res) {
       try {
         const texto = await chamarOpenAI(item.valor, prompt);
 
-        return json(res, 200, {
+        return responder(res, 200, {
           ok: true,
           provider: "openai",
           keyUsed: item.nome,
@@ -225,20 +238,21 @@ export default async function handler(req, res) {
           html: texto,
           content: texto,
           resultado: texto,
+          resposta: texto,
         });
       } catch (erro) {
         erros.push(`${item.nome}: ${erro.message}`);
       }
     }
 
-    return json(res, 500, {
+    return responder(res, 500, {
       ok: false,
       error:
         "A IA não conseguiu gerar. Todas as chaves Gemini/OpenAI falharam, estão sem cota, sem crédito ou inválidas.",
       detalhes: erros,
     });
   } catch (erro) {
-    return json(res, 500, {
+    return responder(res, 500, {
       ok: false,
       error: erro.message || "Erro interno ao gerar conteúdo.",
     });
