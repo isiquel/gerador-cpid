@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.33 — restauração visual Revista EBD: layout editorial, duas colunas, cards coloridos e capa familiar coerente -->
+  <!-- v13.52 — Revista EBD preservada + correção de impressão/PDF sem páginas quebradas -->
 
   <style>
     :root{
@@ -2828,6 +2828,226 @@
     @media(max-width:740px){
       .doc.magazine-layout .lesson-page > .magazine-columns,
       .result .doc.magazine-layout .lesson-page > .magazine-columns{column-count:1 !important;}
+    }
+
+
+    /* =========================================================
+       v13.52 — CORREÇÃO DE IMPRESSÃO/PDF DA REVISTA EBD
+       Mantém a revista igual na tela, mas deixa o PDF fluir
+       sem páginas enormes em branco e sem quebras forçadas.
+    ========================================================= */
+    @media print{
+      @page{
+        size:A4 portrait;
+        margin:10mm 9mm;
+      }
+
+      body.print-a3-livreto @page{
+        size:A3 landscape;
+        margin:12mm;
+      }
+
+      html,
+      body{
+        background:#ffffff !important;
+        margin:0 !important;
+        padding:0 !important;
+        width:auto !important;
+        height:auto !important;
+        overflow:visible !important;
+      }
+
+      body *{
+        visibility:hidden !important;
+      }
+
+      #printArea,
+      #printArea *{
+        visibility:visible !important;
+      }
+
+      #printArea{
+        display:block !important;
+        position:static !important;
+        width:100% !important;
+        max-width:none !important;
+        margin:0 !important;
+        padding:0 !important;
+        background:#ffffff !important;
+        overflow:visible !important;
+      }
+
+      #printArea .doc{
+        display:block !important;
+        gap:0 !important;
+        width:100% !important;
+        max-width:none !important;
+      }
+
+      #printArea .page{
+        box-shadow:none !important;
+        border-radius:0 !important;
+        border:none !important;
+        background:#ffffff !important;
+        width:100% !important;
+        max-width:none !important;
+        min-height:0 !important;
+        height:auto !important;
+        overflow:visible !important;
+        margin:0 !important;
+        padding:10mm 9mm !important;
+        page-break-after:auto !important;
+        break-after:auto !important;
+        page-break-before:auto !important;
+        break-before:auto !important;
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+      }
+
+      /* Capas e páginas institucionais continuam começando em folha própria */
+      #printArea .cover-page,
+      #printArea .back-cover-page,
+      #printArea .revista-institutional-page,
+      #printArea .certificate-print-page{
+        page-break-before:auto !important;
+        break-before:auto !important;
+        page-break-after:always !important;
+        break-after:page !important;
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+        min-height:calc(297mm - 20mm) !important;
+        padding:0 !important;
+        overflow:hidden !important;
+      }
+
+      body.print-a3-livreto #printArea .cover-page,
+      body.print-a3-livreto #printArea .back-cover-page,
+      body.print-a3-livreto #printArea .revista-institutional-page{
+        min-height:calc(297mm - 24mm) !important;
+      }
+
+      /* A abertura de cada lição não deve deixar uma folha quase vazia */
+      #printArea .doc.magazine-layout .lesson-cover-page{
+        page-break-before:auto !important;
+        break-before:auto !important;
+        page-break-after:auto !important;
+        break-after:auto !important;
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+        padding:8mm 8mm 6mm !important;
+        margin:0 0 4mm !important;
+        min-height:0 !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page{
+        page-break-before:auto !important;
+        break-before:auto !important;
+        page-break-after:auto !important;
+        break-after:auto !important;
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+        padding:8mm 8mm !important;
+        margin:0 !important;
+        min-height:0 !important;
+      }
+
+      /* Só a primeira página da primeira lição inicia depois das páginas iniciais */
+      #printArea .doc.magazine-layout .lesson-cover-page:first-of-type{
+        page-break-before:auto !important;
+        break-before:auto !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-hero{
+        margin:0 0 5mm !important;
+        padding:10mm 9mm !important;
+        border-radius:14px !important;
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-hero h1{
+        font-size:25pt !important;
+        line-height:1.12 !important;
+      }
+
+      #printArea .doc.magazine-layout .opening-cards,
+      #printArea .doc.magazine-layout .daily-reading{
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+        margin-bottom:5mm !important;
+      }
+
+      #printArea .doc.magazine-layout .scripture-full{
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+        margin:0 0 5mm !important;
+        padding:5mm !important;
+      }
+
+      #printArea .doc.magazine-layout .compact-comment-header{
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+        margin:0 0 4mm !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page > .magazine-columns{
+        column-count:2 !important;
+        column-gap:8mm !important;
+        column-rule:1px solid rgba(60,80,120,.16) !important;
+        column-fill:auto !important;
+        font-size:10.2pt !important;
+        line-height:1.48 !important;
+        text-align:justify !important;
+        hyphens:auto !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page > .magazine-columns p,
+      #printArea .doc.magazine-layout .lesson-page > .magazine-columns li{
+        font-size:10.2pt !important;
+        line-height:1.48 !important;
+        margin:0 0 3.2mm !important;
+        orphans:2 !important;
+        widows:2 !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page > .magazine-columns h2,
+      #printArea .doc.magazine-layout .lesson-page > .magazine-columns h3,
+      #printArea .doc.magazine-layout .lesson-page > .magazine-columns h4{
+        page-break-after:avoid !important;
+        break-after:avoid !important;
+        margin-top:4mm !important;
+        margin-bottom:2mm !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-topic,
+      #printArea .doc.magazine-layout .subtopic{
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+        margin-bottom:4mm !important;
+        box-shadow:none !important;
+      }
+
+      #printArea .doc.magazine-layout .subtopic{
+        padding:3.5mm 4mm !important;
+      }
+
+      #printArea .doc.magazine-layout .knowledge-box,
+      #printArea .doc.magazine-layout .summary-box,
+      #printArea .doc.magazine-layout .teacher-help,
+      #printArea .doc.magazine-layout .personal-application,
+      #printArea .doc.magazine-layout .lesson-review-full{
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+        margin-top:4mm !important;
+        margin-bottom:4mm !important;
+      }
+
+      #printArea .doc.magazine-layout img{
+        max-width:100% !important;
+        height:auto !important;
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+      }
     }
 
   </style>
