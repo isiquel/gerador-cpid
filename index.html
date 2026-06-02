@@ -8541,7 +8541,56 @@ Gere somente esta etapa.`;
         out = limitarReferenciasNoTopicoSermon(out);
       }
 
+      if(tipo === "oracao"){
+        out = limparOracaoSermon(out);
+      }
+
       return out.trim();
+    }
+
+
+    function removerPaginasDepoisDaOracaoSermon(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      const doc = temp.querySelector(".doc") || temp;
+      const pages = Array.from(doc.children).filter(el => el.classList && el.classList.contains("page"));
+
+      let achouOracaoFinal = false;
+
+      pages.forEach(page => {
+        const ehOracao = page.classList.contains("sermon-prayer-page") || !!page.querySelector(".sermon-prayer");
+
+        if(achouOracaoFinal){
+          page.remove();
+          return;
+        }
+
+        if(ehOracao){
+          achouOracaoFinal = true;
+        }
+      });
+
+      return temp.innerHTML.trim();
+    }
+
+    function limparOracaoSermon(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+
+      temp.querySelectorAll("h1,h2,.page-title").forEach(el => {
+        const t = (el.innerText || "").toLowerCase();
+        if(t.includes("sermão") || t.includes("sermao") || t.includes("tema:")){
+          el.remove();
+        }
+      });
+
+      let saida = temp.innerHTML;
+      saida = saida.replace(/<h[1-2][^>]*>[\s\S]*?<\/h[1-2]>/gi, "");
+      saida = saida.replace(/Serm[aã]o\s+b[ií]blico\s+completo[\s\S]*$/gi, "");
+      saida = saida.replace(/pronto\s+para\s+prega[cç][aã]o[\s\S]*$/gi, "");
+
+      return saida.trim();
     }
 
     function textoLimpoV1336(v){
@@ -8813,6 +8862,8 @@ Gere somente esta etapa.`;
 
       html += renderPage(oracao,"sermon-prayer-page");
       html += `</div>`;
+
+      html = removerPaginasDepoisDaOracaoSermon(html);
 
       renderGenerated(html);
 
