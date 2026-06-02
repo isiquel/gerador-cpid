@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.33 — restauração visual Revista EBD: layout editorial, duas colunas, cards coloridos e capa familiar coerente -->
+  <!-- v13.34 — Revista EBD: novo modo para organizar conteúdo pronto sem alterar a lógica atual -->
 
   <style>
     :root{
@@ -279,6 +279,10 @@
 
     #revistaObservacao{
       min-height:145px;
+    }
+
+    #revistaConteudoPronto{
+      min-height:220px;
     }
 
     #sermonSupportRefs{
@@ -3164,6 +3168,25 @@
               <strong>Preservado:</strong> esta lógica da Revista EBD permanece intocada.
             </div>
 
+            <div class="field">
+              <label for="revistaModoCriacao">Modo de criação da Revista EBD</label>
+              <select id="revistaModoCriacao">
+                <option value="prompt-completo" selected>Jeito atual — criar pelo prompt completo</option>
+                <option value="conteudo-pronto">Novo — organizar conteúdo pronto em Revista EBD</option>
+              </select>
+              <div class="chip-note">
+                O jeito atual continua igual. O novo modo usa o conteúdo colado como fonte principal e apenas organiza, corrige e completa lacunas bíblicas.
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="revistaConteudoPronto">Conteúdo pronto da revista / apostila / lições</label>
+              <textarea id="revistaConteudoPronto" placeholder="Cole aqui o conteúdo real da revista, apostila, estudos ou lições. Exemplo: texto escrito por você, por um professor ou por um comentarista. O app vai preservar este conteúdo como base, corrigir ortografia e pontuação, organizar em 4 lições e completar lacunas bíblicas quando necessário."></textarea>
+              <div class="chip-note">
+                Use este campo somente no modo “Organizar conteúdo pronto”. Se ficar vazio, o app continua usando o prompt e a direção das 4 lições como já fazia.
+              </div>
+            </div>
+
             <div class="status-mini-grid">
               <div id="baseAlunoStatus" class="status-mini warn">Aluno: base não salva.</div>
               <div id="baseProfessorStatus" class="status-mini warn">Professor: base não salva.</div>
@@ -5948,6 +5971,8 @@ REGRAS:
       const revistaMes = getValue("revistaMes") || "Agosto";
       const revistaAno = getValue("revistaAno") || String(new Date().getFullYear());
       const revistaObservacao = getValue("revistaObservacao") || "";
+      const revistaModoCriacao = getValue("revistaModoCriacao") || "prompt-completo";
+      const revistaConteudoPronto = getValue("revistaConteudoPronto") || "";
       const printFormat = getValue("printFormat") || "a4";
       const supportBookDepth = getValue("supportBookDepth") || "expandido";
       const bibliographyMode = getValue("bibliographyMode") || "segura";
@@ -5962,6 +5987,9 @@ REGRAS:
         revistaMes,
         revistaAno,
         revistaObservacao,
+        revistaModoCriacao,
+        revistaConteudoPronto,
+        isConteudoPronto:revistaModoCriacao === "conteudo-pronto" && revistaConteudoPronto.trim().length > 0,
         printFormat,
         supportBookDepth,
         bibliographyMode,
@@ -6912,6 +6940,7 @@ ${base.title}
 ${base.subtitle}
 ${base.theme}
 ${info.revistaObservacao}
+${info.revistaConteudoPronto}
 ${base.extraNotes}
       `.trim();
 
@@ -6942,6 +6971,11 @@ Tópicos: ${(l.topicos || []).map(t => `${t.titulo}: ${(t.subtitulos || []).join
         `.trim())
         .join("\n\n");
 
+      const modoConteudoProntoAtivo = info.isConteudoPronto;
+      const fonteConteudoPronto = modoConteudoProntoAtivo
+        ? limitarTexto(info.revistaConteudoPronto,42000)
+        : "";
+
       return `
 Você é comentarista de Escola Bíblica Dominical, teólogo pentecostal, escritor cristão, professor experiente e editor de materiais cristãos.
 
@@ -6950,9 +6984,10 @@ A revista sempre deve ser mensal e ter 4 lições completas, correspondendo aos 
 REGRA ABSOLUTA:
 O tema e o conteúdo devem obedecer ao que o usuário escreveu no aplicativo.
 Não use tema pré-definido.
-Não use conteúdo pronto.
+Não use conteúdo pronto externo ao usuário.
 Se o usuário escreveu 4 lições, use exatamente essas 4 lições.
 Se o usuário escreveu tópicos e subtópicos, preserve esses tópicos e subtópicos.
+Se o modo "Organizar conteúdo pronto" estiver ativo, a fonte principal obrigatória é o conteúdo colado pelo usuário. Nesse caso, não substitua o material por outro tema: apenas organize, revise, corrija ortografia/pontuação, distribua em formato de Revista EBD, complete lacunas bíblicas necessárias e melhore a clareza sem mudar a doutrina central.
 
 DADOS DO MATERIAL
 Título: ${base.title}
@@ -6970,6 +7005,10 @@ Tom: ${base.tone}
 Profundidade: ${base.depthLevel}
 Observações extras: ${base.extraNotes}
 Direção original das 4 lições: ${info.revistaObservacao}
+Modo de criação da revista: ${modoConteudoProntoAtivo ? "ORGANIZAR CONTEÚDO PRONTO" : "CRIAR PELO PROMPT COMPLETO"}
+
+CONTEÚDO PRONTO COLADO PELO USUÁRIO — USAR COMO FONTE PRINCIPAL QUANDO EXISTIR
+${modoConteudoProntoAtivo ? fonteConteudoPronto : "[Nenhum conteúdo pronto foi informado. Usar o prompt e a direção das lições normalmente.]"}
 
 4 LIÇÕES QUE DEVEM SER USADAS
 ${listaLicoes}
@@ -6981,6 +7020,9 @@ REGRAS DE QUALIDADE:
 - Toda referência bíblica deve combinar com o assunto explicado.
 - Não copiar conteúdo de nenhuma editora.
 - Nunca copiar o prompt do usuário dentro do conteúdo final.
+- Se houver conteúdo pronto colado, não jogar fora o conteúdo real: preservar o sentido, a sequência doutrinária e as ênfases do material original.
+- Corrigir ortografia, acentuação, pontuação, concordância, repetições excessivas e frases confusas do conteúdo colado.
+- Se faltar Texto Áureo, Verdade Prática, Leitura Bíblica em Classe, objetivos ou perguntas, completar de forma bíblica e coerente com o conteúdo colado.
 - Evitar repetição de ideias apenas para preencher espaço.
 - Cada tópico precisa acrescentar algo novo.
 - A Revista do Aluno deve ser profunda, econômica para impressão e com aparência completa de revista EBD, NÃO como apostila seca.
@@ -15367,7 +15409,7 @@ async function generateMaterial(){
     function limparTudo(){
       [
         "title","subtitle","theme","biblicalBase","targetAudience","tone","author",
-        "ministry","extraNotes","quantity","revistaAno","revistaObservacao","sermonSupportRefs"
+        "ministry","extraNotes","quantity","revistaAno","revistaObservacao","revistaConteudoPronto","sermonSupportRefs"
       ].forEach(id => setValue(id,""));
 
       setValue("depthLevel","profundo");
@@ -15382,6 +15424,8 @@ async function generateMaterial(){
       setValue("studyQuestions","com perguntas e respostas");
       setValue("studyLessons","1");
       setValue("revistaTipo","aluno");
+      setValue("revistaModoCriacao","prompt-completo");
+      setValue("revistaConteudoPronto","");
       setValue("revistaClasse","adultos");
       setValue("revistaMes","Agosto");
       setValue("revistaAno","2026");
@@ -15513,6 +15557,8 @@ async function generateMaterial(){
         setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
         setValue("coverMode","com-capa");
         setValue("revistaTipo","aluno");
+        setValue("revistaModoCriacao","prompt-completo");
+        setValue("revistaConteudoPronto","");
         setValue("revistaClasse","adultos");
         setValue("revistaMes","Agosto");
         setValue("revistaAno","2026");
@@ -15697,6 +15743,18 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
       cursoTipo.addEventListener("change",() => {
         const label = cursoTipo.options[cursoTipo.selectedIndex]?.textContent || "material do curso";
         setStatus("Tipo de curso selecionado: " + label + ".","ok");
+      });
+    }
+
+    const revistaModoCriacaoEl = document.getElementById("revistaModoCriacao");
+    if(revistaModoCriacaoEl){
+      revistaModoCriacaoEl.addEventListener("change",() => {
+        const modo = getValue("revistaModoCriacao");
+        if(modo === "conteudo-pronto"){
+          setStatus("Modo Revista EBD atualizado: o conteúdo colado será usado como fonte principal para organizar a revista.","ok");
+        }else{
+          setStatus("Modo Revista EBD atualizado: o app continuará criando pelo prompt completo, como já fazia.","ok");
+        }
       });
     }
 
