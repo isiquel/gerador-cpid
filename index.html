@@ -3086,6 +3086,44 @@
       }
     }
 
+
+    .autosave-panel{
+      background:#f0fff5;
+      border:1px solid #9fd1ad;
+      color:#235f38;
+      border-radius:18px;
+      padding:11px 12px;
+      margin:10px 0 12px;
+      box-shadow:0 8px 18px rgba(35,139,69,.08);
+    }
+
+    .autosave-panel strong{
+      display:block;
+      color:#174e2c;
+      font-size:13px;
+      margin-bottom:4px;
+    }
+
+    .autosave-panel span{
+      display:block;
+      font-size:12.5px;
+      line-height:1.4;
+      color:#2d6d43;
+      margin-bottom:9px;
+    }
+
+    .autosave-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .autosave-actions .btn{
+      padding:10px 11px;
+      font-size:12.5px;
+      border-radius:14px;
+    }
+
   </style>
 </head>
 
@@ -3202,6 +3240,15 @@
           <button id="btnGenerate" class="btn btn-primary" type="button">Gerar material</button>
           <button id="btnPrint" class="btn btn-green" type="button">Salvar / imprimir PDF</button>
           <button id="btnClear" class="btn btn-light" type="button">Limpar</button>
+        </div>
+
+        <div id="autosavePanel" class="autosave-panel hidden">
+          <strong>Material salvo automaticamente</strong>
+          <span id="autosaveInfo">O último material gerado pode ser restaurado depois de atualizar a página.</span>
+          <div class="autosave-actions">
+            <button id="btnRestoreLastMaterial" class="btn btn-green" type="button">Restaurar último</button>
+            <button id="btnClearLastMaterial" class="btn btn-red" type="button">Apagar salvo</button>
+          </div>
         </div>
 
         <details class="accordion">
@@ -4055,6 +4102,14 @@
     const btnCopy = document.getElementById("btnCopy");
     const btnPrompt = document.getElementById("btnPrompt");
 
+    const autosavePanel = document.getElementById("autosavePanel");
+    const autosaveInfo = document.getElementById("autosaveInfo");
+    const btnRestoreLastMaterial = document.getElementById("btnRestoreLastMaterial");
+    const btnClearLastMaterial = document.getElementById("btnClearLastMaterial");
+
+    const STORAGE_ULTIMO_MATERIAL_HTML = "verboia_ultimo_material_html_v1354";
+    const STORAGE_ULTIMO_MATERIAL_META = "verboia_ultimo_material_meta_v1354";
+
     const btnSaveAlunoBase = document.getElementById("btnSaveAlunoBase");
     const btnClearAlunoBase = document.getElementById("btnClearAlunoBase");
     const btnSaveProfessorBase = document.getElementById("btnSaveProfessorBase");
@@ -4457,6 +4512,119 @@
       `;
     }
 
+
+    function textoAutosaveSeguro(valor){
+      return String(valor || "").replace(/\s+/g," ").trim();
+    }
+
+    function materialValidoParaAutosave(html){
+      const temp = document.createElement("div");
+      temp.innerHTML = String(html || "");
+      const texto = textoAutosaveSeguro(temp.innerText || "");
+      if(texto.length < 300) return false;
+      if(temp.querySelector(".placeholder")) return false;
+      if(/Seu material aparecerá aqui/i.test(texto)) return false;
+      return true;
+    }
+
+    function salvarUltimoMaterialGerado(html,origem = "render"){
+      try{
+        const conteudo = String(html || "").trim();
+        if(!materialValidoParaAutosave(conteudo)) return;
+
+        const temp = document.createElement("div");
+        temp.innerHTML = conteudo;
+        const texto = textoAutosaveSeguro(temp.innerText || "");
+        const titulo = getValue("title") || temp.querySelector("h1,h2,.page-title")?.textContent || "Material VERBO IA";
+        const tipo = currentType || getValue("contentType") || "material";
+        const agora = new Date();
+
+        const meta = {
+          titulo:textoAutosaveSeguro(titulo).slice(0,140),
+          tipo:textoAutosaveSeguro(tipo),
+          origem,
+          caracteres:texto.length,
+          salvoEm:agora.toISOString(),
+          salvoEmLocal:agora.toLocaleString("pt-BR")
+        };
+
+        localStorage.setItem(STORAGE_ULTIMO_MATERIAL_HTML,conteudo);
+        localStorage.setItem(STORAGE_ULTIMO_MATERIAL_META,JSON.stringify(meta));
+        atualizarPainelAutosave();
+      }catch(error){
+        console.warn("Falha no autosave do material:",error);
+      }
+    }
+
+    function obterUltimoMaterialSalvo(){
+      try{
+        return localStorage.getItem(STORAGE_ULTIMO_MATERIAL_HTML) || "";
+      }catch(error){
+        return "";
+      }
+    }
+
+    function obterMetaUltimoMaterialSalvo(){
+      try{
+        return JSON.parse(localStorage.getItem(STORAGE_ULTIMO_MATERIAL_META) || "{}");
+      }catch(error){
+        return {};
+      }
+    }
+
+    function atualizarPainelAutosave(){
+      if(!autosavePanel) return;
+      const htmlSalvo = obterUltimoMaterialSalvo();
+      if(!htmlSalvo){
+        autosavePanel.classList.add("hidden");
+        return;
+      }
+
+      const meta = obterMetaUltimoMaterialSalvo();
+      autosavePanel.classList.remove("hidden");
+      if(autosaveInfo){
+        const titulo = meta.titulo || "Material salvo";
+        const data = meta.salvoEmLocal || "data não informada";
+        autosaveInfo.textContent = `${titulo} — salvo em ${data}. Se atualizar a página, clique em “Restaurar último”.`;
+      }
+    }
+
+    function restaurarUltimoMaterialGerado(){
+      const htmlSalvo = obterUltimoMaterialSalvo();
+      if(!htmlSalvo){
+        setStatus("Nenhum material salvo automaticamente foi encontrado.","error");
+        return;
+      }
+
+      currentHtml = htmlSalvo;
+      const temp = document.createElement("div");
+      temp.innerHTML = htmlSalvo;
+      currentText = temp.innerText.trim();
+
+      result.innerHTML = htmlSalvo;
+      printArea.innerHTML = htmlSalvo;
+      result.removeAttribute("contenteditable");
+      editWarning.style.display = "none";
+      btnFinishEdit.disabled = true;
+      btnEdit.disabled = false;
+
+      atualizarPainelAutosave();
+      setStatus("Último material restaurado. Agora você pode revisar, editar ou salvar em PDF.","ok");
+    }
+
+    function apagarUltimoMaterialSalvo(){
+      try{
+        const ok = confirm("Apagar o último material salvo automaticamente neste navegador?");
+        if(!ok) return;
+        localStorage.removeItem(STORAGE_ULTIMO_MATERIAL_HTML);
+        localStorage.removeItem(STORAGE_ULTIMO_MATERIAL_META);
+        atualizarPainelAutosave();
+        setStatus("Material salvo automaticamente apagado.","ok");
+      }catch(error){
+        setStatus("Não foi possível apagar o material salvo automaticamente.","error");
+      }
+    }
+
     function renderGenerated(html){
       currentHtml = html;
 
@@ -4471,6 +4639,8 @@
       editWarning.style.display = "none";
       btnFinishEdit.disabled = true;
       btnEdit.disabled = false;
+
+      salvarUltimoMaterialGerado(html,"geracao");
     }
 
     function extrairTextoDeHtml(html){
@@ -15716,7 +15886,8 @@ async function generateMaterial(){
       updateSteps(currentType);
       atualizarStatusBasesEBD();
       atualizarStatusBasesApostila();
-      setStatus("Campos limpos. O próximo material começa do zero; cursos não usam base anterior automaticamente.","ok");
+      atualizarPainelAutosave();
+      setStatus("Campos limpos. O material salvo automaticamente continua disponível no botão Restaurar último.","ok");
     }
 
     function ativarEdicao(){
@@ -15741,8 +15912,9 @@ async function generateMaterial(){
       currentHtml = result.innerHTML;
       currentText = result.innerText.trim();
       printArea.innerHTML = currentHtml;
+      salvarUltimoMaterialGerado(currentHtml,"edicao");
 
-      setStatus("Edição finalizada e material atualizado.","ok");
+      setStatus("Edição finalizada, material atualizado e salvo automaticamente.","ok");
     }
 
     async function copiarTexto(){
@@ -15956,6 +16128,8 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     btnCopy.addEventListener("click",copiarTexto);
     btnTest.addEventListener("click",preencherTeste);
     btnPrompt.addEventListener("click",gerarPromptAutomatico);
+    if(btnRestoreLastMaterial) btnRestoreLastMaterial.addEventListener("click",restaurarUltimoMaterialGerado);
+    if(btnClearLastMaterial) btnClearLastMaterial.addEventListener("click",apagarUltimoMaterialSalvo);
 
     btnSaveAlunoBase.addEventListener("click",salvarBaseAlunoManual);
     btnClearAlunoBase.addEventListener("click",apagarBaseAluno);
@@ -16004,6 +16178,7 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
     atualizarStatusBasesApostila();
     atualizarStatusBasesCurso();
     atualizarStatusBasesTeologia();
+    atualizarPainelAutosave();
     setContentType("sermao");
   </script>
 </body>
