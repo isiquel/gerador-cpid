@@ -1581,7 +1581,7 @@
 
 
 
-    /* v13.55 — Revista do Professor: blocos editoriais de abertura sempre em largura total */
+    /* v13.57 — Revista do Professor: blocos editoriais de abertura sempre em largura total */
     .doc.magazine-layout .lesson-page > .lesson-hero,
     .doc.magazine-layout .lesson-page > .daily-reading,
     .doc.magazine-layout .lesson-page > .opening-cards,
@@ -1638,6 +1638,77 @@
       #printArea .doc.magazine-layout .lesson-page > .teacher-planning-panel{
         grid-template-columns:1fr 1fr !important;
         margin-bottom:5mm !important;
+      }
+    }
+
+
+
+    /* v13.57 — trava definitiva do layout da Revista do Professor */
+    .doc.magazine-layout .lesson-page > .lesson-hero,
+    .doc.magazine-layout .lesson-page > .opening-cards,
+    .doc.magazine-layout .lesson-page > .daily-reading,
+    .doc.magazine-layout .lesson-page > .scripture-full,
+    .doc.magazine-layout .lesson-page > .teacher-planning-panel,
+    .doc.magazine-layout .lesson-page > .lesson-review-full{
+      display:block !important;
+      width:100% !important;
+      max-width:100% !important;
+      clear:both !important;
+      column-span:all !important;
+      grid-column:1 / -1 !important;
+      box-sizing:border-box !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .daily-reading{
+      float:none !important;
+      margin:0 0 18px !important;
+      overflow:hidden !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .daily-reading .daily-grid{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:9px !important;
+      width:100% !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .teacher-planning-panel{
+      display:grid !important;
+      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+      gap:14px !important;
+      margin:0 0 18px !important;
+    }
+
+    .doc.magazine-layout .lesson-page > .scripture-full{
+      margin:0 0 18px !important;
+    }
+
+    @media(max-width:820px){
+      .doc.magazine-layout .lesson-page > .daily-reading .daily-grid,
+      .doc.magazine-layout .lesson-page > .teacher-planning-panel{
+        grid-template-columns:1fr !important;
+      }
+    }
+
+    @media print{
+      #printArea .doc.magazine-layout .lesson-page > .daily-reading,
+      #printArea .doc.magazine-layout .lesson-page > .scripture-full,
+      #printArea .doc.magazine-layout .lesson-page > .teacher-planning-panel{
+        width:100% !important;
+        max-width:100% !important;
+        clear:both !important;
+        column-span:all !important;
+        display:block !important;
+      }
+      #printArea .doc.magazine-layout .lesson-page > .daily-reading .daily-grid{
+        display:grid !important;
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:7px !important;
+      }
+      #printArea .doc.magazine-layout .lesson-page > .teacher-planning-panel{
+        display:grid !important;
+        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+        gap:7px !important;
       }
     }
 
@@ -10374,23 +10445,41 @@ Estruture assim:
       temp.querySelectorAll(".lesson-page img").forEach(el => el.remove());
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
-        const review = page.querySelector(":scope > .lesson-review-full");
-        const preserved = [];
+        /*
+          v13.57:
+          A Revista do Professor estava deixando Leitura Bíblica em Classe antes do cabeçalho
+          da lição e empurrando a Leitura Diária para dentro/ao lado do miolo em duas colunas.
+          Aqui o app reorganiza a página depois que a IA entrega o HTML.
+          Ordem fixa da lição:
+          1) Cabeçalho azul da lição
+          2) Texto Áureo/Verdade Prática, quando existir
+          3) Leitura Diária em bloco largo
+          4) Leitura Bíblica em Classe
+          5) Objetivos/Plano de Aula
+          6) Miolo em duas colunas
+          7) Revisando o Conteúdo
+        */
+
+        const capturarPrimeiro = (selector) => {
+          const el = page.querySelector(selector);
+          if(el){
+            if(el.parentNode) el.parentNode.removeChild(el);
+            return el;
+          }
+          return null;
+        };
+
+        const hero = capturarPrimeiro(":scope .lesson-hero");
+        const opening = capturarPrimeiro(":scope .opening-cards");
+        const daily = capturarPrimeiro(":scope .daily-reading");
+        const scripture = capturarPrimeiro(":scope .scripture-full");
+        const planning = capturarPrimeiro(":scope .teacher-planning-panel");
+        const review = capturarPrimeiro(":scope .lesson-review-full");
+
         const moving = [];
 
         Array.from(page.children).forEach(child => {
-          const manterForaDasColunas =
-            child.classList.contains("lesson-hero") ||
-            child.classList.contains("daily-reading") ||
-            child.classList.contains("opening-cards") ||
-            child.classList.contains("teacher-planning-panel") ||
-            child.classList.contains("compact-comment-header") ||
-            child.classList.contains("scripture-full") ||
-            child.classList.contains("lesson-review-full");
-
-          if(manterForaDasColunas){
-            preserved.push(child);
-          }else if(child.classList.contains("magazine-columns")){
+          if(child.classList && child.classList.contains("magazine-columns")){
             Array.from(child.childNodes).forEach(node => moving.push(node));
             child.remove();
           }else{
@@ -10406,27 +10495,45 @@ Estruture assim:
           }
         });
 
-        // If review accidentally stayed inside columns, pull it out.
-        const summaries = Array.from(wrap.querySelectorAll(".summary-box"));
-        const revisao = summaries.reverse().find(el => /revisando\s+o\s+conte[uú]do|perguntas/i.test(el.innerText || ""));
-        if(revisao && !page.querySelector(":scope > .lesson-review-full")){
-          const full = document.createElement("div");
-          full.className = "lesson-review-full magazine-full";
-          revisao.parentNode.removeChild(revisao);
-          full.appendChild(revisao);
-          page.appendChild(full);
+        /* Se algum bloco largo caiu dentro do miolo, puxa para fora antes de montar. */
+        const puxarDoWrap = (selector) => {
+          const el = wrap.querySelector(selector);
+          if(el){
+            if(el.parentNode) el.parentNode.removeChild(el);
+            return el;
+          }
+          return null;
+        };
+
+        const heroFinal = hero || puxarDoWrap(".lesson-hero");
+        const openingFinal = opening || puxarDoWrap(".opening-cards");
+        const dailyFinal = daily || puxarDoWrap(".daily-reading");
+        const scriptureFinal = scripture || puxarDoWrap(".scripture-full");
+        const planningFinal = planning || puxarDoWrap(".teacher-planning-panel");
+        let reviewFinal = review || puxarDoWrap(".lesson-review-full");
+
+        if(!reviewFinal){
+          const summaries = Array.from(wrap.querySelectorAll(".summary-box"));
+          const revisao = summaries.reverse().find(el => /revisando\s+o\s+conte[uú]do|perguntas/i.test(el.innerText || ""));
+          if(revisao){
+            const full = document.createElement("div");
+            full.className = "lesson-review-full magazine-full";
+            revisao.parentNode.removeChild(revisao);
+            full.appendChild(revisao);
+            reviewFinal = full;
+          }
         }
 
         Array.from(page.children).forEach(child => child.remove());
-        preserved.forEach(child => page.appendChild(child));
+
+        [heroFinal, openingFinal, dailyFinal, scriptureFinal, planningFinal].forEach(el => {
+          if(el) page.appendChild(el);
+        });
+
         if(wrap.childNodes.length){
-          if(review){
-            page.insertBefore(wrap, review);
-          }else{
-            page.appendChild(wrap);
-          }
+          page.appendChild(wrap);
         }
-        const reviewFinal = page.querySelector(":scope > .lesson-review-full");
+
         if(reviewFinal){
           page.appendChild(reviewFinal);
         }
@@ -15861,24 +15968,200 @@ async function generateMaterial(){
 
   
 
-    /* v13.37 — Revista EBD: ficha editorial, apresentação institucional e leitura em classe completa */
-    .doc.magazine-layout .revista-institutional-page{display:grid;grid-template-columns:38% 62%;gap:0;min-height:900px;padding:0;overflow:hidden;background:#fff;border:1px solid #d7dce4;}
-    .doc.magazine-layout .revista-id-left{padding:34px 26px;text-align:center;color:#334050;background:linear-gradient(180deg,#ffffff,#f4f7fa);border-right:1px solid #d6dde6;display:flex;flex-direction:column;justify-content:center;}
-    .doc.magazine-layout .revista-mini-logo{width:76px;height:76px;border-radius:50%;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;background:#26384f;color:#fff;font-weight:900;letter-spacing:.08em;border:4px solid #d7e4f2;}
-    .doc.magazine-layout .revista-id-left h2{margin:0 0 18px;color:#26384f;text-transform:uppercase;letter-spacing:.08em;font-size:20px;}
-    .doc.magazine-layout .revista-id-left p{margin:0 0 10px;line-height:1.35;font-size:13.5px;}
-    .doc.magazine-layout .revista-id-right{padding:38px 34px;background:linear-gradient(90deg,#26384f 0%,#26384f 42%,#ffffff 42%,#ffffff 100%);color:#fff;display:flex;flex-direction:column;justify-content:center;position:relative;}
-    .doc.magazine-layout .revista-wordmark{font-family:Georgia,'Times New Roman',serif;color:#fff;font-size:48px;line-height:.92;margin-bottom:28px;letter-spacing:.02em;}
-    .doc.magazine-layout .revista-id-right h3,.doc.magazine-layout .revista-id-right p,.doc.magazine-layout .assinatura-revista{width:52%;margin-left:44%;color:#35404d;}
-    .doc.magazine-layout .revista-id-right h3{margin-top:0;margin-bottom:12px;font-size:22px;color:#26384f;}
-    .doc.magazine-layout .revista-id-right p{font-family:Georgia,'Times New Roman',serif;line-height:1.55;font-size:15px;margin-bottom:12px;text-align:left;}
-    .doc.magazine-layout .assinatura-revista{font-family:Arial,Helvetica,sans-serif !important;font-size:14px !important;margin-top:8px;}
-    .doc.magazine-layout .commentator-box{width:52%;margin-left:44%;margin-top:14px;padding:14px;border-radius:14px;background:#f4f8ff;border:1px solid #c5d6ee;}
-    .doc.magazine-layout .commentator-box h3,.doc.magazine-layout .commentator-box p{width:auto;margin-left:0;}
+    /* v13.57 — Revista EBD: ficha editorial alinhada e segura para PDF */
+    .doc.magazine-layout .revista-institutional-page{
+      display:grid;
+      grid-template-columns:40% 60%;
+      gap:0;
+      min-height:900px;
+      padding:22px;
+      overflow:hidden;
+      background:#ffffff;
+      border:1px solid #d7dce4;
+    }
+    .doc.magazine-layout .revista-id-left{
+      padding:30px 28px;
+      text-align:left;
+      color:#334050;
+      background:linear-gradient(180deg,#ffffff,#f4f7fa);
+      border:1px solid #d6dde6;
+      border-radius:20px 0 0 20px;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      min-width:0;
+    }
+    .doc.magazine-layout .revista-mini-logo{
+      width:70px;
+      height:70px;
+      border-radius:50%;
+      margin:0 0 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#26384f;
+      color:#fff;
+      font-weight:900;
+      letter-spacing:.08em;
+      border:4px solid #d7e4f2;
+      flex:0 0 auto;
+    }
+    .doc.magazine-layout .revista-id-left h2{
+      margin:0 0 18px;
+      color:#26384f;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      font-size:22px;
+      line-height:1.15;
+    }
+    .doc.magazine-layout .revista-id-left p{
+      margin:0 0 11px;
+      line-height:1.38;
+      font-size:13.8px;
+      overflow-wrap:anywhere;
+      word-break:normal;
+    }
+    .doc.magazine-layout .revista-id-right{
+      padding:34px 34px;
+      background:linear-gradient(90deg,#26384f 0%,#26384f 39%,#ffffff 39%,#ffffff 100%);
+      color:#fff;
+      border:1px solid #d6dde6;
+      border-left:none;
+      border-radius:0 20px 20px 0;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      position:relative;
+      min-width:0;
+    }
+    .doc.magazine-layout .revista-wordmark{
+      font-family:Georgia,'Times New Roman',serif;
+      color:#fff;
+      font-size:42px;
+      line-height:.94;
+      margin:0 0 24px;
+      letter-spacing:.02em;
+      max-width:34%;
+    }
+    .doc.magazine-layout .revista-id-right h3,
+    .doc.magazine-layout .revista-id-right p,
+    .doc.magazine-layout .assinatura-revista{
+      width:56%;
+      margin-left:43%;
+      color:#35404d;
+    }
+    .doc.magazine-layout .revista-id-right h3{
+      margin-top:0;
+      margin-bottom:12px;
+      font-size:22px;
+      color:#26384f;
+      line-height:1.18;
+    }
+    .doc.magazine-layout .revista-id-right p{
+      font-family:Georgia,'Times New Roman',serif;
+      line-height:1.52;
+      font-size:14.5px;
+      margin-bottom:12px;
+      text-align:left;
+      overflow-wrap:break-word;
+    }
+    .doc.magazine-layout .assinatura-revista{
+      font-family:Arial,Helvetica,sans-serif !important;
+      font-size:14px !important;
+      margin-top:8px;
+    }
+    .doc.magazine-layout .commentator-box{
+      width:56%;
+      margin-left:43%;
+      margin-top:14px;
+      padding:14px;
+      border-radius:14px;
+      background:#f4f8ff;
+      border:1px solid #c5d6ee;
+      color:#35404d;
+    }
+    .doc.magazine-layout .commentator-box h3,
+    .doc.magazine-layout .commentator-box p{
+      width:auto;
+      margin-left:0;
+    }
     .doc.magazine-layout .scripture-full .scripture-passage{margin:10px 0 12px;padding-bottom:8px;border-bottom:1px solid rgba(130,90,70,.14);}
     .doc.magazine-layout .scripture-full .scripture-passage:last-child{border-bottom:none;padding-bottom:0;}
-    @media(max-width:740px){.doc.magazine-layout .revista-institutional-page{grid-template-columns:1fr;}.doc.magazine-layout .revista-id-right{background:#fff;}.doc.magazine-layout .revista-wordmark{color:#26384f;}.doc.magazine-layout .revista-id-right h3,.doc.magazine-layout .revista-id-right p,.doc.magazine-layout .assinatura-revista,.doc.magazine-layout .commentator-box{width:auto;margin-left:0;}}
-    @media print{.doc.magazine-layout .revista-institutional-page{min-height:calc(100vh - 22mm);break-after:page;page-break-after:always;}.doc.magazine-layout .revista-id-left p{font-size:12px !important;}.doc.magazine-layout .revista-id-right p{font-size:12.8px !important;line-height:1.42 !important;}.doc.magazine-layout .revista-wordmark{font-size:40px !important;}}
+    @media(max-width:740px){
+      .doc.magazine-layout .revista-institutional-page{grid-template-columns:1fr;padding:14px;}
+      .doc.magazine-layout .revista-id-left{border-radius:18px 18px 0 0;}
+      .doc.magazine-layout .revista-id-right{background:#fff;border-left:1px solid #d6dde6;border-radius:0 0 18px 18px;}
+      .doc.magazine-layout .revista-wordmark{color:#26384f;max-width:none;}
+      .doc.magazine-layout .revista-id-right h3,
+      .doc.magazine-layout .revista-id-right p,
+      .doc.magazine-layout .assinatura-revista,
+      .doc.magazine-layout .commentator-box{width:auto;margin-left:0;}
+    }
+    @media print{
+      #printArea .doc.magazine-layout .revista-institutional-page{
+        display:grid !important;
+        grid-template-columns:40% 60% !important;
+        padding:10mm 9mm !important;
+        min-height:calc(297mm - 20mm) !important;
+        break-after:page !important;
+        page-break-after:always !important;
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+        overflow:hidden !important;
+        background:#fff !important;
+        border:none !important;
+      }
+      #printArea .doc.magazine-layout .revista-id-left{
+        padding:10mm 8mm !important;
+        border-radius:8mm 0 0 8mm !important;
+        border:1px solid #d6dde6 !important;
+        justify-content:flex-start !important;
+      }
+      #printArea .doc.magazine-layout .revista-id-right{
+        padding:10mm 8mm !important;
+        border-radius:0 8mm 8mm 0 !important;
+        border:1px solid #d6dde6 !important;
+        border-left:none !important;
+        justify-content:flex-start !important;
+        background:linear-gradient(90deg,#26384f 0%,#26384f 38%,#ffffff 38%,#ffffff 100%) !important;
+      }
+      #printArea .doc.magazine-layout .revista-id-left h2{
+        font-size:18px !important;
+        margin-bottom:12px !important;
+      }
+      #printArea .doc.magazine-layout .revista-id-left p{
+        font-size:11.2px !important;
+        line-height:1.28 !important;
+        margin-bottom:7px !important;
+      }
+      #printArea .doc.magazine-layout .revista-mini-logo{
+        width:16mm !important;
+        height:16mm !important;
+        margin-bottom:8mm !important;
+      }
+      #printArea .doc.magazine-layout .revista-id-right h3{
+        font-size:18px !important;
+        margin-bottom:7px !important;
+      }
+      #printArea .doc.magazine-layout .revista-id-right p{
+        font-size:11.7px !important;
+        line-height:1.34 !important;
+        margin-bottom:7px !important;
+      }
+      #printArea .doc.magazine-layout .revista-wordmark{
+        font-size:31px !important;
+        max-width:34% !important;
+        margin-bottom:12mm !important;
+      }
+      #printArea .doc.magazine-layout .commentator-box{
+        padding:8px !important;
+        margin-top:8px !important;
+      }
+      #printArea .doc.magazine-layout .commentator-box p{
+        font-size:11px !important;
+        line-height:1.3 !important;
+      }
+    }
 </style>
 </head>
 <body class="${classeFormato}">
