@@ -15526,8 +15526,7 @@ async function generateMaterial(){
         const titulo = cleanText(getValue("title")) || "Material VERBO IA";
         const estilos = Array.from(document.querySelectorAll("style"))
           .map(style => style.innerHTML)
-          .join("
-");
+          .join("\n");
 
         const classeFormato = format === "a3-livreto" ? "print-a3-livreto" : (format === "a5" ? "print-a5" : "print-a4");
         const nomeArquivo = `${nomeArquivoSeguro(titulo)}.doc`;
