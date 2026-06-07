@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.59 — Revista EBD preservada + opção A5 e exportar Word -->
+  <!-- v13.61 — Revista EBD preservada + Texto Áureo seguro + A5 e Word -->
 
   <style>
     :root{
@@ -1149,6 +1149,29 @@
       font-size:15.2px;
       line-height:1.5;
       color:#3f3128;
+    }
+
+
+    /* v13.61 — Texto Áureo sempre em bloco único e legível */
+    .golden-text-complete{
+      display:block;
+      margin:0 0 8px;
+      color:#3f3128;
+      font-size:15.8px;
+      line-height:1.55;
+      font-weight:700;
+      text-align:left;
+      overflow-wrap:break-word;
+      word-break:normal;
+    }
+
+    .opening-card .golden-text-ref{
+      display:block;
+      margin-top:8px;
+      color:#704915;
+      font-size:14px;
+      font-weight:900;
+      line-height:1.35;
     }
 
     .compact-comment-header{
@@ -2522,6 +2545,26 @@
       .golden-text-verse{
         font-size:13.6px !important;
         line-height:1.38 !important;
+      }
+
+
+      .golden-text-complete{
+        font-size:13.6px !important;
+        line-height:1.38 !important;
+        margin-bottom:6px !important;
+      }
+
+      .opening-card .golden-text-ref{
+        font-size:12.6px !important;
+      }
+
+      body.print-a5 .golden-text-complete{
+        font-size:11.4px !important;
+        line-height:1.32 !important;
+      }
+
+      body.print-a5 .opening-card .golden-text-ref{
+        font-size:10.8px !important;
       }
 
       .compact-comment-header{
@@ -8957,14 +9000,141 @@ Gere somente esta etapa.`;
       return `<div class="lesson-cover-illustration" role="img" aria-label="${escapeHtml(alt)}" style="background-image:url('${svgToDataUriV1335(svg)}')"></div>`;
     }
 
-    function renderLessonOpeningPage(base,info,numero,dados){
-      const brutoAureo = dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base);
-      const ref = referenciaPuraTextoAureoV1332(brutoAureo);
-      let texto = textoPuroTextoAureoV1332(dados.textoAureoTexto || dados.textoAureo || brutoAureo,ref) || textoBiblicoCurtoPorReferencia(ref) || ref;
-      if(textoGenericoRevistaV1329(texto) || texto.toLowerCase().startsWith(String(ref).toLowerCase())){
-        texto = textoBiblicoCurtoPorReferencia(ref) || textoPuroTextoAureoV1332(texto,ref) || ref;
+    /* v13.61 — Texto Áureo seguro: 1 versículo completo + referência, sem palavra solta */
+    function textoLimpoSemHtmlV1361(valor){
+      return String(valor || "")
+        .replace(/<[^>]+>/g," ")
+        .replace(/&nbsp;/gi," ")
+        .replace(/&quot;/gi,'"')
+        .replace(/&#39;/gi,"'")
+        .replace(/&amp;/gi,"&")
+        .replace(/\s+/g," ")
+        .trim();
+    }
+
+    function temaFamiliaFelizV1361(base,dados){
+      const texto = [
+        base?.title,
+        base?.subtitle,
+        base?.visibleTheme,
+        base?.theme,
+        base?.extraNotes,
+        dados?.titulo
+      ].join(" ").toLowerCase();
+
+      return /fam[ií]lia|casal|pais|filhos|div[oó]rcio|lar|casamento|12\s*segredos/i.test(texto);
+    }
+
+    function textoAureoPadraoFamiliaV1361(numero,dados){
+      const titulo = String(dados?.titulo || "").toLowerCase();
+
+      if(numero === 1 || /div[oó]rcio/.test(titulo)){
+        return {
+          texto:"Bem-aventurado o homem que teme ao SENHOR e anda nos seus caminhos.",
+          ref:"Salmos 128.1"
+        };
       }
-      texto = String(texto || "").replace(/^['"“”]+|['"“”]+$/g,"").trim();
+
+      if(numero === 2 || /casal|casamento/.test(titulo)){
+        return {
+          texto:"Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.",
+          ref:"Eclesiastes 4.9"
+        };
+      }
+
+      if(numero === 3 || /pais/.test(titulo)){
+        return {
+          texto:"O pai do justo exultará de júbilo; quem gerar um filho sábio nele se alegrará.",
+          ref:"Provérbios 23.24"
+        };
+      }
+
+      if(numero === 4 || /filhos|felicidade\s+dos\s+filhos/.test(titulo)){
+        return {
+          texto:"Como flechas na mão de um homem poderoso, assim são os filhos da mocidade.",
+          ref:"Salmos 127.4"
+        };
+      }
+
+      return null;
+    }
+
+    function limparReferenciaTextoAureoV1361(ref){
+      let r = textoLimpoSemHtmlV1361(ref)
+        .replace(/^refer[eê]ncia\s*[:\-–—]?\s*/i,"")
+        .replace(/[()]/g,"")
+        .trim();
+
+      r = r
+        .replace(/^Sl\s+/i,"Salmos ")
+        .replace(/^Salmo\s+/i,"Salmos ")
+        .replace(/^Ecl\s+/i,"Eclesiastes ")
+        .replace(/^Pv\s+/i,"Provérbios ")
+        .replace(/^Prov\s+/i,"Provérbios ");
+
+      return r;
+    }
+
+    function limparTextoAureoQuebradoV1361(texto,ref){
+      let t = textoLimpoSemHtmlV1361(texto)
+        .replace(/^texto\s*[aá]ureo\s*[:\-–—]?\s*/i,"")
+        .replace(/^vers[ií]culo\s*[:\-–—]?\s*/i,"")
+        .replace(/^['"“”]+|['"“”]+$/g,"")
+        .trim();
+
+      // Corrige o erro visto na prévia: começou em "aventurado" e deixou "Bem" solto.
+      t = t.replace(/^aventurado\s+/i,"Bem-aventurado ");
+
+      // Remove palavras soltas ou sobras editoriais no final.
+      t = t
+        .replace(/\s+Bem\s*$/i,"")
+        .replace(/\s+Texto\s*$/i,"")
+        .replace(/\s+Refer[eê]ncia\s*$/i,"")
+        .trim();
+
+      // Remove a referência de dentro do versículo para exibir referência em linha própria.
+      const refLimpa = limparReferenciaTextoAureoV1361(ref);
+      if(refLimpa){
+        const refEsc = refLimpa.replace(/[.*+?^${}()|[\]\]/g,"\$&");
+        t = t.replace(new RegExp("\s*\(?" + refEsc + "\)?\s*$","i"),"").trim();
+      }
+
+      t = t
+        .replace(/\(?(Sl|Salmos|Salmo)\s*128\.1\)?/gi,"")
+        .replace(/\(?(Ecl|Eclesiastes)\s*4\.9(?:-10)?\)?/gi,"")
+        .replace(/\(?(Pv|Prov[eé]rbios)\s*23\.24(?:,25)?\)?/gi,"")
+        .replace(/\(?(Sl|Salmos|Salmo)\s*127\.4\)?/gi,"")
+        .replace(/\s+/g," ")
+        .trim();
+
+      if(t && !/[.!?;:]$/.test(t)) t += ".";
+      return t;
+    }
+
+    function textoAureoSeguroV1361(base,numero,dados){
+      const brutoAureo = dados?.textoAureoRef || dados?.textoAureo || escolherTextoAureoPrincipal(dados?.leituraClasse,base);
+      let ref = limparReferenciaTextoAureoV1361(referenciaPuraTextoAureoV1332(brutoAureo));
+      let texto = textoPuroTextoAureoV1332(dados?.textoAureoTexto || dados?.textoAureo || brutoAureo,ref);
+      texto = limparTextoAureoQuebradoV1361(texto,ref);
+
+      const padraoFamilia = temaFamiliaFelizV1361(base,dados) ? textoAureoPadraoFamiliaV1361(numero,dados) : null;
+      if(padraoFamilia){
+        texto = padraoFamilia.texto;
+        ref = padraoFamilia.ref;
+      }
+
+      if(!texto || textoGenericoRevistaV1329(texto) || texto.toLowerCase().startsWith(String(ref).toLowerCase())){
+        texto = limparTextoAureoQuebradoV1361(textoBiblicoCurtoPorReferencia(ref) || texto || "",ref);
+      }
+
+      if(!texto) texto = "A Palavra de Deus orienta a vida do seu povo.";
+      if(!ref) ref = "Referência bíblica";
+
+      return {texto,ref};
+    }
+
+    function renderLessonOpeningPage(base,info,numero,dados){
+      const aureo = textoAureoSeguroV1361(base,numero,dados);
       const verdadePratica = verdadePraticaRevistaV1334(dados,numero,base);
 
       return `
@@ -8979,8 +9149,8 @@ Gere somente esta etapa.`;
             <div class="opening-cards">
               <div class="opening-card">
                 <h3>Texto Áureo</h3>
-                <span class="golden-text-verse">“${escapeHtml(texto)}”</span>
-                <span class="golden-text-ref">${escapeHtml(ref)}</span>
+                <p class="golden-text-complete">“${escapeHtml(aureo.texto)}”</p>
+                <span class="golden-text-ref">${escapeHtml(aureo.ref)}</span>
               </div>
 
               <div class="opening-card blue">
