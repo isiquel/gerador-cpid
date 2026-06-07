@@ -9075,11 +9075,16 @@ Gere somente esta etapa.`;
       return r;
     }
 
+    function escapeRegExpV1362(value){
+      return String(value || "").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+    }
+
     function limparTextoAureoQuebradoV1361(texto,ref){
       let t = textoLimpoSemHtmlV1361(texto)
         .replace(/^texto\s*[aá]ureo\s*[:\-–—]?\s*/i,"")
         .replace(/^vers[ií]culo\s*[:\-–—]?\s*/i,"")
-        .replace(/^['"“”]+|['"“”]+$/g,"")
+        .replace(/^[\'"“”]+|[\'"“”]+$/g,"")
+        .replace(/\s+/g," ")
         .trim();
 
       // Corrige o erro visto na prévia: começou em "aventurado" e deixou "Bem" solto.
@@ -9087,23 +9092,23 @@ Gere somente esta etapa.`;
 
       // Remove palavras soltas ou sobras editoriais no final.
       t = t
-        .replace(/\s+Bem\s*$/i,"")
-        .replace(/\s+Texto\s*$/i,"")
-        .replace(/\s+Refer[eê]ncia\s*$/i,"")
+        .replace(/\s+\bBem\b\s*$/i,"")
+        .replace(/\s+\bTexto\b\s*$/i,"")
+        .replace(/\s+\bRefer[eê]ncia\b\s*$/i,"")
         .trim();
 
       // Remove a referência de dentro do versículo para exibir referência em linha própria.
       const refLimpa = limparReferenciaTextoAureoV1361(ref);
       if(refLimpa){
-        const refEsc = refLimpa.replace(/[.*+?^${}()|[\]\]/g,"\$&");
-        t = t.replace(new RegExp("\s*\(?" + refEsc + "\)?\s*$","i"),"").trim();
+        const refEsc = escapeRegExpV1362(refLimpa);
+        t = t.replace(new RegExp("\\s*\\(?" + refEsc + "\\)?\\s*$","i"),"").trim();
       }
 
       t = t
-        .replace(/\(?(Sl|Salmos|Salmo)\s*128\.1\)?/gi,"")
-        .replace(/\(?(Ecl|Eclesiastes)\s*4\.9(?:-10)?\)?/gi,"")
-        .replace(/\(?(Pv|Prov[eé]rbios)\s*23\.24(?:,25)?\)?/gi,"")
-        .replace(/\(?(Sl|Salmos|Salmo)\s*127\.4\)?/gi,"")
+        .replace(/\(?\b(Sl|Salmos|Salmo)\s*128\.1\)?/gi,"")
+        .replace(/\(?\b(Ecl|Eclesiastes)\s*4\.9(?:-10)?\)?/gi,"")
+        .replace(/\(?\b(Pv|Prov[eé]rbios)\s*23\.24(?:,25)?\)?/gi,"")
+        .replace(/\(?\b(Sl|Salmos|Salmo)\s*127\.4\)?/gi,"")
         .replace(/\s+/g," ")
         .trim();
 
