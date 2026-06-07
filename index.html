@@ -15513,25 +15513,30 @@ async function generateMaterial(){
     }
 
     function baixarWord(){
-      const conteudo = obterConteudoAtualParaExportacao();
+      try{
+        const conteudo = obterConteudoAtualParaExportacao();
 
-      if(!conteudo){
-        setStatus("Gere um material antes de baixar em Word.","error");
-        alert("Gere um material antes de baixar em Word.");
-        return;
-      }
+        if(!conteudo || /placeholder/i.test(conteudo)){
+          setStatus("Gere um material antes de baixar em Word.","error");
+          alert("Gere um material antes de baixar em Word.");
+          return;
+        }
 
-      const format = getValue("printFormat") || "a4";
-      const titulo = cleanText(getValue("title")) || "Material VERBO IA";
-      const estilos = Array.from(document.querySelectorAll("style"))
-        .map(style => style.innerHTML)
-        .join("\n");
+        const format = getValue("printFormat") || "a4";
+        const titulo = cleanText(getValue("title")) || "Material VERBO IA";
+        const estilos = Array.from(document.querySelectorAll("style"))
+          .map(style => style.innerHTML)
+          .join("
+");
 
-      const htmlWord = `<!DOCTYPE html>
+        const classeFormato = format === "a3-livreto" ? "print-a3-livreto" : (format === "a5" ? "print-a5" : "print-a4");
+        const nomeArquivo = `${nomeArquivoSeguro(titulo)}.doc`;
+
+        const htmlWord = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
 <head>
   <meta charset="UTF-8">
-  <title>${escapeHTML(titulo)}</title>
+  <title>${escapeHtml(titulo)}</title>
   <!--[if gte mso 9]>
   <xml>
     <w:WordDocument>
@@ -15547,26 +15552,63 @@ async function generateMaterial(){
     body{font-family:Arial, Helvetica, sans-serif;color:#3f3128;background:#ffffff;}
     ${estilos}
     #printArea{display:block !important;}
+    .app-header,.left-panel,.preview-header,.edit-warning,.primary-actions{display:none !important;}
     .page{box-shadow:none !important;}
   </style>
 </head>
-<body class="print-${format === "a3-livreto" ? "a3-livreto" : format}">
+<body class="${classeFormato}">
   <div class="WordSection1">
     ${conteudo}
   </div>
 </body>
 </html>`;
 
-      const blob = new Blob(["\ufeff",htmlWord],{ type:"application/msword;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `${nomeArquivoSeguro(titulo)}.doc`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      setTimeout(() => URL.revokeObjectURL(url),1200);
-      setStatus("Arquivo Word gerado. Se o celular perguntar, abra com Word, Google Docs ou LibreOffice.","ok");
+        const blob = new Blob(["﻿",htmlWord],{ type:"application/msword;charset=utf-8" });
+
+        if(window.navigator && typeof window.navigator.msSaveOrOpenBlob === "function"){
+          window.navigator.msSaveOrOpenBlob(blob,nomeArquivo);
+          setStatus("Arquivo Word gerado com sucesso.","ok");
+          return;
+        }
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = nomeArquivo;
+        link.style.display = "none";
+        document.body.appendChild(link);
+
+        const evento = new MouseEvent("click",{
+          bubbles:true,
+          cancelable:true,
+          view:window
+        });
+
+        link.dispatchEvent(evento);
+
+        setTimeout(() => {
+          link.remove();
+          URL.revokeObjectURL(url);
+        },1800);
+
+        setStatus("Arquivo Word gerado. Procure o arquivo .doc na pasta Downloads. No celular, toque em abrir com Word, Google Docs ou LibreOffice.","ok");
+      }catch(error){
+        console.error("Erro ao baixar Word:",error);
+        setStatus("Não consegui baixar o Word automaticamente. Vou abrir o documento em uma nova aba para você salvar.","error");
+
+        const conteudoFallback = obterConteudoAtualParaExportacao();
+        const tituloFallback = cleanText(getValue("title")) || "Material VERBO IA";
+        const janela = window.open("","_blank");
+
+        if(janela){
+          janela.document.open();
+          janela.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${escapeHtml(tituloFallback)}</title></head><body>${conteudoFallback}</body></html>`);
+          janela.document.close();
+          alert("Abri o documento em uma nova aba. Use Ctrl+S, Compartilhar ou Imprimir/Salvar para guardar o arquivo.");
+        }else{
+          alert("O navegador bloqueou o download do Word. Libere pop-ups/downloads para este site e tente novamente.");
+        }
+      }
     }
 
     function salvarPDF(){
@@ -15647,7 +15689,7 @@ async function generateMaterial(){
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>${escapeHTML(titulo)} — Impressão</title>
+  <title>${escapeHtml(titulo)} — Impressão</title>
   <style>
     ${estilos}
 
