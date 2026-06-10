@@ -3260,7 +3260,7 @@
 
   
 
-    /* v13.58 — A5 e ajustes de exportação */
+    /* v13.59 — A5 e ajustes de exportação Word/PDF */
     .primary-actions .btn-gold{
       background:#fff7e6;
       border:1px solid #e0bc6a;
@@ -3412,6 +3412,8 @@
         <div class="primary-actions">
           <button id="btnGenerate" class="btn btn-primary" type="button">Gerar material</button>
           <button id="btnPrint" class="btn btn-green" type="button">Salvar / imprimir PDF</button>
+          <button id="btnEditPdfVisual" class="btn btn-gold" type="button">Editar PDF visual</button>
+          <button id="btnFinishEditTop" class="btn btn-light" type="button" disabled>Salvar edição visual</button>
           <button id="btnDownloadWord" class="btn btn-gold" type="button">Baixar Word (.docx)</button>
           <button id="btnClear" class="btn btn-light" type="button">Limpar</button>
         </div>
@@ -3935,7 +3937,7 @@
           <summary>Ferramentas extras</summary>
           <div class="accordion-body">
             <div class="actions-grid" style="margin-top:0;">
-              <button id="btnEdit" class="btn btn-gold" type="button">Editar material</button>
+              <button id="btnEdit" class="btn btn-gold" type="button">Editar material visual</button>
               <button id="btnFinishEdit" class="btn btn-light" type="button" disabled>Finalizar edição</button>
               <button id="btnTest" class="btn btn-light" type="button">Preencher teste</button>
               <button id="btnCopy" class="btn btn-light" type="button">Copiar texto</button>
@@ -3989,7 +3991,7 @@
         </div>
 
         <div id="editWarning" class="edit-warning">
-          Modo de edição ativado. Você pode alterar o material diretamente. Ao terminar, clique em <strong>Finalizar edição</strong>.
+          Modo de edição visual ativado. Edite o material aqui na tela antes de salvar em PDF. Você pode clicar nos textos e ajustar títulos, parágrafos, perguntas, quadros e espaços. Ao terminar, clique em <strong>Salvar edição visual</strong> ou <strong>Finalizar edição</strong>. Depois clique em <strong>Salvar / imprimir PDF</strong>.
         </div>
 
         <div id="result" class="result">
@@ -4270,6 +4272,8 @@
 
     const btnGenerate = document.getElementById("btnGenerate");
     const btnPrint = document.getElementById("btnPrint");
+    const btnEditPdfVisual = document.getElementById("btnEditPdfVisual");
+    const btnFinishEditTop = document.getElementById("btnFinishEditTop");
     const btnDownloadWord = document.getElementById("btnDownloadWord");
     const btnClear = document.getElementById("btnClear");
     const btnEdit = document.getElementById("btnEdit");
@@ -4781,8 +4785,7 @@
       printArea.innerHTML = htmlSalvo;
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
-      btnFinishEdit.disabled = true;
-      btnEdit.disabled = false;
+      sincronizarBotoesEdicao(false);
 
       atualizarPainelAutosave();
       setStatus("Último material restaurado. Agora você pode revisar, editar ou salvar em PDF.","ok");
@@ -4813,8 +4816,7 @@
 
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
-      btnFinishEdit.disabled = true;
-      btnEdit.disabled = false;
+      sincronizarBotoesEdicao(false);
 
       salvarUltimoMaterialGerado(html,"geracao");
     }
@@ -15263,52 +15265,200 @@ async function generateMaterial(){
         .replace(/\n{3,}/g,"\n\n"));
     }
 
-    function coletarLinhasParaWord(){
+    function ehNoIgnoradoWord(el){
+      if(!el || el.nodeType !== 1) return true;
+      return !!el.closest("script,style,button,input,select,textarea,.hidden,.autosave-panel,.primary-actions,.actions-grid,.progress-wrap");
+    }
+
+    function textoDiretoWord(el){
+      if(!el) return "";
+      return textoLimpoParaWord(el.innerText || el.textContent || "");
+    }
+
+    function coletarItensListaWord(el){
+      return [...el.querySelectorAll("li")].map(li => textoDiretoWord(li)).filter(Boolean);
+    }
+
+    function coletarBlocosParaWord(){
       const origem = result.cloneNode(true);
       origem.querySelectorAll("script,style,button,input,select,textarea,.hidden,.autosave-panel").forEach(el => el.remove());
 
-      const linhas = [];
+      const blocos = [];
       const vistos = new Set();
+      let primeiraLicao = true;
 
-      function adicionar(texto,tipo){
-        const limpo = textoLimpoParaWord(texto);
-        if(!limpo) return;
-        const chave = tipo + "|" + limpo;
-        if(vistos.has(chave)) return;
-        vistos.add(chave);
-        linhas.push({ texto:limpo, tipo:tipo || "p" });
+      function adicionar(bloco){
+        if(!bloco) return;
+        if(bloco.tipo === "p" || bloco.tipo === "h1" || bloco.tipo === "h2" || bloco.tipo === "h3" || bloco.tipo === "h4" || bloco.tipo === "subtitle" || bloco.tipo === "li"){
+          bloco.texto = textoLimpoParaWord(bloco.texto);
+          if(!bloco.texto) return;
+          const chave = bloco.tipo + "|" + bloco.texto;
+          if(vistos.has(chave)) return;
+          vistos.add(chave);
+        }
+        if(bloco.tipo === "tabela"){
+          bloco.linhas = (bloco.linhas || []).map(linha => (linha || []).map(c => textoLimpoParaWord(c))).filter(linha => linha.some(Boolean));
+          if(!bloco.linhas.length) return;
+          const chave = "tabela|" + JSON.stringify(bloco.linhas);
+          if(vistos.has(chave)) return;
+          vistos.add(chave);
+        }
+        blocos.push(bloco);
       }
 
-      const seletores = "h1,h2,h3,h4,h5,h6,p,li,blockquote,.page-title,.subtitle,.text,.golden-text-verse,.golden-text-ref,.daily-item,.opening-card,.scripture-full,.knowledge-box,.teacher-help,.summary-box,.personal-application,.book-note,.bibliography-box,.question-answer,.student-space";
-      const blocos = [...origem.querySelectorAll(seletores)];
-
-      if(blocos.length){
-        blocos.forEach(el => {
-          const tag = (el.tagName || "").toLowerCase();
-          let tipo = "p";
-
-          if(tag === "h1") tipo = "h1";
-          else if(tag === "h2") tipo = "h2";
-          else if(tag === "h3") tipo = "h3";
-          else if(tag === "h4" || tag === "h5" || tag === "h6") tipo = "h4";
-          else if(tag === "li") tipo = "li";
-          else if(el.classList.contains("page-title")) tipo = "h1";
-          else if(el.classList.contains("subtitle")) tipo = "subtitle";
-          else if(el.classList.contains("daily-item")) tipo = "li";
-          else if(el.classList.contains("question-answer")) tipo = "p";
-
-          adicionar(el.innerText,tipo);
-        });
-      }else{
-        (origem.innerText || "").split(/\n+/).forEach(l => adicionar(l,"p"));
+      function adicionarParagrafos(texto,tipo="p"){
+        textoLimpoParaWord(texto).split(/\n+/).map(s => s.trim()).filter(Boolean).forEach(parte => adicionar({ tipo, texto:parte }));
       }
 
-      return linhas.length ? linhas : [{ texto:"Material gerado pelo VERBO IA.", tipo:"p" }];
+      function tabelaDeCards(titulo, cards, colunas=2){
+        const linhas = [];
+        const cabecalho = titulo ? [[titulo]] : [];
+        const celulas = cards.map(card => textoDiretoWord(card)).filter(Boolean);
+        for(let i=0;i<celulas.length;i+=colunas){
+          linhas.push(celulas.slice(i,i+colunas));
+        }
+        if(cabecalho.length) adicionar({ tipo:"tabela", titulo, linhas:cabecalho, destaque:true, colunas:1 });
+        adicionar({ tipo:"tabela", linhas, cinza:true, colunas });
+      }
+
+      function processarNo(el){
+        if(!el || el.nodeType !== 1 || ehNoIgnoradoWord(el)) return;
+
+        const tag = (el.tagName || "").toLowerCase();
+        const cls = el.classList;
+
+        if(cls.contains("lesson-hero")){
+          if(!primeiraLicao) adicionar({ tipo:"pagebreak" });
+          primeiraLicao = false;
+          const num = textoDiretoWord(el.querySelector(".number"));
+          const h = textoDiretoWord(el.querySelector("h1"));
+          const meta = textoDiretoWord(el.querySelector(".meta"));
+          if(num) adicionar({ tipo:"subtitle", texto:num });
+          if(h) adicionar({ tipo:"h1", texto:h });
+          if(meta) adicionar({ tipo:"subtitle", texto:meta });
+          return;
+        }
+
+        if(cls.contains("cover-page") || cls.contains("back-cover-page")){
+          const titulo = textoDiretoWord(el.querySelector(".cover-title,h1,.page-title"));
+          const sub = textoDiretoWord(el.querySelector(".cover-subtitle,.subtitle"));
+          if(titulo) adicionar({ tipo:"h1", texto:titulo });
+          if(sub) adicionar({ tipo:"subtitle", texto:sub });
+          adicionar({ tipo:"pagebreak" });
+          return;
+        }
+
+        if(cls.contains("opening-cards")){
+          const cards = [...el.querySelectorAll(".opening-card")];
+          tabelaDeCards("Texto Áureo e Verdade Prática", cards, 2);
+          return;
+        }
+
+        if(cls.contains("daily-reading")){
+          const cards = [...el.querySelectorAll(".daily-item")];
+          tabelaDeCards("Leitura Diária", cards, 2);
+          return;
+        }
+
+        if(cls.contains("teacher-planning-panel")){
+          const cards = [...el.querySelectorAll(".teacher-plan-card,.opening-card,.mini-card")];
+          if(cards.length){
+            tabelaDeCards("Objetivos da Aula e Plano de Aula", cards, 2);
+          }else{
+            adicionar({ tipo:"h2", texto:"Objetivos da Aula e Plano de Aula" });
+            adicionarParagrafos(textoDiretoWord(el),"p");
+          }
+          return;
+        }
+
+        if(cls.contains("scripture-full")){
+          const titulo = textoDiretoWord(el.querySelector("h2,h3,h4")) || "Leitura Bíblica em Classe";
+          adicionar({ tipo:"h2", texto:titulo });
+          const refs = [...el.querySelectorAll(".ref,strong")].map(r => textoDiretoWord(r)).filter(Boolean);
+          refs.forEach(ref => adicionar({ tipo:"h4", texto:ref }));
+          const texto = textoDiretoWord(el);
+          const limpo = refs.concat([titulo]).reduce((acc,r) => acc.replace(r,""), texto).trim();
+          adicionarParagrafos(limpo,"p");
+          return;
+        }
+
+        if(cls.contains("lesson-review-full") || cls.contains("summary-box") || cls.contains("question-answer")){
+          const titulo = textoDiretoWord(el.querySelector("h2,h3,h4"));
+          if(titulo) adicionar({ tipo:"h2", texto:titulo });
+          const perguntas = [...el.querySelectorAll(".question-answer,li")].map(q => textoDiretoWord(q)).filter(Boolean);
+          if(perguntas.length){
+            adicionar({ tipo:"tabela", linhas:perguntas.map((q,i)=>[String(i+1),q]), cinza:true, colunas:2 });
+          }else{
+            adicionarParagrafos(textoDiretoWord(el).replace(titulo || "",""),"p");
+          }
+          return;
+        }
+
+        if(cls.contains("knowledge-box") || cls.contains("teacher-help") || cls.contains("personal-application") || cls.contains("book-note") || cls.contains("bibliography-box") || cls.contains("reference-alert") || cls.contains("safe-bibliography-alert")){
+          const titulo = textoDiretoWord(el.querySelector("h2,h3,h4"));
+          if(titulo) adicionar({ tipo:"h2", texto:titulo });
+          const itens = coletarItensListaWord(el);
+          if(itens.length){
+            itens.forEach(item => adicionar({ tipo:"li", texto:item }));
+          }else{
+            adicionarParagrafos(textoDiretoWord(el).replace(titulo || "",""),"p");
+          }
+          return;
+        }
+
+        if(cls.contains("page-title")){
+          adicionar({ tipo:"h1", texto:textoDiretoWord(el) });
+          return;
+        }
+        if(cls.contains("subtitle")){
+          adicionar({ tipo:"subtitle", texto:textoDiretoWord(el) });
+          return;
+        }
+
+        if(tag === "h1"){
+          adicionar({ tipo:"h1", texto:textoDiretoWord(el) });
+          return;
+        }
+        if(tag === "h2"){
+          adicionar({ tipo:"h2", texto:textoDiretoWord(el) });
+          return;
+        }
+        if(tag === "h3"){
+          adicionar({ tipo:"h3", texto:textoDiretoWord(el) });
+          return;
+        }
+        if(tag === "h4" || tag === "h5" || tag === "h6"){
+          adicionar({ tipo:"h4", texto:textoDiretoWord(el) });
+          return;
+        }
+        if(tag === "p" || cls.contains("text")){
+          adicionarParagrafos(textoDiretoWord(el),"p");
+          return;
+        }
+        if(tag === "li"){
+          adicionar({ tipo:"li", texto:textoDiretoWord(el) });
+          return;
+        }
+
+        [...el.children].forEach(processarNo);
+      }
+
+      [...origem.children].forEach(processarNo);
+
+      if(!blocos.length){
+        (origem.innerText || "").split(/\n+/).forEach(l => adicionar({ tipo:"p", texto:l }));
+      }
+
+      return blocos.length ? blocos : [{ tipo:"p", texto:"Material gerado pelo VERBO IA." }];
     }
 
-    function criarParagrafoWord(linha){
-      const texto = xmlEscape(linha.texto);
-      const tipo = linha.tipo || "p";
+    function criarParagrafoWord(bloco){
+      if(bloco.tipo === "pagebreak"){
+        return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
+      }
+
+      const texto = xmlEscape(bloco.texto || "");
+      const tipo = bloco.tipo || "p";
       let props = "";
       let runProps = "";
 
@@ -15344,12 +15494,39 @@ async function generateMaterial(){
       return partes.map(parte => `<w:p>${props}<w:r>${runProps}<w:t xml:space="preserve">${parte}</w:t></w:r></w:p>`).join("\n");
     }
 
-    function criarDocumentoXmlDocx(linhas,formato){
+    function criarCelulaWord(texto,{ header=false, width="5000" }={}){
+      const shading = header ? '<w:shd w:fill="D9EAF7"/>' : '<w:shd w:fill="F2F2F2"/>';
+      const runProps = header ? '<w:rPr><w:b/><w:sz w:val="22"/><w:color w:val="1F4E79"/></w:rPr>' : '<w:rPr><w:sz w:val="21"/></w:rPr>';
+      const linhas = textoLimpoParaWord(texto).split(/\n+/).filter(Boolean);
+      const conteudo = (linhas.length ? linhas : [""]).map(l => `<w:p><w:pPr><w:spacing w:after="60"/></w:pPr><w:r>${runProps}<w:t xml:space="preserve">${xmlEscape(l)}</w:t></w:r></w:p>`).join("");
+      return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${shading}<w:tcMar><w:top w:w="100" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="100" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr>${conteudo}</w:tc>`;
+    }
+
+    function criarTabelaWord(bloco){
+      const linhas = bloco.linhas || [];
+      const colunas = Math.max(1, bloco.colunas || Math.max(...linhas.map(l => l.length),1));
+      const width = String(Math.floor(10000 / colunas));
+      const bordas = '<w:tblBorders><w:top w:val="single" w:sz="6" w:space="0" w:color="BFBFBF"/><w:left w:val="single" w:sz="6" w:space="0" w:color="BFBFBF"/><w:bottom w:val="single" w:sz="6" w:space="0" w:color="BFBFBF"/><w:right w:val="single" w:sz="6" w:space="0" w:color="BFBFBF"/><w:insideH w:val="single" w:sz="4" w:space="0" w:color="D9D9D9"/><w:insideV w:val="single" w:sz="4" w:space="0" w:color="D9D9D9"/></w:tblBorders>';
+      const tblPr = `<w:tblPr><w:tblW w:w="10000" w:type="dxa"/><w:tblCellMar><w:top w:w="80" w:type="dxa"/><w:left w:w="80" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="80" w:type="dxa"/></w:tblCellMar>${bordas}</w:tblPr>`;
+      const rows = linhas.map((linha,idx) => {
+        const cells = [];
+        for(let i=0;i<colunas;i++) cells.push(linha[i] || "");
+        return `<w:tr>${cells.map(c => criarCelulaWord(c,{ header:idx===0 && bloco.destaque, width })).join("")}</w:tr>`;
+      }).join("\n");
+      return `<w:tbl>${tblPr}${rows}</w:tbl><w:p><w:pPr><w:spacing w:after="140"/></w:pPr></w:p>`;
+    }
+
+    function criarBlocoWord(bloco){
+      if(bloco.tipo === "tabela") return criarTabelaWord(bloco);
+      return criarParagrafoWord(bloco);
+    }
+
+    function criarDocumentoXmlDocx(blocos,formato){
       const isA5 = formato === "a5";
       const pageW = isA5 ? "8391" : "11906";
       const pageH = isA5 ? "11906" : "16838";
       const margin = isA5 ? "720" : "1134";
-      const body = linhas.map(criarParagrafoWord).join("\n");
+      const body = blocos.map(criarBlocoWord).join("\n");
 
       return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
@@ -15468,8 +15645,8 @@ async function generateMaterial(){
       return new Blob([...partes,...central,new Uint8Array(end)],{ type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
     }
 
-    function criarDocxBlob(linhas,formato){
-      const documentXml = criarDocumentoXmlDocx(linhas,formato);
+    function criarDocxBlob(blocos,formato){
+      const documentXml = criarDocumentoXmlDocx(blocos,formato);
       const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
@@ -15514,8 +15691,8 @@ async function generateMaterial(){
 
       try{
         const formato = getValue("printFormat") || "a4";
-        const linhas = coletarLinhasParaWord();
-        const blob = criarDocxBlob(linhas,formato);
+        const blocos = coletarBlocosParaWord();
+        const blob = criarDocxBlob(blocos,formato);
         const titulo = nomeArquivoSeguro(getValue("title") || "VERBO IA");
         const mes = nomeArquivoSeguro(getValue("revistaMes") || "");
         const publico = nomeArquivoSeguro(getValue("revistaClasse") || getValue("targetAudience") || "");
@@ -15529,7 +15706,7 @@ async function generateMaterial(){
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url),2000);
-        setStatus("Word verdadeiro (.docx) gerado. Abra no Word, MobiOffice, LibreOffice ou Google Docs.","ok");
+        setStatus("Word (.docx) gerado em formato limpo, com tabelas simples e quebras entre lições.","ok");
       }catch(erro){
         console.error(erro);
         setStatus("Não foi possível gerar o Word verdadeiro. Detalhe: " + (erro?.message || "erro desconhecido"),"error");
@@ -16568,8 +16745,7 @@ async function generateMaterial(){
 
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
-      btnFinishEdit.disabled = true;
-      btnEdit.disabled = false;
+      sincronizarBotoesEdicao(false);
 
       result.innerHTML = `
         <div class="placeholder">
@@ -16587,6 +16763,13 @@ async function generateMaterial(){
       setStatus("Campos limpos. O material salvo automaticamente continua disponível no botão Restaurar último.","ok");
     }
 
+    function sincronizarBotoesEdicao(ativo){
+      if(btnFinishEdit) btnFinishEdit.disabled = !ativo;
+      if(btnFinishEditTop) btnFinishEditTop.disabled = !ativo;
+      if(btnEdit) btnEdit.disabled = !!ativo;
+      if(btnEditPdfVisual) btnEditPdfVisual.disabled = !!ativo;
+    }
+
     function ativarEdicao(){
       if(!result.innerText.trim() || result.querySelector(".placeholder")){
         setStatus("Gere um material antes de ativar a edição.","error");
@@ -16595,23 +16778,21 @@ async function generateMaterial(){
 
       result.setAttribute("contenteditable","true");
       editWarning.style.display = "block";
-      btnFinishEdit.disabled = false;
-      btnEdit.disabled = true;
-      setStatus("Modo edição ativado. Você pode preencher espaços em branco e ajustar o texto.","ok");
+      sincronizarBotoesEdicao(true);
+      setStatus("Modo edição visual ativado. Ajuste o material na tela e depois clique em Salvar edição visual antes de gerar o PDF.","ok");
     }
 
     function finalizarEdicao(){
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
-      btnFinishEdit.disabled = true;
-      btnEdit.disabled = false;
+      sincronizarBotoesEdicao(false);
 
       currentHtml = result.innerHTML;
       currentText = result.innerText.trim();
       printArea.innerHTML = currentHtml;
       salvarUltimoMaterialGerado(currentHtml,"edicao");
 
-      setStatus("Edição finalizada, material atualizado e salvo automaticamente.","ok");
+      setStatus("Edição visual salva. Agora clique em Salvar / imprimir PDF para gerar o PDF com suas alterações.","ok");
     }
 
     async function copiarTexto(){
@@ -16819,6 +17000,8 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
 
     btnGenerate.addEventListener("click",generateMaterial);
     btnPrint.addEventListener("click",salvarPDF);
+    if(btnEditPdfVisual) btnEditPdfVisual.addEventListener("click",ativarEdicao);
+    if(btnFinishEditTop) btnFinishEditTop.addEventListener("click",finalizarEdicao);
     if(btnDownloadWord) btnDownloadWord.addEventListener("click",baixarWordDocx);
     btnClear.addEventListener("click",limparTudo);
     btnEdit.addEventListener("click",ativarEdicao);
