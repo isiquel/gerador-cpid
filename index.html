@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.61 — Revista EBD preservada + Texto Áureo seguro + A5 e Word -->
+  <!-- v13.53 — Revista EBD preservada + correção de impressão/PDF sem páginas quebradas -->
 
   <style>
     :root{
@@ -1151,29 +1151,6 @@
       color:#3f3128;
     }
 
-
-    /* v13.61 — Texto Áureo sempre em bloco único e legível */
-    .golden-text-complete{
-      display:block;
-      margin:0 0 8px;
-      color:#3f3128;
-      font-size:15.8px;
-      line-height:1.55;
-      font-weight:700;
-      text-align:left;
-      overflow-wrap:break-word;
-      word-break:normal;
-    }
-
-    .opening-card .golden-text-ref{
-      display:block;
-      margin-top:8px;
-      color:#704915;
-      font-size:14px;
-      font-weight:900;
-      line-height:1.35;
-    }
-
     .compact-comment-header{
       border-left:7px solid #0c5fc4;
       background:#f4f9ff;
@@ -1604,7 +1581,7 @@
 
 
 
-    /* v13.57 — Revista do Professor: blocos editoriais de abertura sempre em largura total */
+    /* v13.58 — Revista do Professor: blocos editoriais de abertura sempre em largura total */
     .doc.magazine-layout .lesson-page > .lesson-hero,
     .doc.magazine-layout .lesson-page > .daily-reading,
     .doc.magazine-layout .lesson-page > .opening-cards,
@@ -1666,7 +1643,7 @@
 
 
 
-    /* v13.57 — trava definitiva do layout da Revista do Professor */
+    /* v13.58 — trava definitiva do layout da Revista do Professor */
     .doc.magazine-layout .lesson-page > .lesson-hero,
     .doc.magazine-layout .lesson-page > .opening-cards,
     .doc.magazine-layout .lesson-page > .daily-reading,
@@ -2339,11 +2316,6 @@
         margin:11mm;
       }
 
-      body.print-a5 @page{
-        size:A5 portrait;
-        margin:8mm;
-      }
-
       body.print-a3-livreto @page{
         size:A3 landscape;
         margin:10mm;
@@ -2545,26 +2517,6 @@
       .golden-text-verse{
         font-size:13.6px !important;
         line-height:1.38 !important;
-      }
-
-
-      .golden-text-complete{
-        font-size:13.6px !important;
-        line-height:1.38 !important;
-        margin-bottom:6px !important;
-      }
-
-      .opening-card .golden-text-ref{
-        font-size:12.6px !important;
-      }
-
-      body.print-a5 .golden-text-complete{
-        font-size:11.4px !important;
-        line-height:1.32 !important;
-      }
-
-      body.print-a5 .opening-card .golden-text-ref{
-        font-size:10.8px !important;
       }
 
       .compact-comment-header{
@@ -3060,11 +3012,6 @@
         margin:10mm 9mm;
       }
 
-      body.print-a5 @page{
-        size:A5 portrait;
-        margin:8mm;
-      }
-
       body.print-a3-livreto @page{
         size:A3 landscape;
         margin:12mm;
@@ -3312,122 +3259,44 @@
     }
 
   
-    /* v13.58 — correção exclusiva da Revista EBD do Professor
-       Mantém a abertura da lição fora do miolo em duas colunas:
-       Cabeçalho azul → Texto Áureo/Verdade Prática → Leitura Diária → Leitura Bíblica em Classe → Objetivos/Plano. */
-    .doc.magazine-layout .teacher-lesson-page > .lesson-hero,
-    .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-    .doc.magazine-layout .teacher-lesson-page > .daily-reading,
-    .doc.magazine-layout .teacher-lesson-page > .scripture-full,
-    .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel,
-    .doc.magazine-layout .teacher-lesson-page > .lesson-review-full{
-      display:block !important;
-      width:100% !important;
-      max-width:100% !important;
-      clear:both !important;
-      float:none !important;
-      column-span:all !important;
-      grid-column:1 / -1 !important;
-      box-sizing:border-box !important;
-      break-inside:avoid !important;
-      page-break-inside:avoid !important;
-    }
 
-    .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-    .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel{
-      display:grid !important;
-      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-      gap:14px !important;
-      margin:0 0 18px !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .daily-reading{
-      margin:0 0 18px !important;
-      overflow:hidden !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .daily-reading .daily-grid{
-      display:grid !important;
-      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-      gap:9px !important;
-      width:100% !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .scripture-full{
-      margin:0 0 18px !important;
-      position:relative !important;
-      z-index:1 !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .magazine-columns{
-      clear:both !important;
-      margin-top:2px !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .lesson-review-full{
-      margin-top:18px !important;
-    }
-
-    @media(max-width:820px){
-      .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-      .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel,
-      .doc.magazine-layout .teacher-lesson-page > .daily-reading .daily-grid{
-        grid-template-columns:1fr !important;
-      }
+    /* v13.58 — A5 e ajustes de exportação */
+    .primary-actions .btn-gold{
+      background:#fff7e6;
+      border:1px solid #e0bc6a;
+      color:#6e4b14;
     }
 
     @media print{
-      #printArea .doc.magazine-layout .teacher-lesson-page{
-        page-break-before:always !important;
-        break-before:page !important;
+      body.print-a5 @page{
+        size:A5 portrait;
+        margin:8mm;
       }
 
-      #printArea .doc.magazine-layout .teacher-lesson-page > .lesson-hero,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .daily-reading,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .scripture-full,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .lesson-review-full{
-        display:block !important;
-        width:100% !important;
-        max-width:100% !important;
-        clear:both !important;
-        float:none !important;
-        column-span:all !important;
-        page-break-inside:avoid !important;
-        break-inside:avoid !important;
+      body.print-a5 #printArea .page{
+        padding:8mm !important;
+        font-size:92% !important;
       }
 
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel{
-        display:grid !important;
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:7px !important;
+      body.print-a5 #printArea .doc.magazine-layout .lesson-hero h1{
+        font-size:24px !important;
       }
 
-      #printArea .doc.magazine-layout .teacher-lesson-page > .daily-reading .daily-grid{
-        display:grid !important;
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:7px !important;
+      body.print-a5 #printArea .doc.magazine-layout .daily-reading .daily-grid{
+        grid-template-columns:1fr 1fr !important;
+        gap:6px !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .lesson-page > .magazine-columns{
+        column-count:1 !important;
+      }
+
+      body.print-a5 #printArea .cover-page,
+      body.print-a5 #printArea .back-cover-page,
+      body.print-a5 #printArea .revista-institutional-page{
+        min-height:calc(210mm - 16mm) !important;
       }
     }
-
-    /* v13.58 — ficha editorial mais centralizada no PDF, sem alterar conteúdo */
-    .doc.magazine-layout .revista-institutional-page{
-      align-items:center;
-    }
-
-    @media print{
-      #printArea .doc.magazine-layout .revista-institutional-page{
-        align-items:center !important;
-      }
-      #printArea .doc.magazine-layout .revista-id-left,
-      #printArea .doc.magazine-layout .revista-id-right{
-        justify-content:center !important;
-      }
-    }
-
-
 </style>
 </head>
 
@@ -3543,7 +3412,7 @@
         <div class="primary-actions">
           <button id="btnGenerate" class="btn btn-primary" type="button">Gerar material</button>
           <button id="btnPrint" class="btn btn-green" type="button">Salvar / imprimir PDF</button>
-          <button id="btnWord" class="btn btn-gold" type="button">Baixar Word</button>
+          <button id="btnDownloadWord" class="btn btn-gold" type="button">Baixar Word (.docx)</button>
           <button id="btnClear" class="btn btn-light" type="button">Limpar</button>
         </div>
 
@@ -3871,11 +3740,11 @@
               <label for="printFormat">Formato de impressão</label>
               <select id="printFormat">
                 <option value="a4" selected>A4 normal — PDF padrão</option>
-                <option value="a5">A5 retrato — revista pequena / apostila compacta</option>
+                <option value="a5">A5 retrato — apostila compacta</option>
                 <option value="a3-livreto">A3 paisagem — estilo livreto / encadernação</option>
               </select>
               <div class="chip-note">
-                Escolha A4 para PDF padrão, A5 para material menor/compacto ou A3 paisagem para livreto. Para livreto dobrável perfeito, use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
+                A4 é o padrão. A5 deixa o material em tamanho menor. Para livreto dobrável, escolha A3 paisagem e use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
               </div>
             </div>
           </div>
@@ -4401,7 +4270,7 @@
 
     const btnGenerate = document.getElementById("btnGenerate");
     const btnPrint = document.getElementById("btnPrint");
-    const btnWord = document.getElementById("btnWord");
+    const btnDownloadWord = document.getElementById("btnDownloadWord");
     const btnClear = document.getElementById("btnClear");
     const btnEdit = document.getElementById("btnEdit");
     const btnFinishEdit = document.getElementById("btnFinishEdit");
@@ -8860,35 +8729,6 @@ Gere somente esta etapa.`;
       `;
     }
 
-
-    /* v13.58 — Revista do Professor: abertura fixa em largura total */
-    function renderOpeningCardsProfessorV1358(base,numero,dados){
-      const brutoAureo = dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base);
-      const ref = referenciaPuraTextoAureoV1332(brutoAureo);
-      let texto = textoPuroTextoAureoV1332(dados.textoAureoTexto || dados.textoAureo || brutoAureo,ref) || textoBiblicoCurtoPorReferencia(ref) || ref;
-
-      if(textoGenericoRevistaV1329(texto) || String(texto).toLowerCase().startsWith(String(ref).toLowerCase())){
-        texto = textoBiblicoCurtoPorReferencia(ref) || textoPuroTextoAureoV1332(texto,ref) || ref;
-      }
-
-      texto = String(texto || "").replace(/^['"“”]+|['"“”]+$/g,"").trim();
-
-      return `
-        <div class="opening-cards teacher-opening-cards magazine-full">
-          <div class="opening-card">
-            <h3>Texto Áureo</h3>
-            <span class="golden-text-verse">“${escapeHtml(texto)}”</span>
-            <span class="golden-text-ref">${escapeHtml(ref)}</span>
-          </div>
-
-          <div class="opening-card blue">
-            <h3>Verdade Prática</h3>
-            <p>${escapeHtml(verdadePraticaRevistaV1334(dados,numero,base))}</p>
-          </div>
-        </div>
-      `;
-    }
-
     function svgToDataUriV1335(svg){
       return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
     }
@@ -9000,146 +8840,14 @@ Gere somente esta etapa.`;
       return `<div class="lesson-cover-illustration" role="img" aria-label="${escapeHtml(alt)}" style="background-image:url('${svgToDataUriV1335(svg)}')"></div>`;
     }
 
-    /* v13.61 — Texto Áureo seguro: 1 versículo completo + referência, sem palavra solta */
-    function textoLimpoSemHtmlV1361(valor){
-      return String(valor || "")
-        .replace(/<[^>]+>/g," ")
-        .replace(/&nbsp;/gi," ")
-        .replace(/&quot;/gi,'"')
-        .replace(/&#39;/gi,"'")
-        .replace(/&amp;/gi,"&")
-        .replace(/\s+/g," ")
-        .trim();
-    }
-
-    function temaFamiliaFelizV1361(base,dados){
-      const texto = [
-        base?.title,
-        base?.subtitle,
-        base?.visibleTheme,
-        base?.theme,
-        base?.extraNotes,
-        dados?.titulo
-      ].join(" ").toLowerCase();
-
-      return /fam[ií]lia|casal|pais|filhos|div[oó]rcio|lar|casamento|12\s*segredos/i.test(texto);
-    }
-
-    function textoAureoPadraoFamiliaV1361(numero,dados){
-      const titulo = String(dados?.titulo || "").toLowerCase();
-
-      if(numero === 1 || /div[oó]rcio/.test(titulo)){
-        return {
-          texto:"Bem-aventurado o homem que teme ao SENHOR e anda nos seus caminhos.",
-          ref:"Salmos 128.1"
-        };
-      }
-
-      if(numero === 2 || /casal|casamento/.test(titulo)){
-        return {
-          texto:"Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.",
-          ref:"Eclesiastes 4.9"
-        };
-      }
-
-      if(numero === 3 || /pais/.test(titulo)){
-        return {
-          texto:"O pai do justo exultará de júbilo; quem gerar um filho sábio nele se alegrará.",
-          ref:"Provérbios 23.24"
-        };
-      }
-
-      if(numero === 4 || /filhos|felicidade\s+dos\s+filhos/.test(titulo)){
-        return {
-          texto:"Como flechas na mão de um homem poderoso, assim são os filhos da mocidade.",
-          ref:"Salmos 127.4"
-        };
-      }
-
-      return null;
-    }
-
-    function limparReferenciaTextoAureoV1361(ref){
-      let r = textoLimpoSemHtmlV1361(ref)
-        .replace(/^refer[eê]ncia\s*[:\-–—]?\s*/i,"")
-        .replace(/[()]/g,"")
-        .trim();
-
-      r = r
-        .replace(/^Sl\s+/i,"Salmos ")
-        .replace(/^Salmo\s+/i,"Salmos ")
-        .replace(/^Ecl\s+/i,"Eclesiastes ")
-        .replace(/^Pv\s+/i,"Provérbios ")
-        .replace(/^Prov\s+/i,"Provérbios ");
-
-      return r;
-    }
-
-    function escapeRegExpV1362(value){
-      return String(value || "").replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
-    }
-
-    function limparTextoAureoQuebradoV1361(texto,ref){
-      let t = textoLimpoSemHtmlV1361(texto)
-        .replace(/^texto\s*[aá]ureo\s*[:\-–—]?\s*/i,"")
-        .replace(/^vers[ií]culo\s*[:\-–—]?\s*/i,"")
-        .replace(/^[\'"“”]+|[\'"“”]+$/g,"")
-        .replace(/\s+/g," ")
-        .trim();
-
-      // Corrige o erro visto na prévia: começou em "aventurado" e deixou "Bem" solto.
-      t = t.replace(/^aventurado\s+/i,"Bem-aventurado ");
-
-      // Remove palavras soltas ou sobras editoriais no final.
-      t = t
-        .replace(/\s+\bBem\b\s*$/i,"")
-        .replace(/\s+\bTexto\b\s*$/i,"")
-        .replace(/\s+\bRefer[eê]ncia\b\s*$/i,"")
-        .trim();
-
-      // Remove a referência de dentro do versículo para exibir referência em linha própria.
-      const refLimpa = limparReferenciaTextoAureoV1361(ref);
-      if(refLimpa){
-        const refEsc = escapeRegExpV1362(refLimpa);
-        t = t.replace(new RegExp("\\s*\\(?" + refEsc + "\\)?\\s*$","i"),"").trim();
-      }
-
-      t = t
-        .replace(/\(?\b(Sl|Salmos|Salmo)\s*128\.1\)?/gi,"")
-        .replace(/\(?\b(Ecl|Eclesiastes)\s*4\.9(?:-10)?\)?/gi,"")
-        .replace(/\(?\b(Pv|Prov[eé]rbios)\s*23\.24(?:,25)?\)?/gi,"")
-        .replace(/\(?\b(Sl|Salmos|Salmo)\s*127\.4\)?/gi,"")
-        .replace(/\s+/g," ")
-        .trim();
-
-      if(t && !/[.!?;:]$/.test(t)) t += ".";
-      return t;
-    }
-
-    function textoAureoSeguroV1361(base,numero,dados){
-      const brutoAureo = dados?.textoAureoRef || dados?.textoAureo || escolherTextoAureoPrincipal(dados?.leituraClasse,base);
-      let ref = limparReferenciaTextoAureoV1361(referenciaPuraTextoAureoV1332(brutoAureo));
-      let texto = textoPuroTextoAureoV1332(dados?.textoAureoTexto || dados?.textoAureo || brutoAureo,ref);
-      texto = limparTextoAureoQuebradoV1361(texto,ref);
-
-      const padraoFamilia = temaFamiliaFelizV1361(base,dados) ? textoAureoPadraoFamiliaV1361(numero,dados) : null;
-      if(padraoFamilia){
-        texto = padraoFamilia.texto;
-        ref = padraoFamilia.ref;
-      }
-
-      if(!texto || textoGenericoRevistaV1329(texto) || texto.toLowerCase().startsWith(String(ref).toLowerCase())){
-        texto = limparTextoAureoQuebradoV1361(textoBiblicoCurtoPorReferencia(ref) || texto || "",ref);
-      }
-
-      if(!texto) texto = "A Palavra de Deus orienta a vida do seu povo.";
-      if(!ref) ref = "Referência bíblica";
-
-      return {texto,ref};
-    }
-
     function renderLessonOpeningPage(base,info,numero,dados){
-      const aureo = textoAureoSeguroV1361(base,numero,dados);
+      const brutoAureo = dados.textoAureoRef || dados.textoAureo || escolherTextoAureoPrincipal(dados.leituraClasse,base);
+      const ref = referenciaPuraTextoAureoV1332(brutoAureo);
+      let texto = textoPuroTextoAureoV1332(dados.textoAureoTexto || dados.textoAureo || brutoAureo,ref) || textoBiblicoCurtoPorReferencia(ref) || ref;
+      if(textoGenericoRevistaV1329(texto) || texto.toLowerCase().startsWith(String(ref).toLowerCase())){
+        texto = textoBiblicoCurtoPorReferencia(ref) || textoPuroTextoAureoV1332(texto,ref) || ref;
+      }
+      texto = String(texto || "").replace(/^['"“”]+|['"“”]+$/g,"").trim();
       const verdadePratica = verdadePraticaRevistaV1334(dados,numero,base);
 
       return `
@@ -9154,8 +8862,8 @@ Gere somente esta etapa.`;
             <div class="opening-cards">
               <div class="opening-card">
                 <h3>Texto Áureo</h3>
-                <p class="golden-text-complete">“${escapeHtml(aureo.texto)}”</p>
-                <span class="golden-text-ref">${escapeHtml(aureo.ref)}</span>
+                <span class="golden-text-verse">“${escapeHtml(texto)}”</span>
+                <span class="golden-text-ref">${escapeHtml(ref)}</span>
               </div>
 
               <div class="opening-card blue">
@@ -10176,7 +9884,6 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         </div>
       `);
 
-      partes.push(renderOpeningCardsProfessorV1358(base,numero,dados));
       partes.push(renderDailyReading(numero,dados));
       partes.push(await gerarLeituraClasse(base,info,licoes,numero,dados));
 
@@ -10781,7 +10488,7 @@ Estruture assim:
 
       temp.querySelectorAll(".lesson-page").forEach(page => {
         /*
-          v13.57:
+          v13.58:
           A Revista do Professor estava deixando Leitura Bíblica em Classe antes do cabeçalho
           da lição e empurrando a Leitura Diária para dentro/ao lado do miolo em duas colunas.
           Aqui o app reorganiza a página depois que a IA entrega o HTML.
@@ -11048,7 +10755,7 @@ Estruture assim:
 
         if(info.isTeacher){
           licao = await gerarLicaoProfessorSeccionada(base,info,licoes,numero,dados,revistaAlunoTexto);
-          html += renderPage(licao,"lesson-page teacher-lesson-page");
+          html += renderPage(licao,"lesson-page");
         }else{
           html += renderLessonOpeningPage(base,info,numero,dados);
           licao = await gerarLicaoAlunoSeccionada(base,info,licoes,numero,dados);
@@ -15479,137 +15186,6 @@ async function generateMaterial(){
       await pause(600);
     }
 
-    function obterConteudoAtualParaExportacao(){
-      if(result.getAttribute("contenteditable") === "true"){
-        finalizarEdicao();
-      }
-
-      const html = result.innerHTML || currentHtml || "";
-      return html.trim();
-    }
-
-    function nomeArquivoSeguro(nome){
-      const base = cleanText(nome || "material-verbo-ia") || "material-verbo-ia";
-      return base
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .replace(/[^a-zA-Z0-9\-_ ]+/g,"")
-        .trim()
-        .replace(/\s+/g,"-")
-        .toLowerCase()
-        .slice(0,80) || "material-verbo-ia";
-    }
-
-    function cssPaginaWord(format){
-      if(format === "a5"){
-        return "@page WordSection1{size:148mm 210mm;margin:8mm;}";
-      }
-
-      if(format === "a3-livreto"){
-        return "@page WordSection1{size:420mm 297mm;mso-page-orientation:landscape;margin:12mm;}";
-      }
-
-      return "@page WordSection1{size:210mm 297mm;margin:11mm;}";
-    }
-
-    function baixarWord(){
-      try{
-        const conteudo = obterConteudoAtualParaExportacao();
-
-        if(!conteudo || /placeholder/i.test(conteudo)){
-          setStatus("Gere um material antes de baixar em Word.","error");
-          alert("Gere um material antes de baixar em Word.");
-          return;
-        }
-
-        const format = getValue("printFormat") || "a4";
-        const titulo = cleanText(getValue("title")) || "Material VERBO IA";
-        const estilos = Array.from(document.querySelectorAll("style"))
-          .map(style => style.innerHTML)
-          .join("\n");
-
-        const classeFormato = format === "a3-livreto" ? "print-a3-livreto" : (format === "a5" ? "print-a5" : "print-a4");
-        const nomeArquivo = `${nomeArquivoSeguro(titulo)}.doc`;
-
-        const htmlWord = `<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-  <meta charset="UTF-8">
-  <title>${escapeHtml(titulo)}</title>
-  <!--[if gte mso 9]>
-  <xml>
-    <w:WordDocument>
-      <w:View>Print</w:View>
-      <w:Zoom>100</w:Zoom>
-      <w:DoNotOptimizeForBrowser/>
-    </w:WordDocument>
-  </xml>
-  <![endif]-->
-  <style>
-    ${cssPaginaWord(format)}
-    div.WordSection1{page:WordSection1;}
-    body{font-family:Arial, Helvetica, sans-serif;color:#3f3128;background:#ffffff;}
-    ${estilos}
-    #printArea{display:block !important;}
-    .app-header,.left-panel,.preview-header,.edit-warning,.primary-actions{display:none !important;}
-    .page{box-shadow:none !important;}
-  </style>
-</head>
-<body class="${classeFormato}">
-  <div class="WordSection1">
-    ${conteudo}
-  </div>
-</body>
-</html>`;
-
-        const blob = new Blob(["﻿",htmlWord],{ type:"application/msword;charset=utf-8" });
-
-        if(window.navigator && typeof window.navigator.msSaveOrOpenBlob === "function"){
-          window.navigator.msSaveOrOpenBlob(blob,nomeArquivo);
-          setStatus("Arquivo Word gerado com sucesso.","ok");
-          return;
-        }
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = nomeArquivo;
-        link.style.display = "none";
-        document.body.appendChild(link);
-
-        const evento = new MouseEvent("click",{
-          bubbles:true,
-          cancelable:true,
-          view:window
-        });
-
-        link.dispatchEvent(evento);
-
-        setTimeout(() => {
-          link.remove();
-          URL.revokeObjectURL(url);
-        },1800);
-
-        setStatus("Arquivo Word gerado. Procure o arquivo .doc na pasta Downloads. No celular, toque em abrir com Word, Google Docs ou LibreOffice.","ok");
-      }catch(error){
-        console.error("Erro ao baixar Word:",error);
-        setStatus("Não consegui baixar o Word automaticamente. Vou abrir o documento em uma nova aba para você salvar.","error");
-
-        const conteudoFallback = obterConteudoAtualParaExportacao();
-        const tituloFallback = cleanText(getValue("title")) || "Material VERBO IA";
-        const janela = window.open("","_blank");
-
-        if(janela){
-          janela.document.open();
-          janela.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>${escapeHtml(tituloFallback)}</title></head><body>${conteudoFallback}</body></html>`);
-          janela.document.close();
-          alert("Abri o documento em uma nova aba. Use Ctrl+S, Compartilhar ou Imprimir/Salvar para guardar o arquivo.");
-        }else{
-          alert("O navegador bloqueou o download do Word. Libere pop-ups/downloads para este site e tente novamente.");
-        }
-      }
-    }
-
     function salvarPDF(){
       if(!currentHtml && !result.innerText.trim()){
         setStatus("Gere um material antes de salvar ou imprimir em PDF.","error");
@@ -15662,6 +15238,304 @@ async function generateMaterial(){
       },1200);
     }
 
+
+    function nomeArquivoSeguro(nome){
+      return cleanText(nome || "VERBO IA")
+        .replace(/[\\/:*?"<>|]+/g," ")
+        .replace(/\s+/g," ")
+        .trim()
+        .slice(0,80) || "VERBO IA";
+    }
+
+    function xmlEscape(valor){
+      return String(valor || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&apos;");
+    }
+
+    function textoLimpoParaWord(valor){
+      return cleanText(String(valor || "")
+        .replace(/\u00a0/g," ")
+        .replace(/[ \t]+/g," ")
+        .replace(/\n{3,}/g,"\n\n"));
+    }
+
+    function coletarLinhasParaWord(){
+      const origem = result.cloneNode(true);
+      origem.querySelectorAll("script,style,button,input,select,textarea,.hidden,.autosave-panel").forEach(el => el.remove());
+
+      const linhas = [];
+      const vistos = new Set();
+
+      function adicionar(texto,tipo){
+        const limpo = textoLimpoParaWord(texto);
+        if(!limpo) return;
+        const chave = tipo + "|" + limpo;
+        if(vistos.has(chave)) return;
+        vistos.add(chave);
+        linhas.push({ texto:limpo, tipo:tipo || "p" });
+      }
+
+      const seletores = "h1,h2,h3,h4,h5,h6,p,li,blockquote,.page-title,.subtitle,.text,.golden-text-verse,.golden-text-ref,.daily-item,.opening-card,.scripture-full,.knowledge-box,.teacher-help,.summary-box,.personal-application,.book-note,.bibliography-box,.question-answer,.student-space";
+      const blocos = [...origem.querySelectorAll(seletores)];
+
+      if(blocos.length){
+        blocos.forEach(el => {
+          const tag = (el.tagName || "").toLowerCase();
+          let tipo = "p";
+
+          if(tag === "h1") tipo = "h1";
+          else if(tag === "h2") tipo = "h2";
+          else if(tag === "h3") tipo = "h3";
+          else if(tag === "h4" || tag === "h5" || tag === "h6") tipo = "h4";
+          else if(tag === "li") tipo = "li";
+          else if(el.classList.contains("page-title")) tipo = "h1";
+          else if(el.classList.contains("subtitle")) tipo = "subtitle";
+          else if(el.classList.contains("daily-item")) tipo = "li";
+          else if(el.classList.contains("question-answer")) tipo = "p";
+
+          adicionar(el.innerText,tipo);
+        });
+      }else{
+        (origem.innerText || "").split(/\n+/).forEach(l => adicionar(l,"p"));
+      }
+
+      return linhas.length ? linhas : [{ texto:"Material gerado pelo VERBO IA.", tipo:"p" }];
+    }
+
+    function criarParagrafoWord(linha){
+      const texto = xmlEscape(linha.texto);
+      const tipo = linha.tipo || "p";
+      let props = "";
+      let runProps = "";
+
+      if(tipo === "h1"){
+        props = '<w:pPr><w:spacing w:before="260" w:after="160"/><w:keepNext/><w:outlineLvl w:val="0"/></w:pPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="34"/><w:color w:val="1F4E79"/></w:rPr>';
+      }else if(tipo === "h2"){
+        props = '<w:pPr><w:spacing w:before="220" w:after="120"/><w:keepNext/><w:outlineLvl w:val="1"/></w:pPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="28"/><w:color w:val="1F4E79"/></w:rPr>';
+      }else if(tipo === "h3"){
+        props = '<w:pPr><w:spacing w:before="180" w:after="100"/><w:keepNext/><w:outlineLvl w:val="2"/></w:pPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="24"/><w:color w:val="1F4E79"/></w:rPr>';
+      }else if(tipo === "h4"){
+        props = '<w:pPr><w:spacing w:before="140" w:after="80"/><w:keepNext/></w:pPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="22"/><w:color w:val="5F3B25"/></w:rPr>';
+      }else if(tipo === "subtitle"){
+        props = '<w:pPr><w:spacing w:after="140"/></w:pPr>';
+        runProps = '<w:rPr><w:i/><w:sz w:val="22"/><w:color w:val="666666"/></w:rPr>';
+      }else if(tipo === "li"){
+        props = '<w:pPr><w:spacing w:after="80"/><w:ind w:left="360" w:hanging="180"/></w:pPr>';
+        runProps = '<w:rPr><w:sz w:val="22"/></w:rPr>';
+        return `<w:p>${props}<w:r>${runProps}<w:t xml:space="preserve">• ${texto}</w:t></w:r></w:p>`;
+      }else{
+        props = '<w:pPr><w:spacing w:after="120"/><w:jc w:val="both"/></w:pPr>';
+        runProps = '<w:rPr><w:sz w:val="22"/></w:rPr>';
+      }
+
+      const partes = texto.split(/\n+/).filter(Boolean);
+      if(partes.length <= 1){
+        return `<w:p>${props}<w:r>${runProps}<w:t xml:space="preserve">${texto}</w:t></w:r></w:p>`;
+      }
+
+      return partes.map(parte => `<w:p>${props}<w:r>${runProps}<w:t xml:space="preserve">${parte}</w:t></w:r></w:p>`).join("\n");
+    }
+
+    function criarDocumentoXmlDocx(linhas,formato){
+      const isA5 = formato === "a5";
+      const pageW = isA5 ? "8391" : "11906";
+      const pageH = isA5 ? "11906" : "16838";
+      const margin = isA5 ? "720" : "1134";
+      const body = linhas.map(criarParagrafoWord).join("\n");
+
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">
+  <w:body>
+    ${body}
+    <w:sectPr>
+      <w:pgSz w:w="${pageW}" w:h="${pageH}"/>
+      <w:pgMar w:top="${margin}" w:right="${margin}" w:bottom="${margin}" w:left="${margin}" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:cols w:space="708"/>
+      <w:docGrid w:linePitch="360"/>
+    </w:sectPr>
+  </w:body>
+</w:document>`;
+    }
+
+    function crc32Tabela(){
+      const tabela = [];
+      for(let n = 0; n < 256; n++){
+        let c = n;
+        for(let k = 0; k < 8; k++){
+          c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        tabela[n] = c >>> 0;
+      }
+      return tabela;
+    }
+
+    const CRC32_TABELA_DOCX = crc32Tabela();
+
+    function crc32(bytes){
+      let c = 0xffffffff;
+      for(let i = 0; i < bytes.length; i++){
+        c = CRC32_TABELA_DOCX[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+      }
+      return (c ^ 0xffffffff) >>> 0;
+    }
+
+    function dosDateTime(){
+      const d = new Date();
+      const time = ((d.getHours() & 31) << 11) | ((d.getMinutes() & 63) << 5) | ((Math.floor(d.getSeconds() / 2)) & 31);
+      const date = (((d.getFullYear() - 1980) & 127) << 9) | (((d.getMonth() + 1) & 15) << 5) | (d.getDate() & 31);
+      return { time, date };
+    }
+
+    function u16(valor){ return [valor & 255, (valor >>> 8) & 255]; }
+    function u32(valor){ return [valor & 255, (valor >>> 8) & 255, (valor >>> 16) & 255, (valor >>> 24) & 255]; }
+
+    function criarZipSemCompressao(arquivos){
+      const encoder = new TextEncoder();
+      const partes = [];
+      const central = [];
+      let offset = 0;
+      const dt = dosDateTime();
+
+      function pushBytes(arr,bytes){ bytes.forEach(b => arr.push(b)); }
+
+      for(const arquivo of arquivos){
+        const nomeBytes = encoder.encode(arquivo.nome);
+        const dados = typeof arquivo.conteudo === "string" ? encoder.encode(arquivo.conteudo) : arquivo.conteudo;
+        const crc = crc32(dados);
+        const local = [];
+
+        pushBytes(local,u32(0x04034b50));
+        pushBytes(local,u16(20));
+        pushBytes(local,u16(0));
+        pushBytes(local,u16(0));
+        pushBytes(local,u16(dt.time));
+        pushBytes(local,u16(dt.date));
+        pushBytes(local,u32(crc));
+        pushBytes(local,u32(dados.length));
+        pushBytes(local,u32(dados.length));
+        pushBytes(local,u16(nomeBytes.length));
+        pushBytes(local,u16(0));
+        pushBytes(local,[...nomeBytes]);
+        pushBytes(local,[...dados]);
+
+        partes.push(new Uint8Array(local));
+
+        const cen = [];
+        pushBytes(cen,u32(0x02014b50));
+        pushBytes(cen,u16(20));
+        pushBytes(cen,u16(20));
+        pushBytes(cen,u16(0));
+        pushBytes(cen,u16(0));
+        pushBytes(cen,u16(dt.time));
+        pushBytes(cen,u16(dt.date));
+        pushBytes(cen,u32(crc));
+        pushBytes(cen,u32(dados.length));
+        pushBytes(cen,u32(dados.length));
+        pushBytes(cen,u16(nomeBytes.length));
+        pushBytes(cen,u16(0));
+        pushBytes(cen,u16(0));
+        pushBytes(cen,u16(0));
+        pushBytes(cen,u16(0));
+        pushBytes(cen,u32(0));
+        pushBytes(cen,u32(offset));
+        pushBytes(cen,[...nomeBytes]);
+        central.push(new Uint8Array(cen));
+
+        offset += local.length;
+      }
+
+      const centralOffset = offset;
+      let centralSize = 0;
+      central.forEach(c => centralSize += c.length);
+      const end = [];
+      pushBytes(end,u32(0x06054b50));
+      pushBytes(end,u16(0));
+      pushBytes(end,u16(0));
+      pushBytes(end,u16(arquivos.length));
+      pushBytes(end,u16(arquivos.length));
+      pushBytes(end,u32(centralSize));
+      pushBytes(end,u32(centralOffset));
+      pushBytes(end,u16(0));
+
+      return new Blob([...partes,...central,new Uint8Array(end)],{ type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+    }
+
+    function criarDocxBlob(linhas,formato){
+      const documentXml = criarDocumentoXmlDocx(linhas,formato);
+      const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+  <Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+  <Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
+</Types>`;
+      const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+      const documentRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>`;
+      const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="22"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120"/></w:pPr></w:pPrDefault></w:docDefaults>
+</w:styles>`;
+      const settings = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:zoom w:percent="100"/><w:defaultTabStop w:val="720"/></w:settings>`;
+
+      return criarZipSemCompressao([
+        { nome:"[Content_Types].xml", conteudo:contentTypes },
+        { nome:"_rels/.rels", conteudo:rels },
+        { nome:"word/_rels/document.xml.rels", conteudo:documentRels },
+        { nome:"word/document.xml", conteudo:documentXml },
+        { nome:"word/styles.xml", conteudo:styles },
+        { nome:"word/settings.xml", conteudo:settings }
+      ]);
+    }
+
+    function baixarWordDocx(){
+      if(!currentHtml && !result.innerText.trim()){
+        setStatus("Gere um material antes de baixar em Word.","error");
+        alert("Gere um material antes de baixar em Word.");
+        return;
+      }
+
+      if(result.getAttribute("contenteditable") === "true"){
+        finalizarEdicao();
+      }
+
+      try{
+        const formato = getValue("printFormat") || "a4";
+        const linhas = coletarLinhasParaWord();
+        const blob = criarDocxBlob(linhas,formato);
+        const titulo = nomeArquivoSeguro(getValue("title") || "VERBO IA");
+        const mes = nomeArquivoSeguro(getValue("revistaMes") || "");
+        const publico = nomeArquivoSeguro(getValue("revistaClasse") || getValue("targetAudience") || "");
+        const nome = [titulo,mes,publico].filter(Boolean).join(" - ") + ".docx";
+
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = nome;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url),2000);
+        setStatus("Word verdadeiro (.docx) gerado. Abra no Word, MobiOffice, LibreOffice ou Google Docs.","ok");
+      }catch(erro){
+        console.error(erro);
+        setStatus("Não foi possível gerar o Word verdadeiro. Detalhe: " + (erro?.message || "erro desconhecido"),"error");
+      }
+    }
+
     function abrirJanelaImpressaoMobile(format){
       const conteudo = printArea.innerHTML || result.innerHTML;
 
@@ -15688,7 +15562,7 @@ async function generateMaterial(){
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <title>${escapeHtml(titulo)} — Impressão</title>
+  <title>${escapeHTML(titulo)} — Impressão</title>
   <style>
     ${estilos}
 
@@ -16436,7 +16310,7 @@ async function generateMaterial(){
 
   
 
-    /* v13.57 — Revista EBD: ficha editorial alinhada e segura para PDF */
+    /* v13.58 — Revista EBD: ficha editorial alinhada e segura para PDF */
     .doc.magazine-layout .revista-institutional-page{
       display:grid;
       grid-template-columns:40% 60%;
@@ -16630,123 +16504,6 @@ async function generateMaterial(){
         line-height:1.3 !important;
       }
     }
-
-    /* v13.58 — correção exclusiva da Revista EBD do Professor
-       Mantém a abertura da lição fora do miolo em duas colunas:
-       Cabeçalho azul → Texto Áureo/Verdade Prática → Leitura Diária → Leitura Bíblica em Classe → Objetivos/Plano. */
-    .doc.magazine-layout .teacher-lesson-page > .lesson-hero,
-    .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-    .doc.magazine-layout .teacher-lesson-page > .daily-reading,
-    .doc.magazine-layout .teacher-lesson-page > .scripture-full,
-    .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel,
-    .doc.magazine-layout .teacher-lesson-page > .lesson-review-full{
-      display:block !important;
-      width:100% !important;
-      max-width:100% !important;
-      clear:both !important;
-      float:none !important;
-      column-span:all !important;
-      grid-column:1 / -1 !important;
-      box-sizing:border-box !important;
-      break-inside:avoid !important;
-      page-break-inside:avoid !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-    .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel{
-      display:grid !important;
-      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-      gap:14px !important;
-      margin:0 0 18px !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .daily-reading{
-      margin:0 0 18px !important;
-      overflow:hidden !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .daily-reading .daily-grid{
-      display:grid !important;
-      grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-      gap:9px !important;
-      width:100% !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .scripture-full{
-      margin:0 0 18px !important;
-      position:relative !important;
-      z-index:1 !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .magazine-columns{
-      clear:both !important;
-      margin-top:2px !important;
-    }
-
-    .doc.magazine-layout .teacher-lesson-page > .lesson-review-full{
-      margin-top:18px !important;
-    }
-
-    @media(max-width:820px){
-      .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-      .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel,
-      .doc.magazine-layout .teacher-lesson-page > .daily-reading .daily-grid{
-        grid-template-columns:1fr !important;
-      }
-    }
-
-    @media print{
-      #printArea .doc.magazine-layout .teacher-lesson-page{
-        page-break-before:always !important;
-        break-before:page !important;
-      }
-
-      #printArea .doc.magazine-layout .teacher-lesson-page > .lesson-hero,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .daily-reading,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .scripture-full,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .lesson-review-full{
-        display:block !important;
-        width:100% !important;
-        max-width:100% !important;
-        clear:both !important;
-        float:none !important;
-        column-span:all !important;
-        page-break-inside:avoid !important;
-        break-inside:avoid !important;
-      }
-
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-opening-cards,
-      #printArea .doc.magazine-layout .teacher-lesson-page > .teacher-planning-panel{
-        display:grid !important;
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:7px !important;
-      }
-
-      #printArea .doc.magazine-layout .teacher-lesson-page > .daily-reading .daily-grid{
-        display:grid !important;
-        grid-template-columns:repeat(2,minmax(0,1fr)) !important;
-        gap:7px !important;
-      }
-    }
-
-    /* v13.58 — ficha editorial mais centralizada no PDF, sem alterar conteúdo */
-    .doc.magazine-layout .revista-institutional-page{
-      align-items:center;
-    }
-
-    @media print{
-      #printArea .doc.magazine-layout .revista-institutional-page{
-        align-items:center !important;
-      }
-      #printArea .doc.magazine-layout .revista-id-left,
-      #printArea .doc.magazine-layout .revista-id-right{
-        justify-content:center !important;
-      }
-    }
-
-
 </style>
 </head>
 <body class="${classeFormato}">
@@ -17062,7 +16819,7 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
 
     btnGenerate.addEventListener("click",generateMaterial);
     btnPrint.addEventListener("click",salvarPDF);
-    if(btnWord) btnWord.addEventListener("click",baixarWord);
+    if(btnDownloadWord) btnDownloadWord.addEventListener("click",baixarWordDocx);
     btnClear.addEventListener("click",limparTudo);
     btnEdit.addEventListener("click",ativarEdicao);
     btnFinishEdit.addEventListener("click",finalizarEdicao);
