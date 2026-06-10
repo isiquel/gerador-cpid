@@ -3297,6 +3297,319 @@
         min-height:calc(210mm - 16mm) !important;
       }
     }
+
+
+    /* =========================================================
+       v13.61/v13.62 — PDF A4/A5 com quebra de lição e fluxo por tamanho
+       - Cada lição começa em página nova.
+       - A4 mantém miolo em 2 colunas quando couber.
+       - A5 usa miolo mais compacto e 1 coluna para evitar cortes feios.
+       - Blocos grandes podem fluir para evitar páginas quase vazias.
+    ========================================================= */
+    @media print{
+      body.print-a4 @page{
+        size:A4 portrait;
+        margin:10mm 9mm;
+      }
+
+      body.print-a5 @page{
+        size:A5 portrait;
+        margin:7mm 6mm;
+      }
+
+      body.print-a3-livreto @page{
+        size:A3 landscape;
+        margin:12mm;
+      }
+
+      #printArea{
+        display:block !important;
+        width:100% !important;
+        max-width:none !important;
+        margin:0 !important;
+        padding:0 !important;
+        background:#fff !important;
+        overflow:visible !important;
+      }
+
+      #printArea .doc,
+      #printArea .doc.magazine-layout{
+        display:block !important;
+        width:100% !important;
+        max-width:none !important;
+        gap:0 !important;
+      }
+
+      #printArea .page{
+        width:100% !important;
+        max-width:none !important;
+        height:auto !important;
+        min-height:0 !important;
+        margin:0 !important;
+        box-shadow:none !important;
+        border:none !important;
+        border-radius:0 !important;
+        overflow:visible !important;
+        background:#fff !important;
+      }
+
+      /* Páginas institucionais continuam separadas, mas sem estourar margem */
+      #printArea .cover-page,
+      #printArea .back-cover-page,
+      #printArea .revista-institutional-page,
+      #printArea .certificate-print-page{
+        page-break-before:auto !important;
+        break-before:auto !important;
+        page-break-after:always !important;
+        break-after:page !important;
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+        overflow:hidden !important;
+      }
+
+      /* REGRA PRINCIPAL: cada lição começa em folha nova */
+      #printArea .doc.magazine-layout .lesson-cover-page,
+      #printArea .doc.magazine-layout .lesson-page{
+        page-break-before:always !important;
+        break-before:page !important;
+        page-break-after:auto !important;
+        break-after:auto !important;
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+        overflow:visible !important;
+        min-height:0 !important;
+        height:auto !important;
+        box-shadow:none !important;
+      }
+
+      /* Evita folha em branco antes da primeira lição quando a página anterior já terminou */
+      #printArea .doc.magazine-layout .lesson-cover-page:first-of-type,
+      #printArea .doc.magazine-layout .lesson-page:first-of-type{
+        page-break-before:auto !important;
+        break-before:auto !important;
+      }
+
+      /* Cabeçalho e blocos iniciais ficam juntos no início da lição */
+      #printArea .doc.magazine-layout .lesson-hero,
+      #printArea .doc.magazine-layout .opening-cards,
+      #printArea .doc.magazine-layout .daily-reading,
+      #printArea .doc.magazine-layout .teacher-planning-panel,
+      #printArea .doc.magazine-layout .compact-comment-header{
+        page-break-inside:avoid !important;
+        break-inside:avoid !important;
+        page-break-after:avoid !important;
+        break-after:avoid !important;
+      }
+
+      /* Leitura bíblica pode quebrar quando for grande, para não deixar páginas vazias */
+      #printArea .doc.magazine-layout .scripture-full{
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+      }
+
+      /* Títulos não ficam sozinhos no final da página */
+      #printArea .doc.magazine-layout h1,
+      #printArea .doc.magazine-layout h2,
+      #printArea .doc.magazine-layout h3,
+      #printArea .doc.magazine-layout h4{
+        page-break-after:avoid !important;
+        break-after:avoid !important;
+      }
+
+      /* Miolo: pode fluir; quadros pequenos evitam corte, quadros grandes podem continuar */
+      #printArea .doc.magazine-layout .magazine-columns,
+      #printArea .doc.magazine-layout .lesson-topic,
+      #printArea .doc.magazine-layout .subtopic,
+      #printArea .doc.magazine-layout .knowledge-box,
+      #printArea .doc.magazine-layout .summary-box,
+      #printArea .doc.magazine-layout .teacher-help,
+      #printArea .doc.magazine-layout .personal-application,
+      #printArea .doc.magazine-layout .lesson-review-full{
+        page-break-inside:auto !important;
+        break-inside:auto !important;
+      }
+
+      #printArea .doc.magazine-layout p,
+      #printArea .doc.magazine-layout li{
+        orphans:2 !important;
+        widows:2 !important;
+      }
+
+      body.print-a4 #printArea .doc.magazine-layout .lesson-page,
+      body.print-a4 #printArea .doc.magazine-layout .lesson-cover-page{
+        padding:9mm 8mm !important;
+      }
+
+      body.print-a4 #printArea .doc.magazine-layout .lesson-page > .magazine-columns{
+        column-count:2 !important;
+        column-gap:8mm !important;
+        column-rule:1px solid rgba(60,80,120,.16) !important;
+        column-fill:auto !important;
+        font-size:10.2pt !important;
+        line-height:1.48 !important;
+      }
+
+      body.print-a4 #printArea .doc.magazine-layout .lesson-hero h1{
+        font-size:25pt !important;
+        line-height:1.12 !important;
+      }
+
+      /* A5: melhor leitura, menos aperto, menos quebra esquisita */
+      body.print-a5 #printArea .doc.magazine-layout .lesson-page,
+      body.print-a5 #printArea .doc.magazine-layout .lesson-cover-page{
+        padding:7mm 6mm !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .lesson-hero{
+        padding:7mm 6mm !important;
+        margin-bottom:4mm !important;
+        border-radius:10px !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .lesson-hero h1{
+        font-size:18pt !important;
+        line-height:1.12 !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .opening-cards{
+        grid-template-columns:1fr !important;
+        gap:3mm !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .daily-reading{
+        padding:4mm !important;
+        margin-bottom:4mm !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .daily-reading .daily-grid{
+        grid-template-columns:1fr !important;
+        gap:2.5mm !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .lesson-page > .magazine-columns{
+        column-count:1 !important;
+        column-rule:none !important;
+        column-gap:0 !important;
+        font-size:9.4pt !important;
+        line-height:1.42 !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .scripture-full,
+      body.print-a5 #printArea .doc.magazine-layout .knowledge-box,
+      body.print-a5 #printArea .doc.magazine-layout .summary-box,
+      body.print-a5 #printArea .doc.magazine-layout .teacher-help,
+      body.print-a5 #printArea .doc.magazine-layout .personal-application,
+      body.print-a5 #printArea .doc.magazine-layout .lesson-review-full{
+        padding:4mm !important;
+        margin-bottom:4mm !important;
+      }
+
+      body.print-a5 #printArea .cover-page,
+      body.print-a5 #printArea .back-cover-page,
+      body.print-a5 #printArea .revista-institutional-page{
+        min-height:calc(210mm - 14mm) !important;
+      }
+    }
+
+
+    /* =========================================================
+       v13.62 — PDF visual inteligente
+       - Quebras automáticas antes de quadros quando não cabem no restante da folha.
+       - Cada lição começa em nova página.
+       - A5 fica mais compacto e em uma coluna.
+       - Quadros pequenos tentam ficar inteiros; quadros grandes podem fluir.
+    ========================================================= */
+    .pdf-smart-break{
+      display:block;
+      height:0;
+      margin:0;
+      padding:0;
+      border:0;
+      clear:both;
+    }
+
+    @media print{
+      #printArea .pdf-smart-break{
+        break-before:page !important;
+        page-break-before:always !important;
+      }
+
+      #printArea .pdf-keep-together{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .pdf-soft-keep{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page{
+        page-break-before:always !important;
+        break-before:page !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page:first-of-type{
+        page-break-before:auto !important;
+        break-before:auto !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-hero,
+      #printArea .doc.magazine-layout .opening-cards,
+      #printArea .doc.magazine-layout .daily-reading,
+      #printArea .doc.magazine-layout .teacher-planning-panel,
+      #printArea .doc.magazine-layout .scripture-full,
+      #printArea .doc.magazine-layout .compact-comment-header{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .knowledge-box,
+      #printArea .doc.magazine-layout .summary-box,
+      #printArea .doc.magazine-layout .teacher-help,
+      #printArea .doc.magazine-layout .personal-application{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-review-full{
+        break-inside:auto !important;
+        page-break-inside:auto !important;
+      }
+
+      #printArea .doc.magazine-layout .question-answer,
+      #printArea .doc.magazine-layout .student-space{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .lesson-hero,
+      body.print-a5 #printArea .doc.magazine-layout .opening-cards,
+      body.print-a5 #printArea .doc.magazine-layout .daily-reading,
+      body.print-a5 #printArea .doc.magazine-layout .teacher-planning-panel,
+      body.print-a5 #printArea .doc.magazine-layout .scripture-full{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .text,
+      body.print-a5 #printArea .doc.magazine-layout .list,
+      body.print-a5 #printArea .doc.magazine-layout p,
+      body.print-a5 #printArea .doc.magazine-layout li{
+        font-size:9pt !important;
+        line-height:1.36 !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .daily-item{
+        font-size:8.3pt !important;
+        padding:2.2mm 2.6mm !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .opening-card p{
+        font-size:8.8pt !important;
+      }
+    }
+
 </style>
 </head>
 
@@ -15188,6 +15501,103 @@ async function generateMaterial(){
       await pause(600);
     }
 
+
+    /* =========================================================
+       v13.62 — preparação inteligente de quebra de PDF
+       Observação: o navegador ainda é quem faz a paginação final.
+       Esta função apenas ajuda, inserindo quebras antes de quadros
+       que cairiam cortados no fim da folha.
+    ========================================================= */
+    function alturaFolhaPrintPx(format){
+      const mmToPx = 96 / 25.4;
+      if(format === "a5") return Math.round((210 - 14) * mmToPx);
+      if(format === "a3-livreto") return Math.round((297 - 24) * mmToPx);
+      return Math.round((297 - 20) * mmToPx);
+    }
+
+    function prepararQuebrasPdfVisual(format){
+      if(!printArea) return;
+
+      printArea.querySelectorAll(".pdf-smart-break").forEach(el => el.remove());
+      printArea.querySelectorAll(".pdf-keep-together,.pdf-soft-keep").forEach(el => {
+        el.classList.remove("pdf-keep-together","pdf-soft-keep");
+      });
+
+      const pageHeight = alturaFolhaPrintPx(format);
+      const margemSegura = format === "a5" ? 70 : 95;
+      const maxKeep = Math.round(pageHeight * (format === "a5" ? 0.62 : 0.70));
+
+      const keepSelectors = [
+        ".lesson-hero",
+        ".opening-cards",
+        ".daily-reading",
+        ".teacher-planning-panel",
+        ".compact-comment-header",
+        ".scripture-full",
+        ".knowledge-box",
+        ".summary-box",
+        ".teacher-help",
+        ".personal-application",
+        ".book-note",
+        ".bibliography-box",
+        ".safe-bibliography-alert",
+        ".reference-alert"
+      ].join(",");
+
+      printArea.querySelectorAll(keepSelectors).forEach(el => {
+        const h = el.getBoundingClientRect().height || 0;
+        if(h && h <= maxKeep) el.classList.add("pdf-keep-together");
+        else el.classList.add("pdf-soft-keep");
+      });
+
+      printArea.querySelectorAll(".question-answer,.student-space,.daily-item,.opening-card").forEach(el => {
+        el.classList.add("pdf-keep-together");
+      });
+
+      // Garante que cada lição comece limpa.
+      const lessons = [...printArea.querySelectorAll(".doc.magazine-layout .lesson-page")];
+      lessons.forEach((lesson, index) => {
+        if(index === 0) return;
+        const prev = lesson.previousElementSibling;
+        if(!prev || !prev.classList.contains("pdf-smart-break")){
+          const br = document.createElement("div");
+          br.className = "pdf-smart-break";
+          lesson.parentNode.insertBefore(br, lesson);
+        }
+      });
+
+      // Insere quebra antes de quadros que ficariam cortados no fim da folha.
+      // Repete algumas vezes porque a inserção de uma quebra muda as posições dos blocos seguintes.
+      for(let pass = 0; pass < 3; pass++){
+        let mudou = false;
+        const blocks = [...printArea.querySelectorAll(".pdf-keep-together")];
+
+        for(const block of blocks){
+          if(!block.isConnected) continue;
+          const prev = block.previousElementSibling;
+          if(prev && prev.classList && prev.classList.contains("pdf-smart-break")) continue;
+
+          const rect = block.getBoundingClientRect();
+          const h = rect.height || 0;
+          if(!h || h > maxKeep) continue;
+
+          const top = rect.top + window.scrollY;
+          const areaTop = printArea.getBoundingClientRect().top + window.scrollY;
+          const relativeTop = Math.max(0, top - areaTop);
+          const posNaPagina = relativeTop % pageHeight;
+
+          if(posNaPagina > 80 && posNaPagina + h > pageHeight - margemSegura){
+            const br = document.createElement("div");
+            br.className = "pdf-smart-break";
+            block.parentNode.insertBefore(br, block);
+            mudou = true;
+          }
+        }
+
+        if(!mudou) break;
+      }
+    }
+
     function salvarPDF(){
       if(!currentHtml && !result.innerText.trim()){
         setStatus("Gere um material antes de salvar ou imprimir em PDF.","error");
@@ -15213,6 +15623,7 @@ async function generateMaterial(){
       }
 
       printArea.innerHTML = result.innerHTML;
+      prepararQuebrasPdfVisual(format);
 
       if(isMobile){
         const abriu = abrirJanelaImpressaoMobile(format);
@@ -16681,6 +17092,105 @@ async function generateMaterial(){
         line-height:1.3 !important;
       }
     }
+
+    /* =========================================================
+       v13.62 — PDF visual inteligente
+       - Quebras automáticas antes de quadros quando não cabem no restante da folha.
+       - Cada lição começa em nova página.
+       - A5 fica mais compacto e em uma coluna.
+       - Quadros pequenos tentam ficar inteiros; quadros grandes podem fluir.
+    ========================================================= */
+    .pdf-smart-break{
+      display:block;
+      height:0;
+      margin:0;
+      padding:0;
+      border:0;
+      clear:both;
+    }
+
+    @media print{
+      #printArea .pdf-smart-break{
+        break-before:page !important;
+        page-break-before:always !important;
+      }
+
+      #printArea .pdf-keep-together{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .pdf-soft-keep{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page{
+        page-break-before:always !important;
+        break-before:page !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-page:first-of-type{
+        page-break-before:auto !important;
+        break-before:auto !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-hero,
+      #printArea .doc.magazine-layout .opening-cards,
+      #printArea .doc.magazine-layout .daily-reading,
+      #printArea .doc.magazine-layout .teacher-planning-panel,
+      #printArea .doc.magazine-layout .scripture-full,
+      #printArea .doc.magazine-layout .compact-comment-header{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .knowledge-box,
+      #printArea .doc.magazine-layout .summary-box,
+      #printArea .doc.magazine-layout .teacher-help,
+      #printArea .doc.magazine-layout .personal-application{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      #printArea .doc.magazine-layout .lesson-review-full{
+        break-inside:auto !important;
+        page-break-inside:auto !important;
+      }
+
+      #printArea .doc.magazine-layout .question-answer,
+      #printArea .doc.magazine-layout .student-space{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .lesson-hero,
+      body.print-a5 #printArea .doc.magazine-layout .opening-cards,
+      body.print-a5 #printArea .doc.magazine-layout .daily-reading,
+      body.print-a5 #printArea .doc.magazine-layout .teacher-planning-panel,
+      body.print-a5 #printArea .doc.magazine-layout .scripture-full{
+        break-inside:avoid !important;
+        page-break-inside:avoid !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .text,
+      body.print-a5 #printArea .doc.magazine-layout .list,
+      body.print-a5 #printArea .doc.magazine-layout p,
+      body.print-a5 #printArea .doc.magazine-layout li{
+        font-size:9pt !important;
+        line-height:1.36 !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .daily-item{
+        font-size:8.3pt !important;
+        padding:2.2mm 2.6mm !important;
+      }
+
+      body.print-a5 #printArea .doc.magazine-layout .opening-card p{
+        font-size:8.8pt !important;
+      }
+    }
+
 </style>
 </head>
 <body class="${classeFormato}">
