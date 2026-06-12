@@ -4988,6 +4988,8 @@
         bookSizeMode:getValue("bookSizeMode") || "livro-grande",
         bookGenre:getValue("bookGenre") || "cristao-comum",
         cursoCargaHoraria:getValue("cursoCargaHoraria") || "40 horas",
+        quantity:getValue("quantity") || "",
+        quantityType:getValue("quantityType") || "módulos",
         cursoAulasPorModulo:getValue("cursoAulasPorModulo") || "2",
         cursoObservacao:getValue("cursoObservacao") || "",
         cursoNivelTeologico:getValue("cursoNivelTeologico") || "basico",
@@ -11928,6 +11930,8 @@ Gere o fechamento final do material de curso cristão em HTML interno.
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+QUANTIDADE EXATA DE MÓDULOS: ${total}
+REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA: ${base.theme}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
@@ -11959,7 +11963,7 @@ Regras:
 - Não invente validade legal de certificado.
 
 Inclua conforme o tipo do material:
-- Apostila do Aluno: conclusão geral, atividades finais, avaliação final sem respostas e certificado simbólico em texto.
+- Apostila do Aluno: conclusão geral, atividades finais e avaliação final sem respostas. Só inclua certificado simbólico se o usuário pedir certificado claramente.
 - Manual do Professor: conclusão geral, gabarito, critérios de avaliação, orientação para encerramento e condução da turma.
 - Livro de Apoio: conclusão pastoral, leituras orientadas, modelos práticos, estudos complementares e checklist de preparo.
 
@@ -11970,7 +11974,7 @@ Estrutura sugerida:
 <div class="course-section"><h2>Modelo simples de acompanhamento do estudo</h2>...</div>
 <div class="course-section"><h2>Modelo de abordagem inicial</h2>...</div>
 <div class="course-section"><h2>Avaliação final</h2><ol>...</ol></div>
-<div class="course-section"><h2>Certificado simbólico de conclusão</h2>...</div>
+${usuarioNaoQuerCertificadoCursoV1365(base) ? "" : `<div class="course-section"><h2>Certificado simbólico de conclusão</h2>...</div>`}
       `.trim();
     }
 
@@ -12299,10 +12303,10 @@ Estrutura sugerida:
             <h2>Avaliação final com respostas</h2>
             <ol class="list"><li><strong>Pergunta:</strong> Qual é o ensino central deste curso?<br><strong>Resposta:</strong> É a formação bíblica e prática no tema proposto, com conteúdo organizado para aprendizado, aplicação e maturidade cristã.</li><li><strong>Pergunta:</strong> O curso deve substituir a Bíblia e a vida prática cristã?<br><strong>Resposta:</strong> Não. O curso deve conduzir o aluno à Palavra de Deus, à prática cristã responsável e ao crescimento contínuo.</li></ol>
           </div>
-          <div class="course-section">
+          ${usuarioNaoQuerCertificadoCursoV1365(base) ? "" : `<div class="course-section">
             <h2>Certificado simbólico de conclusão</h2>
             ${paragraph("Certificamos simbolicamente que o participante concluiu este curso bíblico, dedicado ao estudo, à edificação cristã e à aplicação prática do tema proposto.")}
-          </div>
+          </div>`}
         `;
       }
 
@@ -12373,9 +12377,9 @@ TIPO DE MATERIAL: APOSTILA DO ALUNO.
 - A Apostila do Aluno NÃO é roteiro de ministração e NÃO deve falar como se o aluno fosse dar aula.
 - PROIBIDO usar na Apostila do Aluno títulos como “Conteúdo a Ministrar”, “Orientação ao Professor”, “Tempo Sugerido”, “Como conduzir a aula”, “Perguntas para discussão em sala”, “Respostas comentadas” ou “Roteiro de ministração”.
 - Na Apostila do Aluno, use títulos como “Conteúdo da Aula”, “Desenvolvimento do Estudo”, “Resumo da Aula”, “Texto Base”, “Referências Bíblicas”, “Atividade de Fixação”, “Perguntas para Revisão”, “Espaço para Anotações” e “Aplicação Prática”.
-- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma unidade de aproximadamente 4 horas.
+- Este curso tem carga horária de ${carga}. Respeite exatamente a quantidade escolhida pelo usuário: ${quantidadeCursoEscolhidaV1365(base)} módulo(s).
 - NÃO faça apostila resumida. Cada módulo deve ser robusto, com argumento bíblico, explicação teológica/pastoral, desenvolvimento prático, exemplos, estudo de caso, atividade e revisão.
-- Para 10 módulos/40h, mire uma apostila expandida, com densidade equivalente a 80 a 120 páginas quando salva em PDF.
+- A apostila deve ser expandida e proporcional à quantidade escolhida, sem criar módulos extras.
 - Não inclua respostas completas nas atividades e perguntas; deixe espaço de resposta/anotações quando adequado.
 - Use linguagem limpa, didática, contínua e organizada.
 - O aluno deve receber conteúdo suficiente para aprender com profundidade, mas sem o manual de condução do professor.`.trim();
@@ -12388,7 +12392,7 @@ TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
 - O Manual do Professor deve ter algo a mais para quem vai dar aula: “Conteúdo a Ministrar”, “Objetivo Pedagógico”, “Tempo Sugerido”, “Como iniciar a aula”, “Como explicar o tema”, “Como conduzir a discussão”, “Perguntas para interação”, “Possíveis dúvidas dos alunos”, “Respostas sugeridas”, “Atividade em sala”, “Aplicação pastoral” e “Como concluir a aula”.
 - NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo, mais didático e mais orientador que a apostila do aluno.
-- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma aula/formação de aproximadamente 4 horas.
+- Este curso tem carga horária de ${carga}. Respeite exatamente a quantidade escolhida pelo usuário: ${quantidadeCursoEscolhidaV1365(base)} módulo(s).
 - Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula de 4 horas, roteiro de exposição, respostas comentadas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação e orientação de fechamento.
 - Mire densidade equivalente a 120 a 160 páginas quando salvo em PDF, se o curso for de 40h.
 - O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
@@ -12401,7 +12405,7 @@ TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
 - Use OBRIGATORIAMENTE a apostila do aluno e o manual do professor como base.
 - O livro de apoio NÃO é uma repetição do manual do professor. Ele deve ser o material mais aprofundado do curso.
 - NÃO entregue conteúdo menor, igual ou parecido com o manual. Amplie cada módulo com estudo bíblico, teologia aplicada, contextualização histórica quando útil, estratégias ministeriais, estudos de caso, modelos práticos, leituras orientadas, checklists, alertas ministeriais e aprofundamentos.
-- Este curso tem carga horária de ${carga}. Para 10 módulos/40h, o livro de apoio deve funcionar como biblioteca de preparo do professor, com material além da aula.
+- Este curso tem carga horária de ${carga}. O livro de apoio deve respeitar exatamente a quantidade escolhida pelo usuário: ${quantidadeCursoEscolhidaV1365(base)} módulo(s), funcionando como biblioteca de preparo do professor.
 - Para cada módulo, acrescente seções novas que não aparecem no aluno: estudo complementar robusto, aprofundamento bíblico, argumento teológico, aplicações avançadas, caso prático comentado, erros comuns, perguntas de reflexão para o professor, roteiro de preparo e recursos de apoio.
 - Mire densidade equivalente a 150 a 220 páginas quando salvo em PDF, se o curso for de 40h.
 - Não substitua a apostila nem o manual; sirva como biblioteca de preparo, aprofundamento e ampliação.`.trim();
@@ -12495,6 +12499,8 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+QUANTIDADE EXATA DE MÓDULOS: ${total}
+REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 AULAS POR MÓDULO: ${numeroAulasPorModuloV1323(base)}
 NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
@@ -12525,6 +12531,7 @@ ${metaExtensao}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
+- Respeite a quantidade exata de ${total} módulo(s). Não crie nem anuncie módulo extra.
 - Trava de tema v13.64: antes de escrever qualquer parágrafo, confira o TEMA CENTRAL A SER MANTIDO e elimine qualquer assunto que pertença a outro curso.
 - Se o tema for família/casamento/lar, é proibido inserir capelania, atendimento capelão, hospitalar, prisional, escolar, militar, empresarial, missões ou evangelismo como módulo ou seção.
 - Se for Manual do Professor ou Livro de Apoio, preserve a mesma linha da Apostila do Aluno; não mude o curso.
@@ -12588,6 +12595,8 @@ Gere o fechamento final do material de curso cristão em HTML interno.
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+QUANTIDADE EXATA DE MÓDULOS: ${total}
+REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA: ${base.theme}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
@@ -12613,7 +12622,7 @@ Regras:
 - Não invente validade legal de certificado.
 
 Inclua conforme o tipo do material:
-- Apostila do Aluno: conclusão geral, atividades finais, avaliação final sem respostas e certificado simbólico em texto.
+- Apostila do Aluno: conclusão geral, atividades finais e avaliação final sem respostas. Só inclua certificado simbólico se o usuário pedir certificado claramente.
 - Manual do Professor: conclusão geral, gabarito completo, critérios de avaliação, orientação para encerramento e condução da turma.
 - Livro de Apoio: conclusão pastoral, leituras orientadas, modelos práticos, estudos complementares e checklist de preparo.
 
@@ -13226,34 +13235,117 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
       return out.replace(/\\n|\/n/g," ");
     }
 
+    /* v13.65 — quantidade real de módulos do Curso
+       Correção: antes o extrator confundia listas numeradas do prompt
+       (1. Título do módulo, 2. Semana, 3. Texto bíblico...) com módulos reais.
+       Agora só aceita linhas explícitas "Módulo N — ..." e respeita a quantidade escolhida. */
+    function quantidadeCursoEscolhidaV1365(base){
+      const campos = [
+        base && base.quantity,
+        getValue("quantity"),
+        base && base.cursoObservacao,
+        base && base.extraNotes,
+        base && base.theme,
+        base && base.subtitle,
+        base && base.title
+      ].map(v => String(v || ""));
+
+      for(const valor of campos.slice(0,2)){
+        const n = parseInt(String(valor || "").replace(/[^0-9]/g,""),10);
+        if(Number.isFinite(n) && n >= 1 && n <= 40) return n;
+      }
+
+      const texto = campos.join("\n").toLowerCase();
+      const padroes = [
+        /(?:exatamente\s*)?(\d{1,2})\s*m[oó]dulos?/i,
+        /curso\s+de\s+(\d{1,2})\s+semanas?/i,
+        /(\d{1,2})\s+semanas?\s*,?\s*1\s*m[oó]dulo/i,
+        /1\s*m[oó]dulo\s+por\s+semana.*?(\d{1,2})\s+semanas?/i
+      ];
+      for(const re of padroes){
+        const m = texto.match(re);
+        if(m){
+          const n = parseInt(m[1],10);
+          if(Number.isFinite(n) && n >= 1 && n <= 40) return n;
+        }
+      }
+      return 10;
+    }
+
+    function usuarioNaoQuerCertificadoCursoV1365(base){
+      const t = normalizarTextoCursoV9(`${base?.theme || ""}\n${base?.extraNotes || ""}\n${base?.cursoObservacao || ""}`);
+      return /nao\s+(colocar|gerar|incluir)\s+certificado|sem\s+certificado|dispensa\s+certificado/.test(t);
+    }
+
+    function limitarModulosCursoV1365(lista,base){
+      const quantidade = quantidadeCursoEscolhidaV1365(base);
+      return (lista || []).slice(0, quantidade);
+    }
+
     function extrairModulosCurso(base){
+      const quantidade = quantidadeCursoEscolhidaV1365(base);
       const textoOriginal = [base.cursoObservacao, base.extraNotes, base.theme, base.subtitle, base.title].map(v => String(v || "")).join("\n");
       const linhas = textoOriginal.split(/\n+/).map(l => l.trim()).filter(Boolean);
       const encontrados = [];
+      let atual = null;
 
       linhas.forEach(linha => {
-        const matchModulo = linha.match(/^(?:[-*•]?\s*)?(?:m[oó]dulo\s*)?(\d{1,2})\s*(?:[).:-]|—|–|-)?\s*(.+)$/i);
-        if(!matchModulo) return;
-        let titulo = limparTituloModuloCurso(matchModulo[2]).replace(/^—\s*/,"").trim();
-        if(!titulo || titulo.length < 4 || titulo.length > 120) return;
-        if(/^(cada modulo|antes dos modulos|se for|use referencias|nao transformar|carga horaria|fluxo do curso)/i.test(titulo)) return;
-        if(!encontrados.some(m => m.titulo.toLowerCase() === titulo.toLowerCase())){
-          encontrados.push({ titulo, textoBase:base.biblicalBase || "Texto bíblico adequado", foco:`desenvolvimento de ${titulo} dentro do tema do curso`, dores:"desafios, necessidades e aplicações próprias deste módulo" });
+        // Aceita somente módulo real explícito: "Módulo 1 — Título".
+        // Não aceita listas genéricas tipo "1. Título do módulo".
+        const matchModulo = linha.match(/^(?:[-*•]?\s*)?m[oó]dulo\s*(\d{1,2})\s*(?:[).:-]|—|–|-)?\s*(.+)$/i);
+        if(matchModulo){
+          const numero = parseInt(matchModulo[1],10);
+          let titulo = limparTituloModuloCurso(matchModulo[2]).replace(/^—\s*/,"").trim();
+          if(!titulo || titulo.length < 4 || titulo.length > 140) return;
+          if(numero > quantidade) return;
+          if(!encontrados.some(m => m.numero === numero || m.titulo.toLowerCase() === titulo.toLowerCase())){
+            atual = {
+              numero,
+              titulo,
+              textoBase:base.biblicalBase || "Texto bíblico adequado",
+              foco:`desenvolvimento de ${titulo} dentro do tema do curso`,
+              dores:"desafios, necessidades e aplicações próprias deste módulo",
+              topicos:[]
+            };
+            encontrados.push(atual);
+          }else{
+            atual = encontrados.find(m => m.numero === numero || m.titulo.toLowerCase() === titulo.toLowerCase()) || null;
+          }
+          return;
         }
+
+        if(!atual) return;
+
+        const textoBase = linha.match(/^texto\s*base\s*:\s*(.+)$/i);
+        if(textoBase){ atual.textoBase = textoBase[1].trim(); return; }
+
+        const foco = linha.match(/^foco\s*:\s*(.+)$/i);
+        if(foco){ atual.foco = foco[1].trim(); return; }
+
+        const versiculo = linha.match(/^vers[ií]culo[-\s]*chave\s*:\s*(.+)$/i);
+        if(versiculo){ atual.versiculoChave = versiculo[1].trim(); return; }
+
+        const topico = linha.match(/^t[oó]pico\s*(?:i{1,3}|iv|v|\d+)?\s*:\s*(.+)$/i);
+        if(topico){ atual.topicos.push(topico[1].trim()); return; }
       });
 
-      if(encontrados.length >= 3) return encontrados.slice(0,20);
+      if(encontrados.length >= 1){
+        return encontrados
+          .sort((a,b) => (a.numero || 0) - (b.numero || 0))
+          .slice(0, quantidade);
+      }
 
       const tema = detectarTemaCursoV9(base);
-      if(tema === "casais") return modulosPadraoCasaisV9();
-      if(tema === "missoes") return modulosPadraoMissoesV9();
-      if(tema === "capelania") return modulosPadraoCapelania();
+      if(tema === "casais") return limitarModulosCursoV1365(modulosPadraoCasaisV9(),base);
+      if(tema === "missoes") return limitarModulosCursoV1365(modulosPadraoMissoesV9(),base);
+      if(tema === "capelania") return limitarModulosCursoV1365(modulosPadraoCapelania(),base);
+      if(cursoEhTeologiaSistematicaV1313(base)) return limitarModulosCursoV1365(modulosTeologiaSistematicaV1313(),base);
 
-      const quantidade = Math.min(Number(getValue("quantity") || 10),20);
       const assunto = (base.title || base.theme || "Formação Cristã").replace(/^curso\s+(de|para)\s+/i,"").trim();
       const modulos = [];
       for(let i = 1; i <= quantidade; i++){
         modulos.push({
+          numero:i,
           titulo:`${assunto} — Unidade ${i}`,
           textoBase:base.biblicalBase || "Texto bíblico adequado",
           foco:`aprofundamento progressivo de ${assunto}`,
@@ -13335,9 +13427,9 @@ TIPO DE MATERIAL: APOSTILA DO ALUNO.
 - A Apostila do Aluno NÃO é roteiro de ministração e NÃO deve falar como se o aluno fosse dar aula.
 - PROIBIDO usar na Apostila do Aluno títulos como “Conteúdo a Ministrar”, “Orientação ao Professor”, “Tempo Sugerido”, “Como conduzir a aula”, “Perguntas para discussão em sala”, “Respostas comentadas” ou “Roteiro de ministração”.
 - Na Apostila do Aluno, use títulos como “Conteúdo da Aula”, “Desenvolvimento do Estudo”, “Resumo da Aula”, “Texto Base”, “Referências Bíblicas”, “Atividade de Fixação”, “Perguntas para Revisão”, “Espaço para Anotações” e “Aplicação Prática”.
-- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma unidade de aproximadamente 4 horas.
+- Este curso tem carga horária de ${carga}. Respeite exatamente a quantidade escolhida pelo usuário: ${quantidadeCursoEscolhidaV1365(base)} módulo(s).
 - NÃO faça apostila resumida. Cada módulo deve ser robusto, com argumento bíblico, explicação teológica/pastoral, desenvolvimento prático, exemplos, estudo de caso, atividade e revisão.
-- Para 10 módulos/40h, mire uma apostila expandida, com densidade equivalente a 80 a 120 páginas quando salva em PDF.
+- A apostila deve ser expandida e proporcional à quantidade escolhida, sem criar módulos extras.
 - Não inclua respostas completas nas atividades e perguntas; deixe espaço de resposta/anotações quando adequado.
 - Use linguagem limpa, didática, contínua e organizada.
 - O aluno deve receber conteúdo suficiente para aprender com profundidade, mas sem o manual de condução do professor.
@@ -13353,7 +13445,7 @@ TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Mantenha os mesmos módulos, a mesma sequência e o mesmo conteúdo-base da apostila do aluno.
 - O Manual do Professor deve ter algo a mais para quem vai dar aula: “Conteúdo a Ministrar”, “Objetivo Pedagógico”, “Tempo Sugerido”, “Como iniciar a aula”, “Como explicar o tema”, “Como conduzir a discussão”, “Perguntas para interação”, “Possíveis dúvidas dos alunos”, “Respostas sugeridas”, “Atividade em sala”, “Aplicação pastoral” e “Como concluir a aula”.
 - NÃO resuma a apostila do aluno. O manual do professor deve ser mais completo, mais didático e mais orientador que a apostila do aluno.
-- Este curso tem carga horária de ${carga}. Se forem 10 módulos, trate cada módulo como uma aula/formação de aproximadamente 4 horas.
+- Este curso tem carga horária de ${carga}. Respeite exatamente a quantidade escolhida pelo usuário: ${quantidadeCursoEscolhidaV1365(base)} módulo(s).
 - Para cada módulo, preserve o ensino do aluno e acrescente: objetivo da aula, plano de aula de 4 horas, roteiro de exposição, respostas comentadas, comentários ao professor, exemplos extras, alertas pastorais, sugestões de dinâmica, perguntas para debate, critérios de avaliação, orientação de fechamento e bibliografia recomendada real.
 - Mire densidade equivalente a 120 a 160 páginas quando salvo em PDF, se o curso for de 40h.
 - O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
@@ -13369,7 +13461,7 @@ TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
 - Use OBRIGATORIAMENTE a apostila do aluno e o manual do professor como base.
 - O livro de apoio NÃO é uma repetição do manual do professor. Ele deve ser o material mais aprofundado do curso.
 - NÃO entregue conteúdo menor, igual ou parecido com o manual. Amplie cada módulo com estudo bíblico, teologia aplicada, contextualização histórica quando útil, estratégias ministeriais, estudos de caso, modelos práticos, leituras orientadas, checklists, alertas ministeriais, aprofundamentos e bibliografia comentada.
-- Este curso tem carga horária de ${carga}. Para 10 módulos/40h, o livro de apoio deve funcionar como biblioteca de preparo do professor, com material além da aula.
+- Este curso tem carga horária de ${carga}. O livro de apoio deve respeitar exatamente a quantidade escolhida pelo usuário: ${quantidadeCursoEscolhidaV1365(base)} módulo(s), funcionando como biblioteca de preparo do professor.
 - Para cada módulo, acrescente seções novas que não aparecem no aluno: estudo complementar robusto, aprofundamento bíblico, argumento teológico, aplicações avançadas, caso prático comentado, erros comuns, perguntas de reflexão para o professor, roteiro de preparo, recursos de apoio e materiais bibliográficos reais.
 - Mire densidade equivalente a 150 a 220 páginas quando salvo em PDF, se o curso for de 40h.
 - Não substitua a apostila nem o manual; sirva como biblioteca de preparo, aprofundamento e ampliação.
@@ -13446,6 +13538,8 @@ PÚBLICO-ALVO: ${base.targetAudience}
 TOM: ${base.tone}
 OBSERVAÇÕES GERAIS: ${base.extraNotes || "nenhuma"}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
+QUANTIDADE EXATA DE MÓDULOS: ${quantidadeCursoEscolhidaV1365(base)}
+REGRA OBRIGATÓRIA: gere e cite somente ${quantidadeCursoEscolhidaV1365(base)} módulo(s). Não crie módulo extra. Não gere Módulo ${quantidadeCursoEscolhidaV1365(base) + 1}.
 
 ${instrucoesTravaTemaCursoV9(base)}
 
@@ -13514,6 +13608,8 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
+QUANTIDADE EXATA DE MÓDULOS: ${total}
+REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA GERAL DO CURSO: ${base.theme}
@@ -13545,6 +13641,7 @@ ${metaExtensao}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
+- Respeite a quantidade exata de ${total} módulo(s). Não crie nem anuncie módulo extra.
 - Proibido repetir o prompt do usuário.
 - Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
 - Proibido deixar genérico.
