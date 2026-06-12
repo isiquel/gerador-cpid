@@ -4630,6 +4630,16 @@
     let isGenerating = false;
     let manualPlaceholdersCount = 0;
 
+    /* v13.66 — total seguro para CURSO
+       Corrige erro "total is not defined" sem mexer em Sermão, Revista EBD, E-book, Livro, Devocional ou Estudo.
+       Algumas funções antigas do curso ainda podiam procurar uma variável total solta; agora o total é controlado pelo fluxo do curso. */
+    var total = 8;
+    function definirTotalCursoSeguroV1366(valor){
+      const n = parseInt(String(valor || "").replace(/[^0-9]/g,""),10);
+      total = (Number.isFinite(n) && n >= 1 && n <= 40) ? n : 8;
+      return total;
+    }
+
     const stepsByType = {
       sermao:["Texto Bíblico","Introdução","Tópicos","Conclusão","Oração"],
       devocional:["Tema","Reflexão","Aplicação","Oração"],
@@ -11601,6 +11611,7 @@ ESTRUTURA DO CURSO: CURSO GERAL POR MATÉRIAS.
     }
 
     function focoModuloCursoV1324(base,modulo,numero,total){
+      total = definirTotalCursoSeguroV1366(total || quantidadeCursoEscolhidaV1365(base));
       if(cursoEhEspecificoPorMateriaV1324(base)){
         return `
 FOCO DO MÓDULO:
@@ -11874,6 +11885,7 @@ Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pasto
     }
 
     function promptCursoModulo(base,modulo,numero,total){
+      total = definirTotalCursoSeguroV1366(total || quantidadeCursoEscolhidaV1365(base));
       const revisao = base.cursoTipo === "aluno"
         ? "Perguntas de revisão sem respostas, com espaço para o aluno responder."
         : "Perguntas de revisão com respostas e orientação de correção.";
@@ -11930,8 +11942,6 @@ Gere o fechamento final do material de curso cristão em HTML interno.
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
-QUANTIDADE EXATA DE MÓDULOS: ${total}
-REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA: ${base.theme}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
@@ -12059,6 +12069,7 @@ ${usuarioNaoQuerCertificadoCursoV1365(base) ? "" : `<div class="course-section">
     }
 
     function gerarModuloCursoFallback(base,modulo,numero,total){
+      total = definirTotalCursoSeguroV1366(total || quantidadeCursoEscolhidaV1365(base));
       const tema = escapeHtml(base.title || base.theme || "Tema do curso");
       const titulo = escapeHtml(modulo.titulo);
       const textoBase = escapeHtml(modulo.textoBase || base.biblicalBase || "Texto bíblico adequado");
@@ -12163,6 +12174,7 @@ ${usuarioNaoQuerCertificadoCursoV1365(base) ? "" : `<div class="course-section">
     async function generateCourseAsync(base){
       manualPlaceholdersCount = 0;
       const modulos = extrairModulosCurso(base);
+      definirTotalCursoSeguroV1366(modulos.length);
 
       if(base.cursoTipo === "divulgacao"){
         setStep(0,"Gerando material de divulgação do curso...");
@@ -12303,10 +12315,10 @@ ${usuarioNaoQuerCertificadoCursoV1365(base) ? "" : `<div class="course-section">
             <h2>Avaliação final com respostas</h2>
             <ol class="list"><li><strong>Pergunta:</strong> Qual é o ensino central deste curso?<br><strong>Resposta:</strong> É a formação bíblica e prática no tema proposto, com conteúdo organizado para aprendizado, aplicação e maturidade cristã.</li><li><strong>Pergunta:</strong> O curso deve substituir a Bíblia e a vida prática cristã?<br><strong>Resposta:</strong> Não. O curso deve conduzir o aluno à Palavra de Deus, à prática cristã responsável e ao crescimento contínuo.</li></ol>
           </div>
-          ${usuarioNaoQuerCertificadoCursoV1365(base) ? "" : `<div class="course-section">
+          <div class="course-section">
             <h2>Certificado simbólico de conclusão</h2>
             ${paragraph("Certificamos simbolicamente que o participante concluiu este curso bíblico, dedicado ao estudo, à edificação cristã e à aplicação prática do tema proposto.")}
-          </div>`}
+          </div>
         `;
       }
 
@@ -12483,6 +12495,7 @@ Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pasto
     }
 
     function promptCursoModulo(base,modulo,numero,total){
+      total = definirTotalCursoSeguroV1366(total || quantidadeCursoEscolhidaV1365(base));
       const termos = termosCursoV8(base);
       const revisao = base.cursoTipo === "aluno"
         ? "Perguntas de revisão sem respostas, com espaço para o aluno responder."
@@ -12499,8 +12512,6 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
-QUANTIDADE EXATA DE MÓDULOS: ${total}
-REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 AULAS POR MÓDULO: ${numeroAulasPorModuloV1323(base)}
 NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
@@ -12531,7 +12542,6 @@ ${metaExtensao}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
-- Respeite a quantidade exata de ${total} módulo(s). Não crie nem anuncie módulo extra.
 - Trava de tema v13.64: antes de escrever qualquer parágrafo, confira o TEMA CENTRAL A SER MANTIDO e elimine qualquer assunto que pertença a outro curso.
 - Se o tema for família/casamento/lar, é proibido inserir capelania, atendimento capelão, hospitalar, prisional, escolar, militar, empresarial, missões ou evangelismo como módulo ou seção.
 - Se for Manual do Professor ou Livro de Apoio, preserve a mesma linha da Apostila do Aluno; não mude o curso.
@@ -12595,8 +12605,6 @@ Gere o fechamento final do material de curso cristão em HTML interno.
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
-QUANTIDADE EXATA DE MÓDULOS: ${total}
-REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 TEMA: ${base.theme}
 DIREÇÃO ESPECÍFICA DO CURSO: ${base.cursoObservacao || "nenhuma"}
@@ -12743,6 +12751,7 @@ Estrutura sugerida:
     }
 
     function gerarModuloCursoFallback(base,modulo,numero,total){
+      total = definirTotalCursoSeguroV1366(total || quantidadeCursoEscolhidaV1365(base));
       const termos = termosCursoV8(base);
       return `
         <div class="course-section">
@@ -12856,6 +12865,7 @@ Estrutura sugerida:
     async function generateCourseAsyncPadraoV1318(base){
       manualPlaceholdersCount = 0;
       const modulos = extrairModulosCurso(base);
+      definirTotalCursoSeguroV1366(modulos.length);
 
       if(base.cursoTipo === "divulgacao"){
         setStep(0,"Gerando material de divulgação do curso...");
@@ -13269,7 +13279,7 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
           if(Number.isFinite(n) && n >= 1 && n <= 40) return n;
         }
       }
-      return 10;
+      return 8;
     }
 
     function usuarioNaoQuerCertificadoCursoV1365(base){
@@ -13585,6 +13595,7 @@ Escreva conteúdo final, pronto para leitura, com profundidade e linguagem pasto
     }
 
     function promptCursoModulo(base,modulo,numero,total){
+      total = definirTotalCursoSeguroV1366(total || quantidadeCursoEscolhidaV1365(base));
       const termos = termosCursoV8(base);
       const temaCentral = tituloTemaCursoV9(base);
       const bibliografiaSecao = base.cursoTipo === "professor"
@@ -13608,8 +13619,6 @@ Você é o VERBO IA gerando o MÓDULO ${numero} de ${total} de um curso cristão
 
 CURSO: ${base.title}
 TIPO DO MATERIAL: ${nomeTipoCurso(base.cursoTipo)}
-QUANTIDADE EXATA DE MÓDULOS: ${total}
-REGRA OBRIGATÓRIA: este curso termina no módulo ${total}. Não cite, anuncie nem crie módulo ${total + 1}.
 CARGA HORÁRIA: ${base.cursoCargaHoraria}
 NÍVEL DO CURSO: ${labelNivelCursoUniversalV1322(base.cursoNivelTeologico)}
 TEMA GERAL DO CURSO: ${base.theme}
@@ -13641,7 +13650,6 @@ ${metaExtensao}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
-- Respeite a quantidade exata de ${total} módulo(s). Não crie nem anuncie módulo extra.
 - Proibido repetir o prompt do usuário.
 - Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
 - Proibido deixar genérico.
@@ -15390,6 +15398,7 @@ Escreva com profundidade proporcional a um curso básico ao médio: linguagem si
 
     async function gerarCursoTeologiaProfundoV1318(base,modulos){
       manualPlaceholdersCount = 0;
+      definirTotalCursoSeguroV1366((modulos || []).length);
       let html = `<div class="doc">`;
 
       setStep(0,`Estruturando a Trilha Teológica — ${tituloNivelCursoV1319(base)}...`);
@@ -15543,6 +15552,7 @@ Se for manual do professor, avaliação com respostas comentadas.`],
 
     async function generateCourseAsync(base){
       const modulos = extrairModulosCurso(base);
+      definirTotalCursoSeguroV1366(modulos.length);
 
       if(cursoEhTeologiaProfundaV1318(base) && ["aluno","professor","apoio-professor"].includes(base.cursoTipo)){
         await gerarCursoTeologiaProfundoV1318(base,modulos);
