@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VERBO IA — Gerador de Material Cristão</title>
-  <!-- v13.53 — Revista EBD preservada + correção de impressão/PDF sem páginas quebradas -->
+  <!-- v13.64 — trava limpa de tema para Curso, Manual e Livro de Apoio; EBD/Sermão/E-book preservados -->
 
   <style>
     :root{
@@ -11302,7 +11302,7 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
 
       if(encontrados.length >= 3) return encontrados.slice(0,20);
 
-      if(/capelania/i.test(texto) || /capel[aã]o/i.test(texto)){
+      if(cursoUsuarioPediuCapelaniaV1364(base)){
         return modulosPadraoCapelania();
       }
 
@@ -11676,14 +11676,15 @@ TIPO DE MATERIAL: CERTIFICADO.
     }
 
     function blocoPerguntasCursoFallback(base){
+      const assunto = escapeHtml(base.title || base.theme || "tema do curso");
       if(base.cursoTipo === "aluno"){
         return `
           <div class="course-section">
             <h3>10. Perguntas de revisão</h3>
             <ol>
-              <li><strong>Pergunta:</strong> Qual é o papel principal do capelão nesta área?<div class="student-space">Resposta do aluno:</div></li>
-              <li><strong>Pergunta:</strong> Por que o capelão precisa conhecer seus limites?<div class="student-space">Resposta do aluno:</div></li>
-              <li><strong>Pergunta:</strong> Que postura deve marcar o atendimento?<div class="student-space">Resposta do aluno:</div></li>
+              <li><strong>Pergunta:</strong> Qual é o ensino central deste módulo sobre ${assunto}?<div class="student-space">Resposta do aluno:</div></li>
+              <li><strong>Pergunta:</strong> Quais textos bíblicos sustentam este conteúdo?<div class="student-space">Resposta do aluno:</div></li>
+              <li><strong>Pergunta:</strong> Como aplicar este ensino na vida cristã e no contexto do curso?<div class="student-space">Resposta do aluno:</div></li>
             </ol>
           </div>`;
       }
@@ -11692,9 +11693,9 @@ TIPO DE MATERIAL: CERTIFICADO.
         <div class="course-section">
           <h3>10. Perguntas de revisão com respostas</h3>
           <ol>
-            <li><strong>Pergunta:</strong> Qual é o papel principal do capelão nesta área?<br><strong>Resposta:</strong> Oferecer presença, escuta, apoio espiritual, oração respeitosa e encaminhamento responsável quando necessário.</li>
-            <li><strong>Pergunta:</strong> Por que o capelão precisa conhecer seus limites?<br><strong>Resposta:</strong> Porque a capelania não substitui áreas profissionais e deve proteger a pessoa atendida, o ambiente e o próprio capelão.</li>
-            <li><strong>Pergunta:</strong> Que postura deve marcar o atendimento?<br><strong>Resposta:</strong> Empatia, discrição, prudência, respeito, maturidade espiritual e fidelidade bíblica.</li>
+            <li><strong>Pergunta:</strong> Qual é o ensino central deste módulo sobre ${assunto}?<br><strong>Resposta:</strong> O professor deve conduzir a resposta mantendo fidelidade ao tema do curso, aos textos bíblicos estudados e às aplicações apresentadas no módulo.</li>
+            <li><strong>Pergunta:</strong> Quais textos bíblicos sustentam este conteúdo?<br><strong>Resposta:</strong> Os textos bíblicos indicados no módulo devem ser explicados de forma contextual, pastoral e prática.</li>
+            <li><strong>Pergunta:</strong> Como aplicar este ensino na vida cristã e no contexto do curso?<br><strong>Resposta:</strong> A aplicação deve permanecer no tema atual, evitando assuntos externos ou cursos anteriores.</li>
           </ol>
         </div>`;
     }
@@ -11704,11 +11705,11 @@ TIPO DE MATERIAL: CERTIFICADO.
         ${renderPage(`
           <div class="course-clean-page">
             <div class="course-cover-box"><h1>${escapeHtml(base.title)}</h1><p>${escapeHtml(base.subtitle)}</p></div>
-            <div class="course-section"><h2>Texto curto para WhatsApp</h2>${paragraph(`Está aberta a inscrição para o ${base.title}. Um curso bíblico, pastoral e prático para quem deseja servir pessoas em momentos de dor, crise e vulnerabilidade com amor, ética e responsabilidade cristã.`)}</div>
-            <div class="course-section"><h2>Descrição completa</h2>${paragraph(`O ${base.title} foi preparado para cristãos, líderes, obreiros e voluntários que desejam compreender a capelania como ministério de presença, escuta, acolhimento, oração e orientação espiritual responsável. O curso aborda bases bíblicas, ética, limites de atuação e áreas práticas de serviço.`)}</div>
+            <div class="course-section"><h2>Texto curto para WhatsApp</h2>${paragraph(`Está aberta a inscrição para o ${base.title}. Um curso bíblico, pastoral e prático para quem deseja crescer no tema proposto com amor, fidelidade bíblica, maturidade cristã e aplicação prática.`)}</div>
+            <div class="course-section"><h2>Descrição completa</h2>${paragraph(`O ${base.title} foi preparado para cristãos, líderes, obreiros e alunos que desejam estudar o tema atual com base bíblica, profundidade pastoral, organização didática e aplicação prática. O curso respeita o assunto informado pelo usuário e não mistura temas de cursos anteriores.`)}</div>
             <div class="course-section"><h2>Módulos do curso</h2>${orderedList(modulos.map((m,i)=>`Módulo ${i+1} — ${m.titulo}`))}</div>
             <div class="course-section"><h2>Público-alvo</h2>${paragraph(base.targetAudience)}</div>
-            <div class="course-section"><h2>Chamada para inscrição</h2>${paragraph(`Inscreva-se e prepare-se para servir com amor, maturidade espiritual, escuta responsável e sabedoria bíblica.`)}</div>
+            <div class="course-section"><h2>Chamada para inscrição</h2>${paragraph(`Inscreva-se e prepare-se para aprender com profundidade, maturidade espiritual, fidelidade bíblica e aplicação prática.`)}</div>
           </div>
         `,"course-page intro-page")}
       </div>`;
@@ -11964,9 +11965,9 @@ Inclua conforme o tipo do material:
 
 Estrutura sugerida:
 <div class="course-section"><h2>Conclusão geral</h2>...</div>
-<div class="course-section"><h2>Código de conduta do capelão cristão</h2><ol>...</ol></div>
-<div class="course-section"><h2>Roteiro simples de visita capelã</h2>...</div>
-<div class="course-section"><h2>Modelo simples de ficha de atendimento</h2>...</div>
+<div class="course-section"><h2>Princípios de conduta cristã no tema estudado</h2><ol>...</ol></div>
+<div class="course-section"><h2>Roteiro simples de aplicação prática</h2>...</div>
+<div class="course-section"><h2>Modelo simples de acompanhamento do estudo</h2>...</div>
 <div class="course-section"><h2>Modelo de abordagem inicial</h2>...</div>
 <div class="course-section"><h2>Avaliação final</h2><ol>...</ol></div>
 <div class="course-section"><h2>Certificado simbólico de conclusão</h2>...</div>
@@ -12274,33 +12275,33 @@ Estrutura sugerida:
         fechamento = `
           <div class="course-section">
             <h2>Conclusão geral</h2>
-            ${paragraph("A capelania cristã é ministério de presença, escuta, cuidado e serviço. Quem conclui este curso deve compreender que servir pessoas em sofrimento exige amor, preparo, ética, limites e dependência de Deus.")}
+            ${paragraph("Este curso foi preparado para formar o aluno no tema proposto, com fidelidade bíblica, maturidade cristã, profundidade pastoral e aplicação prática. Quem conclui este material deve compreender o assunto estudado e aplicá-lo com responsabilidade diante de Deus.")}
           </div>
           <div class="course-section">
-            <h2>Código de conduta do capelão cristão</h2>
+            <h2>Princípios de conduta cristã no tema estudado</h2>
             <ol class="list">
-              <li>Servir com amor e respeito.</li>
-              <li>Guardar sigilo, salvo quando houver risco ou obrigação legal de comunicar.</li>
-              <li>Respeitar protocolos institucionais.</li>
+              <li>Viver o conteúdo estudado com amor, respeito e fidelidade bíblica.</li>
+              <li>Agir com prudência, responsabilidade e sabedoria cristã.</li>
+              <li>Respeitar a liderança, a igreja local e os limites do contexto de aplicação.</li>
               <li>Não prometer resultados que pertencem somente a Deus.</li>
-              <li>Encaminhar casos técnicos a profissionais habilitados.</li>
+              <li>Buscar ajuda pastoral, familiar ou profissional quando a situação exigir responsabilidade além do estudo.</li>
             </ol>
           </div>
           <div class="course-section">
-            <h2>Roteiro simples de visita capelã</h2>
-            ${paragraph("Apresente-se, peça permissão, ouça com atenção, faça perguntas abertas, ofereça uma palavra bíblica breve, pergunte se pode orar e registre apenas o necessário com discrição.")}
+            <h2>Roteiro simples de aplicação prática</h2>
+            ${paragraph("Revise o conteúdo do módulo, leia os textos bíblicos indicados, reflita sobre as aplicações, converse com maturidade e coloque em prática uma ação concreta durante a semana.")}
           </div>
           <div class="course-section">
-            <h2>Modelo simples de ficha de atendimento</h2>
-            <ul class="list"><li>Nome ou identificação.</li><li>Data e local.</li><li>Necessidade apresentada.</li><li>Orientação espiritual oferecida.</li><li>Encaminhamento recomendado.</li></ul>
+            <h2>Modelo simples de acompanhamento do estudo</h2>
+            <ul class="list"><li>Nome ou identificação.</li><li>Data e local.</li><li>Necessidade ou desafio observado.</li><li>Aplicação bíblica estudada.</li><li>Próximo passo recomendado.</li></ul>
           </div>
           <div class="course-section">
             <h2>Avaliação final com respostas</h2>
-            <ol class="list"><li><strong>Pergunta:</strong> O que é capelania cristã?<br><strong>Resposta:</strong> É serviço cristão de presença, cuidado espiritual, escuta e apoio responsável em ambientes de dor e necessidade.</li><li><strong>Pergunta:</strong> O capelão substitui profissionais técnicos?<br><strong>Resposta:</strong> Não. Ele acolhe espiritualmente e encaminha quando necessário.</li></ol>
+            <ol class="list"><li><strong>Pergunta:</strong> Qual é o ensino central deste curso?<br><strong>Resposta:</strong> É a formação bíblica e prática no tema proposto, com conteúdo organizado para aprendizado, aplicação e maturidade cristã.</li><li><strong>Pergunta:</strong> O curso deve substituir a Bíblia e a vida prática cristã?<br><strong>Resposta:</strong> Não. O curso deve conduzir o aluno à Palavra de Deus, à prática cristã responsável e ao crescimento contínuo.</li></ol>
           </div>
           <div class="course-section">
             <h2>Certificado simbólico de conclusão</h2>
-            ${paragraph("Certificamos simbolicamente que o participante concluiu este curso de formação em capelania cristã, dedicado ao serviço com amor, ética, presença e responsabilidade.")}
+            ${paragraph("Certificamos simbolicamente que o participante concluiu este curso bíblico, dedicado ao estudo, à edificação cristã e à aplicação prática do tema proposto.")}
           </div>
         `;
       }
@@ -12524,6 +12525,9 @@ ${metaExtensao}
 
 REGRAS ABSOLUTAS:
 - Entregue conteúdo final, não instruções.
+- Trava de tema v13.64: antes de escrever qualquer parágrafo, confira o TEMA CENTRAL A SER MANTIDO e elimine qualquer assunto que pertença a outro curso.
+- Se o tema for família/casamento/lar, é proibido inserir capelania, atendimento capelão, hospitalar, prisional, escolar, militar, empresarial, missões ou evangelismo como módulo ou seção.
+- Se for Manual do Professor ou Livro de Apoio, preserve a mesma linha da Apostila do Aluno; não mude o curso.
 - Proibido repetir o prompt do usuário.
 - Proibido escrever “desenvolva esta parte”, “com base no tema”, “estrutura obrigatória” ou “o curso deve”.
 - Proibido deixar genérico.
@@ -12953,7 +12957,7 @@ Estrutura sugerida:
           <div class="course-section">
             <h2>Código de conduta cristão aplicado ao curso</h2>
             <ol class="list">
-              <li>Servir com amor e respeito.</li>
+              <li>Viver o conteúdo estudado com amor, respeito e fidelidade bíblica.</li>
               <li>Agir com fidelidade bíblica.</li>
               <li>Respeitar liderança, ética e limites.</li>
               <li>Evitar promessas irresponsáveis ou atitudes impulsivas.</li>
@@ -13007,12 +13011,80 @@ Estrutura sugerida:
       return normalizarTextoCursoV9(`${base.title || ""}\n${base.subtitle || ""}\n${base.theme || ""}\n${base.biblicalBase || ""}\n${base.targetAudience || ""}\n${base.extraNotes || ""}\n${base.cursoObservacao || ""}`);
     }
 
+    /* v13.64 — trava limpa de tema para CURSO / MANUAL / LIVRO DE APOIO
+       Objetivo: impedir que módulos antigos de capelania, missões ou casais
+       contaminem um curso cujo tema atual é outro. Não interfere em Revista EBD,
+       Sermão, E-book, Livro comum, Devocional ou Estudo. */
+    function cursoUsuarioPediuCapelaniaV1364(base){
+      const t = corpusCursoV9(base);
+      return /\bcapelania\b|\bcapelao\b|\bcapela\b|curso de capelania|manual de capelania|formacao de capelania|formacao capelao/.test(t);
+    }
+
+    function cursoUsuarioPediuMissoesV1364(base){
+      const t = corpusCursoV9(base);
+      return /\bmissoes\b|\bmissao\b|missionario|missionaria|evangelismo|evangelizacao|grande comissao|ide e fazei discipulos|discipulado evangelistico/.test(t);
+    }
+
+    function cursoUsuarioPediuFamiliaV1364(base){
+      const t = corpusCursoV9(base);
+      return /familia|familiar|lar|lares|casal|casais|casamento|conjugal|marido|esposa|noivo|noiva|filho|filhos|pais e filhos|culto domestico|alianca conjugal|vida espiritual no lar/.test(t);
+    }
+
+    function temaBrutoCursoV1364(base){
+      return [base.title,base.subtitle,base.theme,base.biblicalBase,base.targetAudience,base.extraNotes,base.cursoObservacao]
+        .map(v => String(v || '').trim())
+        .filter(Boolean)
+        .join(' | ');
+    }
+
+    function travaTemaAtualCursoV1364(base){
+      const tema = detectarTemaCursoV9(base);
+      const bruto = temaBrutoCursoV1364(base);
+      if(tema === 'casais'){
+        return `
+TRAVA V13.64 — TEMA ATUAL FIXO: FAMÍLIA / CASAMENTO / LAR CRISTÃO.
+- Tema informado pelo usuário: ${bruto}
+- Todo o curso deve permanecer exclusivamente em família cristã, casamento, pais, filhos, comunicação no lar, perdão, disciplina, culto doméstico, vida espiritual no lar, liderança espiritual familiar, restauração do lar e formação de filhos.
+- É PROIBIDO puxar capelania, capelão, atendimento hospitalar, atendimento prisional, capelania escolar, capelania militar, capelania empresarial, luto como área de capelania, dependência química como módulo de capelania, missões, evangelismo, missiologia ou qualquer curso antigo.
+- Se aparecer alguma dessas palavras fora de citação bíblica ou fora do pedido explícito do usuário, reescreva imediatamente dentro do tema família.
+- Manual do Professor: use a Apostila do Aluno como base; preserve os mesmos módulos, títulos, textos bíblicos, tópicos e linha de ensino. Apenas acrescente respostas, plano de aula, orientação didática e subsídios.
+- Livro de Apoio: aprofunde a mesma Apostila/Manual; não crie outro curso e não acrescente tema novo.`.trim();
+      }
+      if(tema === 'missoes'){
+        return `
+TRAVA V13.64 — TEMA ATUAL FIXO: MISSÕES / EVANGELISMO.
+- Tema informado pelo usuário: ${bruto}
+- Todo o curso deve permanecer em Grande Comissão, evangelização, discipulado, igreja local, envio, oração, contribuição, novos convertidos, povos e dependência do Espírito Santo.
+- É PROIBIDO puxar capelania, curso de casais, família como tema central, casamento conjugal ou qualquer curso antigo.`.trim();
+      }
+      if(tema === 'capelania'){
+        return `
+TRAVA V13.64 — TEMA ATUAL FIXO: CAPELANIA CRISTÃ.
+- Tema informado pelo usuário: ${bruto}
+- Só trate como capelania porque o usuário pediu capelania de forma explícita.
+- Todo o curso deve permanecer em presença pastoral, escuta, acolhimento, ética, limites, cuidado espiritual e encaminhamento responsável.
+- É PROIBIDO puxar curso de casais, missões, evangelismo ou outro curso antigo.`.trim();
+      }
+      if(tema === 'teologia'){
+        return `
+TRAVA V13.64 — TEMA ATUAL FIXO: TEOLOGIA / DOUTRINA.
+- Tema informado pelo usuário: ${bruto}
+- Não transforme em família, capelania, missões, evangelismo ou curso antigo.`.trim();
+      }
+      return `
+TRAVA V13.64 — TEMA ATUAL FIXO DO USUÁRIO.
+- Tema informado pelo usuário: ${bruto || 'tema não informado'}
+- Todo o curso deve obedecer ao tema atual, sem puxar módulos, exemplos ou bibliografia de capelania, missões, família, casais ou teologia sistemática, a menos que o usuário peça explicitamente.
+- Manual do Professor e Livro de Apoio devem ampliar a base já gerada, não mudar o curso.`.trim();
+    }
+
+
     function detectarTemaCursoV9(base){
       const t = corpusCursoV9(base);
       if(cursoEhTeologiaSistematicaV1313(base)) return "teologia";
-      if(/casal|casais|casamento|conjugal|marido|esposa|noivo|noiva|familia|lar|filhos/.test(t)) return "casais";
-      if(/missao|missoes|mission|evangelismo|evangeliz|grande comissao|discipulado|novos convertidos/.test(t)) return "missoes";
-      if(/capelania|capelao|capela|hospitalar|prisional|luto|dependencia quimica/.test(t)) return "capelania";
+      if(cursoUsuarioPediuFamiliaV1364(base)) return "casais";
+      if(cursoUsuarioPediuMissoesV1364(base)) return "missoes";
+      if(cursoUsuarioPediuCapelaniaV1364(base)) return "capelania";
       return "geral";
     }
 
@@ -13034,48 +13106,22 @@ Estrutura sugerida:
       if(!texto) return false;
 
       if(tema === "casais"){
-        return /capelania|capelao|atendimento capelao|hospitalar|prisional|dependencia quimica|miss(ao|oes)|evangelismo|missionario/.test(texto);
+        return /capelania|capelao|atendimento capelao|hospitalar como area de capelania|prisional como area de capelania|capelania escolar|capelania militar|capelania empresarial|dependencia quimica como capelania|missoes|missao|missionario|evangelismo como modulo central|missiologia/.test(texto);
       }
 
       if(tema === "missoes"){
-        return /capelania|capelao|atendimento capelao|hospitalar|prisional|curso para casais|casamento conjugal|marido e esposa/.test(texto);
+        return /capelania|capelao|atendimento capelao|hospitalar|prisional|curso para casais|casamento conjugal|manual de familia/.test(texto);
       }
 
       if(tema === "capelania"){
-        return /curso para casais|casamento conjugal|evangelismo pessoal como modulo central de missoes|grande comissao como curso principal/.test(texto);
+        return /curso para casais|casamento conjugal|manual de familia|evangelismo pessoal como modulo central de missoes|grande comissao como curso principal/.test(texto);
       }
 
       return false;
     }
 
     function instrucoesTravaTemaCursoV9(base){
-      const tema = detectarTemaCursoV9(base);
-      if(tema === "casais"){
-        return `
-TRAVA ABSOLUTA DE TEMA:
-Este curso é sobre CASAIS CRISTÃOS / CASAMENTO / FAMÍLIA.
-Todo módulo, exemplo, pergunta, atividade, resumo e aplicação deve permanecer nesse campo: casamento, aliança, amor, respeito, comunicação, perdão, intimidade saudável, filhos, finanças, conflitos, restauração, vida espiritual no lar e legado familiar.
-É PROIBIDO misturar com capelania, missões, evangelismo, hospital, prisão ou qualquer outro curso anterior.
-Não use a palavra capelania nem capelão neste curso, a menos que o usuário peça explicitamente.`.trim();
-      }
-      if(tema === "missoes"){
-        return `
-TRAVA ABSOLUTA DE TEMA:
-Este curso é sobre MISSÕES E EVANGELISMO.
-Todo módulo, exemplo, pergunta, atividade, resumo e aplicação deve permanecer nesse campo: Grande Comissão, evangelização, missão de Deus, igreja local, discipulado, envio, oração, contribuição, novos convertidos, povos não alcançados e dependência do Espírito Santo.
-É PROIBIDO misturar com curso de casais, capelania, casamento conjugal ou qualquer outro curso anterior.`.trim();
-      }
-      if(tema === "capelania"){
-        return `
-TRAVA ABSOLUTA DE TEMA:
-Este curso é sobre CAPELANIA CRISTÃ.
-Todo módulo, exemplo, pergunta, atividade, resumo e aplicação deve permanecer nesse campo: presença pastoral, escuta, acolhimento, ética, sigilo, limites, cuidado espiritual e encaminhamento responsável.
-É PROIBIDO misturar com curso de casais, missões, evangelismo ou qualquer outro curso anterior.`.trim();
-      }
-      return `
-TRAVA ABSOLUTA DE TEMA:
-Todo o conteúdo deve permanecer fiel ao tema atual informado pelo usuário: ${base.title || "curso"}.
-É PROIBIDO puxar assunto de cursos anteriores, exemplos antigos, capelania, missões ou casais quando isso não fizer parte do tema atual.`.trim();
+      return travaTemaAtualCursoV1364(base);
     }
 
     function modulosPadraoMissoesV9(){
@@ -13295,7 +13341,9 @@ TIPO DE MATERIAL: APOSTILA DO ALUNO.
 - Não inclua respostas completas nas atividades e perguntas; deixe espaço de resposta/anotações quando adequado.
 - Use linguagem limpa, didática, contínua e organizada.
 - O aluno deve receber conteúdo suficiente para aprender com profundidade, mas sem o manual de condução do professor.
-${bibliografia}`.trim();
+${bibliografia}
+
+${travaTemaAtualCursoV1364(base)}`.trim();
       }
 
       if(base.cursoTipo === "professor"){
@@ -13310,7 +13358,9 @@ TIPO DE MATERIAL: MANUAL DO PROFESSOR.
 - Mire densidade equivalente a 120 a 160 páginas quando salvo em PDF, se o curso for de 40h.
 - O professor deve receber ferramentas para ministrar; por isso o manual não pode ficar menor, genérico ou parecido com o material do aluno.
 - Não crie um curso diferente do aluno; amplie, explique, responda, oriente e aprofunde.
-${bibliografia}`.trim();
+${bibliografia}
+
+${travaTemaAtualCursoV1364(base)}`.trim();
       }
 
       if(base.cursoTipo === "apoio-professor"){
@@ -13323,7 +13373,9 @@ TIPO DE MATERIAL: LIVRO DE APOIO DO PROFESSOR.
 - Para cada módulo, acrescente seções novas que não aparecem no aluno: estudo complementar robusto, aprofundamento bíblico, argumento teológico, aplicações avançadas, caso prático comentado, erros comuns, perguntas de reflexão para o professor, roteiro de preparo, recursos de apoio e materiais bibliográficos reais.
 - Mire densidade equivalente a 150 a 220 páginas quando salvo em PDF, se o curso for de 40h.
 - Não substitua a apostila nem o manual; sirva como biblioteca de preparo, aprofundamento e ampliação.
-${bibliografia}`.trim();
+${bibliografia}
+
+${travaTemaAtualCursoV1364(base)}`.trim();
       }
 
       if(base.cursoTipo === "divulgacao"){
@@ -13418,6 +13470,8 @@ NÃO escreva “desenvolva esta parte”, “com base no tema”, “crie um cur
 NÃO faça sermão, devocional ou revista EBD.
 NÃO use nomes genéricos como “Fundamento 1 do curso”.
 NÃO puxe assunto de cursos anteriores.
+TRAVA v13.64: se o tema atual for família, casamento ou lar cristão, não cite capelania, capelão, hospitalar, prisional, missões ou evangelismo como estrutura do curso.
+Manual do Professor e Livro de Apoio devem usar a base do aluno, sem mudar tema nem módulos.
 
 Crie uma abertura robusta, com densidade de apostila de formação, usando estas seções:
 <h1 class="page-title">Título do curso</h1>
