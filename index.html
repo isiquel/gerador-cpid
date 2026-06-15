@@ -7029,6 +7029,22 @@ Não inventar bibliografia.
         { teste:["eclesiastes 3.13","ec 3.13","ecl 3.13"], texto:"E também que todo homem coma e beba, e goze do bem de todo o seu trabalho; isto é um dom de Deus." },
         { teste:["eclesiastes 4.6","ec 4.6","ecl 4.6"], texto:"Melhor é a mão cheia com descanso do que ambas as mãos cheias com trabalho e aflição de espírito." },
 
+        { teste:["efésios 6.18","efesios 6.18","ef 6.18"], texto:"Orando em todo o tempo com toda a oração e súplica no Espírito, e vigiando nisto com toda a perseverança e súplica por todos os santos." },
+        { teste:["mateus 21.22","mt 21.22"], texto:"E tudo o que pedirdes em oração, crendo, recebereis." },
+        { teste:["tiago 4.8","tg 4.8"], texto:"Chegai-vos a Deus, e ele se chegará a vós." },
+        { teste:["1 tessalonicenses 5.17","1ts 5.17","1 ts 5.17"], texto:"Orai sem cessar." },
+        { teste:["1 timóteo 2.8","1tm 2.8","1 tm 2.8"], texto:"Quero, pois, que os homens orem em todo o lugar, levantando mãos santas, sem ira nem contenda." },
+        { teste:["gênesis 18.23","genesis 18.23","gn 18.23"], texto:"E chegou-se Abraão, dizendo: Destruirás também o justo com o ímpio?" },
+        { teste:["mateus 26.41","mt 26.41"], texto:"Vigiai e orai, para que não entreis em tentação; o espírito, na verdade, está pronto, mas a carne é fraca." },
+        { teste:["mateus 26.36","mt 26.36"], texto:"Então chegou Jesus com eles a um lugar chamado Getsêmani, e disse a seus discípulos: Assentai-vos aqui, enquanto vou além orar." },
+        { teste:["lucas 22.40","lc 22.40"], texto:"Orai, para que não entreis em tentação." },
+        { teste:["filipenses 4.6","fp 4.6"], texto:"Não estejais inquietos por coisa alguma; antes as vossas petições sejam em tudo conhecidas diante de Deus." },
+        { teste:["filipenses 4.7","fp 4.7"], texto:"E a paz de Deus, que excede todo o entendimento, guardará os vossos corações e os vossos sentimentos em Cristo Jesus." },
+        { teste:["1 joão 5.14","1jo 5.14","1 jo 5.14"], texto:"E esta é a confiança que temos nele: que, se pedirmos alguma coisa, segundo a sua vontade, ele nos ouve." },
+        { teste:["jeremias 33.3","jr 33.3"], texto:"Clama a mim, e responder-te-ei e anunciar-te-ei coisas grandes e firmes, que não sabes." },
+        { teste:["atos 12.5","at 12.5"], texto:"Pedro, pois, era guardado na prisão; mas a igreja fazia contínua oração por ele a Deus." },
+        { teste:["tiago 5.16","tg 5.16"], texto:"A oração feita por um justo pode muito em seus efeitos." },
+
         { teste:["atos 1.8","at 1.8"], texto:"Recebereis a virtude do Espírito Santo, que há de vir sobre vós; e ser-me-eis testemunhas." }
       ];
 
@@ -7168,8 +7184,22 @@ Não inventar bibliografia.
       if(r.includes("atos 1") || r.includes("at 1")) return "O Espírito Santo capacita a igreja para testemunhar.";
       if(r.includes("romanos 10") || r.includes("rm 10")) return "A pregação é necessária para que pessoas ouçam, creiam e invoquem o Senhor.";
       if(r.includes("efésios 2") || r.includes("ef 2")) return "A salvação é pela graça mediante a fé e conduz a uma vida de boas obras.";
+      if(r.includes("efésios 6.18") || r.includes("efesios 6.18") || r.includes("ef 6.18")) return "A oração deve ser constante, espiritual, vigilante e perseverante em favor dos santos.";
+      if(r.includes("mateus 21.22") || r.includes("mt 21.22")) return "Jesus ensina que a oração deve ser acompanhada de fé e confiança em Deus.";
+      if(r.includes("tiago 4.8") || r.includes("tg 4.8")) return "A oração aproxima o crente de Deus e fortalece a comunhão com o Pai.";
+      if(r.includes("1 tessalonicenses 5.17") || r.includes("1ts 5.17") || r.includes("1 ts 5.17")) return "O crente é chamado a manter uma vida de oração contínua diante de Deus.";
+      if(r.includes("1 timóteo 2.8") || r.includes("1tm 2.8") || r.includes("1 tm 2.8")) return "A oração deve ser praticada com santidade, paz e reverência diante do Senhor.";
+      if(r.includes("gênesis 18") || r.includes("genesis 18") || r.includes("gn 18")) return "Abraão revela o coração de um intercessor que se coloca diante de Deus em favor de outros.";
+      if(r.includes("mateus 26.41") || r.includes("mt 26.41")) return "A vigilância e a oração protegem o crente contra a tentação e a fraqueza da carne.";
+      if(r.includes("mateus 26.36") || r.includes("mt 26.36")) return "No Getsêmani, Jesus mostra que a oração sustenta a obediência nos momentos de angústia.";
+      if(r.includes("jeremias 33.3") || r.includes("jr 33.3")) return "Deus convida o seu povo a clamar com confiança e a esperar sua resposta.";
+      if(r.includes("filipenses 4.6") || r.includes("fp 4.6")) return "A oração transforma ansiedade em entrega confiante diante de Deus.";
+      if(r.includes("filipenses 4.7") || r.includes("fp 4.7")) return "A paz de Deus guarda o coração daquele que entrega suas petições ao Senhor.";
+      if(r.includes("tiago 5.16") || r.includes("tg 5.16")) return "A intercessão do justo é eficaz porque nasce de uma vida alinhada com Deus.";
+      if(r.includes("atos 12.5") || r.includes("at 12.5")) return "A igreja primitiva perseverava em oração diante das crises e perseguições.";
 
-      return "A Palavra de Deus chama o cristão à fé, à obediência e à perseverança.";
+      if(/ora[cç][aã]o|intercess/i.test(String(tema || "").toLowerCase())) return "A oração conduz o crente à comunhão, dependência, vigilância e perseverança diante de Deus.";
+      return "A Palavra de Deus ilumina a vida cristã e conduz o crente à prática fiel da vontade do Senhor.";
     }
 
     function criarLeituraDiariaUniversal(base,dados,textoBase = ""){
@@ -7189,14 +7219,24 @@ Não inventar bibliografia.
         }
       });
 
-      const refsGerais = [
-        "2 Timóteo 3.16",
-        "João 17.17",
-        "Romanos 12.2",
-        "Mateus 24.12",
-        "Judas 1.20",
-        "Josué 24.15"
-      ];
+      const temaNormalizado = String(tema || "").toLowerCase();
+      const refsGerais = /ora[cç][aã]o|intercess|orar|s[uú]plica|clamar/.test(temaNormalizado)
+        ? [
+          "Efésios 6.18",
+          "Mateus 21.22",
+          "Tiago 4.8",
+          "1 Tessalonicenses 5.17",
+          "1 Timóteo 2.8",
+          "Gênesis 18.23-33"
+        ]
+        : [
+          "2 Timóteo 3.16",
+          "João 17.17",
+          "Romanos 12.2",
+          "Mateus 24.12",
+          "Judas 1.20",
+          "Josué 24.15"
+        ];
 
       refsGerais.forEach(ref => {
         if(refsUnicas.length < 6 && !refsUnicas.some(r => r.toLowerCase() === ref.toLowerCase())){
@@ -9260,7 +9300,17 @@ Gere somente esta etapa.`;
     function paragrafoFallbackRevistaV1339(dados, contexto = ""){
       const titulo = dados?.titulo || "a lição";
       const base = dados?.leituraClasse || dados?.textoAureoRef || dados?.textoBase || "a Palavra de Deus";
-      return `Esta parte da lição mostra que ${titulo.toLowerCase()} precisa ser compreendido à luz de ${base}. A Palavra de Deus conduz a família cristã a viver com temor, responsabilidade, amor e obediência, transformando princípios bíblicos em atitudes práticas no lar.`;
+      const tema = `${buildBase()?.visibleTheme || buildBase()?.title || ""} ${titulo} ${base}`.toLowerCase();
+      if(/ora[cç][aã]o|orar|intercess|s[uú]plica|clamar|gets[eê]mani/.test(tema)){
+        if(/ampliando|conhecimento/i.test(contexto)){
+          return `Na Bíblia, a oração aparece como comunhão, dependência e serviço espiritual. À luz de ${base}, o crente aprende que orar não é apenas apresentar pedidos, mas aproximar-se de Deus com fé, reverência, perseverança e submissão à sua vontade.`;
+        }
+        return `Esta parte da lição mostra que ${titulo.toLowerCase()} deve ser compreendido à luz de ${base}. A oração conduz o crente à comunhão com Deus, fortalece a fé, desperta vigilância espiritual e ensina dependência diante do Pai.`;
+      }
+      if(/fam[ií]lia|casamento|pais|filhos|lar/.test(tema)){
+        return `Esta parte da lição mostra que ${titulo.toLowerCase()} precisa ser compreendido à luz de ${base}. A Palavra de Deus conduz o cristão a viver com temor, responsabilidade, fé e obediência, transformando princípios bíblicos em atitudes práticas.`;
+      }
+      return `Esta parte da lição mostra que ${titulo.toLowerCase()} precisa ser compreendido à luz de ${base}. A Palavra de Deus ilumina o entendimento, fortalece a fé e chama o cristão a viver com obediência, discernimento e prática espiritual.`;
     }
 
     function forcarBlocoEditorialRevistaV1339(html, titulo, classe = "block", dados = {}){
@@ -9649,7 +9699,7 @@ Gere somente esta etapa.`;
       const ref = String(dados?.leituraClasse || dados?.textoBase || dados?.textoAureoRef || "Referência bíblica da lição").trim();
       const partes = ref.split(/;|\n/).map(r => r.trim()).filter(Boolean).slice(0,3);
       const versos = partes.map(r => {
-        const texto = textoBiblicoCurtoPorReferencia(r) || paragrafoFallbackRevistaV1336(dados,"Leitura Bíblica em Classe",`Leia ${r} com atenção e observe o ensino central para a família.`);
+        const texto = textoBiblicoCurtoPorReferencia(r) || paragrafoFallbackRevistaV1336(dados,"Leitura Bíblica em Classe",`Leia ${r} com atenção e observe o ensino central para a vida cristã.`);
         return `<p class="text"><strong>${escapeHtml(r)}:</strong> ${escapeHtml(texto)}</p>`;
       }).join("\n");
       return `<div class="scripture-full"><h3>Leitura Bíblica em Classe</h3><span class="ref">${escapeHtml(ref)}</span>${versos}</div>`;
@@ -10012,7 +10062,7 @@ Use <div class="block"><h3>Introdução</h3>...</div>.
         160
       );
 
-      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"A vida familiar precisa ser examinada à luz da Palavra de Deus, pois somente Cristo sustenta o lar com graça, verdade e responsabilidade."));
+      corpo.push(intro ? forcarBlocoEditorialRevistaV1339(intro,"Introdução","block",dados) : blocoFallbackRevistaV1336("block","Introdução",dados,"A vida cristã precisa ser examinada à luz da Palavra de Deus, pois somente Cristo sustenta a comunhão, a fé e a obediência com graça e verdade."));
 
       const topicos = Array.isArray(dados.topicos) && dados.topicos.length === 3 ? dados.topicos : [];
 
