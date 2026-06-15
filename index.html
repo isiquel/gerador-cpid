@@ -1713,6 +1713,17 @@
     }
 
 
+    /* v13.69 — editor visual de blocos/quadros antes do PDF */
+    .pdf-block-toolbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2000;display:none;gap:7px;align-items:center;flex-wrap:wrap;max-width:min(960px,calc(100vw - 20px));background:rgba(255,250,244,.98);border:1px solid #d9cbbb;border-radius:18px;box-shadow:0 14px 40px rgba(40,20,10,.24);padding:9px;backdrop-filter:blur(8px);}
+    .pdf-block-toolbar.active{display:flex;}
+    .pdf-block-toolbar button{width:auto !important;border:none;border-radius:12px;padding:9px 11px;font-size:12.5px;font-weight:800;cursor:pointer;color:#4e3121;background:#fff;border:1px solid #d9cbbb;}
+    .pdf-block-toolbar button.primary{color:#fff;background:#6b432b;border-color:#6b432b;}
+    .pdf-selected-block{outline:3px solid #d9a124 !important;box-shadow:0 0 0 6px rgba(217,161,36,.18) !important;position:relative;}
+    .user-page-break-before{border-top:4px dashed #b88700 !important;padding-top:14px !important;}
+    .user-page-break-before::before{content:"QUEBRA DE PÁGINA ANTES DESTE BLOCO";display:block;margin:0 0 8px;color:#8a5a00;font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;}
+    @media print{#printArea .pdf-block-toolbar{display:none !important;}#printArea .pdf-selected-block{outline:none !important;box-shadow:none !important;}#printArea .user-page-break-before{break-before:page !important;page-break-before:always !important;border-top:0 !important;padding-top:0 !important;}#printArea .user-page-break-before::before{display:none !important;}}
+
+
     #printArea{
       display:none;
     }
@@ -4304,7 +4315,7 @@
         </div>
 
         <div id="editWarning" class="edit-warning">
-          Modo de edição visual ativado. Edite o material aqui na tela antes de salvar em PDF. Você pode clicar nos textos e ajustar títulos, parágrafos, perguntas, quadros e espaços. Ao terminar, clique em <strong>Salvar edição visual</strong> ou <strong>Finalizar edição</strong>. Depois clique em <strong>Salvar / imprimir PDF</strong>.
+          Modo de edição visual ativado. Edite textos e clique em qualquer quadro/bloco para abrir os controles: subir, descer, colocar espaço acima/abaixo ou jogar para a próxima página. Ao terminar, clique em <strong>Salvar edição visual</strong>. Depois clique em <strong>Salvar / imprimir PDF</strong>.
         </div>
 
         <div id="result" class="result">
@@ -5110,6 +5121,7 @@
       printArea.innerHTML = htmlSalvo;
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
+      desativarEditorVisualBlocosV1369();
       sincronizarBotoesEdicao(false);
 
       atualizarPainelAutosave();
@@ -5141,6 +5153,7 @@
 
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
+      desativarEditorVisualBlocosV1369();
       sincronizarBotoesEdicao(false);
 
       salvarUltimoMaterialGerado(html,"geracao");
@@ -7152,105 +7165,43 @@ Não inventar bibliografia.
     }
 
     function resumoDaReferencia(ref,tema){
-      const r = String(ref || "").toLowerCase();
-
-      if(r.includes("salmo 147") || r.includes("sl 147")) return "Deus sara os quebrantados de coração e trata suas feridas.";
-      if(r.includes("lucas 4") || r.includes("lc 4")) return "Jesus anuncia sua missão de salvar, libertar e curar os quebrantados.";
-      if(r.includes("isaías 61") || r.includes("is 61")) return "O Senhor promete consolo, restauração e alegria ao povo quebrantado.";
-      if(r.includes("mateus 11") || r.includes("mt 11")) return "Jesus chama os cansados e oprimidos para encontrarem descanso nele.";
-      if(r.includes("joão 8") || r.includes("jo 8")) return "A verdadeira liberdade vem do Filho de Deus.";
-      if(r.includes("2 coríntios 5") || r.includes("2co 5") || r.includes("2 co 5")) return "Em Cristo há nova criação, novo começo e nova direção.";
-      if(r.includes("mateus 24.12") || r.includes("mt 24.12")) return "Jesus alerta que a multiplicação da iniquidade pode esfriar o amor.";
-      if(r.includes("mateus 24.13") || r.includes("mt 24.13")) return "A perseverança até o fim acompanha os que permanecem fiéis.";
-      if(r.includes("2 timóteo 3.16") || r.includes("2tm 3.16") || r.includes("2 tm 3.16")) return "Toda a Escritura é inspirada por Deus e útil para formar o servo do Senhor.";
-      if(r.includes("joão 17") || r.includes("jo 17")) return "A verdade de Deus santifica o seu povo.";
-      if(r.includes("gálatas 1") || r.includes("gl 1")) return "Outro evangelho não pode substituir a mensagem de Cristo.";
-      if(r.includes("2 timóteo 4") || r.includes("2tm 4") || r.includes("2 tm 4")) return "A Palavra deve ser pregada com fidelidade em todo tempo.";
-      if(r.includes("1 pedro 1") || r.includes("1pe 1") || r.includes("1 pe 1")) return "Deus chama o seu povo para uma vida santa.";
-      if(r.includes("romanos 12") || r.includes("rm 12")) return "A mente renovada não se conforma com este mundo.";
-      if(r.includes("judas") || r.includes("jd")) return "A igreja deve edificar-se na fé e guardar-se no amor de Deus.";
-      if(r.includes("daniel 1") || r.includes("dn 1")) return "Daniel decidiu permanecer fiel a Deus mesmo em ambiente de pressão.";
-      if(r.includes("provérbios 4") || r.includes("pv 4")) return "O coração precisa ser guardado, pois dele procedem as escolhas da vida.";
-      if(r.includes("salmo 119") || r.includes("sl 119")) return "A Palavra ilumina e purifica o caminho do cristão.";
-      if(r.includes("salmo 19") || r.includes("sl 19")) return "A criação proclama a glória de Deus.";
-      if(r.includes("romanos 1") || r.includes("rm 1")) return "A criação testemunha atributos divinos e torna o ser humano responsável diante de Deus.";
-      if(r.includes("hebreus 1") || r.includes("hb 1")) return "Deus falou de muitas maneiras e, de modo pleno, por meio do Filho.";
-      if(r.includes("2 pedro 1") || r.includes("2pe 1") || r.includes("2 pe 1")) return "A profecia bíblica veio da parte de Deus, por homens movidos pelo Espírito Santo.";
-      if(r.includes("1 coríntios 2") || r.includes("1co 2") || r.includes("1 co 2")) return "O Espírito ajuda o crente a compreender as coisas espirituais.";
-      if(r.includes("joão 16") || r.includes("jo 16")) return "O Espírito guia o povo de Deus em toda a verdade.";
-      if(r.includes("atos 2") || r.includes("at 2")) return "A igreja perseverava na doutrina dos apóstolos.";
-      if(r.includes("colossenses 3") || r.includes("cl 3")) return "A Palavra de Cristo deve habitar ricamente na igreja.";
-      if(r.includes("mateus 28") || r.includes("mt 28")) return "Cristo envia sua igreja a fazer discípulos de todas as nações.";
-      if(r.includes("atos 1") || r.includes("at 1")) return "O Espírito Santo capacita a igreja para testemunhar.";
-      if(r.includes("romanos 10") || r.includes("rm 10")) return "A pregação é necessária para que pessoas ouçam, creiam e invoquem o Senhor.";
-      if(r.includes("efésios 2") || r.includes("ef 2")) return "A salvação é pela graça mediante a fé e conduz a uma vida de boas obras.";
-      if(r.includes("efésios 6.18") || r.includes("efesios 6.18") || r.includes("ef 6.18")) return "A oração deve ser constante, espiritual, vigilante e perseverante em favor dos santos.";
-      if(r.includes("mateus 21.22") || r.includes("mt 21.22")) return "Jesus ensina que a oração deve ser acompanhada de fé e confiança em Deus.";
-      if(r.includes("tiago 4.8") || r.includes("tg 4.8")) return "A oração aproxima o crente de Deus e fortalece a comunhão com o Pai.";
-      if(r.includes("1 tessalonicenses 5.17") || r.includes("1ts 5.17") || r.includes("1 ts 5.17")) return "O crente é chamado a manter uma vida de oração contínua diante de Deus.";
-      if(r.includes("1 timóteo 2.8") || r.includes("1tm 2.8") || r.includes("1 tm 2.8")) return "A oração deve ser praticada com santidade, paz e reverência diante do Senhor.";
-      if(r.includes("gênesis 18") || r.includes("genesis 18") || r.includes("gn 18")) return "Abraão revela o coração de um intercessor que se coloca diante de Deus em favor de outros.";
-      if(r.includes("mateus 26.41") || r.includes("mt 26.41")) return "A vigilância e a oração protegem o crente contra a tentação e a fraqueza da carne.";
-      if(r.includes("mateus 26.36") || r.includes("mt 26.36")) return "No Getsêmani, Jesus mostra que a oração sustenta a obediência nos momentos de angústia.";
-      if(r.includes("jeremias 33.3") || r.includes("jr 33.3")) return "Deus convida o seu povo a clamar com confiança e a esperar sua resposta.";
-      if(r.includes("filipenses 4.6") || r.includes("fp 4.6")) return "A oração transforma ansiedade em entrega confiante diante de Deus.";
-      if(r.includes("filipenses 4.7") || r.includes("fp 4.7")) return "A paz de Deus guarda o coração daquele que entrega suas petições ao Senhor.";
-      if(r.includes("tiago 5.16") || r.includes("tg 5.16")) return "A intercessão do justo é eficaz porque nasce de uma vida alinhada com Deus.";
-      if(r.includes("atos 12.5") || r.includes("at 12.5")) return "A igreja primitiva perseverava em oração diante das crises e perseguições.";
-
-      if(/ora[cç][aã]o|intercess/i.test(String(tema || "").toLowerCase())) return "A oração conduz o crente à comunhão, dependência, vigilância e perseverança diante de Deus.";
-      return "A Palavra de Deus ilumina a vida cristã e conduz o crente à prática fiel da vontade do Senhor.";
+      // v13.69 — sem resumos temáticos prontos no código.
+      const referencia = String(ref || "texto bíblico").trim() || "texto bíblico";
+      const assunto = String(tema || "tema da lição").replace(/\s+/g," ").trim() || "tema da lição";
+      return `Leia ${referencia} observando como esta passagem ilumina o estudo sobre ${assunto}.`;
     }
 
     function criarLeituraDiariaUniversal(base,dados,textoBase = ""){
+      // v13.68 — Leitura diária universal: usa as referências da própria lição e do campo bíblico informado.
+      // Não injeta presets de família, oração, missões, capelania ou qualquer tema fixo.
       const tema = base.visibleTheme || base.title || "tema bíblico";
 
       const refsBase = [
+        ...dividirReferenciasBiblicas(dados?.leituraDiariaTexto || ""),
         ...dividirReferenciasBiblicas(textoBase),
         ...dividirReferenciasBiblicas(dados?.leituraClasse),
+        ...dividirReferenciasBiblicas(dados?.textoAureoRef),
         ...dividirReferenciasBiblicas(base.biblicalBase)
       ];
 
       const refsUnicas = [];
-
       refsBase.forEach(ref => {
-        if(ref && !refsUnicas.some(r => r.toLowerCase() === ref.toLowerCase())){
-          refsUnicas.push(ref);
-        }
+        const r = limparReferenciaLeituraDiariaV1329(ref);
+        if(r && !refsUnicas.some(x => x.toLowerCase() === r.toLowerCase())) refsUnicas.push(r);
       });
 
-      const temaNormalizado = String(tema || "").toLowerCase();
-      const refsGerais = /ora[cç][aã]o|intercess|orar|s[uú]plica|clamar/.test(temaNormalizado)
-        ? [
-          "Efésios 6.18",
-          "Mateus 21.22",
-          "Tiago 4.8",
-          "1 Tessalonicenses 5.17",
-          "1 Timóteo 2.8",
-          "Gênesis 18.23-33"
-        ]
-        : [
-          "2 Timóteo 3.16",
-          "João 17.17",
-          "Romanos 12.2",
-          "Mateus 24.12",
-          "Judas 1.20",
-          "Josué 24.15"
-        ];
-
-      refsGerais.forEach(ref => {
-        if(refsUnicas.length < 6 && !refsUnicas.some(r => r.toLowerCase() === ref.toLowerCase())){
-          refsUnicas.push(ref);
-        }
+      const refsReserva = ["2 Timóteo 3.16","Salmo 119.105","João 17.17","Romanos 12.2","Tiago 1.22","Hebreus 4.12"];
+      refsReserva.forEach(ref => {
+        if(refsUnicas.length < 6 && !refsUnicas.some(r => r.toLowerCase() === ref.toLowerCase())) refsUnicas.push(ref);
       });
 
       const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
-
       return dias.map((dia,index) => {
-        const ref = refsUnicas[index] || refsGerais[index] || "2 Timóteo 3.16";
+        const ref = refsUnicas[index] || refsReserva[index] || "2 Timóteo 3.16";
         return [dia,ref,resumoDaReferencia(ref,tema)];
       });
     }
+
 
     function gerarTeseUniversal(titulo,base,objetivo = ""){
       const obj = String(objetivo || "").trim();
@@ -7472,6 +7423,33 @@ Não inventar bibliografia.
       return limpos.length === 3 ? limpos : null;
     }
 
+    function extrairLeituraDiariaDoBlocoV1369(bloco){
+      const dias = ["Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+      const normalizarDia = dia => {
+        const d = String(dia || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+        if(d.startsWith("segunda")) return "Segunda";
+        if(d.startsWith("terca")) return "Terça";
+        if(d.startsWith("quarta")) return "Quarta";
+        if(d.startsWith("quinta")) return "Quinta";
+        if(d.startsWith("sexta")) return "Sexta";
+        if(d.startsWith("sabado")) return "Sábado";
+        return "";
+      };
+      const linhas = String(bloco || "").replace(/\r/g,"\n").split(/\n+/).map(l => l.trim()).filter(Boolean);
+      const itens = [];
+      for(const linha of linhas){
+        const m = linha.match(/^(Segunda|Ter[cç]a|Quarta|Quinta|Sexta|S[aá]bado)\s*[—–-]\s*([^—–-]+?)(?:\s*[—–-]\s*(.+))?$/i);
+        if(!m) continue;
+        const dia = normalizarDia(m[1]);
+        const ref = limparReferenciaLeituraDiariaV1329(m[2] || "");
+        const resumo = String(m[3] || "").trim();
+        if(dia && ref) itens.push([dia,ref,resumo || `Medite em ${ref} e aplique esta verdade ao tema da lição.`]);
+      }
+      const ordenados = [];
+      dias.forEach(dia => { const achado = itens.find(i => i[0] === dia); if(achado) ordenados.push(achado); });
+      return ordenados.length >= 6 ? ordenados.slice(0,6) : [];
+    }
+
     function extrairLicoesDoTexto(texto,base){
       const raw = String(texto || "").replace(/\r/g,"\n");
       const regex = /li[cç][aã]o\s*([1-4])\s*[:\-–—]\s*([^\n]+)/gi;
@@ -7503,8 +7481,13 @@ Não inventar bibliografia.
         const verdadePratica = extrairCampoLicaoV138(bloco,["verdade\\s*pr[aá]tica"]);
         const objetivo = extrairCampoLicaoV138(bloco,["objetivo","dire[cç][aã]o\\s*da\\s*li[cç][aã]o"]);
         const topicos = extrairTopicosDoBloco(bloco);
+        const leituraDiariaPrompt = extrairLeituraDiariaDoBlocoV1369(bloco);
 
         const licao = montarLicaoUniversal(titulo,numero,base,objetivo,textoBase,topicos);
+        if(leituraDiariaPrompt.length >= 6){
+          licao.leituraDiaria = leituraDiariaPrompt;
+          licao.leituraDiariaTexto = leituraDiariaPrompt.map(i => `${i[0]} — ${i[1]} — ${i[2]}`).join("\n");
+        }
 
         if(textoAureo){
           const aureo = textoAureoDetalhadoV1330(textoAureo,base);
@@ -7657,7 +7640,7 @@ Não inventar bibliografia.
       const d = { ...(dados || {}) };
       const titulo = d.titulo || `Lição ${numero}`;
       const textoGeral = `${base.title} ${base.theme} ${base.extraNotes}`.toLowerCase();
-      const igrejaLocal = /igreja local|corpo de cristo|comunh[aã]o dos santos|plano de deus/.test(textoGeral);
+      const igrejaLocal = false; // v13.69 — sem preset automático de igreja local ou qualquer outro tema
 
       const padrao = igrejaLocal ? [
         {
@@ -7715,8 +7698,8 @@ Não inventar bibliografia.
       d.textoAureo = d.textoAureoRef;
       d.leituraClasse = referenciasPrincipaisRevistaV138(d.leituraClasse) || d.leituraClasse;
 
-      if(igrejaLocal){
-        d.leituraDiaria = leituraDiariaIgrejaLocalV1312(numero);
+      if(Array.isArray(d.leituraDiaria) && d.leituraDiaria.length >= 6){
+        d.leituraDiaria = d.leituraDiaria.slice(0,6);
       }else{
         d.leituraDiaria = criarLeituraDiariaUniversal(base,d,d.leituraClasse || d.textoAureoRef || base.biblicalBase);
       }
@@ -7726,122 +7709,23 @@ Não inventar bibliografia.
 
 
     function temaRevistaFamiliaV1328(base){
-      const texto = `${base.title || ""} ${base.subtitle || ""} ${base.theme || ""} ${base.visibleTheme || ""} ${base.extraNotes || ""} ${base.targetAudience || ""}`.toLowerCase();
-      return /fam[ií]lia feliz|fam[ií]lia|casamento|casal|div[oó]rcio|pais felizes|filhos felizes|marido|esposa/.test(texto);
+      // v13.68 — Motor universal: a Revista EBD não ativa mais preset por palavra-chave.
+      // O tema deve vir do prompt/direção informados pelo usuário, sem puxar família automaticamente.
+      return false;
     }
+
 
     function leituraDiariaFamiliaV1328(numero){
-      const listas = [
-        [
-          ["Segunda","Salmos 128.1","O temor do Senhor é o começo de uma família bem-aventurada."],
-          ["Terça","Salmos 128.3","A casa floresce quando Deus ocupa o centro do lar."],
-          ["Quarta","Mateus 19.6","O casamento deve ser tratado como aliança diante de Deus."],
-          ["Quinta","Marcos 10.9","O que Deus ajuntou não deve ser separado pelo homem."],
-          ["Sexta","2 Coríntios 5.17","Em Cristo, lares feridos podem experimentar novo começo."],
-          ["Sábado","1 Coríntios 7.3","O cuidado conjugal envolve amor, honra, afeto e responsabilidade mútua."]
-        ],
-        [
-          ["Segunda","Eclesiastes 4.9","Dois caminham melhor quando trabalham juntos diante de Deus."],
-          ["Terça","Eclesiastes 4.10","O casal precisa aprender a levantar um ao outro nas quedas."],
-          ["Quarta","Eclesiastes 4.12","A presença de Deus fortalece a aliança do casal."],
-          ["Quinta","Efésios 5.33","Amor e respeito sustentam a convivência conjugal."],
-          ["Sexta","Colossenses 3.13","O perdão impede que ressentimentos destruam a união."],
-          ["Sábado","Filipenses 2.4","No casamento, cada um deve cuidar também dos interesses do outro."]
-        ],
-        [
-          ["Segunda","Salmos 127.3","Filhos são herança do Senhor e devem ser cuidados com responsabilidade."],
-          ["Terça","Deuteronômio 6.6","A Palavra precisa estar primeiro no coração dos pais."],
-          ["Quarta","Deuteronômio 6.7","A fé deve ser ensinada no cotidiano da casa."],
-          ["Quinta","Tiago 1.19","Pais sábios aprendem a ouvir antes de falar."],
-          ["Sexta","Efésios 6.4","A disciplina precisa formar sem provocar ira."],
-          ["Sábado","Provérbios 22.6","O caminho ensinado hoje acompanha o filho amanhã."]
-        ],
-        [
-          ["Segunda","Salmos 127.4","Filhos são como flechas preparadas para cumprir propósito."],
-          ["Terça","2 Coríntios 5.17","A identidade do cristão nasce de sua nova vida em Cristo."],
-          ["Quarta","Romanos 12.2","O filho de Deus não deve ser moldado pelos padrões do mundo."],
-          ["Quinta","Lucas 16.10","A fidelidade nas pequenas coisas revela caráter confiável."],
-          ["Sexta","Efésios 4.25","A verdade é fundamento para uma vida digna de confiança."],
-          ["Sábado","Salmos 128.2","O trabalho honesto é bênção e motivo de alegria."]
-        ]
-      ];
-      return listas[(numero || 1) - 1] || listas[0];
+      // v13.68 — Preset desativado. Mantido só para compatibilidade, sem interferir em novos temas.
+      return [];
     }
+
 
     function licoesFamiliaFelizV1328(base){
-      if(!temaRevistaFamiliaV1328(base)) return null;
-
-      return [
-        {
-          titulo:"O Perigo do Divórcio e a Restauração da Família",
-          textoAureoRef:"Salmos 128.1",
-          textoAureo:"Salmos 128.1",
-          textoAureoTexto:"Bem-aventurado aquele que teme ao SENHOR e anda nos seus caminhos.",
-          leituraClasse:"Salmos 128.1-6",
-          sintese:"A família pode ser restaurada quando volta ao projeto de Deus e caminha no temor do Senhor.",
-          verdadePratica:"O lar que teme ao Senhor encontra caminho para restauração e permanência.",
-          tese:"A família pode ser restaurada quando volta ao projeto de Deus e caminha no temor do Senhor.",
-          palavraChave:"Restauração",
-          leituraDiaria:leituraDiariaFamiliaV1328(1),
-          topicos:[
-            { titulo:"A crise da família na sociedade atual", subtitulos:["O divórcio e suas consequências","Conflitos que adoecem o lar","A necessidade de uma nova vida em Cristo"] },
-            { titulo:"O plano de Deus para o casamento", subtitulos:["O casamento como aliança","O que Deus ajuntou","A dureza do coração e a ruptura familiar"] },
-            { titulo:"Caminhos de restauração para o lar", subtitulos:["O temor do Senhor como fundamento","Amor, perdão e responsabilidade conjugal","Cristo como esperança para famílias feridas"] }
-          ]
-        },
-        {
-          titulo:"Segredos para um Casal Feliz",
-          textoAureoRef:"Eclesiastes 4.9",
-          textoAureo:"Eclesiastes 4.9",
-          textoAureoTexto:"Melhor é serem dois do que um, porque têm melhor paga do seu trabalho.",
-          leituraClasse:"Salmos 128.1-2; Efésios 5.33",
-          sintese:"Casamento feliz é construído com compromisso, trabalho em equipe, respeito e perdão.",
-          verdadePratica:"O casal que honra a aliança diante de Deus fortalece o amor e vence as crises.",
-          tese:"Casamento feliz é construído com compromisso, trabalho em equipe, respeito e perdão.",
-          palavraChave:"Compromisso",
-          leituraDiaria:leituraDiariaFamiliaV1328(2),
-          topicos:[
-            { titulo:"Compromisso: a âncora do casamento", subtitulos:["Casamento como pacto diante de Deus","Permanência em tempos difíceis","Aliança firmada em amor e respeito"] },
-            { titulo:"Trabalho em equipe no lar", subtitulos:["Marido e esposa no mesmo propósito","No casamento não existe apenas eu, existe nós","Cuidado mútuo e busca pela paz"] },
-            { titulo:"Respeito e perdão na vida conjugal", subtitulos:["O amor que não busca seus próprios interesses","Palavras respeitosas fortalecem a união","O perdão vence o ressentimento"] }
-          ]
-        },
-        {
-          titulo:"Segredos para Pais Felizes",
-          textoAureoRef:"Provérbios 23.24",
-          textoAureo:"Provérbios 23.24",
-          textoAureoTexto:"O pai do justo exultará de júbilo; quem gerar um filho sábio nele se alegrará.",
-          leituraClasse:"Salmos 127.3; Deuteronômio 6.6-7",
-          sintese:"Pais felizes formam filhos com amor, disciplina, diálogo e exemplo diante de Deus.",
-          verdadePratica:"Educar filhos é uma missão espiritual que exige amor, exemplo e disciplina equilibrada.",
-          tese:"Pais felizes formam filhos com amor, disciplina, diálogo e exemplo diante de Deus.",
-          palavraChave:"Educação",
-          leituraDiaria:leituraDiariaFamiliaV1328(3),
-          topicos:[
-            { titulo:"Comunicação saudável entre pais e filhos", subtitulos:["Diálogo aberto dentro de casa","Ouvir antes de falar","Palavras que edificam e encorajam"] },
-            { titulo:"Disciplina com equilíbrio e amor", subtitulos:["Disciplina como direção e ensino","Limites que formam adultos equilibrados","Corrigir sem provocar ira ou desânimo"] },
-            { titulo:"Exemplo e bons valores dentro de casa", subtitulos:["Valores que moldam o caráter","O exemplo dos pais na formação dos filhos","Tecnologia, supervisão e sabedoria bíblica"] }
-          ]
-        },
-        {
-          titulo:"Segredos para Filhos Felizes",
-          textoAureoRef:"Salmos 127.4",
-          textoAureo:"Salmos 127.4",
-          textoAureoTexto:"Como flechas na mão de um homem poderoso, assim são os filhos da mocidade.",
-          leituraClasse:"Salmos 127.3-5",
-          sintese:"Filhos felizes são preparados com identidade, confiança, responsabilidade e valores bíblicos.",
-          verdadePratica:"Filhos ensinados na Palavra crescem com identidade, caráter e responsabilidade.",
-          tese:"Filhos felizes são preparados com identidade, confiança, responsabilidade e valores bíblicos.",
-          palavraChave:"Identidade",
-          leituraDiaria:leituraDiariaFamiliaV1328(4),
-          topicos:[
-            { titulo:"Ter identidade diante de Deus", subtitulos:["Saber quem é em Cristo","Não ser moldado pelo mundo","Reconhecer pontos fortes e pontos fracos"] },
-            { titulo:"Ser de confiança", subtitulos:["Integridade, lealdade e verdade","Fidelidade nas pequenas coisas","Responsabilidade e maturidade"] },
-            { titulo:"Aprender o valor do trabalho", subtitulos:["Dedicação e excelência","Equilíbrio entre trabalho e descanso","Metas para uma vida responsável"] }
-          ]
-        }
-      ];
+      // v13.68 — Preset antigo removido do fluxo. A IA deve seguir somente os campos preenchidos no app.
+      return null;
     }
+
 
     function dadosLicoesMensais(base,info){
       const textoCompleto = `
@@ -8255,179 +8139,38 @@ Use HTML com:
     }
 
     function detectarEstiloVisualCapa(base,info){
-      const texto = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${info.revistaClasse || ""} ${base.targetAudience || ""}`.toLowerCase();
-
-      if(/igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(texto)){
-        return "capa editorial cristã sobre IGREJA LOCAL: congregação adulta reunida em culto, irmãos adultos adorando em unidade, ambiente de templo local, púlpito discreto com Bíblia aberta, comunhão cristã, oração coletiva, serviço, discipulado e missão; composição horizontal/vertical profissional; NÃO mostrar criança; NÃO mostrar adolescente sozinho; NÃO mostrar pessoa individual lendo Bíblia; NÃO mostrar estudo bíblico infantil; NÃO mostrar cena doméstica infantil; NÃO parecer capa de material infantil";
-      }
-
-      if(/adolescentes|adolescência|escolhas|futuro|internet|pressão|redes sociais|identidade/.test(texto)){
-        return "visual cristão atual para adolescentes, moderno e reverente, jovem lendo a Bíblia ou caminhando diante de escolhas, luz suave e esperançosa, elementos discretos de escola, celular e caminho, sem parecer infantil e sem parecer secular demais";
-      }
-
-      if(/crianças|infantil|criança/.test(texto)){
-        return "visual infantil cristão, alegre, colorido, crianças aprendendo a Bíblia, ambiente limpo, luz suave, sem caricatura exagerada";
-      }
-
-      if(/jovens|juventude|propósito/.test(texto)){
-        return "visual jovem cristão, moderno e reverente, grupo de jovens com Bíblia, luz vibrante, cidade ao fundo, fé e propósito";
-      }
-
-      if(/confusão|verdade|doutrina|engano|evangelho raso|esfriamento/.test(texto)){
-        return "visual de igreja firme em meio à confusão, Bíblia iluminada como centro, pessoas caminhando entre sombras e luz, contraste entre verdade e engano, atmosfera atual e urgente";
-      }
-
-      if(/perdas|perda|renuncia|renúncia|solidao|solidão|lagrima|lágrima|chamado|ministerio|ministério|exaustao|exaustão|esgotamento/.test(texto)){
-        return "visual cristão editorial profundo e sensível, pessoa em oração ou em silêncio, lágrimas discretas, Bíblia ou altar em segundo plano, atmosfera de renúncia, consolo, esperança e presença do Espírito Santo, sem dramatização exagerada";
-      }
-
-      if(/família|familia|lar|casamento|filhos|casa|casal/.test(texto)){
-        return "visual familiar cristão ADULTO, casal cristão adulto e família reunida em oração no lar, Bíblia aberta sobre a mesa, ambiente acolhedor e reverente, luz suave, tons familiares elegantes, visual de revista EBD adulta; NÃO mostrar criança dentro da Bíblia; NÃO mostrar criança como personagem principal; NÃO mostrar desenho/cartoon; NÃO mostrar capa infantil; NÃO usar imagem de menino ou menina lendo Bíblia sozinho; não colocar pessoas ou crianças saindo de dentro das páginas da Bíblia";
-      }
-
-      if(/missões|missionário|ide|evangelização|grande comissão/.test(texto)){
-        return "visual missionário, mapa do mundo, pessoas em oração, Bíblia aberta, luz sobre as nações, senso de envio e propósito";
-      }
-
-      if(/bibliologia|bíblia|escrituras|palavra de deus|doutrina das escrituras/.test(texto)){
-        return "visual teológico cristão, Bíblia aberta sobre mesa de estudo, luz suave sobre as páginas, caderno de anotações, ambiente acadêmico reverente, profundo e elegante";
-      }
-
-      if(/soteriologia|salvação|graça|justificação|regeneração|redenção/.test(texto)){
-        return "visual cristão teológico sobre salvação, cruz iluminada, Bíblia aberta, luz dourada simbolizando graça, atmosfera reverente, profunda e cristocêntrica";
-      }
-
-      return "visual cristão editorial premium baseado no tema, com composição diferente de capa comum, usando símbolos coerentes com o assunto, luz bíblica, reverência e profundidade";
+      // v13.69 — universal: não ativa temas prontos por palavra-chave.
+      const tema = [base?.title,base?.subtitle,base?.visibleTheme,base?.theme,base?.targetAudience,info?.revistaClasse].filter(Boolean).join(" | ").slice(0,900);
+      return `visual cristão editorial premium criado exclusivamente a partir deste tema informado pelo usuário: ${tema}. Use símbolos coerentes com o assunto, Bíblia, reverência, luz espiritual e composição profissional. Não invente outro tema e não puxe família, missões, capelania, teologia ou qualquer assunto que não esteja pedido claramente.`;
     }
 
     function promptCapaImagem(base,info = {}){
+      // v13.69 — prompt universal de capa: sem presets de família, missões, capelania, igreja local ou teologia.
       const estiloVisual = detectarEstiloVisualCapa(base,info);
-      const textoTema = `${base.title} ${base.subtitle} ${base.visibleTheme || base.theme} ${base.theme} ${base.targetAudience || ""} ${info.revistaClasse || ""}`.toLowerCase();
-      const isRevista = base.type === "revista" || /revista|ebd|escola b[ií]blica/.test(info.label || "");
-      const isCurso = base.type === "curso" || /curso|apostila do aluno|manual do professor|livro de apoio/i.test(info.label || "");
-      const isInfantil = /crianças|infantil|criança/.test(`${info.revistaClasse || ""} ${base.targetAudience || ""}`.toLowerCase());
-      const igrejaLocalTema = /igreja local|corpo de cristo|comunh[aã]o dos santos|vida congregacional|membresia|discipulado|servi[cç]o crist[aã]o|miss[aã]o da igreja/.test(textoTema);
-      const teologiaCursoTema = /teologia|teol[oó]gic|sistem[aá]tica|doutrina|bibliologia|teontologia|cristologia|pneumatologia|soteriologia|eclesiologia|escatologia|trindade|hamartiologia/.test(textoTema);
-      const familiaTema = /fam[ií]lia|casamento|casal|marido|esposa|pais|filhos|lar|div[oó]rcio|fam[ií]lia feliz/.test(textoTema);
-
-      if(isRevista && familiaTema){
-        return `
-Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de REVISTA EBD para adultos sobre família cristã.
-NÃO escreva nenhum texto na imagem.
-NÃO coloque letras, logotipos, nomes de igreja, marcas ou frases.
-
-TEMA OBRIGATÓRIO DA CAPA: família cristã feliz, casamento, pais e filhos debaixo dos princípios bíblicos.
-TÍTULO DO MATERIAL: ${base.title}
-SUBTÍTULO: ${base.subtitle}
-TIPO: ${info.label || getTypeLabel(base.type)}
-
-CENA PRINCIPAL OBRIGATÓRIA:
-- Uma família cristã adulta em ambiente de lar: casal adulto com filhos ou família reunida com harmonia.
-- Bíblia aberta sobre a mesa ou nas mãos dos pais, como centro espiritual do lar.
-- Ambiente acolhedor, luz quente, sensação de restauração, união, amor, perdão e direção de Deus.
-- Visual editorial premium de revista cristã adulta, realista, limpo, bonito e profissional.
-
-PROIBIÇÕES ABSOLUTAS:
-- Não mostrar criança sozinha lendo Bíblia.
-- Não transformar a capa em material infantil.
-- Não usar desenho/cartoon.
-- Não mostrar apenas uma pessoa isolada.
-- Não usar adolescente sozinho.
-- Não colocar texto dentro da imagem.
-- Não criar cena genérica sem relação com família, casamento, pais e filhos.
-
-Composição vertical 2:3, capa de revista EBD adulta, alta qualidade, iluminação profissional, sem texto.
-        `.trim();
-      }
-
-      if(isCurso && teologiaCursoTema){
-        return `
-Crie SOMENTE A ARTE DE FUNDO de uma capa profissional para CURSO DE TEOLOGIA.
-NÃO escreva nenhum texto na imagem.
-NÃO coloque letras, logotipos, nomes de igreja, marcas ou frases.
-
-TÍTULO DO MATERIAL: ${base.title}
-SUBTÍTULO: ${base.subtitle}
-TIPO: ${info.label || getTypeLabel(base.type)}
-TEMA: ${base.visibleTheme || base.theme}
-
-ESTILO VISUAL OBRIGATÓRIO:
-- Capa de curso teológico sério, premium, ministerial e acadêmico.
-- Bíblia aberta em destaque, livros teológicos, caderno de estudo, pena/caneta, ambiente de biblioteca ou sala de aula teológica.
-- Luz dourada ou azul profunda, atmosfera reverente, intelectual e espiritual.
-- Elementos discretos que remetam à doutrina cristã, estudo bíblico, seminário, formação teológica e profundidade.
-- Visual adulto, sofisticado, limpo, com profundidade e credibilidade.
-
-NÃO USAR:
-- criança lendo Bíblia;
-- imagem infantil;
-- pessoa isolada com aparência genérica de devocional;
-- púlpito de culto como tema principal;
-- microfone, show, palco ou multidão;
-- imagem de missões, família, casamento ou capelania;
-- símbolos estranhos, ocultistas ou místicos;
-- texto escrito dentro da imagem.
-
-Composição vertical editorial, alta qualidade, iluminação profissional, capa de apostila/curso teológico premium, sem texto.
-        `.trim();
-      }
-
-      if(isRevista && igrejaLocalTema){
-        return `
-Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de REVISTA EBD para jovens e adultos.
-NÃO escreva nenhum texto na imagem.
-NÃO coloque letras, logotipos, nomes de igreja ou marcas.
-
-TEMA OBRIGATÓRIO DA CAPA: A IGREJA LOCAL E SUA IMPORTÂNCIA NO PLANO DE DEUS.
-TÍTULO DO MATERIAL: ${base.title}
-SUBTÍTULO: ${base.subtitle}
-TIPO: ${info.label || getTypeLabel(base.type)}
-
-CENA PRINCIPAL OBRIGATÓRIA:
-- Uma igreja local/congregação reunida em culto e comunhão.
-- Pessoas ADULTAS adorando juntas, em unidade, reverência e vida congregacional.
-- Ambiente de templo local ou salão de igreja, com púlpito discreto, Bíblia aberta no púlpito ou na mesa, luz reverente e atmosfera de presença de Deus.
-- Transmitir corpo de Cristo, comunhão dos santos, serviço cristão, discipulado, unidade e missão.
-
-PROIBIÇÕES ABSOLUTAS:
-- Não mostrar criança.
-- Não mostrar adolescente sozinho.
-- Não mostrar criança lendo Bíblia.
-- Não mostrar pessoa individual lendo Bíblia como cena principal.
-- Não mostrar quarto, sala de casa, escola infantil ou imagem infantil.
-- Não criar capa de devocional infantil.
-- Não criar capa genérica de estudo bíblico individual.
-
-Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, capa de revista EBD adulta, composição bonita, luz bem trabalhada, alta qualidade.
-        `.trim();
-      }
-
-      const capaRevistaTema = isRevista
-        ? `
-REGRAS ESPECÍFICAS PARA CAPA DE REVISTA EBD:
-- A imagem precisa representar diretamente o tema da revista, não apenas alguém lendo a Bíblia.
-- Para classe adulta, a capa deve ter aparência adulta, editorial e séria.
-- Não usar imagem infantil genérica, criança lendo Bíblia ou capa de material infantil${isInfantil ? ", exceto porque o público selecionado é infantil" : "."}
-- Não mostrar criança dentro de Bíblia, saindo das páginas da Bíblia ou como símbolo principal da capa.
-- Não usar desenho/cartoon quando a classe for adulta.
-- Não usar visual aleatório que não explique o argumento central da revista.`
-        : "";
-
+      const classe = info?.revistaClasse || base?.targetAudience || "";
+      const infantil = /crian[cç]as|infantil|crian[cç]a/i.test(classe);
       return `
 Crie SOMENTE A ARTE DE FUNDO de uma capa profissional de material cristão.
 NÃO escreva nenhum texto na imagem.
-NÃO coloque letras, logotipos, nomes de igreja ou marcas.
+NÃO coloque letras, logotipos, nomes de igreja, marcas ou frases.
 
-TEMA: ${base.visibleTheme || base.theme}
+OBEDEÇA SOMENTE AOS DADOS ABAIXO:
+TEMA INFORMADO PELO USUÁRIO: ${base.visibleTheme || base.theme || base.title}
 TÍTULO: ${base.title}
 SUBTÍTULO: ${base.subtitle}
 TIPO: ${info.label || getTypeLabel(base.type)}
-${capaRevistaTema}
+PÚBLICO/CLASSE: ${classe}
+
+REGRA PRINCIPAL:
+A arte deve representar diretamente o tema informado pelo usuário, sem puxar automaticamente temas antigos do código.
+Não transforme o tema em família, casamento, missões, capelania, igreja local, teologia sistemática, juventude ou infantil, a menos que isso esteja pedido claramente nos campos acima.
 
 DIREÇÃO VISUAL:
 ${estiloVisual}
 
-Estilo: editorial cristão premium, profissional, reverente, vertical 2:3, composição bonita, luz bem trabalhada, alta qualidade.
+${infantil ? "Como o público informado é infantil, pode usar visual adequado para crianças, com reverência e sem exagero." : "Como o público não foi definido como infantil, use visual adulto, editorial, reverente e profissional. Não usar aparência infantil."}
+
+Composição vertical 2:3, alta qualidade, luz bem trabalhada, visual cristão, sem texto.
       `.trim();
     }
 
@@ -9040,23 +8783,18 @@ Gere somente esta etapa.`;
     }
 
     function verdadePraticaFamiliaV1334(titulo,numero){
-      const t = String(titulo || "").toLowerCase();
-      if(numero === 1 || /div[oó]rcio|restaura/.test(t)) return "O lar que teme ao Senhor encontra caminho para restauração e permanência.";
-      if(numero === 2 || /casal|casamento/.test(t)) return "O casal que honra a aliança diante de Deus fortalece o amor e vence as crises.";
-      if(numero === 3 || /pais/.test(t)) return "Educar filhos é uma missão espiritual que exige amor, exemplo e disciplina equilibrada.";
-      if(numero === 4 || /filhos/.test(t)) return "Filhos ensinados na Palavra crescem com identidade, caráter e responsabilidade.";
-      return "A família se fortalece quando vive os princípios da Palavra de Deus.";
+      // v13.68 — Sem verdade prática pronta por tema fixo.
+      return "A Palavra de Deus orienta o crente a viver com fé, obediência e prática fiel.";
     }
 
+
     function verdadePraticaRevistaV1334(dados,numero,base){
-      const familia = temaRevistaFamiliaV1328(base || buildBase());
       let valor = String(dados?.verdadePratica || dados?.tese || dados?.sintese || "").trim();
 
       const generica = /a li[cç][aã]o\s+(desenvolve|apresenta|mostra|trabalha)|dentro do tema|compreens[aã]o do tema|unindo exposi[cç][aã]o|orienta a f[eé]|fortalece a esperan[cç]a|conduz o crist[aã]o|tema mensal|verdade b[ií]blica essencial/i.test(valor);
       if(!valor || generica || valor.length > 165){
-        valor = familia
-          ? verdadePraticaFamiliaV1334(dados?.titulo,numero)
-          : `A Palavra de Deus transforma o entendimento e conduz o cristão à prática fiel.`;
+        const titulo = textoLimpoV1336(dados?.titulo || base?.visibleTheme || base?.title || "o ensino bíblico");
+        valor = `${titulo} deve conduzir o cristão a uma vida de fé, comunhão com Deus e obediência à Palavra.`;
       }
 
       valor = valor
@@ -9069,6 +8807,7 @@ Gere somente esta etapa.`;
       }
       return valor;
     }
+
 
     function renderDailyReading(numero,dados){
       const items = curarLeituraDiariaV1331(buildBase(),dados,numero);
@@ -9298,19 +9037,11 @@ Gere somente esta etapa.`;
     }
 
     function paragrafoFallbackRevistaV1339(dados, contexto = ""){
+      // v13.69 — fallback universal: não puxa família, oração, missões, capelania ou tema pronto.
       const titulo = dados?.titulo || "a lição";
       const base = dados?.leituraClasse || dados?.textoAureoRef || dados?.textoBase || "a Palavra de Deus";
-      const tema = `${buildBase()?.visibleTheme || buildBase()?.title || ""} ${titulo} ${base}`.toLowerCase();
-      if(/ora[cç][aã]o|orar|intercess|s[uú]plica|clamar|gets[eê]mani/.test(tema)){
-        if(/ampliando|conhecimento/i.test(contexto)){
-          return `Na Bíblia, a oração aparece como comunhão, dependência e serviço espiritual. À luz de ${base}, o crente aprende que orar não é apenas apresentar pedidos, mas aproximar-se de Deus com fé, reverência, perseverança e submissão à sua vontade.`;
-        }
-        return `Esta parte da lição mostra que ${titulo.toLowerCase()} deve ser compreendido à luz de ${base}. A oração conduz o crente à comunhão com Deus, fortalece a fé, desperta vigilância espiritual e ensina dependência diante do Pai.`;
-      }
-      if(/fam[ií]lia|casamento|pais|filhos|lar/.test(tema)){
-        return `Esta parte da lição mostra que ${titulo.toLowerCase()} precisa ser compreendido à luz de ${base}. A Palavra de Deus conduz o cristão a viver com temor, responsabilidade, fé e obediência, transformando princípios bíblicos em atitudes práticas.`;
-      }
-      return `Esta parte da lição mostra que ${titulo.toLowerCase()} precisa ser compreendido à luz de ${base}. A Palavra de Deus ilumina o entendimento, fortalece a fé e chama o cristão a viver com obediência, discernimento e prática espiritual.`;
+      const tema = buildBase()?.visibleTheme || buildBase()?.title || "o tema proposto";
+      return `Esta parte da lição aprofunda ${titulo.toLowerCase()} à luz de ${base}, mantendo fidelidade ao tema "${tema}" e conduzindo o aluno à compreensão bíblica, aplicação prática e resposta espiritual coerente.`;
     }
 
     function forcarBlocoEditorialRevistaV1339(html, titulo, classe = "block", dados = {}){
@@ -9333,7 +9064,7 @@ Gere somente esta etapa.`;
       const topicos = Array.isArray(dados?.topicos) ? dados.topicos : [];
       const perguntas = perguntasBase.length >= 5 ? perguntasBase.slice(0,5) : [
         `Qual é o ensino central da lição sobre ${dados?.titulo || "o tema estudado"}?`,
-        topicos[0]?.titulo ? `O que aprendemos no tópico sobre ${topicos[0].titulo.toLowerCase()}?` : "Que princípio bíblico deve orientar a família cristã?",
+        topicos[0]?.titulo ? `O que aprendemos no tópico sobre ${topicos[0].titulo.toLowerCase()}?` : "Que princípio bíblico deve orientar a vida cristã?",
         topicos[1]?.titulo ? `Como o tópico ${topicos[1].titulo.toLowerCase()} se aplica à vida familiar?` : "Como aplicar esta lição no lar?",
         topicos[2]?.titulo ? `Por que ${topicos[2].titulo.toLowerCase()} é importante para a família?` : "Que atitude prática devemos assumir nesta semana?",
         "Qual compromisso você pode assumir diante de Deus depois desta lição?"
@@ -9472,10 +9203,10 @@ Gere somente esta etapa.`;
 
     function curarLeituraDiariaV1331(base,dados,numero){
       const atual = Array.isArray(dados?.leituraDiaria) ? dados.leituraDiaria : [];
-      if(temaRevistaFamiliaV1328(base)) return leituraDiariaFamiliaV1328(numero);
       if(!leituraDiariaRuimV1331(atual)) return atual;
       return criarLeituraDiariaUniversal(base,dados,dados?.leituraClasse || dados?.textoAureoRef || base.biblicalBase || "");
     }
+
 
     function forcarSubtopicoRevistaV1329(html,tituloEsperado){
       return forcarBlocoEditorialRevistaV1339(html,tituloEsperado,"subtopic",{});
@@ -9654,32 +9385,18 @@ Gere somente esta etapa.`;
     }
 
     function paragrafoFallbackRevistaV1336(dados,titulo,extra = ""){
-      const tema = textoLimpoV1336(dados?.titulo || buildBase()?.visibleTheme || "a lição");
+      const tema = textoLimpoV1336(dados?.titulo || buildBase()?.visibleTheme || buildBase()?.title || "a lição");
       const ref = refsDaLicaoV1336(dados);
       const assunto = textoLimpoV1336(titulo || tema);
       let detalhe = textoLimpoV1336(extra);
-      if(/\b(apresente|prepare|explique|mostre|conduza|oriente|professor|aluno|classe)\b/i.test(detalhe)){
+      if(/(apresente|prepare|explique|mostre|conduza|oriente|professor|aluno|classe)/i.test(detalhe)){
         detalhe = "";
       }
 
-      if(/div[oó]rcio|restaura[cç][aã]o|fam[ií]lia/i.test(`${tema} ${assunto}`)){
-        return `A família precisa ser conduzida pelo temor do Senhor e pela obediência à Palavra. ${ref} aponta para um lar firmado em Deus, onde compromisso, perdão e responsabilidade vencem a frieza, a confusão e as crises. ${detalhe ? detalhe + " " : ""}Na prática, a restauração familiar começa quando cada pessoa submete suas atitudes, palavras e decisões ao governo de Cristo.`;
-      }
-
-      if(/casal|casamento|compromisso|respeito|perd[aã]o/i.test(`${tema} ${assunto}`)){
-        return `O casamento saudável é fortalecido quando marido e esposa vivem como aliados, e não como adversários. À luz de ${ref}, compromisso, diálogo, respeito e perdão protegem a aliança e tornam o lar um ambiente de segurança, crescimento e testemunho cristão. ${detalhe ? detalhe : ""}`;
-      }
-
-      if(/pais|educa[cç][aã]o|disciplina|comunica[cç][aã]o|exemplo/i.test(`${tema} ${assunto}`)){
-        return `A missão espiritual dos pais envolve formar caráter, fé e valores, e não apenas corrigir comportamentos. Com base em ${ref}, a educação cristã exige amor, coerência, limites e exemplo. ${detalhe ? detalhe + " " : ""}Quando os pais ensinam com a vida, os filhos reconhecem com mais clareza o caminho do Senhor.`;
-      }
-
-      if(/filhos|identidade|confian[cç]a|honestidade|trabalhador|metas|responsabilidade/i.test(`${tema} ${assunto}`)){
-        return `Filhos formados à luz da Palavra desenvolvem identidade, responsabilidade e temor a Deus. ${ref} ensina que a verdadeira felicidade não nasce da ausência de limites, mas de uma vida orientada pela verdade, pela honestidade e pelo propósito. ${detalhe ? detalhe : ""}`;
-      }
-
-      return `A Palavra de Deus ilumina a prática cristã, corrige caminhos e conduz a igreja a uma vida mais fiel. Com base em ${ref}, este ensino chama o aluno à humildade, à obediência e ao compromisso espiritual. ${detalhe ? detalhe : ""}`;
+      const temaGeral = textoLimpoV1336(buildBase()?.visibleTheme || buildBase()?.title || buildBase()?.theme || "o tema bíblico");
+      return `Esta parte da lição aprofunda ${assunto.toLowerCase()} dentro do tema "${temaGeral}". À luz de ${ref}, o cristão é chamado a compreender a verdade bíblica, aplicá-la com sinceridade e responder a Deus com fé, reverência e obediência. ${detalhe ? detalhe : ""}`.replace(/\s+/g," ").trim();
     }
+
 
     function blocoFallbackRevistaV1336(tipo,titulo,dados,extra = ""){
       const p = paragrafoFallbackRevistaV1336(dados,titulo,extra);
@@ -10143,8 +9860,8 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
         : [];
       const topicos = Array.isArray(dados?.topicos) ? dados.topicos : [];
       const perguntas = perguntasBase.length >= 5 ? perguntasBase.slice(0,5) : [
-        [`Qual é o ensino central da lição sobre ${dados?.titulo || "o tema estudado"}?`, `O ensino central é que ${String(dados?.titulo || "o tema estudado").toLowerCase()} precisa ser compreendido à luz da Palavra de Deus, conduzindo a família cristã ao temor do Senhor, à responsabilidade e à prática da fé no lar.`],
-        [topicos[0]?.titulo ? `O que aprendemos no tópico sobre ${topicos[0].titulo.toLowerCase()}?` : "Que princípio bíblico deve orientar a família cristã?", topicos[0]?.titulo ? `Aprendemos que ${topicos[0].titulo.toLowerCase()} deve ser tratado com equilíbrio bíblico, discernimento espiritual e aplicação prática na vida familiar.` : "A família cristã deve ser orientada pela Palavra de Deus, pelo amor, pela obediência e pelo compromisso com Cristo."],
+        [`Qual é o ensino central da lição sobre ${dados?.titulo || "o tema estudado"}?`, `O ensino central é que ${String(dados?.titulo || "o tema estudado").toLowerCase()} precisa ser compreendido à luz da Palavra de Deus, conduzindo o cristão ao temor do Senhor, à responsabilidade e à prática da fé.`],
+        [topicos[0]?.titulo ? `O que aprendemos no tópico sobre ${topicos[0].titulo.toLowerCase()}?` : "Que princípio bíblico deve orientar a vida cristã?", topicos[0]?.titulo ? `Aprendemos que ${topicos[0].titulo.toLowerCase()} deve ser tratado com equilíbrio bíblico, discernimento espiritual e aplicação prática na vida familiar.` : "A vida cristã deve ser orientada pela Palavra de Deus, pelo amor, pela obediência e pelo compromisso com Cristo."],
         [topicos[1]?.titulo ? `Como o tópico ${topicos[1].titulo.toLowerCase()} se aplica à vida familiar?` : "Como aplicar esta lição no lar?", topicos[1]?.titulo ? `Ele se aplica quando a família reconhece suas responsabilidades, corrige atitudes e busca viver os princípios bíblicos no relacionamento diário.` : "A lição se aplica quando cada pessoa decide praticar o ensino bíblico dentro de casa, com humildade e constância."],
         [topicos[2]?.titulo ? `Por que ${topicos[2].titulo.toLowerCase()} é importante para a família?` : "Que atitude prática devemos assumir nesta semana?", topicos[2]?.titulo ? `Porque esse ensino fortalece o lar, corrige caminhos perigosos e ajuda a família a viver com maturidade, amor e temor a Deus.` : "Devemos assumir o compromisso de obedecer à Palavra e transformar a lição em atitudes concretas."],
         ["Qual compromisso o professor deve conduzir a classe a assumir?", "O professor deve conduzir a classe a assumir o compromisso de aplicar a Palavra de Deus no lar, buscando restauração, maturidade e fidelidade cristã."]
@@ -10155,7 +9872,7 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
           <h4>Revisando o Conteúdo — Respostas Comentadas</h4>
           ${perguntas.slice(0,5).map((q,i)=>{
             const pergunta = limparTextoProfessorV1353(Array.isArray(q) ? q[0] : q).replace(/\?*$/, "?");
-            const resposta = limparTextoProfessorV1353(Array.isArray(q) && q[1] ? q[1] : `O professor deve conduzir a classe a responder com base no conteúdo da lição, relacionando o ensino bíblico à vida prática da família cristã.`);
+            const resposta = limparTextoProfessorV1353(Array.isArray(q) && q[1] ? q[1] : `O professor deve conduzir a classe a responder com base no conteúdo da lição, relacionando o ensino bíblico à vida prática cristã.`);
             return `
               <div class="question-answer">
                 <p class="text"><strong>${i + 1}. ${escapeHtml(pergunta)}</strong></p>
@@ -10173,7 +9890,7 @@ Use <div class="block"><h3>Conclusão</h3>...</div>.
       return `
         <div class="block">
           <h3>Introdução</h3>
-          <p class="text">Esta lição trabalha ${escapeHtml(titulo.toLowerCase())} a partir de ${escapeHtml(base)}, conduzindo a classe a enxergar o tema com fidelidade bíblica, sensibilidade pastoral e aplicação prática para a família cristã.</p>
+          <p class="text">Esta lição trabalha ${escapeHtml(titulo.toLowerCase())} a partir de ${escapeHtml(base)}, conduzindo a classe a enxergar o tema com fidelidade bíblica, sensibilidade pastoral e aplicação prática para a vida cristã.</p>
           <p class="text">O professor deve apresentar o assunto com equilíbrio, evitando discussões vazias e conduzindo os alunos ao centro da mensagem: a Palavra de Deus continua sendo suficiente para orientar o casamento, os pais, os filhos e a vida espiritual do lar.</p>
         </div>
         <div class="teacher-help">
@@ -10984,7 +10701,7 @@ Estruture assim:
           <div class="revista-id-right">
             <div class="revista-wordmark">Lições<br>Bíblicas</div>
             <h3>Apresentação</h3>
-            <p>Prezados alunos, esta revista foi preparada com o propósito de fortalecer a família cristã à luz da Palavra de Deus. Ao longo deste mês, estudaremos princípios bíblicos que tratam do casamento, dos pais, dos filhos e dos desafios enfrentados pelos lares na atualidade.</p>
+            <p>Prezados alunos, esta revista foi preparada com o propósito de fortalecer a vida cristã à luz da Palavra de Deus. Ao longo deste mês, estudaremos princípios bíblicos ligados ao tema proposto nos campos do material.</p>
             <p>Cremos que a família continua sendo projeto de Deus, e que, mesmo diante das crises, o Senhor pode restaurar relacionamentos, curar feridas, fortalecer alianças e conduzir cada lar a uma vida de temor, amor e obediência à sua Palavra.</p>
             <p>Que cada lição seja uma oportunidade de reflexão, crescimento espiritual e prática cristã dentro da nossa casa.</p>
             <p class="assinatura-revista"><strong>Pr. Isiquel Rodrigues</strong><br>Presidente do Ministério</p>
@@ -13149,48 +12866,28 @@ TRAVA V13.64 — TEMA ATUAL FIXO DO USUÁRIO.
 
 
     function detectarTemaCursoV9(base){
-      const t = corpusCursoV9(base);
-      if(cursoEhTeologiaSistematicaV1313(base)) return "teologia";
-      if(cursoUsuarioPediuFamiliaV1364(base)) return "casais";
-      if(cursoUsuarioPediuMissoesV1364(base)) return "missoes";
-      if(cursoUsuarioPediuCapelaniaV1364(base)) return "capelania";
+      // v13.69 — universal: não classifica curso por palavra-chave nem ativa presets.
       return "geral";
     }
 
     function tituloTemaCursoV9(base){
-      const tema = detectarTemaCursoV9(base);
-      const mapa = {
-        casais:"casamento cristão, família, aliança conjugal, diálogo, perdão, vida espiritual no lar, filhos, finanças e restauração do relacionamento",
-        missoes:"missões, evangelismo, Grande Comissão, discipulado, igreja local, envio, oração, contribuição e dependência do Espírito Santo",
-        capelania:"capelania cristã, presença pastoral, escuta, cuidado espiritual, ética, limites, acolhimento e encaminhamento responsável",
-        teologia:"teologia sistemática avançada, doutrinas bíblicas, Bibliologia, Teontologia, Trindade, Cristologia, Soteriologia, Pneumatologia, Eclesiologia e Escatologia",
-        geral:"tema central do curso informado pelo usuário"
-      };
-      return mapa[tema] || mapa.geral;
+      return base?.visibleTheme || base?.title || base?.theme || "tema central do curso informado pelo usuário";
     }
 
     function temaProibidoCursoV9(base,html){
-      const tema = detectarTemaCursoV9(base);
-      const texto = normalizarTextoCursoV9(extrairTextoDeHtml(html || ""));
-      if(!texto) return false;
-
-      if(tema === "casais"){
-        return /capelania|capelao|atendimento capelao|hospitalar como area de capelania|prisional como area de capelania|capelania escolar|capelania militar|capelania empresarial|dependencia quimica como capelania|missoes|missao|missionario|evangelismo como modulo central|missiologia/.test(texto);
-      }
-
-      if(tema === "missoes"){
-        return /capelania|capelao|atendimento capelao|hospitalar|prisional|curso para casais|casamento conjugal|manual de familia/.test(texto);
-      }
-
-      if(tema === "capelania"){
-        return /curso para casais|casamento conjugal|manual de familia|evangelismo pessoal como modulo central de missoes|grande comissao como curso principal/.test(texto);
-      }
-
+      // v13.69 — sem detector por preset. A validação de tema fica nas instruções do usuário.
       return false;
     }
 
     function instrucoesTravaTemaCursoV9(base){
-      return travaTemaAtualCursoV1364(base);
+      return `
+TRAVA UNIVERSAL DE TEMA:
+- Obedeça somente ao tema, módulos, tópicos, textos bíblicos e observações que o usuário escreveu no aplicativo.
+- Não use módulos, exemplos, bibliografia ou assuntos antigos do código.
+- Não puxe outro tema por palavra-chave solta.
+- Se o usuário informou módulos, mantenha exatamente esses módulos e a mesma ordem.
+- Se o usuário proibiu algum assunto, respeite a proibição.
+      `.trim();
     }
 
     function modulosPadraoMissoesV9(){
@@ -13395,13 +13092,9 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
           .slice(0, quantidade);
       }
 
-      const tema = detectarTemaCursoV9(base);
-      if(tema === "casais") return limitarModulosCursoV1365(modulosPadraoCasaisV9(),base);
-      if(tema === "missoes") return limitarModulosCursoV1365(modulosPadraoMissoesV9(),base);
-      if(tema === "capelania") return limitarModulosCursoV1365(modulosPadraoCapelania(),base);
-      if(cursoEhTeologiaSistematicaV1313(base)) return limitarModulosCursoV1365(modulosTeologiaSistematicaV1313(),base);
-
-      const assunto = (base.title || base.theme || "Formação Cristã").replace(/^curso\s+(de|para)\s+/i,"").trim();
+      // v13.69 — sem módulos prontos por tema. Se o usuário não informar módulos explícitos,
+      // o app cria unidades neutras baseadas no título, sem puxar família, missões, capelania ou teologia.
+      const assunto = (base.title || base.visibleTheme || base.theme || "Formação Cristã").replace(/^curso\s+(de|para)\s+/i,"").trim();
       const modulos = [];
       for(let i = 1; i <= quantidade; i++){
         modulos.push({
@@ -13416,45 +13109,14 @@ REGRA ESPECÍFICA DO MÓDULO DE PNEUMATOLOGIA:
     }
 
     function referenciasBibliograficasCursoV9(base){
-      const tema = detectarTemaCursoV9(base);
-      const comum = [
-        {obra:"Bíblia de Estudo Pentecostal", autor:"Donald C. Stamps (ed.)", uso:"apoio bíblico e notas de estudo em perspectiva pentecostal."},
-        {obra:"Comentário Bíblico Beacon", autor:"Vários autores", uso:"consulta bíblica e apoio exegético para aulas."},
-        {obra:"Comentário Bíblico Moody", autor:"Vários autores", uso:"panorama bíblico e apoio introdutório aos textos."},
-        {obra:"Teologia Sistemática", autor:"Wayne Grudem", uso:"consulta teológica geral, com revisão doutrinária conforme a linha da igreja."}
+      // v13.69 — bibliografia universal. Não escolhe lista pronta por tema.
+      return [
+        {obra:"Bíblia Sagrada", autor:"Edições Almeida/ARC/ARA/KJF conforme preferência da igreja", uso:"fonte principal do ensino e da aplicação."},
+        {obra:"Comentário Bíblico Matthew Henry", autor:"Matthew Henry", uso:"apoio devocional e expositivo aos textos bíblicos."},
+        {obra:"Comentário Bíblico Expositivo", autor:"Warren W. Wiersbe", uso:"apoio pastoral e didático para exposição bíblica."},
+        {obra:"Comentário Bíblico Beacon", autor:"Vários autores", uso:"consulta bíblica e apoio ao professor."},
+        {obra:"O Conhecimento de Deus", autor:"J. I. Packer", uso:"apoio teológico geral sobre vida cristã e conhecimento de Deus."}
       ];
-      const listas = {
-        casais:[
-          {obra:"O Significado do Casamento", autor:"Timothy Keller e Kathy Keller", uso:"base cristã sobre aliança, compromisso e visão bíblica do casamento."},
-          {obra:"As Cinco Linguagens do Amor", autor:"Gary Chapman", uso:"apoio prático para diálogo, afeto e compreensão das necessidades emocionais."},
-          {obra:"Amor e Respeito", autor:"Emerson Eggerichs", uso:"reflexão sobre dinâmicas conjugais de honra, respeito e amor."},
-          {obra:"Limites no Casamento", autor:"Henry Cloud e John Townsend", uso:"apoio para limites saudáveis, responsabilidade e maturidade relacional."},
-          {obra:"Os Sete Princípios para o Casamento Dar Certo", autor:"John Gottman e Nan Silver", uso:"material prático sobre estabilidade conjugal, comunicação e resolução de conflitos; usar com discernimento pastoral."},
-          {obra:"O Poder da Esposa que Ora", autor:"Stormie Omartian", uso:"apoio devocional sobre intercessão no casamento."},
-          {obra:"O Poder do Marido que Ora", autor:"Stormie Omartian", uso:"apoio devocional sobre oração e responsabilidade espiritual no lar."}
-        ],
-        missoes:[
-          {obra:"A Missão Cristã no Mundo Moderno", autor:"John Stott", uso:"reflexão bíblica equilibrada sobre missão, evangelização e responsabilidade cristã."},
-          {obra:"A Missão de Deus", autor:"Christopher J. H. Wright", uso:"aprofundamento sobre a missão na grande narrativa bíblica."},
-          {obra:"Missão Transformadora", autor:"David J. Bosch", uso:"obra ampla para reflexão histórica e teológica sobre missão; indicada para professor e apoio."},
-          {obra:"Perspectivas no Movimento Cristão Mundial", autor:"Ralph D. Winter e Steven C. Hawthorne (orgs.)", uso:"panorama histórico, bíblico, cultural e estratégico da missão cristã mundial."},
-          {obra:"Métodos Missionários: São Paulo ou os Nossos?", autor:"Roland Allen", uso:"análise missionária clássica sobre métodos, igreja local e expansão do evangelho."},
-          {obra:"Paixão pelas Almas", autor:"Oswald J. Smith", uso:"inspiração missionária e evangelística com forte apelo à responsabilidade da igreja."}
-        ],
-        capelania:[
-          {obra:"Aconselhamento Pastoral", autor:"Howard Clinebell", uso:"apoio para cuidado pastoral, escuta e acompanhamento em sofrimento."},
-          {obra:"O Curador Ferido", autor:"Henri J. M. Nouwen", uso:"reflexão pastoral sobre presença, vulnerabilidade e cuidado."},
-          {obra:"Instrumentos nas Mãos do Redentor", autor:"Paul David Tripp", uso:"apoio cristão para cuidado, aconselhamento e transformação pela Palavra."},
-          {obra:"O Pastor Contemplativo", autor:"Eugene Peterson", uso:"reflexão sobre ministério pastoral, presença e cuidado com a alma."},
-          {obra:"Conexão", autor:"Larry Crabb", uso:"apoio sobre relacionamentos, cuidado e conversas transformadoras."}
-        ],
-        geral:[
-          {obra:"Cristianismo Básico", autor:"John Stott", uso:"fundamentos da fé cristã para formação de alunos."},
-          {obra:"Celebração da Disciplina", autor:"Richard Foster", uso:"apoio sobre formação espiritual e disciplinas cristãs."},
-          {obra:"O Discípulo Radical", autor:"John Stott", uso:"reflexão sobre maturidade cristã e compromisso prático."}
-        ]
-      };
-      return (listas[tema] || listas.geral).concat(comum);
     }
 
     function htmlBibliografiaCursoV9(base,titulo="Materiais recomendados para aprofundamento"){
@@ -16155,7 +15817,7 @@ async function generateMaterial(){
   <w:body>
     ${body}
     <w:sectPr>
-      <w:pgSz w:w="${pageW}" w:h="${pageH}"/>
+      <w:pgSz w:w="${pageW}" w:h="${pageH}" w:orient="portrait"/>
       <w:pgMar w:top="${margin}" w:right="${margin}" w:bottom="${margin}" w:left="${margin}" w:header="708" w:footer="708" w:gutter="0"/>
       <w:cols w:space="708"/>
       <w:docGrid w:linePitch="360"/>
@@ -16328,7 +15990,7 @@ async function generateMaterial(){
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url),2000);
-        setStatus("Word (.docx) gerado em formato limpo, com tabelas simples e quebras entre lições.","ok");
+        setStatus(`Word (.docx) gerado em formato ${formato === "a5" ? "A5" : "A4"}, com tabelas simples e quebras entre lições.`,"ok");
       }catch(erro){
         console.error(erro);
         setStatus("Não foi possível gerar o Word verdadeiro. Detalhe: " + (erro?.message || "erro desconhecido"),"error");
@@ -17466,6 +17128,7 @@ async function generateMaterial(){
 
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
+      desativarEditorVisualBlocosV1369();
       sincronizarBotoesEdicao(false);
 
       result.innerHTML = `
@@ -17484,6 +17147,45 @@ async function generateMaterial(){
       setStatus("Campos limpos. O material salvo automaticamente continua disponível no botão Restaurar último.","ok");
     }
 
+    let blocoVisualSelecionado = null;
+    let toolbarBlocosPdf = null;
+
+    function seletoresBlocosEditaveisV1369(){
+      return [".lesson-hero",".opening-cards",".daily-reading",".scripture-full",".teacher-planning-panel",".compact-comment-header",".lesson-topic",".subtopic",".knowledge-box",".summary-box",".teacher-help",".personal-application",".book-note",".bibliography-box",".safe-bibliography-alert",".reference-alert",".lesson-review-full",".block",".mini-card",".course-section",".study-section",".sermon-scripture",".sermon-intro",".sermon-point",".sermon-conclusion",".sermon-prayer"].join(",");
+    }
+    function criarToolbarBlocosPdfV1369(){
+      if(toolbarBlocosPdf) return toolbarBlocosPdf;
+      toolbarBlocosPdf = document.createElement("div");
+      toolbarBlocosPdf.className = "pdf-block-toolbar";
+      toolbarBlocosPdf.innerHTML = `<button type="button" data-action="up">↑ subir</button><button type="button" data-action="down">↓ descer</button><button type="button" data-action="space-up">+ espaço acima</button><button type="button" data-action="space-down">+ espaço abaixo</button><button type="button" data-action="less-space">− espaço</button><button type="button" data-action="page-break" class="primary">jogar p/ próxima página</button><button type="button" data-action="remove-break">tirar quebra</button><button type="button" data-action="clear">fechar</button>`;
+      toolbarBlocosPdf.addEventListener("click",ev => { const btn = ev.target.closest("button[data-action]"); if(!btn) return; ev.preventDefault(); aplicarAcaoBlocoPdfV1369(btn.dataset.action); });
+      document.body.appendChild(toolbarBlocosPdf); return toolbarBlocosPdf;
+    }
+    function selecionarBlocoPdfV1369(bloco){
+      if(blocoVisualSelecionado && blocoVisualSelecionado !== bloco) blocoVisualSelecionado.classList.remove("pdf-selected-block");
+      blocoVisualSelecionado = bloco || null;
+      if(blocoVisualSelecionado){ blocoVisualSelecionado.classList.add("pdf-selected-block"); criarToolbarBlocosPdfV1369().classList.add("active"); } else if(toolbarBlocosPdf){ toolbarBlocosPdf.classList.remove("active"); }
+    }
+    function numeroPx(valor){ const n = parseFloat(String(valor || "").replace("px","")); return Number.isFinite(n) ? n : 0; }
+    function margemAtual(el,prop){ return numeroPx(el.style[prop] || getComputedStyle(el)[prop]); }
+    function aplicarAcaoBlocoPdfV1369(action){
+      const el = blocoVisualSelecionado; if(!el || !el.isConnected){ selecionarBlocoPdfV1369(null); return; }
+      if(action === "up"){ const prev = el.previousElementSibling; if(prev) el.parentNode.insertBefore(el,prev); }
+      else if(action === "down"){ const next = el.nextElementSibling; if(next) el.parentNode.insertBefore(next,el); }
+      else if(action === "space-up"){ el.style.marginTop = Math.min(margemAtual(el,"marginTop") + 12,220) + "px"; }
+      else if(action === "space-down"){ el.style.marginBottom = Math.min(margemAtual(el,"marginBottom") + 12,220) + "px"; }
+      else if(action === "less-space"){ el.style.marginTop = Math.max(margemAtual(el,"marginTop") - 12,0) + "px"; el.style.marginBottom = Math.max(margemAtual(el,"marginBottom") - 12,0) + "px"; }
+      else if(action === "page-break"){ el.classList.add("user-page-break-before"); }
+      else if(action === "remove-break"){ el.classList.remove("user-page-break-before"); }
+      else if(action === "clear"){ selecionarBlocoPdfV1369(null); return; }
+      currentHtml = result.innerHTML; currentText = result.innerText.trim(); printArea.innerHTML = currentHtml; salvarUltimoMaterialGerado(currentHtml,"edicao-visual-blocos"); selecionarBlocoPdfV1369(el);
+    }
+    function instalarEditorVisualBlocosV1369(){
+      criarToolbarBlocosPdfV1369();
+      result.querySelectorAll(seletoresBlocosEditaveisV1369()).forEach(el => { el.setAttribute("data-pdf-block","1"); el.addEventListener("click",ev => { if(result.getAttribute("contenteditable") !== "true") return; const alvo = ev.target.closest(seletoresBlocosEditaveisV1369()); if(alvo) selecionarBlocoPdfV1369(alvo); }); });
+    }
+    function desativarEditorVisualBlocosV1369(){ if(blocoVisualSelecionado) blocoVisualSelecionado.classList.remove("pdf-selected-block"); blocoVisualSelecionado = null; if(toolbarBlocosPdf) toolbarBlocosPdf.classList.remove("active"); }
+
     function sincronizarBotoesEdicao(ativo){
       if(btnFinishEdit) btnFinishEdit.disabled = !ativo;
       if(btnFinishEditTop) btnFinishEditTop.disabled = !ativo;
@@ -17499,13 +17201,15 @@ async function generateMaterial(){
 
       result.setAttribute("contenteditable","true");
       editWarning.style.display = "block";
+      instalarEditorVisualBlocosV1369();
       sincronizarBotoesEdicao(true);
-      setStatus("Modo edição visual ativado. Ajuste o material na tela e depois clique em Salvar edição visual antes de gerar o PDF.","ok");
+      setStatus("Modo edição visual ativado. Clique em um quadro/bloco para subir, descer, adicionar espaço ou jogar para a próxima página. Depois clique em Salvar edição visual antes de gerar o PDF.","ok");
     }
 
     function finalizarEdicao(){
       result.removeAttribute("contenteditable");
       editWarning.style.display = "none";
+      desativarEditorVisualBlocosV1369();
       sincronizarBotoesEdicao(false);
 
       currentHtml = result.innerHTML;
@@ -17533,168 +17237,13 @@ async function generateMaterial(){
     }
 
     function preencherTeste(){
-      const type = currentType;
-
-      if(type === "sermao"){
-        setValue("title","Cura Interior: Quando Deus Sara as Feridas da Alma");
-        setValue("subtitle","Uma mensagem bíblica sobre restauração, perdão, libertação emocional e recomeço em Deus");
-        setValue("theme","Crie um sermão completo sobre cura interior. A mensagem deve nascer do texto bíblico principal e mostrar que Deus conhece as feridas escondidas, Jesus cura os quebrantados de coração, a cura passa pela entrega, pelo perdão e pela fé, e Deus transforma dor em testemunho. O sermão deve ser bíblico, pastoral, pentecostal, profundo, acolhedor e cristocêntrico. Use frases fortes em destaque, parágrafos curtos e visual bom para ministrar no tablet.");
-        setValue("biblicalBase","Salmo 147.3");
-        setValue("sermonSupportRefs","Lucas 4.18-19; Isaías 61.1-3; Mateus 11.28-30; João 8.36; 2 Coríntios 5.17");
-        setValue("targetAudience","Igreja em geral, pessoas feridas, famílias, novos convertidos e todos que precisam de restauração interior");
-        setValue("tone","bíblico, pastoral, pentecostal, profundo, acolhedor, sensível, restaurador e cristocêntrico");
-        setValue("author","Isiquel Rodrigues");
-        setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
-        setValue("sermonPoints","4");
-        setValue("sermonType","temático");
-        setValue("sermonAppeal","com fechamento e apelo forte para ação");
-        setValue("sermonStyle","libertação, autoridade espiritual, bíblico e cristocêntrico");
-        setValue("sermonLength","normal");
-        setValue("coverMode","sem-capa");
-        setValue("extraNotes","O sermão deve começar com o tema e o Texto Bíblico Base principal escrito. Use somente Salmo 147.3 no início. As demais referências são apenas de apoio nos tópicos, no máximo uma por tópico e somente se sustentarem diretamente o argumento. A introdução deve começar comentando o texto base lido, sem começar com pergunta direta. Não criar aplicação prática separada. Não colocar conclusão nem oração dentro dos tópicos. Depois do último tópico, ir direto para a conclusão com fechamento e apelo para ação. Finalizar com oração.");
-      }
-
-      if(type === "estudo"){
-        setValue("title","Soteriologia: A Doutrina da Salvação");
-        setValue("subtitle","Um estudo sobre a obra salvadora de Deus em Cristo, a graça, a fé, a justificação, a regeneração, a santificação e a esperança eterna");
-        setValue("theme","Crie um estudo bíblico e teológico completo, profundo, didático e organizado sobre Soteriologia: a Doutrina da Salvação. Explique a condição pecaminosa do ser humano, a graça de Deus, a obra de Cristo, arrependimento e fé, justificação, regeneração, adoção, santificação, perseverança e glorificação. Não escrever como sermão. Não criar apelo final. Não criar oração final. Organizar como estudo ou apostila para ensino cristão.");
-        setValue("biblicalBase","Efésios 2.8-10");
-        setValue("targetAudience","Alunos de teologia, professores de EBD, líderes cristãos, obreiros, pregadores e cristãos que desejam compreender melhor a doutrina da salvação");
-        setValue("tone","teológico, bíblico, doutrinário, didático, profundo, claro, reverente, cristocêntrico e formativo");
-        setValue("author","Isiquel Rodrigues");
-        setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
-        setValue("depthLevel","muito-profundo");
-        setValue("studyType","apostila-aluno");
-        setValue("studyDepth","revista teológica ou apostila doutrinária");
-        setValue("studyQuestions","com perguntas e respostas");
-        setValue("studyLessons","4");
-        setValue("coverMode","sem-capa");
-        setValue("extraNotes","O material deve parecer apostila bíblica para sala de aula. Pode ser usado com alunos. Não escrever em formato de sermão. Não criar conclusão com apelo nem oração final. Usar explicação doutrinária, referências bíblicas bem aplicadas, perguntas com respostas e glossário.");
-      }
-
-      if(type === "revista"){
-        setValue("title","A Igreja em Tempos de Confusão");
-        setValue("subtitle","Guardando a fé, a santidade e a verdade em uma geração marcada por engano, relativismo e esfriamento espiritual");
-        setValue("theme","Crie uma revista mensal de Escola Bíblica Dominical para adultos com o tema: A Igreja em Tempos de Confusão.");
-        setValue("biblicalBase","2 Timóteo 3.14-17; João 17.17; Gálatas 1.6-10; 2 Timóteo 4.1-5; 1 Pedro 1.13-16; Romanos 12.1-2; Mateus 24.12-13; Judas 1.20-25");
-        setValue("targetAudience","Classe adulta da Escola Bíblica Dominical");
-        setValue("tone","bíblico, pastoral, pentecostal, doutrinário, didático, atual, profundo, firme e esperançoso");
-        setValue("author","Isiquel Rodrigues");
-        setValue("ministry","CPID — Casa Publicadora da Igreja de Deus");
-        setValue("coverMode","com-capa");
-        setValue("revistaTipo","aluno");
-        setValue("revistaClasse","adultos");
-        setValue("revistaMes","Agosto");
-        setValue("revistaAno","2026");
-        setValue("supportBookDepth","expandido");
-        setValue("bibliographyMode","segura");
-        setValue("printFormat","a4");
-        setValue("revistaObservacao","Lição 1: Uma Geração Confusa e a Verdade da Palavra\nTexto base: 2 Timóteo 3.14-17; João 17.17; Salmo 119.105\nObjetivo: mostrar que, em tempos de confusão espiritual e moral, a igreja precisa permanecer firmada na verdade da Palavra de Deus.\n\nTópico 1: A confusão de uma geração sem absolutos\nSubtópicos: A verdade tem sido relativizada; A opinião humana tem ocupado o lugar da Palavra; A igreja precisa discernir o espírito do tempo.\n\nTópico 2: A Palavra de Deus como fundamento da verdade\nSubtópicos: Toda a Escritura é inspirada por Deus; A Palavra santifica o povo de Deus; A Escritura ilumina o caminho do cristão.\n\nTópico 3: A igreja guardando a verdade em amor\nSubtópicos: Defender a verdade sem perder a graça; Ensinar a Palavra com fidelidade; Viver a verdade diante de uma geração confusa.\n\n\nLição 2: O Perigo do Evangelho Raso\nTexto base: Gálatas 1.6-10; Mateus 7.21-27; 2 Timóteo 4.1-5\nObjetivo: alertar a igreja sobre os perigos de um evangelho sem cruz, sem arrependimento, sem santidade e sem compromisso real com Cristo.\n\nTópico 1: Quando o evangelho é esvaziado\nSubtópicos: Um evangelho sem arrependimento; Uma fé sem obediência; Uma mensagem que agrada o homem, mas não transforma o coração.\n\nTópico 2: O perigo de ouvir apenas o que agrada\nSubtópicos: A rejeição da sã doutrina; A busca por mensagens convenientes; O risco de confundir emoção com conversão.\n\nTópico 3: Voltando ao evangelho de Cristo\nSubtópicos: Cristo é o centro da mensagem; A cruz confronta o pecado; O verdadeiro evangelho produz fruto e perseverança.\n\n\nLição 3: Santidade em Tempos de Relativismo\nTexto base: 1 Pedro 1.13-16; Romanos 12.1-2; Hebreus 12.14\nObjetivo: ensinar que a santidade continua sendo uma exigência bíblica para o povo de Deus, mesmo em uma cultura que tenta normalizar o pecado.\n\nTópico 1: O chamado bíblico à santidade\nSubtópicos: Deus é santo e chama seu povo à santidade; A santidade envolve mente, corpo e conduta; A graça não anula a obediência.\n\nTópico 2: O perigo da conformação com o mundo\nSubtópicos: O mundo tenta moldar os valores da igreja; A mente precisa ser renovada pela Palavra; O cristão não pode negociar princípios eternos.\n\nTópico 3: Uma vida santa em uma geração impura\nSubtópicos: Santidade no falar, no pensar e no agir; Santidade na família e nos relacionamentos; Santidade como testemunho diante do mundo.\n\n\nLição 4: Uma Igreja Firme Até a Volta de Cristo\nTexto base: Mateus 24.12-13; Apocalipse 3.7-13; Judas 1.20-25\nObjetivo: mostrar que, mesmo diante do esfriamento espiritual e da multiplicação do engano, a igreja deve permanecer fiel, vigilante e esperançosa até a volta de Cristo.\n\nTópico 1: O perigo do esfriamento espiritual\nSubtópicos: O amor de muitos se esfriará; A rotina religiosa pode substituir a vida com Deus; A vigilância espiritual não pode ser abandonada.\n\nTópico 2: Perseverando em fidelidade\nSubtópicos: Guardar a Palavra de Cristo; Permanecer firme mesmo com pouca força; Não negociar a fé diante da pressão.\n\nTópico 3: A esperança que sustenta a igreja\nSubtópicos: Cristo guarda os que permanecem fiéis; A volta de Jesus fortalece a perseverança; A igreja deve edificar-se na fé até o fim.");
-      }
-
-      setStatus("Exemplo preenchido para " + getTypeLabel(type) + ".","ok");
+      // v13.69 — exemplos prontos foram desativados para evitar contaminação de tema.
+      setStatus("Exemplos prontos desativados. Preencha os campos com o tema real do material.","ok");
     }
 
     function gerarPromptAutomatico(){
-      if(!isAdminUnlocked()){
-        setStatus("Prompt automático é reservado. Digite o código de acesso.","error");
-        return;
-      }
-
-      const tema = getValue("theme") || getValue("title") || "tema bíblico escolhido";
-      const tipo = getValue("sermonType") || "temático";
-      const studyType = getValue("studyType") || "estudo-biblico";
-
-      let regra = "";
-
-      if(currentType === "sermao"){
-        if(tipo === "expositivo"){
-          regra = `
-Como sermão expositivo, caminhe pelo texto bíblico base principal. Explique contexto, propósito, sentido do texto, blocos de versículos, lições extraídas do texto e aplicações dentro de cada bloco.
-Use apenas o texto base principal no início.
-Referências de apoio devem ser usadas somente quando sustentarem o argumento.
-Não coloque conclusão nem oração dentro dos blocos.
-Use parágrafos curtos e frases fortes em destaque.
-          `.trim();
-        }else if(tipo === "textual"){
-          regra = `
-Como sermão textual, tire as divisões das palavras, expressões e ideias do próprio texto bíblico base principal. Cada divisão deve ter explicação, argumento e aplicação dentro dela.
-Use apenas o texto base principal no início.
-Referências de apoio devem ser usadas somente quando sustentarem o argumento.
-Não coloque conclusão nem oração dentro das divisões.
-Use parágrafos curtos e frases fortes em destaque.
-          `.trim();
-        }else{
-          regra = `
-Como sermão temático, desenvolva tópicos progressivos sobre o tema, mas a mensagem deve emanar do texto bíblico base principal.
-Use apenas o texto base principal no início.
-Cada tópico deve ter explicação bíblica, argumento consistente e aplicação prática dentro do próprio tópico.
-Use no máximo uma referência bíblica de apoio por tópico, somente se ela sustentar diretamente o argumento.
-Não coloque conclusão nem oração dentro dos tópicos.
-Use parágrafos curtos e frases fortes em destaque.
-          `.trim();
-        }
-      }
-
-      if(currentType === "estudo"){
-        if(studyType === "apostila-aluno"){
-          regra = `
-Crie uma Apostila do Aluno completa sobre o tema.
-A apostila deve servir para sala de aula, discipulado, curso bíblico, formação cristã ou estudo em grupo.
-Não escrever como sermão.
-Não criar apelo final.
-Não criar oração final.
-Organize em: contexto, introdução, explicação principal, unidades/aulas, aplicações, perguntas de revisão, glossário e conclusão.
-Escreva para o aluno acompanhar, aprender e responder.
-Não coloque orientação ao professor.
-          `.trim();
-        }else if(studyType === "apostila-professor"){
-          regra = `
-Crie uma Apostila do Professor completa sobre o tema, usando a Apostila do Aluno como base quando disponível.
-Não pode virar outro material.
-Mantenha o mesmo conteúdo central do aluno, mas acrescente objetivos, orientação ao professor, plano de aula, subsídios bíblicos, subsídios teológicos, auxílio didático, perguntas com respostas, erros comuns a evitar e como explicar pontos difíceis.
-Não escrever como sermão.
-Não criar apelo final.
-Não criar oração final.
-          `.trim();
-        }else if(studyType === "estudo-teologico"){
-          regra = `
-Crie um estudo teológico completo, bíblico, doutrinário, didático e organizado.
-O material deve parecer revista teológica ou apostila de teologia.
-Não escrever em formato de sermão.
-Não criar apelo final.
-Não criar oração final.
-Organize em etapas: contexto, explicação doutrinária, desenvolvimento por blocos, aplicações, perguntas com respostas, glossário teológico e conclusão teológica.
-          `.trim();
-        }else{
-          regra = `
-Crie um estudo bíblico completo, profundo, claro e didático.
-Pode ser sobre qualquer tema cristão: missões, família, oração, santidade, discipulado, liderança, evangelismo, doutrina, vida cristã ou outro assunto bíblico.
-Não escrever como sermão.
-Não criar apelo final.
-Não criar oração final.
-Organize com contexto, explicação bíblica, desenvolvimento, aplicações, perguntas, glossário e conclusão.
-          `.trim();
-        }
-      }
-
-      const prompt = `
-Crie um material cristão completo, original, bíblico, profundo e bem organizado sobre o tema:
-
-${tema}
-
-${regra}
-
-Use linguagem bíblica, pastoral, pentecostal, didática e clara.
-Não copie conteúdo de nenhuma editora.
-Não repita este prompt dentro do conteúdo final.
-Não escreva "desenvolva esta parte".
-Não entregue esboço vazio.
-Toda referência bíblica citada deve combinar com o assunto explicado.
-      `.trim();
-
-      setValue("theme",prompt);
-      setStatus("Prompt automático criado no campo Tema principal ou prompt.","ok");
+      // v13.69 — prompts automáticos foram desativados para evitar temas prontos dentro do código.
+      setStatus("Prompt automático desativado. Preencha o campo Tema principal ou prompt com o conteúdo real do seu projeto.","ok");
     }
 
     typeButtons.forEach(button => {
