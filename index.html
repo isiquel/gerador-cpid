@@ -1713,61 +1713,15 @@
     }
 
 
-    /* v13.70 — editor visual de blocos/quadros e quebras manuais antes do PDF */
-    .pdf-block-toolbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2000;display:none;gap:7px;align-items:center;flex-wrap:wrap;max-width:min(980px,calc(100vw - 20px));background:rgba(255,250,244,.98);border:1px solid #d9cbbb;border-radius:18px;box-shadow:0 14px 40px rgba(40,20,10,.24);padding:9px;backdrop-filter:blur(8px);}
+    /* v13.69 — editor visual de blocos/quadros antes do PDF */
+    .pdf-block-toolbar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:2000;display:none;gap:7px;align-items:center;flex-wrap:wrap;max-width:min(960px,calc(100vw - 20px));background:rgba(255,250,244,.98);border:1px solid #d9cbbb;border-radius:18px;box-shadow:0 14px 40px rgba(40,20,10,.24);padding:9px;backdrop-filter:blur(8px);}
     .pdf-block-toolbar.active{display:flex;}
     .pdf-block-toolbar button{width:auto !important;border:none;border-radius:12px;padding:9px 11px;font-size:12.5px;font-weight:800;cursor:pointer;color:#4e3121;background:#fff;border:1px solid #d9cbbb;}
     .pdf-block-toolbar button.primary{color:#fff;background:#6b432b;border-color:#6b432b;}
-    .pdf-block-toolbar button.danger{color:#8a2a2a;background:#fff0f0;border-color:#e1b2b2;}
     .pdf-selected-block{outline:3px solid #d9a124 !important;box-shadow:0 0 0 6px rgba(217,161,36,.18) !important;position:relative;}
-
-    .result[contenteditable="true"] .user-page-break-before{
-      margin-top:46px !important;
-      border-top:7px dashed #0c5fc4 !important;
-      padding-top:18px !important;
-      position:relative !important;
-    }
-    .result[contenteditable="true"] .user-page-break-before::before{
-      content:"QUEBRA MANUAL DE PÁGINA — este bloco começará em nova página no PDF";
-      display:block;
-      position:absolute;
-      top:-36px;
-      left:0;
-      right:0;
-      text-align:center;
-      background:#eaf4ff;
-      border:1px solid #8bb9ef;
-      color:#073d8c;
-      border-radius:999px;
-      padding:7px 10px;
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.2px;
-    }
-    .result[contenteditable="true"] .user-page-break-after{
-      margin-bottom:46px !important;
-      border-bottom:7px dashed #7d1025 !important;
-      padding-bottom:18px !important;
-      position:relative !important;
-    }
-    .result[contenteditable="true"] .user-page-break-after::after{
-      content:"QUEBRA MANUAL APÓS ESTE BLOCO";
-      display:block;
-      position:absolute;
-      bottom:-36px;
-      left:0;
-      right:0;
-      text-align:center;
-      background:#fff0f4;
-      border:1px solid #e3a7b5;
-      color:#7d1025;
-      border-radius:999px;
-      padding:7px 10px;
-      font-size:12px;
-      font-weight:900;
-      letter-spacing:.2px;
-    }
-    @media print{#printArea .pdf-block-toolbar{display:none !important;}#printArea .pdf-selected-block{outline:none !important;box-shadow:none !important;}#printArea .user-page-break-before{break-before:page !important;page-break-before:always !important;border-top:0 !important;padding-top:0 !important;margin-top:0 !important;}#printArea .user-page-break-before::before{display:none !important;}#printArea .user-page-break-after{break-after:page !important;page-break-after:always !important;border-bottom:0 !important;padding-bottom:0 !important;margin-bottom:0 !important;}#printArea .user-page-break-after::after{display:none !important;}}
+    .user-page-break-before{border-top:4px dashed #b88700 !important;padding-top:14px !important;}
+    .user-page-break-before::before{content:"QUEBRA DE PÁGINA ANTES DESTE BLOCO";display:block;margin:0 0 8px;color:#8a5a00;font-size:11px;font-weight:900;letter-spacing:.5px;text-transform:uppercase;}
+    @media print{#printArea .pdf-block-toolbar{display:none !important;}#printArea .pdf-selected-block{outline:none !important;box-shadow:none !important;}#printArea .user-page-break-before{break-before:page !important;page-break-before:always !important;border-top:0 !important;padding-top:0 !important;}#printArea .user-page-break-before::before{display:none !important;}}
 
 
     #printArea{
@@ -3667,7 +3621,96 @@
       }
     }
 
-</style>
+
+
+    /* v13.71 — controle manual do tamanho da letra para prévia, PDF e Word */
+    .font-size-preview-note{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-top:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      background:#fff7e6;
+      border:1px solid #e6ca84;
+      color:#7c5924;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    #result.verbo-font-controlled,
+    #printArea.verbo-font-controlled{
+      --verbo-user-font-size:14pt;
+      --verbo-user-line-height:1.45;
+    }
+
+    #result.verbo-font-controlled .text,
+    #result.verbo-font-controlled .list,
+    #result.verbo-font-controlled p,
+    #result.verbo-font-controlled li,
+    #result.verbo-font-controlled .question-answer,
+    #result.verbo-font-controlled .student-space,
+    #result.verbo-font-controlled .sermon-scripture .text,
+    #result.verbo-font-controlled .sermon-intro .text,
+    #result.verbo-font-controlled .sermon-point .text,
+    #result.verbo-font-controlled .sermon-conclusion .text,
+    #result.verbo-font-controlled .sermon-prayer .text,
+    #result.verbo-font-controlled .sermon-application-inside .text,
+    #result.verbo-font-controlled .study-section .text,
+    #result.verbo-font-controlled .course-section p,
+    #result.verbo-font-controlled .course-section li{
+      font-size:var(--verbo-user-font-size) !important;
+      line-height:var(--verbo-user-line-height) !important;
+    }
+
+    @media print{
+      #printArea.verbo-font-controlled .text,
+      #printArea.verbo-font-controlled .list,
+      #printArea.verbo-font-controlled p,
+      #printArea.verbo-font-controlled li,
+      #printArea.verbo-font-controlled .question-answer,
+      #printArea.verbo-font-controlled .student-space,
+      #printArea.verbo-font-controlled .sermon-scripture .text,
+      #printArea.verbo-font-controlled .sermon-intro .text,
+      #printArea.verbo-font-controlled .sermon-point .text,
+      #printArea.verbo-font-controlled .sermon-conclusion .text,
+      #printArea.verbo-font-controlled .sermon-prayer .text,
+      #printArea.verbo-font-controlled .sermon-application-inside .text,
+      #printArea.verbo-font-controlled .study-section .text,
+      #printArea.verbo-font-controlled .course-section p,
+      #printArea.verbo-font-controlled .course-section li{
+        font-size:var(--verbo-user-font-size) !important;
+        line-height:var(--verbo-user-line-height) !important;
+      }
+
+      #printArea.verbo-font-controlled .block,
+      #printArea.verbo-font-controlled .subtopic,
+      #printArea.verbo-font-controlled .knowledge-box,
+      #printArea.verbo-font-controlled .teacher-help,
+      #printArea.verbo-font-controlled .summary-box,
+      #printArea.verbo-font-controlled .personal-application,
+      #printArea.verbo-font-controlled .scripture-full,
+      #printArea.verbo-font-controlled .sermon-scripture,
+      #printArea.verbo-font-controlled .sermon-intro,
+      #printArea.verbo-font-controlled .sermon-point,
+      #printArea.verbo-font-controlled .sermon-conclusion,
+      #printArea.verbo-font-controlled .sermon-prayer,
+      #printArea.verbo-font-controlled .memory-verse,
+      #printArea.verbo-font-controlled .lesson-synthesis,
+      #printArea.verbo-font-controlled .daily-reading,
+      #printArea.verbo-font-controlled .book-note,
+      #printArea.verbo-font-controlled .bibliography-box,
+      #printArea.verbo-font-controlled .safe-bibliography-alert,
+      #printArea.verbo-font-controlled .reference-alert,
+      #printArea.verbo-font-controlled .theology-box,
+      #printArea.verbo-font-controlled .study-header,
+      #printArea.verbo-font-controlled .study-article{
+        break-inside:auto !important;
+        page-break-inside:auto !important;
+      }
+    }
+
+  </style>
 </head>
 
 <body>
@@ -4117,6 +4160,22 @@
               </select>
               <div class="chip-note">
                 A4 é o padrão. A5 deixa o material em tamanho menor. Para livreto dobrável, escolha A3 paisagem e use também a opção “Livreto/Booklet” da impressora ou do leitor de PDF.
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="pdfFontSize">Tamanho da letra para PDF / Word</label>
+              <select id="pdfFontSize">
+                <option value="12">12 pt — mais compacto</option>
+                <option value="13">13 pt — leitura confortável</option>
+                <option value="14" selected>14 pt — recomendado</option>
+                <option value="15">15 pt — maior</option>
+                <option value="16">16 pt — bem grande</option>
+                <option value="17">17 pt — extra grande</option>
+                <option value="18">18 pt — máximo</option>
+              </select>
+              <div class="chip-note">
+                Escolha antes de imprimir. O tamanho escolhido aparece na prévia, vai para o PDF e também para o Word. Se ficar grande demais, use as quebras manuais no modo “Editar PDF visual”.
               </div>
             </div>
           </div>
@@ -4884,7 +4943,8 @@
       if(isValidAdminCode(code)){
         adminAccessGranted = true;
         try{ localStorage.setItem("verboia_acesso_liberado_reservado","1"); }catch(e){}
-        updateReservedState();
+    
+    updateReservedState();
         setStatus("Recursos reservados liberados.","ok");
         return true;
       }
@@ -15427,6 +15487,38 @@ async function generateMaterial(){
        Esta função apenas ajuda, inserindo quebras antes de quadros
        que cairiam cortados no fim da folha.
     ========================================================= */
+    /* =========================================================
+       v13.71 — Tamanho da fonte controlado pelo usuário
+       Aplica na prévia, no PDF e no Word.
+    ========================================================= */
+    function tamanhoFonteSelecionadoPt(){
+      const campo = document.getElementById("pdfFontSize");
+      const n = parseInt(campo?.value || "14",10);
+      if(!Number.isFinite(n)) return 14;
+      return Math.max(12,Math.min(18,n));
+    }
+
+    function tamanhoFonteWordHalfPoints(){
+      return tamanhoFonteSelecionadoPt() * 2;
+    }
+
+    function aplicarTamanhoFonteNoElemento(el){
+      if(!el) return;
+      const n = tamanhoFonteSelecionadoPt();
+      el.classList.add("verbo-font-controlled");
+      el.style.setProperty("--verbo-user-font-size", n + "pt");
+      el.style.setProperty("--verbo-user-line-height", n >= 16 ? "1.38" : "1.45");
+    }
+
+    function aplicarTamanhoFontePreview(){
+      aplicarTamanhoFonteNoElemento(result);
+      aplicarTamanhoFonteNoElemento(printArea);
+      const campo = document.getElementById("pdfFontSize");
+      if(campo && result && !result.querySelector(".placeholder")){
+        campo.title = "Tamanho atual para PDF/Word: " + tamanhoFonteSelecionadoPt() + " pt";
+      }
+    }
+
     function alturaFolhaPrintPx(format){
       const mmToPx = 96 / 25.4;
       if(format === "a5") return Math.round((210 - 14) * mmToPx);
@@ -15543,6 +15635,7 @@ async function generateMaterial(){
       }
 
       printArea.innerHTML = result.innerHTML;
+      aplicarTamanhoFonteNoElemento(printArea);
       prepararQuebrasPdfVisual(format);
 
       if(isMobile){
@@ -15792,29 +15885,35 @@ async function generateMaterial(){
       const tipo = bloco.tipo || "p";
       let props = "";
       let runProps = "";
+      const wordBaseSize = tamanhoFonteWordHalfPoints();
+      const wordH1Size = wordBaseSize + 12;
+      const wordH2Size = wordBaseSize + 8;
+      const wordH3Size = wordBaseSize + 4;
+      const wordH4Size = wordBaseSize;
+      const wordSmallSize = Math.max(18,wordBaseSize - 1);
 
       if(tipo === "h1"){
         props = '<w:pPr><w:spacing w:before="260" w:after="160"/><w:keepNext/><w:outlineLvl w:val="0"/></w:pPr>';
-        runProps = '<w:rPr><w:b/><w:sz w:val="34"/><w:color w:val="1F4E79"/></w:rPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="' + wordH1Size + '"/><w:color w:val="1F4E79"/></w:rPr>';
       }else if(tipo === "h2"){
         props = '<w:pPr><w:spacing w:before="220" w:after="120"/><w:keepNext/><w:outlineLvl w:val="1"/></w:pPr>';
-        runProps = '<w:rPr><w:b/><w:sz w:val="28"/><w:color w:val="1F4E79"/></w:rPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="' + wordH2Size + '"/><w:color w:val="1F4E79"/></w:rPr>';
       }else if(tipo === "h3"){
         props = '<w:pPr><w:spacing w:before="180" w:after="100"/><w:keepNext/><w:outlineLvl w:val="2"/></w:pPr>';
-        runProps = '<w:rPr><w:b/><w:sz w:val="24"/><w:color w:val="1F4E79"/></w:rPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="' + wordH3Size + '"/><w:color w:val="1F4E79"/></w:rPr>';
       }else if(tipo === "h4"){
         props = '<w:pPr><w:spacing w:before="140" w:after="80"/><w:keepNext/></w:pPr>';
-        runProps = '<w:rPr><w:b/><w:sz w:val="22"/><w:color w:val="5F3B25"/></w:rPr>';
+        runProps = '<w:rPr><w:b/><w:sz w:val="' + wordH4Size + '"/><w:color w:val="5F3B25"/></w:rPr>';
       }else if(tipo === "subtitle"){
         props = '<w:pPr><w:spacing w:after="140"/></w:pPr>';
-        runProps = '<w:rPr><w:i/><w:sz w:val="22"/><w:color w:val="666666"/></w:rPr>';
+        runProps = '<w:rPr><w:i/><w:sz w:val="' + wordBaseSize + '"/><w:color w:val="666666"/></w:rPr>';
       }else if(tipo === "li"){
         props = '<w:pPr><w:spacing w:after="80"/><w:ind w:left="360" w:hanging="180"/></w:pPr>';
-        runProps = '<w:rPr><w:sz w:val="22"/></w:rPr>';
+        runProps = '<w:rPr><w:sz w:val="' + wordBaseSize + '"/></w:rPr>';
         return `<w:p>${props}<w:r>${runProps}<w:t xml:space="preserve">• ${texto}</w:t></w:r></w:p>`;
       }else{
         props = '<w:pPr><w:spacing w:after="120"/><w:jc w:val="both"/></w:pPr>';
-        runProps = '<w:rPr><w:sz w:val="22"/></w:rPr>';
+        runProps = '<w:rPr><w:sz w:val="' + wordBaseSize + '"/></w:rPr>';
       }
 
       const partes = texto.split(/\n+/).filter(Boolean);
@@ -15827,7 +15926,9 @@ async function generateMaterial(){
 
     function criarCelulaWord(texto,{ header=false, width="5000" }={}){
       const shading = header ? '<w:shd w:fill="D9EAF7"/>' : '<w:shd w:fill="F2F2F2"/>';
-      const runProps = header ? '<w:rPr><w:b/><w:sz w:val="22"/><w:color w:val="1F4E79"/></w:rPr>' : '<w:rPr><w:sz w:val="21"/></w:rPr>';
+      const wordBaseSize = tamanhoFonteWordHalfPoints();
+      const wordCellSize = Math.max(18,wordBaseSize - 1);
+      const runProps = header ? '<w:rPr><w:b/><w:sz w:val="' + wordBaseSize + '"/><w:color w:val="1F4E79"/></w:rPr>' : '<w:rPr><w:sz w:val="' + wordCellSize + '"/></w:rPr>';
       const linhas = textoLimpoParaWord(texto).split(/\n+/).filter(Boolean);
       const conteudo = (linhas.length ? linhas : [""]).map(l => `<w:p><w:pPr><w:spacing w:after="60"/></w:pPr><w:r>${runProps}<w:t xml:space="preserve">${xmlEscape(l)}</w:t></w:r></w:p>`).join("");
       return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${shading}<w:tcMar><w:top w:w="100" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="100" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr>${conteudo}</w:tc>`;
@@ -15992,9 +16093,10 @@ async function generateMaterial(){
 </Relationships>`;
       const documentRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>`;
+      const wordDefaultSize = tamanhoFonteWordHalfPoints();
       const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-  <w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="22"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120"/></w:pPr></w:pPrDefault></w:docDefaults>
+  <w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial"/><w:sz w:val="${wordDefaultSize}"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120"/></w:pPr></w:pPrDefault></w:docDefaults>
 </w:styles>`;
       const settings = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:zoom w:percent="100"/><w:defaultTabStop w:val="720"/></w:settings>`;
@@ -16037,7 +16139,7 @@ async function generateMaterial(){
         a.click();
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url),2000);
-        setStatus(`Word (.docx) gerado em formato ${formato === "a5" ? "A5" : "A4"}, com tabelas simples e quebras entre lições.`,"ok");
+        setStatus(`Word (.docx) gerado em formato ${formato === "a5" ? "A5" : "A4"}, fonte ${tamanhoFonteSelecionadoPt()} pt, com tabelas simples e quebras entre lições.`,"ok");
       }catch(erro){
         console.error(erro);
         setStatus("Não foi possível gerar o Word verdadeiro. Detalhe: " + (erro?.message || "erro desconhecido"),"error");
@@ -17114,6 +17216,7 @@ async function generateMaterial(){
 </style>
 </head>
 <body class="${classeFormato}">
+  <script>document.documentElement.style.setProperty('--verbo-user-font-size','${tamanhoFonteSelecionadoPt()}pt');</script>
   <div class="print-mobile-toolbar">
     <strong>VERBO IA<br>Toque no botão verde se o PDF não abrir sozinho.</strong>
     <button type="button" onclick="window.print()">Imprimir / salvar PDF</button>
@@ -17253,6 +17356,7 @@ async function generateMaterial(){
       result.setAttribute("contenteditable","true");
       editWarning.style.display = "block";
       instalarEditorVisualBlocosV1369();
+      aplicarTamanhoFontePreview();
       sincronizarBotoesEdicao(true);
       setStatus("Modo edição visual ativado. Clique no quadro ou bloco. Use “quebrar antes / nova página” para fazer a quebra aparecer na tela antes do PDF. Depois clique em Salvar edição visual e Salvar / imprimir PDF.","ok");
     }
@@ -17266,6 +17370,7 @@ async function generateMaterial(){
       currentHtml = result.innerHTML;
       currentText = result.innerText.trim();
       printArea.innerHTML = currentHtml;
+      aplicarTamanhoFontePreview();
       salvarUltimoMaterialGerado(currentHtml,"edicao");
 
       setStatus("Edição visual salva. Agora clique em Salvar / imprimir PDF para gerar o PDF com suas alterações.","ok");
@@ -17528,6 +17633,24 @@ Toda referência bíblica citada deve combinar com o assunto explicado.
         const label = cursoTipo.options[cursoTipo.selectedIndex]?.textContent || "material do curso";
         setStatus("Tipo de curso selecionado: " + label + ".","ok");
       });
+    }
+
+
+    const pdfFontSizeField = document.getElementById("pdfFontSize");
+    if(pdfFontSizeField){
+      pdfFontSizeField.addEventListener("change",() => {
+        aplicarTamanhoFontePreview();
+        if(result && !result.querySelector(".placeholder")){
+          currentHtml = result.innerHTML;
+          printArea.innerHTML = currentHtml;
+          aplicarTamanhoFonteNoElemento(printArea);
+          salvarUltimoMaterialGerado(currentHtml,"fonte-pdf");
+          setStatus("Tamanho da letra ajustado para " + tamanhoFonteSelecionadoPt() + " pt. Agora você pode ajustar quebras e imprimir.","ok");
+        }else{
+          setStatus("Tamanho da letra para PDF/Word definido em " + tamanhoFonteSelecionadoPt() + " pt.","ok");
+        }
+      });
+      aplicarTamanhoFontePreview();
     }
 
     updateReservedState();
